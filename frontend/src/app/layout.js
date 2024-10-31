@@ -3,10 +3,12 @@ export const metadata = {
   description: 'AI for Software Development',
 }
 
+import styles from "./page.module.css";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className={styles.main}>{children}</body>
     </html>
   )
 }
