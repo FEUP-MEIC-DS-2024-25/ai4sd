@@ -1,14 +1,15 @@
 import Image from "next/image";
 import 'bootstrap/dist/css/bootstrap.css';
 import styles from "./page.module.css";
+import './globals.css';
 import logo from "./pictures/logo.svg";
 
 export default function Home() {
   return (
       <main className={styles.main}>
-        <nav id="mainNav" className="navbar navbar-expand-md sticky-top py-3 navbar-dark">
+        <nav id="mainNav" className="navbar navbar-expand-md sticky-top navbar-dark" style={{borderBottom: "1px solid #EFEFEF", padding: 0 + "px"}}>
           <div className="container">
-            <Image src={logo} alt="Logo" height={50} width={50} />
+            <Image src={logo} alt="Logo" height={60} width={"100"} />
             <a className="navbar-brand d-flex align-items-center" href="/"></a>
             <button className="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navcol-1">
               <span className="visually-hidden">Toggle navigation</span>
@@ -17,24 +18,25 @@ export default function Home() {
             <div id="navcol-1" className="collapse navbar-collapse">
               <ul className="navbar-nav mx-auto"></ul>
             </div>
-                <a href="#" style={{margin_left: 30 + "px"}}>Home</a>
-                <a href="#" style={{margin_left: 30 + "px"}}>About</a>
-                <a href="#" style={{margin_left: 30 + "px"}}>Contact</a>
+            <div className="ul" style={{display: "inline-grid", gridGap: 30 + "px", gridTemplateColumns: "repeat(3, 1fr)"}}>
+                <a href="#" >Home</a>
+                <a href="#" >About</a>
+                <a href="#" >Contact</a>
+            </div>  
           </div>
         </nav>
 
+        <div className="container" style={{"min-width": "100%", height: "400px", padding: 0 + 'px', margin: 0 + 'px', display: 'flex', flexDirection: "column", alignItems: "center", background: "linear-gradient(180deg, rgba(20,20,20,1) 8%, rgba(44,44,44,1) 100%);"}} >
+          <Image src={logo} alt="Logo" height={215} width={600} style={{"margin-top": 7.5 + "px"}} />
+          <div className="row">
+            <span style={{"font-size": 28 + "px", "text-align": "center"}}>
+            Artificial Intelligence for <br/> Software Development
+            </span>
+          </div>
+        </div>
 
-        <Image src={logo} alt="Logo" height={50} width={50} />
-        <ol>
-
-
-
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
+        <div className="container" style={{minWidth: "100%", height: "400px", padding: 0 + 'px', margin: 0 + 'px', display: 'flex', flexDirection: "column", alignItems: "center", background: "linear-gradient(180deg, rgba(20,20,20,1) 8%, rgba(44,44,44,1) 100%);"}} >
+        </div>
         <footer className={styles.footer}>
         <a
           href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
