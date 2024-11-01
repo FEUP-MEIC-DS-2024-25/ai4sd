@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 :root {
   --background: #141414;
   --foreground: #ededed;
@@ -11,8 +13,6 @@
   }
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Noto+Sans+Symbols:wght@100..900&display=swap');
-
 html,
 body {
   max-width: 100vw;
@@ -23,7 +23,7 @@ body {
   color: var(--foreground);
   background: var(--background) !important;
   background-color: var(--background) !important;
-  font-family: 'Josefin Sans' sans-serif !important;
+  font-family: Josefin Sans, sans-serif !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
