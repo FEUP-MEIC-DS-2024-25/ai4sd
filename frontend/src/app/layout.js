@@ -8,7 +8,7 @@ import styles from "./page.module.css";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={styles.main}>{children}</body>
+      <body style={{fontFamily: 'Josefin Sans', color: "white"}} className={styles.main}>{children}</body>
     </html>
   )
 }
