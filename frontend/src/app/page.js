@@ -4,6 +4,7 @@ import styles from "./page.module.css";
 import './globals.css';
 import logo from "./pictures/logo.svg";
 import Featured from "./featured.js";
+import Assistant from "./assistant";
 
 export default function Home() {
   return (
@@ -38,6 +39,7 @@ export default function Home() {
 
         <div className="container" style={{display: "grid", padding: "20px 30px 20px 30px", gridTemplateColumns: "repeat(3, 1fr)", backgroundColor: "white", height: "400px", minWidth: "100%"}}>
           <Featured name="Archy" teamId="1MEIC01T2" description="Analyze local data such as commit logs and  documentation in software repositories and infer which patterns are present in source code." area="arch" />
+          <Assistant name="Archy" teamId="1MEIC01T2" description="Analyze local data such as commit logs and  documentation in software repositories and infer which patterns are present in source code." area="arch" />
         </div>
         <footer className={styles.footer}>
         
