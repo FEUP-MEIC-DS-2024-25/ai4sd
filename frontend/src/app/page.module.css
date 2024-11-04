@@ -7,6 +7,8 @@
 
   --button-primary-hover: #383838;
   --button-secondary-hover: #f2f2f2;
+  --foreground: none;
+  --bs-body-color: none;
 
   display: grid;
   grid-template-rows: 20px 1fr 20px;
@@ -31,6 +33,7 @@
 
 .main {
   display: flex;
+  color: transparent;
   flex-direction: column;
   grid-row-start: 2;
 }
@@ -83,8 +86,6 @@
 }
 
 a.primary {
-  background: var(--foreground);
-  color: var(--background);
   gap: 8px;
 }
 
@@ -166,4 +167,47 @@ a.secondary {
   .logo {
     filter: invert();
   }
+}
+
+.filter-assistant-button {
+  background-color: #212121;
+  min-width: 165px;
+  min-height: 30px;
+  font-size: 32px;
+}
+
+.refact {
+  color: rgb(255, 227, 84);
+}
+
+.refact:active {
+  background-color: rgb(255, 227, 84);
+  color: rgb(33, 33, 33);
+}
+
+.verif {
+  color: rgb(167, 77, 227);
+}
+
+.verif.active {
+  background-color: rgb(167, 77, 227) !important;
+  color: rgb(33, 33, 33) !important;
+}
+
+.arch {
+  color: rgb(45, 117, 212) !important;
+}
+
+.arch.active {
+  background-color: rgb(45, 117, 212) !important;
+  color: rgb(33, 33, 33) !important;
+}
+
+.req {
+  color: rgb(233, 70, 70);
+}
+
+.req.active {
+  background-color: rgb(233, 70, 70) !important;
+  color: rgb(33, 33, 33) !important;
 }

@@ -20,10 +20,8 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background) !important;
-  background-color: var(--background) !important;
   font-family: Josefin Sans, sans-serif !important;
+  color: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
