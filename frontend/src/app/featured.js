@@ -2,9 +2,9 @@ import Image from "next/image";
 
 function getAccentColor(area) {
     switch (area) {
-        case "arch":
-            return "#FFE354";
         case "refact":
+            return "#FFE354";
+        case "arch":
             return "#2D75D4";
         case "verif":
             return "#A74DE3";
@@ -18,9 +18,9 @@ function getAccentColor(area) {
 function getShadowColor(area) {
     switch (area) {
         case "arch":
-            return "rgba(255,227,84, 0.5)";
+            return "rgba(84, 183, 255, 0.5)";
         case "refact":
-            return "rgba(45,117,212, 0.5)";
+            return "rgba(255,227,84, 0.5)";
         case "verif":
             return "rgba(167,77,227, 0.5)";
         case "req":
@@ -32,8 +32,8 @@ function getShadowColor(area) {
 
 export default function Featured(props) {
     return (
-        <div className="featured-card" style={{backgroundColor: "#EFEFEF", color: "black", borderRadius: "40px", height: "225px", minWidth: "1fr", display: "flex", flexDirection: "column", padding: "10px", boxShadow: "2px 4px 5px 0px " + getShadowColor(props.area)}}>
-            <div className="header" style={{display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "start", padding: "20px 20px 10px 20px"}}>
+        <div className="featured-card" style={{backgroundColor: "#EFEFEF", color: "black", borderRadius: "40px", height: "200px", minWidth: "1fr", display: "flex", flexDirection: "column", padding: "10px", boxShadow: "2px 4px 5px 0px " + getShadowColor(props.area)}}>
+            <div className="header" style={{display: "flex", flexDirection: "row", alignItems: "center", justifyItems: "start", padding: "20px 20px 10px 20px"}}>
                 <h4 className="card-title" style={{padding: "0px", margin: 0 + "px", marginRight: 5 + "px"}}>{props.name}</h4>
                 <p className="card-text" style={{padding: 0 + "px", color: "#C4C4C4"}}>by {props.teamId}</p>
 
