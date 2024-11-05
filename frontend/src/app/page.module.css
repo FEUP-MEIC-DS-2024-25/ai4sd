@@ -212,33 +212,40 @@ a.secondary {
   color: rgb(33, 33, 33) !important;
 }
 
-.assistantPicker{
-  width: 5rem; 
-  background-color: var(--bs-body-color); 
-  overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 1em; /* Place content 60px from the top */
+.assistantPicker {
+  width: 5rem;
+  background-color: var(--bs-body-color);
+  overflow-x: hidden;
+  /* Disable horizontal scroll */
+  padding-top: 1em;
+  /* Place content 60px from the top */
 
 }
 
-.assistantHistory{
+.assistantHistory {
   width: 20rem;
 }
 
-.assistantInteraction{
+.assistantInteraction {
   background-color: white;
   color: var(--bs-body-color);
   flex: 1;
   padding: 2em;
 }
 
-.interactorLayout{
+.interactorLayout {
   display: flex;
   height: 100vh;
   flex-flow: row nowrap;
 }
 
-.interactorLayout > * {
+.interactorLayout>* {
   box-sizing: border-box;
-  border-right: 1px solid #ccc;
+  border-right: 1px solid #303030;
 }
 
+.historyItem {
+  border-radius: 5px;
+  border: solid 1px;
+  padding: 0.5em
+}
