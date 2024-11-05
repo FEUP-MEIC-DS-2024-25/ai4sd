@@ -211,3 +211,17 @@ a.secondary {
   background-color: rgb(233, 70, 70) !important;
   color: rgb(33, 33, 33) !important;
 }
+
+.sidenav{
+  height: 100%; /* 100% Full-height */
+  width: 5rem; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+  background-color: var(--bs-body-color); /* Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+
+}
