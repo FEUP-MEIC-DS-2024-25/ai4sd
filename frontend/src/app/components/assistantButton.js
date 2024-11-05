@@ -1,5 +1,7 @@
-
 "use client"
+
+import { getAccentColor } from "../utils/utils";
+
 export default function AssistantButton(props) {
     function click(event) {
         var area = event.target.classList[1],
@@ -36,18 +38,3 @@ function getButtonText(area) {
             return "RE";
     }
 }
-
-function getAccentColor(area) {
-    switch (area) {
-      case "refact":
-        return "#FFE354";
-      case "arch":
-        return "#2D75D4";
-      case "verif":
-        return "#A74DE3";
-      case "req":
-        return "#E94646";
-      default:
-        return "#212121";
-    }
-  }
