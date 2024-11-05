@@ -212,16 +212,33 @@ a.secondary {
   color: rgb(33, 33, 33) !important;
 }
 
-.sidenav{
-  height: 100%; /* 100% Full-height */
-  width: 5rem; /* 0 width - change this with JavaScript */
-  position: fixed; /* Stay in place */
-  z-index: 1; /* Stay on top */
-  top: 0; /* Stay at the top */
-  left: 0;
-  background-color: var(--bs-body-color); /* Black*/
+.assistantPicker{
+  width: 5rem; 
+  background-color: var(--bs-body-color); 
   overflow-x: hidden; /* Disable horizontal scroll */
-  padding-top: 60px; /* Place content 60px from the top */
-  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+  padding-top: 1em; /* Place content 60px from the top */
 
 }
+
+.assistantHistory{
+  width: 20rem;
+}
+
+.assistantInteraction{
+  background-color: white;
+  color: var(--bs-body-color);
+  flex: 1;
+  padding: 2em;
+}
+
+.interactorLayout{
+  display: flex;
+  height: 100vh;
+  flex-flow: row nowrap;
+}
+
+.interactorLayout > * {
+  box-sizing: border-box;
+  border-right: 1px solid #ccc;
+}
+

@@ -6,13 +6,15 @@ import '../globals.css';
 
 import logo from "../pictures/logo.svg";
 import AssistantPicker from "../components/assistantPicker";
+import AssistantHistory from "../components/assistantHistory";
+import AssistantInteraction from "../components/AssistantInteraction";
 
 export default function Home() {
-    return(
-        <div>
-            <AssistantPicker/>
-            <h1>Interactor page!</h1>
-
+    return (
+        <div className={styles.interactorLayout}>
+            <AssistantPicker />
+            <AssistantHistory />
+            <AssistantInteraction />
         </div>
     )
 }
