@@ -3,11 +3,9 @@ import styles from "../page.module.css";
 import AssistantLogo from './assistantLogo';
 
 export default function AssistantPicker() {
-    const aName = "test";
-    const aType = "req";
-    const aLink = "#";
+
     return (
-        <div className={styles.sidenav}>
+        <div className={styles.assistantPicker}>
             <AssistantPickerItems />
         </div>
 
@@ -31,7 +29,7 @@ function AssistantPickerItems() {
     const items = getAssistantList();
 
     return (
-        <ul className="nav nav-pills nav-flush flex-column mb-auto text-center">
+        <ul className="nav flex-column mb-auto text-center">
             {items.map((item, index) => (
                 <li className="nav-item" key={index}>
                     <AssistantLogo name={item.name} type={item.type} link={item.link} />
