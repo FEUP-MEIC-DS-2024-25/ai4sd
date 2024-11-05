@@ -12,3 +12,18 @@ export function getAccentColor(area) {
         return "#212121";
     }
   }
+
+export function getShadowColor(area) {
+    switch (area) {
+      case "arch":
+        return "rgba(84, 183, 255, 0.5)";
+      case "refact":
+        return "rgba(255,227,84, 0.5)";
+      case "verif":
+        return "rgba(167,77,227, 0.5)";
+      case "req":
+        return "rgba(233,70,70, 0.5)";
+      default:
+        return "#C4C4C4";
+    }
+  }
