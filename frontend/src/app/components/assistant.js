@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "./pictures/logo.svg";
+import logo from "../pictures/logo.svg";
 
 function getAccentColor(area) {
   switch (area) {
