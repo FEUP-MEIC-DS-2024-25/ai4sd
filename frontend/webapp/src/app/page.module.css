@@ -216,14 +216,14 @@ a.secondary {
   width: 5rem;
   background-color: var(--bs-body-color);
   overflow-x: hidden;
-  /* Disable horizontal scroll */
   padding-top: 1em;
-  /* Place content 60px from the top */
-
 }
 
 .assistantHistory {
   width: 20rem;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
 
 .assistantInteraction {
@@ -242,6 +242,26 @@ a.secondary {
 .interactorLayout>* {
   box-sizing: border-box;
   border-right: 1px solid #303030;
+}
+
+.historyList{
+  border-bottom: 1px #ccc solid;
+  flex-grow: 1;
+  overflow-y: auto;
+  scrollbar-gutter: stable; 
+  scrollbar-width: thin;
+  scrollbar-color: var(--button-secondary-hover) var(--bs-body-color);
+}
+
+.historyList::-webkit-scrollbar{
+  width: 8px;
+}
+.historyList::-webkit-scrollbar-track {
+  background-color: var(--bs-body-color); /* Background of the scrollbar track */
+}
+.historyList::-webkit-scrollbar-thumb {
+  background-color: var(--button-secondary-hover); /* Color of the scrollbar thumb */
+  border-radius: 10px; /* Optional: round the edges of the scrollbar thumb */
 }
 
 .historyItem {

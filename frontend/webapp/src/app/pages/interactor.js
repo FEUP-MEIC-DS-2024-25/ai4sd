@@ -32,7 +32,8 @@ function prepareMockHistory(){
     let h4 = {text: "Luctus praesent dapibus natoque hac euismod risus eget suspendisse", link: "#"}
     let h5 = {text: "Varius urna suscipit blandit aenean blandit odio efficitur sit", link: "#"}
     let h6 = {text: "Curabitur dictum gravida dui potenti mattis fames", link: "#"}
+    
 
 
-    return [h1, h2, h3, h4, h5, h6]
+    return [h1, h2, h3, h4, h5, h6, h1, h2, h3, h4, h5, h6, h1, h2, h3, h4, h5, h6, h1, h2, h3]
 }
