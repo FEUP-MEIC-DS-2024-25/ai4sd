@@ -4,12 +4,14 @@ import { getAccentColor } from "../utils/utils";
 import AssistantMenu from './assistantMenu';
 
 export default function AssistantHistory({ name, type, interactions }) {
+    /*mock buttons*/
+    const icons = prepareMockButtons();
 
     return (
         <div className={styles.assistantHistory}>
             <HistoryHeader name={name} type={type} />
             <HistoryList interactions={interactions} />
-            <AssistantMenu />
+            <AssistantMenu buttons={icons} />
         </div>
 
     )
@@ -27,6 +29,7 @@ function HistoryHeader({ name, type }) {
 }
 
 function HistoryList({ interactions }) {
+
     return (
         <div className={styles.historyList}>
             <ul className="nav flex-column mb-auto text-left gap-3 px-3 mt-3">
@@ -48,4 +51,13 @@ function HistoryItem({ text }) {
             {text}
         </div>
     )
+}
+
+function prepareMockButtons(){
+    let b1 = {name: "New Interaction", icon:"plus", link:"#"}
+    let b2 = {name: "Download Report", icon: "download", link: "#"}
+    let b3 = {name: "Button3", icon: "border", link: "#"}
+    let b4 = {name: "Settings", icon: "gear", link: "#"}
+
+    return [b1, b2, b3, b4]
 }
