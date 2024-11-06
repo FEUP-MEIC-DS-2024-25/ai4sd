@@ -1,13 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import styles from "../page.module.css";
 import { getAccentColor } from "../utils/utils";
+import AssistantMenu from './assistantMenu';
 
 export default function AssistantHistory({ name, type, interactions }) {
 
     return (
         <div className={styles.assistantHistory}>
             <HistoryHeader name={name} type={type} />
-            <HistoryList interactions={interactions}  />
+            <HistoryList interactions={interactions} />
+            <AssistantMenu />
         </div>
 
     )
@@ -26,15 +28,17 @@ function HistoryHeader({ name, type }) {
 
 function HistoryList({ interactions }) {
     return (
-        <ul className="nav flex-column mb-auto text-left gap-3 px-3 mt-3">
-            {interactions.map((interaction, index) => (
-                <a href={interaction.link} style={{textDecoration:"none"}}>
-                <li className="nav-item w-100" key={index} >
-                    <HistoryItem text={interaction.text} />
-                </li>
-                </a>
-            ))}
-        </ul>
+        <div className={styles.historyList}>
+            <ul className="nav flex-column mb-auto text-left gap-3 px-3 mt-3">
+                {interactions.map((interaction, index) => (
+                    <a href={interaction.link} style={{ textDecoration: "none" }} key={index}>
+                        <li className="nav-item w-100" key={index} >
+                            <HistoryItem text={interaction.text} />
+                        </li>
+                    </a>
+                ))}
+            </ul>
+        </div>
     )
 }
 
