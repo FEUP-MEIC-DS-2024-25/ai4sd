@@ -246,6 +246,24 @@ a.secondary {
 
 .historyItem {
   border-radius: 5px;
-  border: solid 1px;
-  padding: 0.5em
+  background-color: var(--bs-body-color);
+  border: 1px solid transparent;
+  padding: 0.5em;
+  color: rgb(75%, 75%, 75%);
+  text-decoration: none !important;
+  width:18rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.historyItem:hover {
+  border: solid 1px white;
+  color: white;
+  white-space: normal; /* Allows text wrapping */
+  max-height: 100px; /* Maximum height for expanded item */
+  overflow: visible; /* Allow full content to show */
+  mask-image: none; /* Remove fade-out effect*/
 }
