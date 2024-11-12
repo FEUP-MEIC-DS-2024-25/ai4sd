@@ -1,0 +1,23 @@
+{
+  "name": "ai4sd-jarvis",
+  "version": "1.0.0",
+  "description": "Updates the contents of Nexus storage buckets based on updates to its repositories",
+  "main": "main.js",
+  "scripts": {
+    "dev": "node main.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/FEUP-MEIC-DS-2024-25/ai4sd.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FEUP-MEIC-DS-2024-25/ai4sd/issues"
+  },
+  "homepage": "https://github.com/FEUP-MEIC-DS-2024-25/ai4sd#readme",
+  "dependencies": {
+    "axios": "^1.7.7"
+  }
+}
