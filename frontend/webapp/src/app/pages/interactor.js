@@ -6,7 +6,7 @@ import '../globals.css';
 
 import AssistantPicker from "../components/assistantPicker";
 import AssistantHistory from "../components/assistantHistory";
-import AssistantInteraction from "../components/assistantInteraction";
+import AssistantInteraction from "../components/AssistantInteraction";
 
 
 export default function Interactor() {
