@@ -1,4 +1,4 @@
-import { getAccentColor } from "../utils/utils"
+import { getAccentColor } from "@/app/utils/utils"
 
 export default function AssistantLogo({ name, type, link }) {
     return (
