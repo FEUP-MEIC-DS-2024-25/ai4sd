@@ -1,6 +1,5 @@
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.css';
-import { useEffect } from 'react';
 
 
 export default function AssistantMenu({ buttons }) {

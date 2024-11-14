@@ -1,38 +1,23 @@
-"use client"
-
-//import React from "react";
-import styles from "./page.module.css";
+// Assets
+import styles from "@/app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.css';
-import './globals.css';
-import Home from "./pages/home.js";
-import Interactor from "./pages/interactor";
-import React, {useState} from "react";
+import "@/app/globals.css";
 
-export default function Page() {
-    const [currentPage, setCurrentPage] = useState("home");
-    
-    const renderPage = () => {
-        if (currentPage === "home") {
-            return <Home />;
-        } else if (currentPage === "interactor") {
-            return <Interactor />;
-        }
+// Components
+import NavBar from "@/app/components/navbar";
+import HeroBar from "@/app/components/heroBar";
+import FeaturedBar from "@/app/components/featuredBar";
+import AssistantList from "@/app/components/assistantList";
+import Footer from "@/app/components/footer"
 
-        return <Page404 />;
-    }
-
+export default function Home() {
     return (
-        <div>
-            {renderPage()}
-        </div>)
-
-}
-
-function Page404(){
-    return(
-        <div>
-            <h1>404</h1>
-            <h2>Page not found!</h2>
-        </div>
-    )
+        <main className={styles.main} style={{ color: "none" }}>
+            <NavBar />
+            <HeroBar />
+            <FeaturedBar />
+            <AssistantList />
+            <Footer />
+        </main>
+    );
 }

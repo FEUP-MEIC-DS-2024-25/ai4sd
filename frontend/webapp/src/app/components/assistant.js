@@ -1,6 +1,6 @@
 import Image from "next/image";
-import logo from "../pictures/logo.svg";
-import { getAccentColor, getShadowColor } from "../utils/utils.js";
+import logo from "@/app/pictures/logo.svg";
+import { getAccentColor, getShadowColor } from "@/app/utils/utils.js";
 
 export default function Assistant(props) {
   return (

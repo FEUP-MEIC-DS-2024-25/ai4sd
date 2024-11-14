@@ -1,4 +1,4 @@
-import { getAccentColor, getShadowColor } from "../utils/utils";
+import { getAccentColor, getShadowColor } from "@/app/utils/utils";
 
 export default function Featured(props) {
     return (

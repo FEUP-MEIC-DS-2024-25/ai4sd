@@ -1,6 +1,6 @@
 "use client"
 
-import { getAccentColor } from "../utils/utils";
+import { getAccentColor } from "@/app/utils/utils";
 
 export default function AssistantButton(props) {
     function click(event) {
