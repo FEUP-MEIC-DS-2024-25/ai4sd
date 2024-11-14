@@ -1,12 +1,12 @@
-import styles from "../page.module.css";
+import styles from "@/app/page.module.css";
 import Image from "next/image";
 
 import 'bootstrap/dist/css/bootstrap.css';
-import '../globals.css';
+import '@/app/globals.css';
 
-import AssistantPicker from "../components/assistantPicker";
-import AssistantHistory from "../components/assistantHistory";
-import AssistantInteraction from "../components/assistantInteraction";
+import AssistantPicker from "@/app/components/assistantPicker";
+import AssistantHistory from "@/app/components/assistantHistory";
+import AssistantInteraction from "@/app/components/assistantInteraction";
 
 
 export default function Interactor() {

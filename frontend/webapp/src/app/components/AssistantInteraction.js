@@ -1,5 +1,5 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import styles from "../page.module.css";
+import styles from "@/app/page.module.css";
 
 export default function AssistantInteraction() {
     return (

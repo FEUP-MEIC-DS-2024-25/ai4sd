@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 // Pictures
-import logo from "../pictures/logo.svg";
+import logo from "@/app/pictures/logo.svg";
 
 export default function HeroBar() {
   return (

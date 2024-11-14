@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
-import styles from "../page.module.css";
-import { getAccentColor } from "../utils/utils";
+import styles from "@/app/page.module.css";
+import { getAccentColor } from "@/app/utils/utils";
 import AssistantMenu from './assistantMenu';
 
 export default function AssistantHistory({ name, type, interactions }) {
