@@ -75,7 +75,7 @@ steps:
       fi
 
 # Step 4: Build, Push, and Deploy Avengers Backend (skip if directory doesn't exist)
-- name: 'gcr.io/cloud-builders/docker'
+- name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
     - '-c'
