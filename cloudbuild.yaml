@@ -1,44 +1,53 @@
 steps:
-# Step 1: Build, Push, and Deploy Superhero Services
+# Step 1: Build, Push, and Deploy Superhero Services (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      for i in {1..8}; do
-        for j in {1..5}; do
-          echo "Building image for superhero-${i}-${j}..."
-          docker build -t gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest ./superhero-services/
+      if [ -d "./superhero-services" ]; then
+        for i in {1..8}; do
+          for j in {1..5}; do
+            echo "Building image for superhero-${i}-${j}..."
+            # Ensure the correct relative path for superhero-services
+            docker build -t gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest ./superhero-services/
 
-          echo "Pushing image for superhero-${i}-${j}..."
-          docker push gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest
+            echo "Pushing image for superhero-${i}-${j}..."
+            docker push gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest
+          done
         done
-      done
+      else
+        echo "Directory './superhero-services' not found, skipping superhero services build."
+      fi
 
-# Step 1: Deploy Superhero Services using gcloud (moved to separate step)
+# Step 2: Deploy Superhero Services using gcloud (moved to separate step)
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
     - '-c'
     - |
-      for i in {1..8}; do
-        for j in {1..5}; do
-          echo "Deploying superhero-${i}-${j} to Cloud Run..."
-          gcloud run deploy superhero-${i}-${j} \
-            --image=gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest \
-            --region=europe-west1 \
-            --platform=managed \
-            --allow-unauthenticated \
-            --service-account=superhero-${i}-${j}@${_PROJECT_ID}.iam.gserviceaccount.com
+      if [ -d "./superhero-services" ]; then
+        for i in {1..8}; do
+          for j in {1..5}; do
+            echo "Deploying superhero-${i}-${j} to Cloud Run..."
+            gcloud run deploy superhero-${i}-${j} \
+              --image=gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest \
+              --region=europe-west1 \
+              --platform=managed \
+              --allow-unauthenticated \
+              --service-account=superhero-${i}-${j}@${_PROJECT_ID}.iam.gserviceaccount.com
+          done
         done
-      done
+      else
+        echo "Directory './superhero-services' not found, skipping superhero services deployment."
+      fi
 
 # Diagnostic step.
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'version'
 
-# Step 2: Build, Push, and Deploy Avengers Backend
+# Step 3: Build, Push, and Deploy Avengers Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
@@ -60,7 +69,7 @@ steps:
     - '--allow-unauthenticated'
     - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
 
-# Step 3: Build, Push, and Deploy X-Men Backend
+# Step 4: Build, Push, and Deploy X-Men Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
@@ -82,7 +91,7 @@ steps:
     - '--allow-unauthenticated'
     - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
 
-# Step 4: Build, Push, and Deploy Jarvis Backend
+# Step 5: Build, Push, and Deploy Jarvis Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
