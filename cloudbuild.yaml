@@ -5,67 +5,27 @@ steps:
   args:
     - '-c'
     - |
-      # Hardcoded values for superhero services
-      SERVICES=(
-        "superhero-${_PROJECT_ID}-01-01"
-        "superhero-${_PROJECT_ID}-01-02"
-        "superhero-${_PROJECT_ID}-01-03"
-        "superhero-${_PROJECT_ID}-01-04"
-        "superhero-${_PROJECT_ID}-01-05"
-        "superhero-${_PROJECT_ID}-02-01"
-        "superhero-${_PROJECT_ID}-02-02"
-        "superhero-${_PROJECT_ID}-02-03"
-        "superhero-${_PROJECT_ID}-02-04"
-        "superhero-${_PROJECT_ID}-02-05"
-        "superhero-${_PROJECT_ID}-03-01"
-        "superhero-${_PROJECT_ID}-03-02"
-        "superhero-${_PROJECT_ID}-03-03"
-        "superhero-${_PROJECT_ID}-03-04"
-        "superhero-${_PROJECT_ID}-03-05"
-        "superhero-${_PROJECT_ID}-04-01"
-        "superhero-${_PROJECT_ID}-04-02"
-        "superhero-${_PROJECT_ID}-04-03"
-        "superhero-${_PROJECT_ID}-04-04"
-        "superhero-${_PROJECT_ID}-04-05"
-        "superhero-${_PROJECT_ID}-05-01"
-        "superhero-${_PROJECT_ID}-05-02"
-        "superhero-${_PROJECT_ID}-05-03"
-        "superhero-${_PROJECT_ID}-05-04"
-        "superhero-${_PROJECT_ID}-05-05"
-        "superhero-${_PROJECT_ID}-06-01"
-        "superhero-${_PROJECT_ID}-06-02"
-        "superhero-${_PROJECT_ID}-06-03"
-        "superhero-${_PROJECT_ID}-06-04"
-        "superhero-${_PROJECT_ID}-06-05"
-        "superhero-${_PROJECT_ID}-07-01"
-        "superhero-${_PROJECT_ID}-07-02"
-        "superhero-${_PROJECT_ID}-07-03"
-        "superhero-${_PROJECT_ID}-07-04"
-        "superhero-${_PROJECT_ID}-07-05"
-        "superhero-${_PROJECT_ID}-08-01"
-        "superhero-${_PROJECT_ID}-08-02"
-        "superhero-${_PROJECT_ID}-08-03"
-        "superhero-${_PROJECT_ID}-08-04"
-        "superhero-${_PROJECT_ID}-08-05"
-      )
+      # Define superhero services
+      for i in {1..8}; do
+        for j in {1..5}; do
+          SERVICE="superhero-${_PROJECT_ID}-${i}-${j}"
+          IMAGE="gcr.io/${_PROJECT_ID}/${SERVICE}:latest"
+          SERVICE_ACCOUNT="${SERVICE}@${_PROJECT_ID}.iam.gserviceaccount.com"
 
-      for SERVICE in "${SERVICES[@]}"; do
-        IMAGE="gcr.io/${_PROJECT_ID}/${SERVICE}:latest"
-        SERVICE_ACCOUNT="${SERVICE}@${_PROJECT_ID}.iam.gserviceaccount.com"
+          echo "Building image for $SERVICE..."
+          docker build -t $IMAGE ./superhero-services/
 
-        echo "Building image: $IMAGE"
-        docker build -t $IMAGE ./superhero-services/
+          echo "Pushing image for $SERVICE..."
+          docker push $IMAGE
 
-        echo "Pushing image: $IMAGE"
-        docker push $IMAGE
-
-        echo "Deploying Cloud Run service: $SERVICE with image: $IMAGE"
-        gcloud run deploy $SERVICE \
-          --image=$IMAGE \
-          --region=europe-west1 \
-          --platform=managed \
-          --allow-unauthenticated \
-          --service-account=$SERVICE_ACCOUNT
+          echo "Deploying $SERVICE to Cloud Run..."
+          gcloud run deploy $SERVICE \
+            --image=$IMAGE \
+            --region=europe-west1 \
+            --platform=managed \
+            --allow-unauthenticated \
+            --service-account=$SERVICE_ACCOUNT
+        done
       done
 
 # Step 2: Build, Push, and Deploy Avengers Backend
@@ -112,7 +72,7 @@ steps:
     - '--allow-unauthenticated'
     - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
 
-# Step 4: Build, Push, and Deploy Jarvis Service
+# Step 4: Build, Push, and Deploy Jarvis Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
@@ -134,29 +94,24 @@ steps:
     - '--allow-unauthenticated'
     - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
 
-# Step 5: Deploy Avengers Frontend to Bucket
+# Step 5: Deploy Avengers Frontend to Storage Bucket
 - name: 'gcr.io/cloud-builders/gsutil'
   args:
+    - '-m'
     - 'rsync'
-    - '-R'
-    - './frontend/avengers/'
+    - '-r'
+    - './frontend/avengers'
     - 'gs://avengers-frontend-${_PROJECT_ID}'
-
-# Step 6: Make Avengers Frontend Public
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'storage'
     - 'buckets'
     - 'update'
     - 'gs://avengers-frontend-${_PROJECT_ID}'
-    - '--public'
+    - '--public-access'
 
+# Define Substitutions
 substitutions:
   _PROJECT_ID: 'hero-alliance-feup-ds-24-25'
 
-options:
-  logging: CLOUD_LOGGING_ONLY
-  default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
-
-timeout: '1200s'
-serviceAccount: "build-service-account-08-05@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com"
+timeout: 1800s
