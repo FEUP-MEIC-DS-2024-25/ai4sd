@@ -1,17 +1,19 @@
-import fastapi
+import http.server
 
-app = fastapi.FastAPI()
+# Set the port
+PORT = 8080
 
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
+# Create a basic request handler that always returns "Hello, World!"
+class SimpleHandler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain")
+        self.end_headers()
+        self.wfile.write(b"Hello, World!")
 
-# Get target repository
-@app.get("/repos/{repository}")
-def read_item(repository: str):
-    return {"repository": repository}
+# Run the server
+if __name__ == "__main__":
+    server = http.server.HTTPServer(('0.0.0.0', PORT), SimpleHandler)
+    print(f"Serving on port {PORT}")
+    server.serve_forever()
 
-# Go to target assistant
-@app.get("/assistant/{assistant}")
-def read_item(assistant: str):
-    return {"assistant": assistant}
