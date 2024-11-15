@@ -12,7 +12,17 @@ steps:
 
           echo "Pushing image for superhero-${i}-${j}..."
           docker push gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest
+        done
+      done
 
+# Step 1: Deploy Superhero Services using gcloud (moved to separate step)
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      for i in {1..8}; do
+        for j in {1..5}; do
           echo "Deploying superhero-${i}-${j} to Cloud Run..."
           gcloud run deploy superhero-${i}-${j} \
             --image=gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest \
@@ -28,7 +38,6 @@ steps:
   args:
     - 'version'
 
-
 # Step 2: Build, Push, and Deploy Avengers Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
@@ -40,15 +49,6 @@ steps:
   args:
     - 'push'
     - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
-
-# Diagnostic step 2.
-- name: 'gcr.io/cloud-builders/gcloud'
-  args:
-    - 'bash'
-    - '-c'
-    - 'ls -la ./superhero-services/'
-
-
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
