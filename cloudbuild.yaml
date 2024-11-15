@@ -33,19 +33,36 @@ steps:
               --region=europe-west1 \
               --platform=managed \
               --allow-unauthenticated \
-              --service-account=$superhero@${_PROJECT_ID}.iam.gserviceaccount.com
+              --service-account=$superhero@${_PROJECT_ID}.iam.gserviceaccount.com \
+              --timeout=900s  # Increase timeout to 15 minutes
           fi
         done
       else
         echo "Directory './superheroes' not found, skipping superhero services deployment."
       fi
 
-# Diagnostic step.
-- name: 'gcr.io/cloud-builders/docker'
+# Step 3: IAM Policy Binding for Superhero Services
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
   args:
-    - 'version'
+    - '-c'
+    - |
+      if [ -d "./superheroes" ]; then
+        for superhero in $(ls ./superheroes); do
+          if [ -d "./superheroes/$superhero" ]; then
+            echo "Binding IAM policy for $superhero to allow unauthenticated access..."
+            gcloud run services add-iam-policy-binding $superhero \
+              --region=europe-west1 \
+              --member=allUsers \
+              --role=roles/run.invoker \
+              --platform=managed
+          fi
+        done
+      else
+        echo "Directory './superheroes' not found, skipping IAM policy binding."
+      fi
 
-# Step 3: Build, Push, and Deploy Avengers Backend
+# Step 4: Build, Push, and Deploy Avengers Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
@@ -66,8 +83,9 @@ steps:
     - '--platform=managed'
     - '--allow-unauthenticated'
     - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--timeout=900s'  # Increase timeout to 15 minutes
 
-# Step 4: Build, Push, and Deploy X-Men Backend
+# Step 5: Build, Push, and Deploy X-Men Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
@@ -88,8 +106,9 @@ steps:
     - '--platform=managed'
     - '--allow-unauthenticated'
     - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--timeout=900s'  # Increase timeout to 15 minutes
 
-# Step 5: Build, Push, and Deploy Jarvis Backend
+# Step 6: Build, Push, and Deploy Jarvis Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
@@ -110,6 +129,7 @@ steps:
     - '--platform=managed'
     - '--allow-unauthenticated'
     - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--timeout=900s'  # Increase timeout to 15 minutes
 
 # Specify logging behavior to satisfy requirements
 options:
