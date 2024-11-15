@@ -210,210 +210,208 @@ steps:
         --service-account=superhero-4-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
 
-    # Superhero 5-1
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-1:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-1:latest
-    gcloud run deploy superhero-5-1 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-1:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-5-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 5-1
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-1:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-1:latest
+      gcloud run deploy superhero-5-1 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-1:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-5-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 5-2
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-2:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-2:latest
-    gcloud run deploy superhero-5-2 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-2:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-5-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 5-2
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-2:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-2:latest
+      gcloud run deploy superhero-5-2 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-2:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-5-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 5-3
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-3:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-3:latest
-    gcloud run deploy superhero-5-3 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-3:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-5-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 5-3
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-3:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-3:latest
+      gcloud run deploy superhero-5-3 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-3:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-5-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 5-4
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-4:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-4:latest
-    gcloud run deploy superhero-5-4 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-4:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-5-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 5-4
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-4:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-4:latest
+      gcloud run deploy superhero-5-4 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-4:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-5-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 5-5
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-5:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-5:latest
-    gcloud run deploy superhero-5-5 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-5:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-5-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-
-    # Superhero 6-1
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-1:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-1:latest
-    gcloud run deploy superhero-6-1 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-1:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-6-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 6-2
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-2:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-2:latest
-    gcloud run deploy superhero-6-2 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-2:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-6-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 6-3
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-3:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-3:latest
-    gcloud run deploy superhero-6-3 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-3:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-6-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 6-4
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-4:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-4:latest
-    gcloud run deploy superhero-6-4 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-4:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-6-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 6-5
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-5:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-5:latest
-    gcloud run deploy superhero-6-5 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-5:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-6-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 5-5
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-5-5:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-5-5:latest
+      gcloud run deploy superhero-5-5 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-5-5:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-5-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
 
-    # Superhero 7-1
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-1:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-1:latest
-    gcloud run deploy superhero-7-1 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-1:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-7-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 6-1
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-1:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-1:latest
+      gcloud run deploy superhero-6-1 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-1:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-6-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 7-2
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-2:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-2:latest
-    gcloud run deploy superhero-7-2 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-2:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-7-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 6-2
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-2:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-2:latest
+      gcloud run deploy superhero-6-2 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-2:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-6-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 7-3
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-3:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-3:latest
-    gcloud run deploy superhero-7-3 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-3:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-7-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 6-3
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-3:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-3:latest
+      gcloud run deploy superhero-6-3 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-3:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-6-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 7-4
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-4:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-4:latest
-    gcloud run deploy superhero-7-4 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-4:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-7-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 6-4
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-4:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-4:latest
+      gcloud run deploy superhero-6-4 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-4:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-6-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-    # Superhero 7-5
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-5:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-5:latest
-    gcloud run deploy superhero-7-5 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-5:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-7-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-
-    # Superhero 8-1
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-1:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-1:latest
-    gcloud run deploy superhero-8-1 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-1:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-8-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 8-2
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-2:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-2:latest
-    gcloud run deploy superhero-8-2 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-2:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-8-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 8-3
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-3:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-3:latest
-    gcloud run deploy superhero-8-3 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-3:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-8-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 8-4
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-4:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-4:latest
-    gcloud run deploy superhero-8-4 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-4:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-8-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
-
-    # Superhero 8-5
-    docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-5:latest ./superhero-services/
-    docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-5:latest
-    gcloud run deploy superhero-8-5 \
-      --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-5:latest \
-      --region=europe-west1 \
-      --platform=managed \
-      --allow-unauthenticated \
-      --service-account=superhero-8-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+      # Superhero 6-5
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-6-5:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-6-5:latest
+      gcloud run deploy superhero-6-5 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-6-5:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-6-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
 
+      # Superhero 7-1
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-1:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-1:latest
+      gcloud run deploy superhero-7-1 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-1:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-7-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 7-2
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-2:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-2:latest
+      gcloud run deploy superhero-7-2 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-2:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-7-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 7-3
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-3:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-3:latest
+      gcloud run deploy superhero-7-3 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-3:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-7-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 7-4
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-4:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-4:latest
+      gcloud run deploy superhero-7-4 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-4:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-7-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 7-5
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-7-5:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-7-5:latest
+      gcloud run deploy superhero-7-5 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-7-5:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-7-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+
+      # Superhero 8-1
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-1:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-1:latest
+      gcloud run deploy superhero-8-1 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-1:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-8-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 8-2
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-2:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-2:latest
+      gcloud run deploy superhero-8-2 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-2:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-8-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 8-3
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-3:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-3:latest
+      gcloud run deploy superhero-8-3 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-3:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-8-3@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 8-4
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-4:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-4:latest
+      gcloud run deploy superhero-8-4 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-4:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-8-4@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
+
+      # Superhero 8-5
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-8-5:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-8-5:latest
+      gcloud run deploy superhero-8-5 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-8-5:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-8-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
 # Step 2: Build, Push, and Deploy Avengers Backend
 - name: 'gcr.io/cloud-builders/docker'
