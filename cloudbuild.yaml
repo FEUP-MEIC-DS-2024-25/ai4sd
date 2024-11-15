@@ -5,12 +5,11 @@ steps:
   args:
     - '-c'
     - |
-      # Define superhero services
       for i in {1..8}; do
         for j in {1..5}; do
-          SERVICE="superhero-${_PROJECT_ID}-${i}-${j}"
+          SERVICE="superhero-${i}-${j}"
           IMAGE="gcr.io/${_PROJECT_ID}/${SERVICE}:latest"
-          SERVICE_ACCOUNT="${SERVICE}@${_PROJECT_ID}.iam.gserviceaccount.com"
+          SERVICE_ACCOUNT="superhero-${i}-${j}@${_PROJECT_ID}.iam.gserviceaccount.com"
 
           echo "Building image for $SERVICE..."
           docker build -t $IMAGE ./superhero-services/
@@ -43,12 +42,12 @@ steps:
   args:
     - 'run'
     - 'deploy'
-    - 'avengers-backend-${_PROJECT_ID}'
+    - 'avengers-backend'
     - '--image=gcr.io/${_PROJECT_ID}/avengers-backend:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
 
 # Step 3: Build, Push, and Deploy X-Men Backend
 - name: 'gcr.io/cloud-builders/docker'
@@ -65,12 +64,12 @@ steps:
   args:
     - 'run'
     - 'deploy'
-    - 'xmen-backend-${_PROJECT_ID}'
+    - 'xmen-backend'
     - '--image=gcr.io/${_PROJECT_ID}/xmen-backend:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
 
 # Step 4: Build, Push, and Deploy Jarvis Backend
 - name: 'gcr.io/cloud-builders/docker'
@@ -87,28 +86,16 @@ steps:
   args:
     - 'run'
     - 'deploy'
-    - 'jarvis-${_PROJECT_ID}'
+    - 'jarvis'
     - '--image=gcr.io/${_PROJECT_ID}/jarvis:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
 
-# Step 5: Deploy Avengers Frontend to Storage Bucket
-- name: 'gcr.io/cloud-builders/gsutil'
-  args:
-    - '-m'
-    - 'rsync'
-    - '-r'
-    - './frontend/avengers'
-    - 'gs://avengers-frontend-${_PROJECT_ID}'
-- name: 'gcr.io/cloud-builders/gcloud'
-  args:
-    - 'storage'
-    - 'buckets'
-    - 'update'
-    - 'gs://avengers-frontend-${_PROJECT_ID}'
-    - '--public-access'
+# Specify logging behavior to satisfy requirements
+options:
+  logging: CLOUD_LOGGING_ONLY  # Use Cloud Logging for build logs
 
 # Define Substitutions
 substitutions:
