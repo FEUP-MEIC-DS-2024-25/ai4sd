@@ -41,7 +41,7 @@ steps:
         echo "Directory './superheroes' not found, skipping superhero services deployment."
       fi
 
-# Step 3: IAM Policy Binding for Superhero Services
+# Step 3: IAM Policy Binding for Superhero Services (use beta command)
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
@@ -51,7 +51,7 @@ steps:
         for superhero in $(ls ./superheroes); do
           if [ -d "./superheroes/$superhero" ]; then
             echo "Binding IAM policy for $superhero to allow unauthenticated access..."
-            gcloud run services add-iam-policy-binding $superhero \
+            gcloud beta run services add-iam-policy-binding $superhero \
               --region=europe-west1 \
               --member=allUsers \
               --role=roles/run.invoker \
