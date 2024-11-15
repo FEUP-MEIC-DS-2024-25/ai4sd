@@ -1,5 +1,5 @@
 steps:
-# Step 1: Build, Push, and Deploy Superhero Services (Hardcoded)
+# Step 1: Build, Push, and Deploy Superhero Services
 - name: 'gcr.io/cloud-builders/docker'
   entrypoint: 'bash'
   args:
@@ -47,22 +47,14 @@ steps:
         "superhero-${_PROJECT_ID}-08-03"
         "superhero-${_PROJECT_ID}-08-04"
         "superhero-${_PROJECT_ID}-08-05"
-        "superhero-${_PROJECT_ID}-09-01"
-        "superhero-${_PROJECT_ID}-09-02"
-        "superhero-${_PROJECT_ID}-09-03"
-        "superhero-${_PROJECT_ID}-09-04"
-        "superhero-${_PROJECT_ID}-09-05"
       )
 
-      # Loop through services array and deploy each superhero
       for SERVICE in "${SERVICES[@]}"; do
-        GROUP_ID=$(echo $SERVICE | cut -d'-' -f3)  # Extract GROUP_ID
-        HERO_ID=$(echo $SERVICE | cut -d'-' -f4)   # Extract HERO_ID
         IMAGE="gcr.io/${_PROJECT_ID}/${SERVICE}:latest"
         SERVICE_ACCOUNT="${SERVICE}@${_PROJECT_ID}.iam.gserviceaccount.com"
 
         echo "Building image: $IMAGE"
-        docker build -t $IMAGE ./superhero-services/${GROUP_ID}/${HERO_ID}/
+        docker build -t $IMAGE ./superhero-services/
 
         echo "Pushing image: $IMAGE"
         docker push $IMAGE
