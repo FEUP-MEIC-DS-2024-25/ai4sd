@@ -1,6 +1,6 @@
 steps:
 # Step 1: Build, Push, and Deploy Superhero Services (skip if directory doesn't exist)
-- name: 'gcr.io/cloud-builders/docker'
+- name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
     - '-c'
@@ -8,15 +8,19 @@ steps:
       if [ -d "./superheroes" ]; then
         for superhero in $(ls ./superheroes); do
           if [ -d "./superheroes/$superhero" ]; then
-            echo "Building image for $superhero..."
-            docker build -t gcr.io/${_PROJECT_ID}/$superhero:latest ./superheroes/$superhero/
-            echo "Pushing image for $superhero..."
-            docker push gcr.io/${_PROJECT_ID}/$superhero:latest
+            echo "Binding IAM policy for $superhero to allow unauthenticated access..."
+            gcloud run services add-iam-policy-binding $superhero \
+              --region=europe-west1 \
+              --member=allUsers \
+              --role=roles/run.invoker \
+              --platform=managed \
+              --service-account=${_PROJECT_ID}-service-account@${_PROJECT_ID}.iam.gserviceaccount.com
           fi
         done
       else
-        echo "Directory './superheroes' not found, skipping superhero services build."
+        echo "Directory './superheroes' not found, skipping IAM policy binding."
       fi
+
 
 # Step 2: Deploy Superhero Services using gcloud
 - name: 'gcr.io/cloud-builders/gcloud'
