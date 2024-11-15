@@ -14,15 +14,16 @@ export default function AssistantPicker() {
 }
 
 function getAssistantList() {
-    //creating mock data
-    let ai1 = { name: "ai1", type: "refact", link: "#" };
-    let ai2 = { name: "ai2", type: "req", link: "#" };
-    let ai3 = { name: "ai3", type: "verif", link: "#" };
-    let ai4 = { name: "ai4", type: "req", link: "#" };
-    let ai5 = { name: "ai5", type: "arch", link: "#" };
-    let ai6 = { name: "ai6", type: "arch", link: "#" };
-
-    return [ai1, ai2, ai3, ai4, ai5, ai6]
+    // ADD YOUR ASSISTANTS HERE
+    const assistantList = [
+        { name: "ai1", type: "refact", link: "#" },
+        { name: "ai2", type: "req", link: "#" },
+        { name: "req2test", type: "verif", link: "/assistants/req2test" },
+        { name: "ai4", type: "req", link: "#" },
+        { name: "ai5", type: "arch", link: "#" },
+        { name: "ai6", type: "arch", link: "#" }
+    ];
+    return assistantList;
 }
 
 function AssistantPickerItems() {
