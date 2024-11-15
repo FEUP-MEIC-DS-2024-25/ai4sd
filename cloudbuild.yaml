@@ -23,6 +23,12 @@ steps:
         done
       done
 
+# Diagnostic step.
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'version'
+
+
 # Step 2: Build, Push, and Deploy Avengers Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
@@ -34,6 +40,15 @@ steps:
   args:
     - 'push'
     - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+
+# Diagnostic step 2.
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'bash'
+    - '-c'
+    - 'ls -la ./superhero-services/'
+
+
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
