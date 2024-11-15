@@ -1,3 +1,118 @@
+steps:
+# Step 1: Build, Push, and Deploy Superhero Services (skip if directory doesn't exist)
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      if [ -d "./superheroes" ]; then
+        for superhero in $(ls ./superheroes); do
+          if [ -d "./superheroes/$superhero" ]; then
+            echo "Binding IAM policy for $superhero to allow unauthenticated access..."
+            gcloud run services add-iam-policy-binding $superhero \
+              --region=europe-west1 \
+              --member=allUsers \
+              --role=roles/run.invoker \
+              --platform=managed \
+              --service-account=${_PROJECT_ID}-service-account@${_PROJECT_ID}.iam.gserviceaccount.com
+          else
+            echo "Directory './superheroes/$superhero' not found, skipping IAM policy binding for $superhero."
+          fi
+        done
+      else
+        echo "Directory './superheroes' not found, skipping IAM policy binding."
+      fi
+
+
+# Step 2: Deploy Superhero Services using gcloud (skip if directory doesn't exist)
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      if [ -d "./superheroes" ]; then
+        for superhero in $(ls ./superheroes); do
+          if [ -d "./superheroes/$superhero" ]; then
+            echo "Deploying $superhero to Cloud Run..."
+            gcloud run deploy $superhero \
+              --image=gcr.io/${_PROJECT_ID}/$superhero:latest \
+              --region=europe-west1 \
+              --platform=managed \
+              --allow-unauthenticated \
+              --service-account=$superhero@${_PROJECT_ID}.iam.gserviceaccount.com \
+              --timeout=900s  # Increase timeout to 15 minutes
+          else
+            echo "Directory './superheroes/$superhero' not found, skipping deployment for $superhero."
+          fi
+        done
+      else
+        echo "Directory './superheroes' not found, skipping superhero services deployment."
+      fi
+
+# Step 3: IAM Policy Binding for Superhero Services (skip if directory doesn't exist)
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      if [ -d "./superheroes" ]; then
+        for superhero in $(ls ./superheroes); do
+          if [ -d "./superheroes/$superhero" ]; then
+            echo "Binding IAM policy for $superhero to allow unauthenticated access..."
+            gcloud beta run services add-iam-policy-binding $superhero \
+              --region=europe-west1 \
+              --member=allUsers \
+              --role=roles/run.invoker \
+              --platform=managed \
+              --service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com
+          else
+            echo "Directory './superheroes/$superhero' not found, skipping IAM policy binding for $superhero."
+          fi
+        done
+      else
+        echo "Directory './superheroes' not found, skipping IAM policy binding."
+      fi
+
+# Step 4: Build, Push, and Deploy Avengers Backend (skip if directory doesn't exist)
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - './avengers/backend/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'avengers-backend'
+    - '--image=gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--timeout=900s'  # Increase timeout to 15 minutes
+
+# Step 5: Build, Push, and Deploy X-Men Backend (skip if directory doesn't exist)
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "Current directory: $(pwd)"
+      echo "Listing directory structure:"
+      ls -R .  # List all files to verify directories
+      if [ -d "./x-men/backend/" ]; then
+        echo "Building X-Men backend..."
+        # Continue with build steps here
+      else
+        echo "Directory './x-men/backend/' not found, skipping deployment."
+      fi
+
+
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
@@ -17,3 +132,14 @@
       else
         echo "Directory './jarvis/' not found, skipping build and deployment for Jarvis."
       fi
+
+
+# Specify logging behavior to satisfy requirements
+options:
+  logging: CLOUD_LOGGING_ONLY  # Use Cloud Logging for build logs
+
+# Define Substitutions
+substitutions:
+  _PROJECT_ID: 'hero-alliance-feup-ds-24-25'
+
+timeout: 1800s
