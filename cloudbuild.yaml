@@ -8,8 +8,8 @@ steps:
       for i in {1..8}; do
         for j in {1..5}; do
           SERVICE="superhero-${i}-${j}"
-          IMAGE="gcr.io/${_PROJECT_ID}/${SERVICE}:latest"
-          SERVICE_ACCOUNT="superhero-${i}-${j}@${_PROJECT_ID}.iam.gserviceaccount.com"
+          IMAGE="gcr.io/$PROJECT_ID/$SERVICE:latest"
+          SERVICE_ACCOUNT="superhero-${i}-${j}@$PROJECT_ID.iam.gserviceaccount.com"
 
           echo "Building image for $SERVICE..."
           docker build -t $IMAGE ./superhero-services/
@@ -32,66 +32,66 @@ steps:
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - 'gcr.io/$PROJECT_ID/avengers-backend:latest'
     - './backend/avengers/'
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
-    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - 'gcr.io/$PROJECT_ID/avengers-backend:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
     - 'deploy'
     - 'avengers-backend'
-    - '--image=gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - '--image=gcr.io/$PROJECT_ID/avengers-backend:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--service-account=superhero-08-05@$PROJECT_ID.iam.gserviceaccount.com'
 
 # Step 3: Build, Push, and Deploy X-Men Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+    - 'gcr.io/$PROJECT_ID/xmen-backend:latest'
     - './backend/xmen/'
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
-    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+    - 'gcr.io/$PROJECT_ID/xmen-backend:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
     - 'deploy'
     - 'xmen-backend'
-    - '--image=gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+    - '--image=gcr.io/$PROJECT_ID/xmen-backend:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--service-account=superhero-08-05@$PROJECT_ID.iam.gserviceaccount.com'
 
 # Step 4: Build, Push, and Deploy Jarvis Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/${_PROJECT_ID}/jarvis:latest'
+    - 'gcr.io/$PROJECT_ID/jarvis:latest'
     - './backend/jarvis/'
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
-    - 'gcr.io/${_PROJECT_ID}/jarvis:latest'
+    - 'gcr.io/$PROJECT_ID/jarvis:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
     - 'deploy'
     - 'jarvis'
-    - '--image=gcr.io/${_PROJECT_ID}/jarvis:latest'
+    - '--image=gcr.io/$PROJECT_ID/jarvis:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--service-account=superhero-08-05@$PROJECT_ID.iam.gserviceaccount.com'
 
 # Specify logging behavior to satisfy requirements
 options:
