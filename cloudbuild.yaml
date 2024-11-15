@@ -40,33 +40,76 @@ steps:
         echo "Directory './superheroes' not found, skipping superhero services deployment."
       fi
 
-# Step 3: IAM Policy Binding for Superhero Services
-- name: 'gcr.io/cloud-builders/gcloud'
-  entrypoint: 'bash'
-  args:
-    - '-c'
-    - |
-      if [ -d "./superheroes" ]; then
-        for superhero in $(ls ./superheroes); do
-          if [ -d "./superheroes/$superhero" ]; then
-            echo "Binding IAM policy for $superhero to allow unauthenticated access..."
-            gcloud run services add-iam-policy-binding $superhero \
-              --region=europe-west1 \
-              --member=allUsers \
-              --role=roles/run.invoker \
-              --platform=managed
-          fi
-        done
-      else
-        echo "Directory './superheroes' not found, skipping IAM policy binding."
-      fi
-
 # Diagnostic step.
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'version'
 
-# Additional steps for other services (Avengers, X-Men, Jarvis) with similar IAM policy binding
+# Step 3: Build, Push, and Deploy Avengers Backend
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - './avengers/backend/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'avengers-backend'
+    - '--image=gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+
+# Step 4: Build, Push, and Deploy X-Men Backend
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+    - './x-men/backend/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'xmen-backend'
+    - '--image=gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+
+# Step 5: Build, Push, and Deploy Jarvis Backend
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/jarvis:latest'
+    - './jarvis/backend/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/jarvis:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'jarvis'
+    - '--image=gcr.io/${_PROJECT_ID}/jarvis:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
 
 # Specify logging behavior to satisfy requirements
 options:
