@@ -119,7 +119,7 @@ steps:
     - 'build'
     - '-t'
     - 'gcr.io/${_PROJECT_ID}/jarvis:latest'
-    - './jarvis/backend/'
+    - './jarvis'
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
@@ -143,11 +143,11 @@ steps:
       echo "Current directory: $(pwd)"
       echo "Listing directory structure:"
       ls -R .  # List all files recursively to verify the directories
-      if [ -d "./jarvis/backend/" ]; then
+      if [ -d "./jarvis" ]; then
         echo "Building and deploying Jarvis backend..."
         # Continue with build steps here
       else
-        echo "Directory './jarvis/backend/' not found, skipping deployment."
+        echo "Directory './jarvis' not found, skipping deployment."
       fi
 
 
