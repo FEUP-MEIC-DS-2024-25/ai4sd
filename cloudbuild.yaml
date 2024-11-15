@@ -76,26 +76,24 @@ steps:
 
 # Step 4: Build, Push, and Deploy Avengers Backend (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
   args:
-    - 'build'
-    - '-t'
-    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
-    - './avengers/backend/'
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
-- name: 'gcr.io/cloud-builders/gcloud'
-  args:
-    - 'run'
-    - 'deploy'
-    - 'avengers-backend'
-    - '--image=gcr.io/${_PROJECT_ID}/avengers-backend:latest'
-    - '--region=europe-west1'
-    - '--platform=managed'
-    - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
-    - '--timeout=900s'  # Increase timeout to 15 minutes
+    - '-c'
+    - |
+      if [ -d "./avengers/backend/" ]; then
+        echo "Building Avengers backend..."
+        docker build -t gcr.io/${_PROJECT_ID}/avengers-backend:latest ./avengers/backend/
+        docker push gcr.io/${_PROJECT_ID}/avengers-backend:latest
+        gcloud run deploy avengers-backend \
+          --image=gcr.io/${_PROJECT_ID}/avengers-backend:latest \
+          --region=europe-west1 \
+          --platform=managed \
+          --allow-unauthenticated \
+          --service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com \
+          --timeout=900s  # Increase timeout to 15 minutes
+      else
+        echo "Directory './avengers/backend/' not found, skipping Avengers backend deployment."
+      fi
 
 # Step 5: Build, Push, and Deploy X-Men Backend (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/gcloud'
@@ -119,27 +117,25 @@ steps:
       fi
 
 # Step 6: Build, Push, and Deploy X-Men Frontend (skip if directory doesn't exist)
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'build'
-    - '-t'
-    - 'gcr.io/${_PROJECT_ID}/xmen-frontend:latest'
-    - './x-men/frontend/'
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'gcr.io/${_PROJECT_ID}/xmen-frontend:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
   args:
-    - 'run'
-    - 'deploy'
-    - 'xmen-frontend'
-    - '--image=gcr.io/${_PROJECT_ID}/xmen-frontend:latest'
-    - '--region=europe-west1'
-    - '--platform=managed'
-    - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
-    - '--timeout=900s'  # Increase timeout to 15 minutes
+    - '-c'
+    - |
+      if [ -d "./x-men/frontend/" ]; then
+        echo "Building X-Men frontend..."
+        docker build -t gcr.io/${_PROJECT_ID}/xmen-frontend:latest ./x-men/frontend/
+        docker push gcr.io/${_PROJECT_ID}/xmen-frontend:latest
+        gcloud run deploy xmen-frontend \
+          --image=gcr.io/${_PROJECT_ID}/xmen-frontend:latest \
+          --region=europe-west1 \
+          --platform=managed \
+          --allow-unauthenticated \
+          --service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com \
+          --timeout=900s  # Increase timeout to 15 minutes
+      else
+        echo "Directory './x-men/frontend/' not found, skipping X-Men frontend deployment."
+      fi
 
 # Step 7: Build, Push, and Deploy Jarvis Backend (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/gcloud'
