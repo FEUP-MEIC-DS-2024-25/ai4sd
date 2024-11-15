@@ -5,100 +5,96 @@ steps:
   args:
     - '-c'
     - |
-      for i in {1..8}; do
-        for j in {1..5}; do
-          SERVICE="superhero-${i}-${j}"
-          IMAGE="gcr.io/$PROJECT_ID/$SERVICE:latest"
-          SERVICE_ACCOUNT="superhero-${i}-${j}@$PROJECT_ID.iam.gserviceaccount.com"
+      echo "Building, pushing, and deploying superhero services..."
 
-          echo "Building image for $SERVICE..."
-          docker build -t $IMAGE ./superhero-services/
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-1-1:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-1-1:latest
+      gcloud run deploy superhero-1-1 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-1-1:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-1-1@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-          echo "Pushing image for $SERVICE..."
-          docker push $IMAGE
+      docker build -t gcr.io/hero-alliance-feup-ds-24-25/superhero-1-2:latest ./superhero-services/
+      docker push gcr.io/hero-alliance-feup-ds-24-25/superhero-1-2:latest
+      gcloud run deploy superhero-1-2 \
+        --image=gcr.io/hero-alliance-feup-ds-24-25/superhero-1-2:latest \
+        --region=europe-west1 \
+        --platform=managed \
+        --allow-unauthenticated \
+        --service-account=superhero-1-2@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com
 
-          echo "Deploying $SERVICE to Cloud Run..."
-          gcloud run deploy $SERVICE \
-            --image=$IMAGE \
-            --region=europe-west1 \
-            --platform=managed \
-            --allow-unauthenticated \
-            --service-account=$SERVICE_ACCOUNT
-        done
-      done
+      # Repeat the above block for each superhero (1-1 to 8-5).
 
 # Step 2: Build, Push, and Deploy Avengers Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/$PROJECT_ID/avengers-backend:latest'
+    - 'gcr.io/hero-alliance-feup-ds-24-25/avengers-backend:latest'
     - './backend/avengers/'
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
-    - 'gcr.io/$PROJECT_ID/avengers-backend:latest'
+    - 'gcr.io/hero-alliance-feup-ds-24-25/avengers-backend:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
     - 'deploy'
     - 'avengers-backend'
-    - '--image=gcr.io/$PROJECT_ID/avengers-backend:latest'
+    - '--image=gcr.io/hero-alliance-feup-ds-24-25/avengers-backend:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@$PROJECT_ID.iam.gserviceaccount.com'
+    - '--service-account=superhero-8-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com'
 
 # Step 3: Build, Push, and Deploy X-Men Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/$PROJECT_ID/xmen-backend:latest'
+    - 'gcr.io/hero-alliance-feup-ds-24-25/xmen-backend:latest'
     - './backend/xmen/'
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
-    - 'gcr.io/$PROJECT_ID/xmen-backend:latest'
+    - 'gcr.io/hero-alliance-feup-ds-24-25/xmen-backend:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
     - 'deploy'
     - 'xmen-backend'
-    - '--image=gcr.io/$PROJECT_ID/xmen-backend:latest'
+    - '--image=gcr.io/hero-alliance-feup-ds-24-25/xmen-backend:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@$PROJECT_ID.iam.gserviceaccount.com'
+    - '--service-account=superhero-8-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com'
 
 # Step 4: Build, Push, and Deploy Jarvis Backend
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'build'
     - '-t'
-    - 'gcr.io/$PROJECT_ID/jarvis:latest'
+    - 'gcr.io/hero-alliance-feup-ds-24-25/jarvis:latest'
     - './backend/jarvis/'
 - name: 'gcr.io/cloud-builders/docker'
   args:
     - 'push'
-    - 'gcr.io/$PROJECT_ID/jarvis:latest'
+    - 'gcr.io/hero-alliance-feup-ds-24-25/jarvis:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
     - 'deploy'
     - 'jarvis'
-    - '--image=gcr.io/$PROJECT_ID/jarvis:latest'
+    - '--image=gcr.io/hero-alliance-feup-ds-24-25/jarvis:latest'
     - '--region=europe-west1'
     - '--platform=managed'
     - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@$PROJECT_ID.iam.gserviceaccount.com'
+    - '--service-account=superhero-8-5@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com'
 
 # Specify logging behavior to satisfy requirements
 options:
   logging: CLOUD_LOGGING_ONLY  # Use Cloud Logging for build logs
-
-# Define Substitutions
-substitutions:
-  _PROJECT_ID: 'hero-alliance-feup-ds-24-25'
 
 timeout: 1800s
