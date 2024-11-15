@@ -1,0 +1,116 @@
+steps:
+# Step 1: Build, Push, and Deploy Superhero Services
+- name: 'gcr.io/cloud-builders/docker'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      for i in $(seq 1 40); do
+        GROUP_ID=$(printf "%02d" $(((i - 1) / 5 + 1)))
+        HERO_ID=$(printf "%02d" $(((i - 1) % 5 + 1)))
+        SERVICE_NAME="superhero-${_PROJECT_ID}-${GROUP_ID}-${HERO_ID}"
+        IMAGE="gcr.io/${_PROJECT_ID}/superhero-${GROUP_ID}-${HERO_ID}:latest"
+        SERVICE_ACCOUNT="superhero-${GROUP_ID}-${HERO_ID}@${_PROJECT_ID}.iam.gserviceaccount.com"
+
+        echo "Building image: $IMAGE"
+        docker build -t $IMAGE ./superhero-services/${GROUP_ID}/${HERO_ID}/
+
+        echo "Pushing image: $IMAGE"
+        docker push $IMAGE
+
+        echo "Deploying Cloud Run service: $SERVICE_NAME with image: $IMAGE"
+        gcloud run deploy $SERVICE_NAME \
+          --image=$IMAGE \
+          --region=europe-west1 \
+          --platform=managed \
+          --allow-unauthenticated \
+          --service-account=$SERVICE_ACCOUNT
+      done
+
+# Step 2: Build, Push, and Deploy Avengers Backend
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - './backend/avengers/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'avengers-backend-${_PROJECT_ID}'
+    - '--image=gcr.io/${_PROJECT_ID}/avengers-backend:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
+
+# Step 3: Build, Push, and Deploy X-Men Backend
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+    - './backend/xmen/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'xmen-backend-${_PROJECT_ID}'
+    - '--image=gcr.io/${_PROJECT_ID}/xmen-backend:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
+
+# Step 4: Build, Push, and Deploy Jarvis Service
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/jarvis:latest'
+    - './backend/jarvis/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/jarvis:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'jarvis-${_PROJECT_ID}'
+    - '--image=gcr.io/${_PROJECT_ID}/jarvis:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-01-01@${_PROJECT_ID}.iam.gserviceaccount.com'
+
+# Step 5: Deploy Avengers Frontend to Bucket
+- name: 'gcr.io/cloud-builders/gsutil'
+  args:
+    - 'rsync'
+    - '-R'
+    - './frontend/avengers/'
+    - 'gs://avengers-frontend-${_PROJECT_ID}'
+
+# Step 6: Make Avengers Frontend Public
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'storage'
+    - 'buckets'
+    - 'update'
+    - 'gs://avengers-frontend-${_PROJECT_ID}'
+    - '--public'
+
+substitutions:
+  _PROJECT_ID: 'hero-alliance-feup-ds-24-25'
+
+timeout: '1200s'
