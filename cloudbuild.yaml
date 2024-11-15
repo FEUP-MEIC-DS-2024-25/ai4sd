@@ -6,9 +6,9 @@ steps:
     - '-c'
     - |
       for i in $(seq 1 40); do
-        GROUP_ID=$(printf "%02d" $(((i - 1) / 5 + 1)))
-        HERO_ID=$(printf "%02d" $(((i - 1) % 5 + 1)))
-        SERVICE_NAME="superhero-${_PROJECT_ID}-${GROUP_ID}-${HERO_ID}"
+        GROUP_ID=$(printf "%02d" $(((i - 1) / 5 + 1)))  # Generate GROUP_ID
+        HERO_ID=$(printf "%02d" $(((i - 1) % 5 + 1)))   # Generate HERO_ID
+        SERVICE_NAME="superhero-${_PROJECT_ID}-${GROUP_ID}-${HERO_ID}"  # Use generated values
         IMAGE="gcr.io/${_PROJECT_ID}/superhero-${GROUP_ID}-${HERO_ID}:latest"
         SERVICE_ACCOUNT="superhero-${GROUP_ID}-${HERO_ID}@${_PROJECT_ID}.iam.gserviceaccount.com"
 
