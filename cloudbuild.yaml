@@ -1,5 +1,4 @@
 steps:
-steps:
 # Step 1: Build, Push, and Deploy Superhero Services (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
@@ -104,17 +103,45 @@ steps:
   args:
     - '-c'
     - |
-      echo "Current directory: $(pwd)"
-      echo "Listing directory structure:"
-      ls -R .  # List all files to verify directories
       if [ -d "./x-men/backend/" ]; then
         echo "Building X-Men backend..."
-        # Continue with build steps here
+        docker build -t gcr.io/${_PROJECT_ID}/xmen-backend:latest ./x-men/backend/
+        docker push gcr.io/${_PROJECT_ID}/xmen-backend:latest
+        gcloud run deploy xmen-backend \
+          --image=gcr.io/${_PROJECT_ID}/xmen-backend:latest \
+          --region=europe-west1 \
+          --platform=managed \
+          --allow-unauthenticated \
+          --service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com \
+          --timeout=900s  # Increase timeout to 15 minutes
       else
-        echo "Directory './x-men/backend/' not found, skipping deployment."
+        echo "Directory './x-men/backend/' not found, skipping X-Men backend deployment."
       fi
 
+# Step 6: Build, Push, and Deploy X-Men Frontend (skip if directory doesn't exist)
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'build'
+    - '-t'
+    - 'gcr.io/${_PROJECT_ID}/xmen-frontend:latest'
+    - './x-men/frontend/'
+- name: 'gcr.io/cloud-builders/docker'
+  args:
+    - 'push'
+    - 'gcr.io/${_PROJECT_ID}/xmen-frontend:latest'
+- name: 'gcr.io/cloud-builders/gcloud'
+  args:
+    - 'run'
+    - 'deploy'
+    - 'xmen-frontend'
+    - '--image=gcr.io/${_PROJECT_ID}/xmen-frontend:latest'
+    - '--region=europe-west1'
+    - '--platform=managed'
+    - '--allow-unauthenticated'
+    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
+    - '--timeout=900s'  # Increase timeout to 15 minutes
 
+# Step 7: Build, Push, and Deploy Jarvis Backend (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'bash'
   args:
@@ -134,7 +161,6 @@ steps:
       else
         echo "Directory './jarvis/' not found, skipping build and deployment for Jarvis."
       fi
-
 
 # Specify logging behavior to satisfy requirements
 options:
