@@ -113,4 +113,9 @@ steps:
 substitutions:
   _PROJECT_ID: 'hero-alliance-feup-ds-24-25'
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+  default_logs_bucket_behavior: REGIONAL_USER_OWNED_BUCKET
+
 timeout: '1200s'
+serviceAccount: "build-service-account@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com"
