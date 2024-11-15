@@ -1,10 +1,16 @@
-FROM alpine:latest
+FROM python:3.11-alpine
 
-# Install a simple HTTP server (busybox)
-RUN apk --no-cache add busybox
+# Install FastAPI and Uvicorn (ASGI server)
+RUN pip install --no-cache-dir fastapi uvicorn
 
-# Expose port 8080
+# Set environment variable for Cloud Run to expect the port
+ENV PORT 8080
+
+# Copy the FastAPI app into the container
+COPY app.py /app.py
+
+# Expose the correct port
 EXPOSE 8080
 
-# Start the server to listen on port 8080
-CMD httpd -f -p 8080 -h /var/www
+# Run the FastAPI app with Uvicorn
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
