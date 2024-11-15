@@ -6,9 +6,12 @@ steps:
     - '-c'
     - |
       for i in $(seq 1 40); do
-        GROUP_ID=$(printf "%02d" $(((i - 1) / 5 + 1)))  # Generate GROUP_ID
-        HERO_ID=$(printf "%02d" $(((i - 1) % 5 + 1)))   # Generate HERO_ID
-        SERVICE_NAME="superhero-${_PROJECT_ID}-${GROUP_ID}-${HERO_ID}"  # Use generated values
+        # Generate GROUP_ID and HERO_ID dynamically
+        GROUP_ID=$(printf "%02d" $(((i - 1) / 5 + 1)))
+        HERO_ID=$(printf "%02d" $(((i - 1) % 5 + 1)))
+        
+        # Create service name and image based on the generated values
+        SERVICE_NAME="superhero-${_PROJECT_ID}-${GROUP_ID}-${HERO_ID}"
         IMAGE="gcr.io/${_PROJECT_ID}/superhero-${GROUP_ID}-${HERO_ID}:latest"
         SERVICE_ACCOUNT="superhero-${GROUP_ID}-${HERO_ID}@${_PROJECT_ID}.iam.gserviceaccount.com"
 
@@ -111,7 +114,7 @@ steps:
     - '--public'
 
 substitutions:
-  _PROJECT_ID: 'hero-alliance-feup-ds-24-25'
+  _PROJECT_ID: 'hero-alliance-feup-ds-24-25'  # Define only project ID here
 
 options:
   logging: CLOUD_LOGGING_ONLY
