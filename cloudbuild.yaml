@@ -97,27 +97,21 @@ steps:
     - '--timeout=900s'  # Increase timeout to 15 minutes
 
 # Step 5: Build, Push, and Deploy X-Men Backend (skip if directory doesn't exist)
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'build'
-    - '-t'
-    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
-    - './x-men/backend/'
-- name: 'gcr.io/cloud-builders/docker'
-  args:
-    - 'push'
-    - 'gcr.io/${_PROJECT_ID}/xmen-backend:latest'
 - name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
   args:
-    - 'run'
-    - 'deploy'
-    - 'xmen-backend'
-    - '--image=gcr.io/${_PROJECT_ID}/xmen-backend:latest'
-    - '--region=europe-west1'
-    - '--platform=managed'
-    - '--allow-unauthenticated'
-    - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
-    - '--timeout=900s'  # Increase timeout to 15 minutes
+    - '-c'
+    - |
+      echo "Current directory: $(pwd)"
+      echo "Listing directory structure:"
+      ls -R .  # List all files to verify directories
+      if [ -d "./x-men/backend/" ]; then
+        echo "Building X-Men backend..."
+        # Continue with build steps here
+      else
+        echo "Directory './x-men/backend/' not found, skipping deployment."
+      fi
+
 
 # Step 6: Build, Push, and Deploy Jarvis Backend (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/docker'
