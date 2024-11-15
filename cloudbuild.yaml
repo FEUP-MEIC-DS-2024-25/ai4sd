@@ -7,23 +7,19 @@ steps:
     - |
       for i in {1..8}; do
         for j in {1..5}; do
-          SERVICE="superhero-${i}-${j}"
-          IMAGE="gcr.io/${_PROJECT_ID}/${SERVICE}:latest"
-          SERVICE_ACCOUNT="superhero-${i}-${j}@${_PROJECT_ID}.iam.gserviceaccount.com"
+          echo "Building image for superhero-${i}-${j}..."
+          docker build -t gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest ./superhero-services/
 
-          echo "Building image for $SERVICE..."
-          docker build -t $IMAGE ./superhero-services/
+          echo "Pushing image for superhero-${i}-${j}..."
+          docker push gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest
 
-          echo "Pushing image for $SERVICE..."
-          docker push $IMAGE
-
-          echo "Deploying $SERVICE to Cloud Run..."
-          gcloud run deploy $SERVICE \
-            --image=$IMAGE \
+          echo "Deploying superhero-${i}-${j} to Cloud Run..."
+          gcloud run deploy superhero-${i}-${j} \
+            --image=gcr.io/${_PROJECT_ID}/superhero-${i}-${j}:latest \
             --region=europe-west1 \
             --platform=managed \
             --allow-unauthenticated \
-            --service-account=$SERVICE_ACCOUNT
+            --service-account=superhero-${i}-${j}@${_PROJECT_ID}.iam.gserviceaccount.com
         done
       done
 
