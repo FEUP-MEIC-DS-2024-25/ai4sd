@@ -135,6 +135,21 @@ steps:
     - '--allow-unauthenticated'
     - '--service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com'
     - '--timeout=900s'  # Increase timeout to 15 minutes
+- name: 'gcr.io/cloud-builders/gcloud'
+  entrypoint: 'bash'
+  args:
+    - '-c'
+    - |
+      echo "Current directory: $(pwd)"
+      echo "Listing directory structure:"
+      ls -R .  # List all files recursively to verify the directories
+      if [ -d "./jarvis/backend/" ]; then
+        echo "Building and deploying Jarvis backend..."
+        # Continue with build steps here
+      else
+        echo "Directory './jarvis/backend/' not found, skipping deployment."
+      fi
+
 
 # Specify logging behavior to satisfy requirements
 options:
