@@ -55,7 +55,8 @@ steps:
               --region=europe-west1 \
               --member=allUsers \
               --role=roles/run.invoker \
-              --platform=managed
+              --platform=managed \
+              --service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com
           fi
         done
       else
