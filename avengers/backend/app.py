@@ -4,7 +4,7 @@ app = fastapi.FastAPI()
 
 @app.get("/")
 def read_root():
-    return {"Goodbye": "Moon"}
+    return {"The cake": "is a lie!"}
 
 # Get target repository
 @app.get("/repos/{repository}")
