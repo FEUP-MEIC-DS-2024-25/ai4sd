@@ -17,32 +17,30 @@ async function handleSubmit (event) {
   loading = true;
 
   // Prepare form data for file upload
-  const formData = await file.text()
+  const formData = new FormData();
+  formData.append('file', file);
 
   try {
-    console.log("file: ", formData);
-    const response = await fetch('http://localhost:8000/online', {
-      mode: 'no-cors',
-      method: 'POST',
-      body: formData,
-    });
-    
+    console.log("file: ", file);
+    // Replace 'http://your-api-url.com/upload' with your actual API endpoint
+    // const response = await fetch('http://localhost:8000/online', {
+    //   method: 'POST',
+    //   body: formData,
+    // });
     // hard coded response
-    // const response = {
-    //   ok: true,
-    //   json: () => Promise.resolve({ 
-    //     title: 'Sample Title',
-    //     description: 'Sample Body',
-    //     lines: [12, 34],
-    //     fix: "Sample Fix"
-    //  })
-    // };
+    const response = {
+      ok: true,
+      json: () => Promise.resolve({ 
+        title: 'Sample Title',
+        description: 'Sample Body',
+        lines: [12, 34],
+        fix: "Sample Fix"
+     })
+    };
 
     if (!response.ok) {
       throw new Error('File upload failed');
     }
-
-    console.log("response: ", response);
 
     const data = await response.json();
     responseData = data;
@@ -79,12 +77,12 @@ export default function UploadFile() {
         </form>
       ) : (
         <div>
-          <h1>{responseData.title}</h1>
+          <h2>{responseData.title}</h2>
           <p>{responseData.description}</p>
           <div>
             <strong>Lines:</strong>
             <ul>
-              {responseData.lines.map((lineNumber) => (
+              {responseData.line.map((lineNumber) => (
                 <li>
                   {lineNumber}
                 </li>
