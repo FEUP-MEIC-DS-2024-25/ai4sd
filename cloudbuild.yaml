@@ -101,8 +101,12 @@ steps:
     - |
       if [ -d "./avengers/backend/" ]; then
         echo "Building Avengers backend..."
+        # Build Docker image with no cache
         docker build --no-cache -t gcr.io/${_PROJECT_ID}/avengers-backend:latest ./avengers/backend/
         docker push gcr.io/${_PROJECT_ID}/avengers-backend:latest
+
+        echo "Deploying Avengers backend to Cloud Run..."
+        # Deploy the image to Cloud Run
         gcloud run deploy avengers-backend \
           --image=gcr.io/${_PROJECT_ID}/avengers-backend:latest \
           --region=europe-west1 \
@@ -110,9 +114,19 @@ steps:
           --allow-unauthenticated \
           --service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com \
           --timeout=900s  # Increase timeout to 15 minutes
+
+        echo "Binding IAM policy for Avengers backend to allow unauthenticated access..."
+        # Bind IAM policy to allow unauthenticated access
+        gcloud run services add-iam-policy-binding avengers-backend \
+          --region=europe-west1 \
+          --member=allUsers \
+          --role=roles/run.invoker \
+          --platform=managed \
+          --service-account=superhero-08-05@${_PROJECT_ID}.iam.gserviceaccount.com
       else
         echo "Directory './avengers/backend/' not found, skipping Avengers backend deployment."
       fi
+
 
 # Step 5: Build, Push, and Deploy X-Men Backend (skip if directory doesn't exist)
 - name: 'gcr.io/cloud-builders/gcloud'
