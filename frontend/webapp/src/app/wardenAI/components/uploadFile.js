@@ -2,68 +2,77 @@
 
 import React, { useState } from 'react';
 
-// const [file, setFile] = useState(null);
-// const [responseData, setResponseData] = useState(null);
-// const [loading, setLoading] = useState(false);
+const UploadFilePage = () => {
+  const [file, setFile] = useState(null);
+  const [responseData, setResponseData] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-function handleFileChange(event) {
-  file = event.target.files[0];
-};
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
 
-async function handleSubmit (event) {
-  event.preventDefault();
-  if (!file) return;
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (!file) return;
 
-  loading = true;
+    setLoading(true);
 
-  // Prepare form data for file upload
-  const formData = await file.text()
+    // Prepare form data for file upload
+    const formData = new FormData();
+    formData.append('file', file);
 
-  try {
-    console.log("file: ", formData);
-    const response = await fetch('http://localhost:8000/online', {
-      mode: 'no-cors',
-      method: 'POST',
-      body: formData,
-    });
-    
-    // hard coded response
-    // const response = {
-    //   ok: true,
-    //   json: () => Promise.resolve({ 
-    //     title: 'Sample Title',
-    //     description: 'Sample Body',
-    //     lines: [12, 34],
-    //     fix: "Sample Fix"
-    //  })
-    // };
+    try {
+      // Replace 'https://your-api-url.com/upload' with your actual API endpoint
+      // console.log("file: ", formData);
+      // const response = await fetch('http://localhost:8000/online', {
+      //   mode: 'no-cors',
+      //   method: 'POST',
+      //   body: formData,
+      // });
+      
+      // hard coded response
+      const response = {
+        ok: true,
+        json: () => Promise.resolve(
+          {
+            data: [
+              { 
+                title: 'Sample Title',
+                description: 'Sample Body',
+                lines: [12, 34],
+                fix: "Sample Fix"
+              },
+              {
+                title: 'Sample Title 2',
+                description: 'Sample Body 2',
+                lines: [13, 35],
+                fix: "Sample Fix 2"
+              }
+            ]
+          }
+        )
+      };
 
-    if (!response.ok) {
-      throw new Error('File upload failed');
+      if (!response.ok) {
+        throw new Error('File upload failed');
+      }
+
+      const data = await response.json();
+      setResponseData(data);
+      setFile(null);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    console.log("response: ", response);
-
-    const data = await response.json();
-    responseData = data;
-    file = null;
-  } catch (error) {
-    console.error('Error uploading file:', error);
-  } finally {
-    loading = false;
-  }
-}
-
-let responseData = null;
-let file = null;
-let loading = false;
-
-export default function UploadFile() {
   return (
     <div className="bg-white text-dark h-75 text-center p-10" style={{ height: '100vh' }}>
-      <h1>File Upload</h1>
 
       {!responseData ? (
+        <div>
+        <h1>File Upload</h1>
         <form onSubmit={handleSubmit}>
           <input
             type="file"
@@ -77,24 +86,29 @@ export default function UploadFile() {
             {loading ? 'Uploading...' : 'Upload File'}
           </button>
         </form>
+        </div>
       ) : (
         <div>
-          <h1>{responseData.title}</h1>
-          <p>{responseData.description}</p>
+          {responseData.data.map((vulnerability) => (
           <div>
-            <strong>Lines:</strong>
-            <ul>
-              {responseData.lines.map((lineNumber) => (
-                <li>
-                  {lineNumber}
-                </li>
-              ))}
-            </ul>
+            <strong><h1>{vulnerability.title}</h1></strong>
+            <p>{vulnerability.description}</p>
+            <div>
+              <p>Lines:</p>
+              <ul>
+                {vulnerability.lines.map((lineNumber) => (
+                  <li>
+                    {lineNumber}
+                  </li>
+                ))}
+              </ul>
+            </div><p>Fix: {vulnerability.fix}</p>
           </div>
-          <p>Fix: {responseData.fix}</p>
+        ))}   
         </div>
       )}
     </div>
   );
-}
+};
 
+export default UploadFilePage;
