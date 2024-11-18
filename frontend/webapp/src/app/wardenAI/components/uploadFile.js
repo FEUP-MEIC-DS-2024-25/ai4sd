@@ -18,40 +18,39 @@ const UploadFilePage = () => {
     setLoading(true);
 
     // Prepare form data for file upload
-    const formData = new FormData();
-    formData.append('file', file);
+    const fileContents = await file.text()
 
     try {
       // Replace 'https://your-api-url.com/upload' with your actual API endpoint
-      // console.log("file: ", formData);
-      // const response = await fetch('http://localhost:8000/online', {
-      //   mode: 'no-cors',
-      //   method: 'POST',
-      //   body: formData,
-      // });
+      console.log("file: ", fileContents);
+      const response = await fetch('http://localhost:8000/online', {
+        mode: 'no-cors',
+        method: 'POST',
+        "content": fileContents,
+      });
       
       // hard coded response
-      const response = {
-        ok: true,
-        json: () => Promise.resolve(
-          {
-            data: [
-              { 
-                title: 'Sample Title',
-                description: 'Sample Body',
-                lines: [12, 34],
-                fix: "Sample Fix"
-              },
-              {
-                title: 'Sample Title 2',
-                description: 'Sample Body 2',
-                lines: [13, 35],
-                fix: "Sample Fix 2"
-              }
-            ]
-          }
-        )
-      };
+      // const response = {
+      //   ok: true,
+      //   json: () => Promise.resolve(
+      //     {
+      //       data: [
+      //         { 
+      //           title: 'Sample Title',
+      //           description: 'Sample Body',
+      //           lines: [12, 34],
+      //           fix: "Sample Fix"
+      //         },
+      //         {
+      //           title: 'Sample Title 2',
+      //           description: 'Sample Body 2',
+      //           lines: [13, 35],
+      //           fix: "Sample Fix 2"
+      //         }
+      //       ]
+      //     }
+      //   )
+      // };
 
       if (!response.ok) {
         throw new Error('File upload failed');
@@ -80,7 +79,7 @@ const UploadFilePage = () => {
           />
           <button
             type="submit"
-            // disabled={!file || loading}
+            disabled={!file || loading}
             className="btn btn-primary"
           >
             {loading ? 'Uploading...' : 'Upload File'}
