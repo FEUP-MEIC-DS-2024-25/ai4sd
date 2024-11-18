@@ -51,9 +51,9 @@ export default function AssistantInteraction() {
       const blob = await response.blob();
       const contentDisposition = response.headers.get("content-disposition");
       const filename = contentDisposition
-          ?.split("filename=")[1]
-          ?.split(";")[0]
-          ?.replace(/"/g, "") || "Classification.txt";
+        ?.split("filename=")[1]
+        ?.split(";")[0]
+        ?.replace(/"/g, "") || "Classification.txt";
 
       const url = URL.createObjectURL(blob);
       setDownloadUrl(url);
