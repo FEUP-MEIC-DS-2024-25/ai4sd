@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Updates the contents of Nexus storage buckets based on updates to its repositories",
   "main": "main.js",
+  "type": "module",
   "scripts": {
     "dev": "node main.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -18,6 +19,9 @@
   },
   "homepage": "https://github.com/FEUP-MEIC-DS-2024-25/ai4sd#readme",
   "dependencies": {
-    "axios": "^1.7.7"
+    "@octokit/app": "^15.1.1",
+    "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
+    "octokit": "^4.0.2"
   }
 }
