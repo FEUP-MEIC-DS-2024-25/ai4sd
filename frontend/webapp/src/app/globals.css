@@ -1,12 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 :root {
-  --background: #171717;
+  --background: #141414;
   --foreground: #ededed;
-  --bs-body-bg: #171717 !important;
+  --bs-body-bg: #141414 !important;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
+    --background: #141414;
     --foreground: #ededed;
   }
 }
@@ -18,10 +24,8 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background) !important;
-  background-color: var(--background) !important;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: Josefin Sans, sans-serif !important;
+  color: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
