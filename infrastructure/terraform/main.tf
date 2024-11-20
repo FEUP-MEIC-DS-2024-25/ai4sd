@@ -18,7 +18,7 @@ variable "image_timestamp" {
 }
 
 variable "default_image" {
-  default = "gcr.io/google-samples/hello-app:latest"
+  default = "gcr.io/hero-alliance-feup-ds-24-25/hello-world"
 }
 
 provider "google" {
@@ -46,23 +46,7 @@ resource "google_service_account" "cloud_build_sa" {
   account_id = "cloud-build-sa"
 
   lifecycle {
-    ignore_changes = [
-      account_id  # Ignore changes to account_id to prevent errors if it already exists
-    ]
-  }
-}
-
-# Use count to loop through the 40 service accounts
-resource "google_service_account" "superhero" {
-  count        = 40
-  account_id   = "superhero-${format("%02d", floor(count.index / 5) + 1)}-${format("%02d", (count.index % 5) + 1)}"
-  display_name = "Superhero ${format("%02d", floor(count.index / 5) + 1)}-${format("%02d", (count.index % 5) + 1)}"
-
-  lifecycle {
-    create_before_destroy = true  # Ensure the new account is created before the old one is destroyed
-    ignore_changes = [
-      account_id  # Ignore account_id changes to prevent accidental recreation
-    ]
+    ignore_changes = [account_id]
   }
 }
 
@@ -90,18 +74,25 @@ resource "google_cloud_run_service" "superhero" {
   template {
     spec {
       containers {
-        image = var.image_timestamp != "" ? "gcr.io/${var.project_id}/superhero-${format("%02d", floor(count.index / 5) + 1)}-${format("%02d", (count.index % 5) + 1)}-${var.image_timestamp}:latest" : var.default_image
+        image = "gcr.io/${var.project_id}/superhero-${format("%02d", floor(count.index / 5) + 1)}-${format("%02d", (count.index % 5) + 1)}-${var.image_timestamp}"
       }
       service_account_name = google_service_account.superhero[count.index].email
     }
   }
 
   lifecycle {
-    prevent_destroy = true  # Prevent accidental deletion of Cloud Run services
+    prevent_destroy = true
   }
 
   depends_on = [google_project_service.enable_services]
 }
+
+resource "google_service_account" "superhero" {
+  count      = 40
+  account_id = "superhero-${format("%02d", floor(count.index / 5) + 1)}-${format("%02d", (count.index % 5) + 1)}"
+  display_name = "Superhero Service Account ${format("%02d", floor(count.index / 5) + 1)}-${format("%02d", (count.index % 5) + 1)}"
+}
+
 
 # Ensure Cloud Build can access the service account key in Secret Manager
 resource "google_secret_manager_secret" "cloudbuild_sa_key" {
@@ -116,7 +107,7 @@ resource "google_secret_manager_secret" "cloudbuild_sa_key" {
   }
 
   lifecycle {
-    prevent_destroy = true  # Prevent deletion of secrets
+    ignore_changes = [secret_id]
   }
 }
 
@@ -129,10 +120,16 @@ resource "google_secret_manager_secret_version" "cloudbuild_sa_key_version" {
 # Pub/Sub Topics
 resource "google_pubsub_topic" "echo_superheroes" {
   name = "echo-superheroes"
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 resource "google_pubsub_topic" "echo_jarvis" {
   name = "echo-jarvis"
+  lifecycle {
+    ignore_changes = [name]
+  }
 }
 
 # Cloud Build service account permissions and IAM roles
@@ -146,7 +143,7 @@ resource "google_project_iam_member" "cloud_build_run_permissions" {
 resource "google_project_iam_member" "cloud_build_storage_permissions" {
   project = var.project_id
   member  = "serviceAccount:${google_service_account.cloud_build_sa.email}"
-  role    = "roles/storage.admin"
+  role    = "roles/storage.objectAdmin"
 }
 
 # Ensure Cloud Build SA can access Cloud Build secrets
@@ -156,17 +153,17 @@ resource "google_project_iam_member" "cloud_build_sa_secret_manager_permissions_
   role    = "roles/secretmanager.secretAccessor"
 }
 
-resource "google_storage_bucket" "terraform_state" {
+resource "google_storage_bucket" "hero_alliance_bucket" {
   name     = "hero-alliance-terraform-state-bucket"
   location = "europe-west1"
 
   lifecycle {
-    prevent_destroy = true  # Prevent accidental deletion of the bucket storing state
+    prevent_destroy = true  # Prevents Terraform from destroying the bucket
   }
 }
 
 resource "google_storage_bucket_iam_binding" "cloud_build_state_access" {
-  bucket = google_storage_bucket.terraform_state.name
+  bucket = google_storage_bucket.hero_alliance_bucket.name
   role   = "roles/storage.objectAdmin"
   members = [
     "serviceAccount:cloud-build-sa@${var.project_id}.iam.gserviceaccount.com"
@@ -186,7 +183,7 @@ resource "google_project_iam_member" "cloud_build_artifact_registry_permissions_
 }
 
 resource "google_artifact_registry_repository" "superhero_repo" {
-  repository_id = "hero-alliance-feup-ds-24-25"
+  repository_id = "superhero-repo"  # Updated ID format
   location      = "us"
   format        = "DOCKER"
   project       = var.project_id

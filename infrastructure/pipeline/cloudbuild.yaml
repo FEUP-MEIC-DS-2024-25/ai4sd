@@ -1,6 +1,9 @@
 options:
   logging: CLOUD_LOGGING_ONLY
 
+substitutions:
+  _FALLBACK_IMAGE: "gcr.io/<your-project-id>/hello-world"  # Use your fallback image path
+
 steps:
   # Step 1: Fetch and decode service account key
   - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
@@ -135,7 +138,7 @@ steps:
           }
           echo "Terraform applied successfully."
 
-  # Step 7: Build Docker images (using fallback image)
+  # Step 7: Build Docker images
   - name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
     args:
@@ -143,7 +146,7 @@ steps:
       - |
           set -e
           echo "Building and pushing Docker images for superheroes..."
-          fallback_image="gcr.io/google-samples/hello-app:latest"
+          fallback_image="${_FALLBACK_IMAGE}"  # Use substitution variable
           docker pull "${fallback_image}" || {
             echo "ERROR: Failed to pull fallback image. Exiting."
             exit 1
@@ -154,7 +157,7 @@ steps:
               hero_name="superhero-0${group}-0${hero}"
               dir="../superheroes/${hero_name}"  # Adjust path to reflect location
               dockerfile="${dir}/Dockerfile"    # Path to Dockerfile
-              image="gcr.io/${_PROJECT_ID}/${hero_name}-${BUILD_ID}:latest"
+              image="gcr.io/${_PROJECT_ID}/${hero_name}-${BUILD_ID}"
 
               if [ -f "${dockerfile}" ]; then
                 echo "Dockerfile found in ${dir}. Building image for ${hero_name}..."
