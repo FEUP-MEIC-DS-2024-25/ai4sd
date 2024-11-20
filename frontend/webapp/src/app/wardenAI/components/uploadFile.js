@@ -20,6 +20,11 @@ const UploadFilePage = () => {
     // Prepare form data for file upload
     const fileContents = await file.text()
 
+    const contents_data = {
+      content: `#include <stdio.h>\\n#include <string.h>\\n#include <stdlib.h>\\n\\nint main(int argc, char *argv[])\\n{\\n    char buffer[5];\\n\\n    if (argc < 2)\\n    {\\n        printf(\\"Usage: %s <string>\\n\\", argv[0]);\\n        exit(0);\\n    }\\n\\n    strcpy(buffer, argv[1]);\\n    printf(\\"buffer content= %s\\n\\", buffer);\\n\\n    return 0;\\n}`
+    };
+    
+
     try {
       // Replace 'https://your-api-url.com/upload' with your actual API endpoint
       console.log("file: ", fileContents);
@@ -30,9 +35,7 @@ const UploadFilePage = () => {
           'Accept': 'application/json',
           'Content-Type': 'application/json',
         },
-        body:  JSON.stringify({
-          "content": fileContents,
-        })
+        body:  JSON.stringify(contents_data)
       });
       
       // hard coded response
