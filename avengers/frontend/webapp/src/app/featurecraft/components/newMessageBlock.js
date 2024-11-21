@@ -30,7 +30,7 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
     };
 
     return (
-        <div className="flex flex-col justify-end h-full items-center">
+        <div className="flex flex-col justify-end items-center">
             <div className="min-h-20 w-full flex justify-center p-3 relative">
                 <div className="w-full flex">
                     <textarea
