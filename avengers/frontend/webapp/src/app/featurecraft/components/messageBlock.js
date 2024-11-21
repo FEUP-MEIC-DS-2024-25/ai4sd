@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
+import ReactMarkdown from "react-markdown";
 import styles from "@/app/page.module.css";
-
 
 export default function MessageBlock({ messages, totalMessages, description }) {
     const messagesEndRef = useRef(null);
@@ -20,7 +20,7 @@ export default function MessageBlock({ messages, totalMessages, description }) {
                     {messages.filter(Boolean).map((message, index) => (
                         <li key={index} className="p-2 bg-white rounded-md shadow-sm">
                             <p className="font-semibold">{message.authorName}</p>
-                            <p>{message.body}</p>
+                            <ReactMarkdown>{message.body}</ReactMarkdown>
                             <p className="text-xs text-gray-500">{new Date(message.timestamp).toLocaleString()}</p>
                             {message.isDeleted && <p className="text-red-500">This message has been deleted</p>}
                         </li>
