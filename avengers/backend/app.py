@@ -1,4 +1,5 @@
 import fastapi
+from superheroes.req2test.api import register_req2test_api
 
 app = fastapi.FastAPI()
 
@@ -15,3 +16,5 @@ def read_item(repository: str):
 @app.get("/assistant/{assistant}")
 def read_item(assistant: str):
     return {"assistant": assistant}
+
+register_req2test_api(app)
