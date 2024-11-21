@@ -28,38 +28,32 @@ const UploadFilePage = () => {
     try {
       // Replace 'https://your-api-url.com/upload' with your actual API endpoint
       console.log("file: ", fileContents);
-      const response = await fetch('http://localhost:8000/online', {
-        mode: 'no-cors',
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body:  JSON.stringify(contents_data)
-      });
+      // const response = await fetch('http://localhost:8000/online', {
+      //   mode: 'no-cors',
+      //   method: 'POST',
+      //   headers: {
+      //     'Accept': 'application/json',
+      //     'Content-Type': 'application/json',
+      //   },
+      //   body:  JSON.stringify(contents_data)
+      // });
       
       // hard coded response
-      // const response = {
-      //   ok: true,
-      //   json: () => Promise.resolve(
-      //     {
-      //       data: [
-      //         { 
-      //           title: 'Sample Title',
-      //           description: 'Sample Body',
-      //           lines: [12, 34],
-      //           fix: "Sample Fix"
-      //         },
-      //         {
-      //           title: 'Sample Title 2',
-      //           description: 'Sample Body 2',
-      //           lines: [13, 35],
-      //           fix: "Sample Fix 2"
-      //         }
-      //       ]
-      //     }
-      //   )
-      // };
+      const response = {
+        ok: true,
+        json: () => Promise.resolve(
+          {
+            data: [
+              {
+                title: "Buffer Overflow Vulnerability",
+                description: "The `strcpy` function copies the entire contents of `argv[1]` into the `buffer` array, which has a fixed size of 5 bytes. If the length of `argv[1]` is greater than or equal to 5 (including the null terminator), this will lead to a buffer overflow, overwriting adjacent memory locations. This can cause program crashes, unexpected behavior, or even allow attackers to execute arbitrary code.",
+                lines: ["strcpy(buffer, argv[1]);"],
+                fix: "Use a safer string copy function like `strncpy` with a size parameter to prevent overflowing the buffer.  Also, always validate and sanitize user inputs to ensure they are within the expected size limits. For instance, check the length of argv[1] before copying."
+              }
+            ]
+          }
+        )
+      };
 
       if (!response.ok) {
         throw new Error('File upload failed');
