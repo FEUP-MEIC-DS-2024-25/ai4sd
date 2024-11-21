@@ -16,7 +16,7 @@ export default function AssistantPicker() {
 function getAssistantList() {
     //creating mock data
     let ai1 = { name: "ai1", type: "refact", link: "#" };
-    let ai2 = { name: "Req2Test", type: "req", link: "req2test" };
+    let ai2 = { name: "Req2Test", type: "req", link: "/assistants/req2test" };
     let ai3 = { name: "ai3", type: "verif", link: "#" };
     let ai4 = { name: "ai4", type: "req", link: "#" };
     let ai5 = { name: "ai5", type: "arch", link: "#" };
