@@ -6,8 +6,7 @@ import '@/app/globals.css';
 
 import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
-import AssistantInteraction from "@/app/components/AssistantInteraction";
-import Req2Test from "../../../../../../superheroes/req2test/req2test";
+import Req2Test from "./components/Assistant";
 
 
 export default function Interactor() {
