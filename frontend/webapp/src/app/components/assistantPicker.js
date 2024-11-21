@@ -19,7 +19,7 @@ function getAssistantList() {
         { name: "ai1", type: "refact", link: "#" },
         { name: "ai2", type: "req", link: "#" },
         { name: "req2test", type: "verif", link: "/assistants/req2test" },
-        { name: "ai4", type: "req", link: "#" },
+        { name: "toopai", type: "verif", link: "/assistants/toopai" },
         { name: "ai5", type: "arch", link: "#" },
         { name: "ai6", type: "arch", link: "#" }
     ];
