@@ -3,8 +3,7 @@ import styles from "@/app/page.module.css";
 import NewMessageBlock from "@/app/featurecraft/components/newMessageBlock";
 import MessageBlock from "@/app/featurecraft/components/messageBlock";
 
-export default function FeaturecraftAssistant() {
-    const [conversationId, setConversationId] = useState("673d10aa792f5dc2123f0895");
+export default function FeaturecraftAssistant({ conversationId, setConversationId }) {
     const [members, setMembers] = useState(["You", "Gemini"]);
     const [description, setDescription] = useState("Welcome to the Featurecraft Assistant!");
     const [messages, setMessages] = useState([]);
