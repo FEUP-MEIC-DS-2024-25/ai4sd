@@ -46,15 +46,14 @@ export default function FeaturecraftConversationPage() {
             })
             .then(data => setAssistHistory(data))
             .catch(error => console.error("Error fetching history:", error));
-    }, []);
-
+    }, [id]);
 
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
             <AssistantHistory name={assistName} type={assistType} interactions={assistHistory} />
             {conversationExists ? (
-                <FeaturecraftAssistant conversationId={conversationId} setConversationId={setConversationId} />
+                <FeaturecraftAssistant conversationId={conversationId} setConversationId={setConversationId} setAssistHistory={setAssistHistory} />
             ) : (
                 <ConversationNotFound />
             )}
