@@ -10,6 +10,7 @@ import '@/app/globals.css';
 import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
 import FeaturecraftAssistant from "@/app/assistants/featurecraft/components/assistant";
+import ConversationNotFound from "@/app/assistants/featurecraft/components/ui/conversationNotFound";
 
 export default function FeaturecraftConversationPage() {
     const { id } = useParams();
@@ -17,6 +18,7 @@ export default function FeaturecraftConversationPage() {
     const assistType = "req";
     const [assistHistory, setAssistHistory] = useState([]);
     const [conversationId, setConversationId] = useState(id);
+    const [conversationExists, setConversationExists] = useState(true);
 
     useEffect(() => {
         axios.get("http://localhost:8000/history")
@@ -28,6 +30,13 @@ export default function FeaturecraftConversationPage() {
                             item.text = item.description;
                             item.link = `/assistants/featurecraft/${item._id}`;
                         });
+                        // Check if the conversation ID exists
+                        const conversation = response.data.find(item => item._id === id);
+                        if (!conversation) {
+                            setConversationExists(false);
+                        } else {
+                            setConversationExists(true);
+                        }
                         return response.data;
                     }
                     return [{ text: "Nothing to show yet.", link: "" }];
@@ -39,11 +48,16 @@ export default function FeaturecraftConversationPage() {
             .catch(error => console.error("Error fetching history:", error));
     }, []);
 
+
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
             <AssistantHistory name={assistName} type={assistType} interactions={assistHistory} />
-            <FeaturecraftAssistant conversationId={conversationId} setConversationId={setConversationId} />
+            {conversationExists ? (
+                <FeaturecraftAssistant conversationId={conversationId} setConversationId={setConversationId} />
+            ) : (
+                <ConversationNotFound />
+            )}
         </div>
     )
 }
