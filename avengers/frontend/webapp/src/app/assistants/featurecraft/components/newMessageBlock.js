@@ -42,7 +42,7 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
             <div className="min-h-20 w-full flex justify-center p-3 relative">
                 <div className="w-full flex">
                     <textarea
-                        className="flex-grow p-2 border border-gray-300 rounded resize-none overflow-hidden min-h-24 max-h-24 pr-10 mr-2"
+                        className="flex-grow p-2 border border-gray-300 rounded resize-none overflow-hidden min-h-24 max-h-24 pr-10 mr-2 bg-white text-black"
                         placeholder="Type your message here..."
                         rows="1"
                         onInput={(e) => {

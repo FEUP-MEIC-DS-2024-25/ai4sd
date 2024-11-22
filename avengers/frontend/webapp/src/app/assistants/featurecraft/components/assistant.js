@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import axios from "axios";
 import styles from "@/app/page.module.css";
-import NewMessageBlock from "@/app/featurecraft/components/newMessageBlock";
-import MessageBlock from "@/app/featurecraft/components/messageBlock";
+import NewMessageBlock from "@/app/assistants/featurecraft/components/newMessageBlock";
+import MessageBlock from "@/app/assistants/featurecraft/components/messageBlock";
 
 export default function FeaturecraftAssistant({ conversationId, setConversationId }) {
     const [members, setMembers] = useState(["You", "Gemini"]);
@@ -9,6 +10,30 @@ export default function FeaturecraftAssistant({ conversationId, setConversationI
     const [messages, setMessages] = useState([]);
     const [pinnedMessages, setPinnedMessages] = useState([]);
     const [totalMessages, setTotalMessages] = useState(0);
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const response = await axios.get(`http://localhost:8000/chat/${conversationId}`);
+                return response.data;
+            } catch (error) {
+                console.error("Error fetching chat:", error);
+            }
+        }
+
+        async function loadChatData() {
+            const chatData = await fetchData();
+            if (chatData) {
+                setMembers(chatData.members);
+                setDescription(chatData.description);
+                setMessages(chatData.messages);
+                setPinnedMessages(chatData.pinnedMessages);
+                setTotalMessages(chatData.totalMessages);
+            }
+        }
+
+        loadChatData();
+    }, [conversationId]);
 
     const handleSendMessage = (sentMessage) => {
         setMessages((prevMessages) => [
