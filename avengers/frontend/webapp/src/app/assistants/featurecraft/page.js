@@ -9,12 +9,13 @@ import '@/app/globals.css';
 
 import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
-import Assistant from "@/app/assistants/featurecraft/components/assistant";
+import {NewFeaturecraftAssistant} from "@/app/assistants/featurecraft/components/assistant";
 
 export default function Interactor() {
     const assistName = "FeatureCraft";
     const assistType = "req";
     const [assistHistory, setAssistHistory] = useState([]);
+    const [conversationId, setConversationId] = useState("673d10aa792f5dc2123f0895"); // TODO: Change backend to accept "new" instead of an ID
 
     
     useEffect(() => {
@@ -43,6 +44,7 @@ export default function Interactor() {
         <div className={styles.interactorLayout}>
             <AssistantPicker />
             <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
+            <NewFeaturecraftAssistant conversationId={conversationId} setConversationId={setConversationId} />
         </div>
     )
 }
