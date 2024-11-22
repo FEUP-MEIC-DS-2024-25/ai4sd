@@ -1,4 +1,3 @@
-import { getAuthOctokit } from "./auth.js";
 import { fetchRepoContents, downloadFile } from "./githubClient.js";
 import { saveFile, ensureDownloadDir } from "./utils.js";
 import { config } from "../config.js";
@@ -47,10 +46,9 @@ async function downloadAndSaveFiles(pythonFiles) {
     }
 }
 
-async function processRepo(repoUrl) {
+async function processRepo(octokit, repoUrl) {
     try {
         const [org, repo] = extractRepoDetails(repoUrl);
-        const octokit = await getAuthOctokit(org); // Get authenticated Octokit instance
 
         const pythonFiles = await findFiles(octokit, org, repo);
         ensureDownloadDir();
