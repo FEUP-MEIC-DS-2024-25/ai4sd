@@ -20,9 +20,17 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
             // Send the message to the server
             try {
                 onSendMessage(newMessage);
+                setMessage("");
+                
+                // Reset the height of the textarea
+                const textarea = document.querySelector('textarea');
+                if (textarea) {
+                    textarea.style.height = 'auto';
+                }
+                
                 const response = await axios.post("http://localhost:8000/chat", newMessage);
                 onReceiveMessage(response);
-                setMessage("");
+                
             } catch (error) {
                 console.error(error);
             }
@@ -34,7 +42,7 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
             <div className="min-h-20 w-full flex justify-center p-3 relative">
                 <div className="w-full flex">
                     <textarea
-                        className="flex-grow p-2 border border-gray-300 rounded resize-none overflow-hidden min-h-16 max-h-40 pr-10 mr-2"
+                        className="flex-grow p-2 border border-gray-300 rounded resize-none overflow-hidden min-h-24 max-h-24 pr-10 mr-2"
                         placeholder="Type your message here..."
                         rows="1"
                         onInput={(e) => {

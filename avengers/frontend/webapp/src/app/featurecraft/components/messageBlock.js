@@ -15,7 +15,7 @@ export default function MessageBlock({ messages, totalMessages, description }) {
         <div className="p-4 shadow-sm flex-grow">
             <h2 className="text-xl font-bold mb-2">Your Conversation</h2>
             <p className="text-sm text-gray-60 mb-4">{description}</p>
-            <div className="overflow-y-auto max-h-[65vh]">
+            <div className="overflow-y-auto max-h-[63vh]">
                 <ul className="space-y-2">
                     {messages.filter(Boolean).map((message, index) => (
                         <li key={index} className="p-2 bg-white rounded-md shadow-sm">
