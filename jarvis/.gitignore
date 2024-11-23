@@ -1,6 +1,8 @@
 *.pem
 /downloads
 
+.DS_Store
+
 # Logs
 logs
 *.log
