@@ -8,6 +8,8 @@ import DownloadOutput from "./downloadOutput";
 import "tailwindcss/tailwind.css";
 import "bootstrap/dist/css/bootstrap.css";
 import styles from "@/app/page.module.css";
+import AssistantTitleBar from "./assistantTitleBar";
+import rrbuddy_logo from "@/app/pictures/rrbuddy_logo.png"
 
 export default function AssistantInteraction() {
   const [selectedFiles, setSelectedFiles] = useState([]);
@@ -36,14 +38,13 @@ export default function AssistantInteraction() {
     event.preventDefault();
 
     if (!selectedFiles.length) return;
-
     const formData = new FormData();
     selectedFiles.forEach((file) => formData.append("files", file));
     formData.append("additionalInfo", additionalInfo);
 
     setLoading(true);
     try {
-      const response = await fetch("toDetermine", {
+      const response = await fetch("http://172.21.0.3:5001/api/process", {
         method: "POST",
         body: formData,
       });
@@ -71,9 +72,9 @@ export default function AssistantInteraction() {
 
   return (
     <div className={styles.assistantInteraction}>
-      <header className="p-5 mb-5 bg-gray-100 shadow-md text-xl font-bold text-center w-full flex items-center justify-center">
-        <h2 className="text-3xl font-bold">RRBuddy</h2>
-      </header>
+      <AssistantTitleBar name={"RRBuddy"} logoFile={rrbuddy_logo}
+        className={"p-4 mb-5 bg-gray-100 shadow-md text-xl font-bold text-center w-full flex gap-6 items-center justify-center"}
+      />
 
       <div className="p-2 flex flex-col mx-auto bg-gray-300 shadow-md rounded-md w-5/6">
         <form onSubmit={handleFormSubmit}>
@@ -88,7 +89,6 @@ export default function AssistantInteraction() {
           />
         </form>
       </div>
-
       {loading && <Loading />}
       {downloadUrl && (
         <DownloadOutput

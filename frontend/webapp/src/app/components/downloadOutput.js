@@ -1,6 +1,8 @@
 "use client";
 
+import Image from "next/image";
 import React from "react";
+import fileSVG from "@/app/pictures/file.svg";
 
 export default function DownloadOutput({
   downloadUrl,
@@ -19,6 +21,20 @@ export default function DownloadOutput({
           >
             Download your file <i className="fas fa-download"></i>
           </a>
+          <a
+            href={downloadUrl}
+            download={downloadFilename}
+            className="document-item mr-5 mt-3 mb-3 w-32 h-36 bg-white shadow-md rounded-xl flex flex-col items-center pt-10"
+          >
+            <Image
+              src={fileSVG}
+              alt="File SVG"
+              height={70}
+              width={70}
+              className="px-2 mb-3"
+            />
+            <span className="px-2 text-s">{downloadFilename}</span>
+          </a>
         </div>
 
         <div className="shadow-inner rounded-md w-1/2 flex flex-col h-full">
@@ -36,6 +52,6 @@ export default function DownloadOutput({
           </button>
         </div>
       </div>
-    </div>
+    </div >
   );
 }

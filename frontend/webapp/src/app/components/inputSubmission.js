@@ -1,6 +1,7 @@
 "use client";
-
+import Image from "next/image";
 import React from "react";
+import fileSVG from "@/app/pictures/file.svg";
 
 export default function InputSubmission({
   selectedFiles,
@@ -39,11 +40,17 @@ export default function InputSubmission({
                   className="delete-button flex items-center justify-between w-full"
                 >
                   <div className="p-2 ml-auto bg-white shadow-md rounded-full w-10 h-10 flex items-center justify-center hover:bg-gray-100 duration-300">
-                    <i className="fas fa-trash text-purple-600 text-2xl hover:text-red-500 duration-300"></i>
+                    <p className="text-purple-600 text-2xl hover:text-red-500 duration-300">X</p>
                   </div>
                 </button>
-                <i className="px-2 far fa-file-alt text-6xl text-black mb-3"></i>
-                <span className="px-2 text-xs">{normalizeText(file)}</span>
+                <Image
+                  src={fileSVG}
+                  alt="File SVG"
+                  height={70}
+                  width={70}
+                  className="px-2 mb-3"
+                />
+                <span className="px-2 text-s">{normalizeText(file)}</span>
               </li>
             ))
           ) : (
