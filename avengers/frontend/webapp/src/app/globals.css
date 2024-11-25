@@ -5,24 +5,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
 
 :root {
-<<<<<<< HEAD
-  --background: #141414;
-  --foreground: #ededed;
   --bs-body-bg: #141414 !important;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #141414;
-    --foreground: #ededed;
-  }
-}
-
-=======
-  --bs-body-bg: #141414 !important;
-}
-
->>>>>>> dd6ac1c087a15a2a39beb99d022b2cf5ed1fd091
 html,
 body {
   max-width: 100vw;
@@ -52,8 +37,6 @@ a {
     color-scheme: dark;
   }
 }
-<<<<<<< HEAD
-=======
 
 @layer base {
   :root {
@@ -119,4 +102,3 @@ a {
     @apply bg-background text-foreground;
   }
 }
->>>>>>> dd6ac1c087a15a2a39beb99d022b2cf5ed1fd091
