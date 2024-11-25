@@ -23,13 +23,6 @@ export default function Filters() {
           <option value="portuguese">Portuguese</option>
         </select>
       </div>
-      <div className="mr-20">
-        <label className="block text-center font-bold mb-2">AI Model</label>
-        <select className="p-2 bg-white border rounded-md w-full">
-          <option value="gemini">Gemini</option>
-          <option value="chatgpt">ChatGPT</option>
-        </select>
-      </div>
     </div>
   );
 }
