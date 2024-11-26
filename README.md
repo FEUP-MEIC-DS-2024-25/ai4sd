@@ -3,7 +3,7 @@
 ## Step-by-step guide
 
 1. **Ask your professor for a JSON key** for your specific superhero
-2. Once you get the key, you can use it on your code files (just be sure to not store it in the repository: save it as a secret, do not leave it publicly accessible). For information on **how to authenticate**, check the following link: https://cloud.google.com/docs/authentication/gcloud
+2. Once you get the key, you can use it on your code files (just be sure to not store it in the repository: save it as a secret, do not leave it publicly accessible). Authenticate with `gcloud auth activate-service-account --key-file=superhero-0Y-0Y.json`
 3. In order to deploy your code to the cloud, you simply create a branch from main, make a Pull Request with the changes you have in mind, and, if/when it gets accepted and merged, a pipeline will be triggered
 
 ## Important remarks
