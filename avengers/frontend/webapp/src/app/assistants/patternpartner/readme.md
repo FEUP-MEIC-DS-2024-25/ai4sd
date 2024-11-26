@@ -1,6 +1,7 @@
 **All files placed in the first commit of this branch are only moving from the team's public repository to the main "ai4sd" repository.**
 
 - The adaptations to make this work with the new architecture are not complete yet.
+- To test, from the root of the project simply navigate to `avengers/frontend/webapp` and run `docker-compose up`, then access: `http://localhost:3000/assistants/patternpartner`.
 
 ### OLD PROTOTYPE SETUP - DOCKERFILE THAT WAS USED FOR FRONTEND
 
