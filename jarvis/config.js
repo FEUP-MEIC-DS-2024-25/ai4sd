@@ -6,6 +6,7 @@ export const config = {
     appId: process.env.APP_ID,
     privateKeyPath: process.env.PRIVATE_KEY_PATH,
     org: process.env.GITHUB_ORG,
+    serviceAccountKeyPath: process.env.SERVICE_ACCOUNT_KEY_PATH,
     downloadDir: "./downloads"
 };
 
