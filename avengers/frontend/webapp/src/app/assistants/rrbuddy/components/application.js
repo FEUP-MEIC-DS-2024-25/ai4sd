@@ -56,7 +56,7 @@ export default function Application() {
             const filename = contentDisposition
                 ?.split("filename=")[1]
                 ?.split(";")[0]
-                ?.replace(/"/g, "") || "Classification.txt";
+                ?.replace(/"/g, "") || "classification.txt";
 
             const url = URL.createObjectURL(blob);
             setDownloadUrl(url);
