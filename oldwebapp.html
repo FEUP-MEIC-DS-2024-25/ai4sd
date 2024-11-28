@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOOP AI - Chatbot</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            height: 100%;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Conteneur global */
+        .container {
+            display: flex;
+            height: 100%;
+        }
+
+       
+        .sidebar {
+            width: 15%; /* Largeur de la sidebar */
+            height: 100%;
+            background-color: #49454F;
+            display: flex;
+            flex-direction: column; /* Empile les éléments de la sidebar verticalement */
+            padding-top: 20px; /* Espacement du logo du haut */
+            position: relative;
+            padding-left: 20px;
+            padding-right: 20px;
+        }
+
+        /* Logo du chatbot centré en haut de la sidebar */
+        .sidebar img.logo {
+            width: 80px; /* Taille du logo */
+            height: 80px;
+            margin: 0 auto 30px; /* Centré horizontalement, marge en bas */
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        /* Divs pour les informations "More info" */
+        .sidebar .info-div {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px; /* Espacement entre chaque info-div */
+        }
+
+        .sidebar .info-div img {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px; /* Espacement entre l'image et le texte */
+        }
+
+        .sidebar .info-div a {
+            text-decoration: none;
+            color: #EADDFF;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* Zone de chat */
+        .chat-area {
+            flex: 1; /* Prend tout l'espace restant */
+            display: flex;
+            max-width: 85%;
+            flex-direction: column; /* Disposition verticale pour les messages et l'input */
+            background-color: #3E3E42;
+            padding: 20px;
+        }
+
+        /* Titre du chatbot */
+        .chat-title {
+            color: #EADDFF;
+            font-size: 48px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 400;
+            margin-bottom: 20px;
+        }
+
+        .chat-title{
+            margin: 0 auto 0px;
+        }
+
+        
+        /* Zone des messages */
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column; /* Empile les messages verticalement */
+            padding-left: 8%;padding-right: 8%;
+        }
+
+        /* Bulle de message */
+        .message {
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            max-width: 90%;
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-wrap: break-word; /* Gère le retour à la ligne */
+            display: inline-block; /* S'assure que chaque message est sur une nouvelle ligne */
+        }
+
+        /* Message du chatbot */
+        .message.received {
+            background-color: #49454F;
+            align-self: flex-start;
+            color: white;
+            
+        }
+
+
+        /* Message de l'utilisateur */
+        .message.sent {
+            background-color: #F4DDFF;
+            color: black;
+            align-self: flex-end; /* Aligne à droite */
+        }
+
+        /* Zone d'entrée du message */
+        .chat-input {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #F4DDFF;
+            padding: 10px;
+            border-radius: 28px;
+            margin-left: 10%;margin-right: 10%;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background-color: #F4DDFF;
+            border-radius: 18px;
+        }
+
+        .chat-input input:focus {
+            outline: none; /* Supprime le contour bleu au focus */
+        }
+
+        /* Remplacer le bouton par une image (logo) */
+        .chat-input img {
+            width: 36px; /* Taille du logo */
+            height: 36px;
+            cursor: pointer; /* Pour indiquer que c'est cliquable */
+        }
+
+        .test{
+            width: 36px; /* Taille du logo */
+            height: 36px;
+            cursor: pointer; /* Pour indiquer que c'est cliquable */
+        }
+    </style>
+    <!-- CSS pour les styles de couleur -->
+    <link href="prism.css" rel="stylesheet" />
+
+</head>
+<body>
+    <!-- Script de Prism.js -->
+    <script src="prism.js"></script> 
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <img src="dummy.png" alt="Logo Chatbot" class="logo">
+
+            <div class ="history" id="history" style="color:white; max-height: 80%; height: 80%; overflow-y: auto;margin-bottom: 10px;"></div>
+            
+            <!-- Divs pour les informations -->
+            <div class="info-div">
+                <img src="link.png" alt="Icon 1">
+                <a href="https://github.com/">About</a>
+            </div>
+            <!-- <div class="info-div">
+                <img src="exit.png" alt="Icon 2">
+                <a href="https://github.com/">Logout</a>
+            </div> -->
+            <div class="info-div">
+                <img src="add.png" alt="Icon 3">
+                <a href="https://github.com/">Newchat</a>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div class="chat-area">
+            <!-- Chat Title -->
+            <div class="chat-title">
+                TOOP AI 
+            </div>
+
+            <!-- Messages -->
+            <div class="messages">
+                
+            </div>
+
+            <!-- Chat Input -->
+            <div class="chat-input">
+                <img src="paperclip.png" alt="Envoyer" onclick="openFolder()">
+                <input type="file" id="folderInput" webkitdirectory mozdirectory style="display: none;">
+                <input type="text" placeholder="Type Something..." id="userMessage">
+                <!-- Logo comme bouton d'envoi -->
+                <img class = test src="search.png" alt="Envoyer" onclick="sendMessage() ">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.querySelector('#userMessage');
+            const messageText = input.value.trim();
+            if (messageText !== '') {
+
+
+                const purepreview = messageText.split(' ').slice(0, 5).join(' ');
+                const preview = purepreview.charAt(0).toUpperCase() + purepreview.slice(1);
+    
+    // Création de la div de prévisualisation
+    const previewDiv = document.createElement('div');
+    previewDiv.classList.add('message-preview');
+    previewDiv.textContent = preview;
+    previewDiv.style.margin = '10px';
+    previewDiv.style.borderRadius = '5px';
+    previewDiv.style.cursor = 'pointer';
+    previewDiv.style.transition = 'background-color 0.3s';
+    previewDiv.style.whiteSpace = 'nowrap';  // Empêche le texte de se diviser sur plusieurs lignes
+    previewDiv.style.overflow = 'hidden';    // Masque le texte qui dépasse
+    previewDiv.style.textOverflow = 'ellipsis';
+
+    // Effet de survol
+    previewDiv.addEventListener('mouseover', function() {
+        previewDiv.style.backgroundColor = '#555';
+    });
+    previewDiv.addEventListener('mouseout', function() {
+        previewDiv.style.backgroundColor = '#49454F';
+    });
+
+    // Création de la div du message complet
+    const newMessage = document.createElement('div');
+    newMessage.classList.add('message', 'sent');
+    newMessage.textContent = messageText;
+
+    // Ajout de l'événement de clic pour défiler vers la div du message complet
+    previewDiv.addEventListener('click', function() {
+        newMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    // Ajout de previewDiv et newMessage aux conteneurs
+    document.getElementById('history').prepend(previewDiv);
+    document.querySelector('.messages').appendChild(newMessage);
+
+    // Réinitialiser le champ de saisie et faire défiler la zone de messages vers le bas
+    input.value = '';
+    const messagesContainer = document.querySelector('.messages');
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
+    console.log("Message envoyé :", messageText);
+
+                fetch('http://localhost:3000/api/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: messageText })
+                })
+                .then(response => {
+                    console.log("Réponse reçue :", response);
+                    return response.json();
+                })
+                .then(data => {
+                    // Récupérer la réponse de l'API
+                    // Texte de réponse brute de l'API
+                    let text = data.response;
+                    console.log(text);
+
+
+                    // Remplacement des blocs de code Python par des balises HTML
+                    let formattedText = text.replace(/```java([\s\S]*?)```/g, '<pre style="margin:10px; border-radius:5px;"><code class="language-java">$1</code></pre>');
+
+                    // Remplacement des sauts de ligne et autres formats uniquement en dehors des blocs de code
+                    formattedText = formattedText
+                        .replace(/\n(?![^<]*<\/code>)/g, '<br>')    // Remplacer les retours à la ligne hors blocs <code>
+                        .replace(/ (?![^<]*<\/code>)/g, ' ')        // Remplacer les espaces hors blocs <code>
+                        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // Appliquer le gras au texte en dehors du code
+
+                    // Création et ajout du message formaté
+                    const botMessage = document.createElement('div');
+                    botMessage.classList.add('message', 'received');
+                    botMessage.innerHTML = formattedText;
+                    document.querySelector('.messages').appendChild(botMessage);
+                    Prism.highlightAll();
+
+
+                })
+                .catch(error => {
+                    console.error('Erreur lors de l\'appel API:', error);
+                });
+            }
+        }
+        function openFolder(){
+        document.getElementById('folderInput').click();  // Ouvre la boîte de dialogue du sélecteur de dossier
+        }
+
+        document.getElementById('folderInput').addEventListener('change', function(event) {
+            const files = event.target.files;
+            console.log(files);  // Affiche les fichiers du dossier sélectionné
+        });
+    </script>
+
+
+</body>
+</html>
+
+
