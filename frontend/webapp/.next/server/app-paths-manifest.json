@@ -1,0 +1,4 @@
+{
+  "/page": "app/page.js",
+  "/assistants/toopai/page": "app/assistants/toopai/page.js"
+}
