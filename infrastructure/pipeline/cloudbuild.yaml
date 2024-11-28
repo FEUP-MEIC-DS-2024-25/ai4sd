@@ -1,0 +1,198 @@
+# Cloud Build Configuration
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+substitutions:
+  _PROJECT_ID: "hero-alliance-feup-ds-24-25"
+  _FALLBACK_IMAGE: "gcr.io/hero-alliance-feup-ds-24-25/testapp"
+  _BUCKET_NAME: "hero-alliance-state"
+  _REGION: "europe-west1"
+
+steps:
+  # Step 1: Fetch and activate the service account key
+  - id: "Fetch and Activate Service Account Key"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Fetching and activating the Cloud Build service account key..."
+          gcloud secrets versions access latest --secret="cloudbuild-sa-key" --project="${_PROJECT_ID}" > /tmp/cloudbuild-sa-key.b64
+          base64 --decode /tmp/cloudbuild-sa-key.b64 > /tmp/cloudbuild-sa-key.json
+          gcloud auth activate-service-account --key-file=/tmp/cloudbuild-sa-key.json
+
+  # Step 2: Authenticate Docker with Google Cloud
+  - id: "Authenticate Docker"
+    name: "gcr.io/cloud-builders/gcloud"
+    args: ["auth", "configure-docker"]
+
+  # Step 3: Sync Avengers folder to Cloud Storage bucket
+  - id: "Sync Avengers Folder to Bucket"
+    name: "gcr.io/cloud-builders/gsutil"
+    args:
+      - "rsync"
+      - "-r"
+      - "./avengers/"
+      - "gs://hero-alliance-avengers"
+
+  # Step 4: Reinitialize Terraform
+  - id: "Initialize Terraform"
+    name: "hashicorp/terraform"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+          echo "Initializing Terraform..."
+          cd infrastructure/terraform
+          terraform init -backend-config="bucket=${_BUCKET_NAME}" -backend-config="prefix=terraform/state"
+
+  # Step 5: Terraform Refresh
+  - id: "Terraform Refresh"
+    name: "hashicorp/terraform"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+          echo "Refreshing Terraform state..."
+          cd infrastructure/terraform
+          terraform refresh -var "build_id=${BUILD_ID}"
+
+  # Step 6: Terraform Plan
+  - id: "Terraform Plan"
+    name: "hashicorp/terraform"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+          echo "Running Terraform Plan..."
+          cd infrastructure/terraform
+          terraform plan -out=tfplan -var "build_id=${BUILD_ID}" -refresh-only
+
+  # Step 7: Terraform Apply
+  - id: "Terraform Apply"
+    name: "hashicorp/terraform"
+    entrypoint: "sh"
+    args:
+      - "-c"
+      - |
+          echo "Applying Terraform Plan..."
+          cd infrastructure/terraform
+          terraform apply -auto-approve tfplan
+
+  # Step 8: Build and Push Docker Images for Superheroes
+  - id: "Build and Push Docker Images"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Building and pushing Docker images for superhero services..."
+          for group in $(seq -w 1 8); do
+            for hero in $(seq -w 1 5); do
+              hero_name="superhero-0${group}-0${hero}"
+              dir="superheroes/${hero_name}"
+              dockerfile="${dir}/Dockerfile"
+              image="gcr.io/${_PROJECT_ID}/${hero_name}"
+              image_with_build_id="${image}-${BUILD_ID}"
+
+              if [ -f "${dockerfile}" ]; then
+                echo "Building image for ${hero_name}..."
+                docker build -t "${image_with_build_id}" "${dir}" || exit 1
+                docker push "${image_with_build_id}" || exit 1
+              else
+                echo "No Dockerfile found for ${hero_name}, using fallback image."
+                sleep 10  # Wait for GCR image propagation
+              fi
+            done
+          done
+
+  # Step 9: Build and Push Docker Images for Jarvis and Strange
+  - id: "Build and Push Jarvis and Strange"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Building and pushing Docker images for jarvis and strange..."
+          for service in jarvis strange; do
+            dir="./${service}"
+            dockerfile="${dir}/Dockerfile"
+            image="gcr.io/${_PROJECT_ID}/${service}"
+            image_with_build_id="${image}-${BUILD_ID}"
+
+            if [ -f "${dockerfile}" ]; then
+              echo "Building image for ${service}..."
+              docker build -t "${image_with_build_id}" "${dir}" || exit 1
+              docker push "${image_with_build_id}" || exit 1
+            else
+              echo "No Dockerfile found for ${service}, using fallback image."
+            fi
+          done
+
+  # Step 10: Deploy Services to Cloud Run
+  - id: "Deploy to Cloud Run"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Deploying services to Cloud Run..."
+          for service in jarvis strange; do
+            image="gcr.io/${_PROJECT_ID}/${service}-${BUILD_ID}"
+            fallback_image="${_FALLBACK_IMAGE}"
+
+            echo "Deploying ${service}..."
+            if gcloud container images describe "${image}" --project="${_PROJECT_ID}" > /dev/null 2>&1; then
+              gcloud run deploy "${service}" \
+                --image="${image}" \
+                --platform=managed \
+                --region="${_REGION}" \
+                --project="${_PROJECT_ID}" \
+                --allow-unauthenticated
+            else
+              echo "Image for ${service} not found, deploying using fallback image."
+              gcloud run deploy "${service}" \
+                --image="${fallback_image}" \
+                --platform=managed \
+                --region="${_REGION}" \
+                --project="${_PROJECT_ID}" \
+                --allow-unauthenticated
+            fi
+          done
+
+          # Deploy superheroes
+          for group in $(seq -w 1 8); do
+            for hero in $(seq -w 1 5); do
+              hero_name="superhero-0${group}-0${hero}"
+              image="gcr.io/${_PROJECT_ID}/${hero_name}-${BUILD_ID}"
+              fallback_image="${_FALLBACK_IMAGE}"
+
+              echo "Deploying ${hero_name}..."
+              if gcloud container images describe "${image}" --project="${_PROJECT_ID}" > /dev/null 2>&1; then
+                gcloud run deploy "${hero_name}" \
+                  --image="${image}" \
+                  --platform=managed \
+                  --region="${_REGION}" \
+                  --project="${_PROJECT_ID}" \
+                  --allow-unauthenticated
+              else
+                echo "Image for ${hero_name} not found, deploying using fallback image."
+                gcloud run deploy "${hero_name}" \
+                  --image="${fallback_image}" \
+                  --platform=managed \
+                  --region="${_REGION}" \
+                  --project="${_PROJECT_ID}" \
+                  --allow-unauthenticated
+              fi
+            done
+          done
+
+  # Step 11: Verify Deployment
+  - id: "Verify Deployment"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Verifying deployed services..."
+          gcloud run services list --platform=managed --region="${_REGION}" --project="${_PROJECT_ID}"
