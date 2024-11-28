@@ -1,0 +1,9 @@
+# This is a CODEOWNERS file.
+# Lines starting with '#' are comments.
+
+# Define code owners for the infrastructure folder.
+# Only the specified users or teams can approve changes to this folder.
+/infrastructure/ @aaguiar @cosmicblackcat @danrpinho @lessthelonely
+
+# Protect the CODEOWNERS file itself
+/.github/CODEOWNERS @aaguiar @cosmicblackcat @danrpinho @lessthelonely
