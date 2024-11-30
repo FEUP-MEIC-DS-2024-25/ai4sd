@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
+import Markdown from 'react-markdown';
 
 const UploadFilePage = () => {
   const [file, setFile] = useState(null);
@@ -23,12 +24,8 @@ const UploadFilePage = () => {
     const contents_data = {
       "content": "#include <stdio.h>\\n#include <string.h>\\n#include <stdlib.h>\\n\\nint main(int argc, char *argv[])\\n{\\n    char buffer[5];\\n\\n    if (argc < 2)\\n    {\\n        printf(\"Usage: %s <string>\\n\", argv[0]);\\n        exit(0);\\n    }\\n\\n    strcpy(buffer, argv[1]);\\n    printf(\"buffer content= %s\\n\", buffer);\\n\\n    return 0;\\n}"
     };
-    
-    const params = new URLSearchParams();
-    params.append("content", `#include <stdio.h>\\n#include <string.h>\\n#include <stdlib.h>\\n\\nint main(int argc, char *argv[])\\n{\\n    char buffer[5];\\n\\n    if (argc < 2)\\n    {\\n        printf(\\"Usage: %s <string>\\n\\", argv[0]);\\n        exit(0);\\n    }\\n\\n    strcpy(buffer, argv[1]);\\n    printf(\\"buffer content= %s\\n\\", buffer);\\n\\n    return 0;\\n}`)
 
     try {
-      const contents2 = new FormData();
       // Replace 'https://your-api-url.com/upload' with your actual API endpoint
       console.log("file: ", fileContents);
       const xhr = new XMLHttpRequest();
@@ -36,29 +33,17 @@ const UploadFilePage = () => {
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
         if (xhr.status === 200){
-          console.log("response: ", xhr.responseText);
+          let response = JSON.parse(xhr.responseText);
+          console.log("response: ", response.data);
+          setResponseData(response);
+          setFile(null);
         }
         else{
           console.error("phodase", xhr.status)
         }
       }
       xhr.send(JSON.stringify(contents_data))
-      /*
-      const contents = {
-        mode: 'no-cors',
-        method: 'POST',
-        headers: {
-          'accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        body: contents_data
-      };
-      console.log(contents)
-      fetch('http://localhost:8000/online', contents)
-      .then(response => response.json())
-      .then(result => conbsole.log(result))
-      .catch(error => console.error('Errror: ', error))
-      */
+
       // hard coded response
       // const response = {
       //   ok: true,
@@ -76,13 +61,6 @@ const UploadFilePage = () => {
       //   )
       // };
 
-      if (!response.ok) {
-        throw new Error('File upload failed');
-      }
-
-      const data = await response.json();
-      setResponseData(data);
-      setFile(null);
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
@@ -115,17 +93,16 @@ const UploadFilePage = () => {
           {responseData.data.map((vulnerability) => (
           <div>
             <strong><h1>{vulnerability.title}</h1></strong>
-            <p>{vulnerability.description}</p>
+              <p><Markdown>{vulnerability.description}</Markdown></p>
             <div>
               <p>Lines:</p>
-              <ul>
-                {vulnerability.lines.map((lineNumber) => (
+                <p><Markdown>{"```"+vulnerability.lines+"```"}</Markdown></p>
+                {/* {vulnerability.lines.map((lineNumber) => (
                   <li>
                     {lineNumber}
                   </li>
-                ))}
-              </ul>
-            </div><p>Fix: {vulnerability.fix}</p>
+                ))} */}
+            </div><p>Fix: <Markdown>{vulnerability.fix}</Markdown></p>
           </div>
         ))}   
         </div>
