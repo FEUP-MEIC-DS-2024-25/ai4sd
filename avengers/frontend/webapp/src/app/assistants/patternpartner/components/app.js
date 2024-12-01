@@ -1,51 +1,27 @@
-"use client";
+"use client"; // This makes the file a client component
 
-/** 
- * 
- * 
- * OLD PROTOTYPE SETUP
- * 
- * 
- * 
- * 
-*/
-
-import React, { useState } from 'react';
-//import { generateContent } from '../services/apiService';
+import React, { useState } from "react";
+import Chat from "./Chat";
+import FileUpload from "./FileUpload";
+import "./styling.css"; // Ensure your styling file is imported
 
 const App = () => {
-    const [prompt, setPrompt] = useState('');
-    const [response, setResponse] = useState('');
+  const [selectedAssistant, setSelectedAssistant] = useState("ai1");
+  const [history, setHistory] = useState([]);
 
-    const handleGenerate = async () => {
-        try {
-            const result = "EXAMPLE"; /*await generateContent(prompt);*/
-            console.log('Backend response:', result); // Log the full backend response
-            setResponse(result);
-        } catch (error) {
-            console.error('Error generating content:', error);
-    
-            // Display the error message received from the backend
-            setResponse(error.message || 'An unexpected error occurred.');
-        }
-    };
+  const handleSelectAssistant = (id) => {
+    setSelectedAssistant(id);
+    setHistory([]); // Reset history when switching
+  };
 
-    return (
-        <div>
-        <h1>Gemini Content Generator</h1>
-        <input
-            type="text"
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Enter a prompt"
-        />
-        <button onClick={handleGenerate}>Generate</button>
-        <div>
-            <h2>Response:</h2>
-            <div dangerouslySetInnerHTML={{ __html: response }}></div>
-        </div>
-        </div>
-    );
+  return (
+    <div className="app">
+      <div className="main-content">
+        <Chat assistantId={selectedAssistant} />
+        <FileUpload />
+      </div>
+    </div>
+  );
 };
 
 export default App;
