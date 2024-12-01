@@ -6,7 +6,7 @@ import FileUpload from "./FileUpload";
 import "./styling.css"; // Ensure your styling file is imported
 
 const App = () => {
-  const [selectedAssistant, setSelectedAssistant] = useState("ai1");
+  const [selectedAssistant, setSelectedAssistant] = useState("PatternPartner");
   const [history, setHistory] = useState([]);
 
   const handleSelectAssistant = (id) => {
