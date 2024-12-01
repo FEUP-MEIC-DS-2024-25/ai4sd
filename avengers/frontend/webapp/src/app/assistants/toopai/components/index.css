@@ -17,8 +17,10 @@ html {
   display: flex;
   flex-direction: column;
   max-width: 100%;
-  height: 100vh;
+  height: 100%;
   background-color: #3e3e42;
+  border-radius: 10px;
+  overflow-x: hidden; /* Empêche le débordement horizontal */
 }
 
 /* Título do Chat */
@@ -27,12 +29,8 @@ html {
   font-size: 48px;
   font-family: "Inter", sans-serif;
   font-weight: 400;
-  position: absolute;
-  top: 2%; /* Ajuste o valor para colocar mais para baixo */
-  left: 50%;
-  transform: translateX(-50%); /* Centraliza o título horizontalmente */
+  margin: 0 auto 0px;
 }
-
 
 /* Área de Mensagens */
 .messages {
@@ -43,6 +41,8 @@ html {
   flex-direction: column;
   padding-left: 8%;
   padding-right: 8%;
+  max-width: 99%;
+  word-wrap: break-word; /* Assure que les mots longs se coupent */
 }
 
 /* Bolhas de Mensagem */
@@ -52,7 +52,7 @@ html {
   border-radius: 10px;
   max-width: 90%;
   white-space: normal;
-  overflow-wrap: break-word;
+  word-break: break-word; /* Assure la coupure des mots longs */
   display: inline-block;
 }
 
@@ -80,11 +80,8 @@ html {
   border-radius: 28px;
   margin-left: 10%;
   margin-right: 10%;
-  position: absolute;  /* Fixando o input na tela */
-  bottom: 2%;  /* Coloca o input a 2% do fundo da tela */
-  width: 80%; /* Garantindo que ocupe uma largura razoável */
+  margin-bottom: 10px;
 }
-
 
 .chat-input input {
   flex: 1;
