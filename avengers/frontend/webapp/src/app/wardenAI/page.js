@@ -1,3 +1,5 @@
+"use client";
+
 // Assets
 import styles from "@/app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.css';
