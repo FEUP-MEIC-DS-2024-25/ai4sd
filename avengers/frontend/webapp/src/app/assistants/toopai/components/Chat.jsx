@@ -39,7 +39,7 @@ const ChatArea = () => {
 
     try {
       // Appel à l'API pour obtenir la réponse du chatbot
-      const response = await fetch("http://localhost:3000/api/chat-with-file", {
+      const response = await fetch("https://superhero-01-02-150699885662.europe-west1.run.app/", {
         method: "POST",
         body: formData,
       });
