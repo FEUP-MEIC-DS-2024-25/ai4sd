@@ -1,32 +1,32 @@
-/** 
- * 
- * 
- * OLD PROTOTYPE SETUP
- * 
- * 
- * 
- * 
-*/
+//const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "http://localhost:3001";
 
-export const generateContent = async (prompt) => {
-    try {
-        const response = await fetch('http://localhost:3000/generate', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ prompt }),
-        });
+export const generateContent = async (prompt, assistantId) => {
+  const response = await fetch(`${API_BASE_URL}/generate`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ prompt, assistantId }),
+  });
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Failed to fetch');
-        }
+  if (!response.ok) {
+    throw new Error("Failed to generate content.");
+  }
 
-        const data = await response.json();
-        return data.generatedText;
-    } catch (error) {
-        console.error('Error in generateContent:', error);
-        throw error;
-    }
+  return response.json();
+};
+
+export const uploadLogFile = async (file) => {
+  const formData = new FormData();
+  formData.append("logfile", file);
+
+  const response = await fetch(`${API_BASE_URL}/upload-log`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to upload log file.");
+  }
+
+  return response.json();
 };

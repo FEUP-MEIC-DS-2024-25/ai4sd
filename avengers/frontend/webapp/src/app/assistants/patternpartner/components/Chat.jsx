@@ -19,14 +19,14 @@ const Chat = ({ assistantId }) => {
 
   return (
     <div className="chat">
-      <h3>Chat with {assistantId}</h3>
+      <h3>{assistantId}</h3>
       <input
         type="text"
         placeholder="Enter your prompt"
         value={prompt}
         onChange={(e) => setPrompt(e.target.value)}
       />
-      <button onClick={handleGenerate}>Generate</button>
+      <button onClick={handleGenerate}>Send Prompt</button>
       <div className="chat-response">
         <h4>Response:</h4>
         <p>{response}</p>
