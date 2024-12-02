@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Login
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Login</h1>
+
+    <!-- Form to handle login -->
+    <form method="POST" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <!-- Display general form errors -->
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <!-- Username Field -->
+        <div class="form-group mb-3">
+            <label for="id_username" class="form-label">Username</label>
+            <input 
+                type="text" 
+                class="form-control {% if form.username.errors %}is-invalid{% endif %}" 
+                id="id_username" 
+                name="username" 
+                placeholder="Enter your username" 
+                value="{{ form.username.value|default:'' }}" 
+                required>
+            {% if form.username.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group mb-3">
+            <label for="id_password" class="form-label">Password</label>
+            <input 
+                type="password" 
+                class="form-control {% if form.password.errors %}is-invalid{% endif %}" 
+                id="id_password" 
+                name="password" 
+                placeholder="Enter your password" 
+                required>
+            {% if form.password.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+            <label class="form-check-label" for="remember">Remember Me</label>
+        </div>
+
+        <!-- Login Button -->
+        <div class="d-grid">
+            <button type="submit" class="btn btn-primary">Login</button>
+        </div>
+    </form>
+
+    <!-- Links for Password Reset and Sign Up -->
+    <div class="mt-4 text-center">
+        <p><a href="{% url 'signup' %}">Don't have an account? Sign Up</a></p>
+    </div>
+</div>
+{% endblock %}
