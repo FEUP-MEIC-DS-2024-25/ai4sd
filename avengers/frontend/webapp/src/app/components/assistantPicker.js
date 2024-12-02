@@ -20,8 +20,8 @@ function getAssistantList() {
     let ai3 = { name: "ai3", type: "verif", link: "#" };
     let ai4 = { name: "ai4", type: "req", link: "#" };
     let ai5 = { name: "ai5", type: "arch", link: "#" };
-    let ai6 = { name: "ai6", type: "arch", link: "#" };
     let ai7 = { name: "RRBuddy", type: "req", link: "/assistants/rrbuddy" };
+    let ai6 = { name: "FeatureCraft", type: "req", link: "/assistants/featurecraft" };
 
     return [ai1, ai2, ai3, ai4, ai5, ai6, ai7]
 }
