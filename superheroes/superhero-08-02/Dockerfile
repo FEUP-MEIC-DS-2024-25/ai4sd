@@ -7,7 +7,7 @@ COPY spark/Pipfile spark/Pipfile.lock ./
 RUN pip install -U pipenv
 RUN pipenv install --system
 
-COPY spark/.env ./
+# COPY spark/.env ./
 COPY spark/ ./
 
 EXPOSE 8080
