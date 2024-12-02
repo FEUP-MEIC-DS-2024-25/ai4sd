@@ -1,0 +1,36 @@
+.assistantInteraction{
+    background-color: #2C2F57;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.assistantInteraction h1{
+    font-size: 6em;
+    font-weight: bold;
+}
+
+.assistantInteraction p{
+    font-size: 2em;
+    font-weight: 300;
+}
+.assistantInteraction .input{
+    background-color: #272727;
+    width: 40rem;
+    height: 3em;
+  
+    border-radius: 10rem;
+    display: flex;
+    margin-top: 5em;
+}
+
+.assistantInteraction input{
+    background-color: inherit;
+    outline: none;
+    font-size: 1rem;
+    width: 75%;
+    margin-left: 15%;
+}
+
