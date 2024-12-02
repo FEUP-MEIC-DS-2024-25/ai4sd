@@ -4,3 +4,4 @@ PyPDF2
 protobuf
 python-dotenv
 google-generativeai
+fpdf

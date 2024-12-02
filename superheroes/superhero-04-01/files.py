@@ -1,7 +1,6 @@
 import PyPDF2
 import tempfile
 from fpdf import FPDF
-from parse import parse_input
 
 def process_files(files):
     result = []
@@ -25,7 +24,7 @@ def process_files(files):
 
 def create_response_txt(text):
     with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.txt') as temp:
-        temp.write(text.encode('utf-8'))
+        temp.write(text)
         return temp.name
 
 def create_response_pdf(text):
@@ -34,6 +33,7 @@ def create_response_pdf(text):
         pdf.set_auto_page_break(auto=True, margin=15)
         pdf.add_page()
         pdf.set_font("Arial", size=11)
-        pdf.write(5, text)
+        pdf.multi_cell(0, 10, text)
         pdf.output(temp.name)
         return temp.name
+    

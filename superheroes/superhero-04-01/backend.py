@@ -25,18 +25,17 @@ def process():
         output_language = request.form.get('outputLanguage')
         additional_info = request.form.get('additionalInfo')
         files_data = request.files.getlist('files')
-        
         files_text = files.process_files(files_data)
 
         prompt = prompting.generate(files_text, additional_info, output_language)
-
         response = model.generate_content(prompt)
 
         if output_type == 'pdf':
             filename = files.create_response_pdf(response.candidates[0].content.parts[0].text)
         else: 
             filename = files.create_response_txt(response.candidates[0].content.parts[0].text)
-        send_file(filename, as_attachment=True, attachment_filename="classification.pdf", mimetype='application/pdf')
+        
+        return send_file(filename, as_attachment=True)
 
     except Exception as e:
         print(f"Error processing request: {e}")
