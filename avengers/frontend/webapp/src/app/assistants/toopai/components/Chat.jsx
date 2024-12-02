@@ -38,7 +38,7 @@ const ChatArea = () => {
 
     try {
       
-      const response = await fetch("http://127.0.0.1:8000/api/chat-with-file", {
+      const response = await fetch("https://superhero-01-02-150699885662.europe-west1.run.app/api/chat-with-file", {
         method: "POST",
         body: formData,
       });
