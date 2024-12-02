@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}
+    Sign Up
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">Sign Up</h1>
+
+    <form method="POST" action="{% url 'signup' %}">
+        {% csrf_token %}
+        
+        <div class="form-group">
+            {{ form.as_p }}
+        </div>
+
+        <!-- Sign Up Button -->
+        <button type="submit" class="btn btn-primary">Sign Up</button>
+    </form>
+
+    <!-- Link to Login Page -->
+    <p class="mt-3">Already have an account? <a href="{% url 'login' %}">Login here</a>.</p>
+</div>
+{% endblock %}
