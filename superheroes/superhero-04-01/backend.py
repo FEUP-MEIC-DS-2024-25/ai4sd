@@ -23,19 +23,20 @@ def process():
     try:
         output_type = request.form.get('outputType')
         output_language = request.form.get('outputLanguage')
-        ai_model = request.form.get('aiModel')
         additional_info = request.form.get('additionalInfo')
         files_data = request.files.getlist('files')
-
+        
         files_text = files.process_files(files_data)
 
         prompt = prompting.generate(files_text, additional_info, output_language)
 
         response = model.generate_content(prompt)
 
-        fileName = files.create_response_txt(response.candidates[0].content.parts[0].text)
-        
-        return send_file(fileName, as_attachment=True, attachment_filename="classification.txt", mimetype='text/plain')
+        if output_type == 'pdf':
+            filename = files.create_response_pdf(response.candidates[0].content.parts[0].text)
+        else: 
+            filename = files.create_response_txt(response.candidates[0].content.parts[0].text)
+        send_file(filename, as_attachment=True, attachment_filename="classification.pdf", mimetype='application/pdf')
 
     except Exception as e:
         print(f"Error processing request: {e}")
