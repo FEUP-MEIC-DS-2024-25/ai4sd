@@ -15,6 +15,8 @@ export default function Application() {
     const [downloadFilename, setDownloadFilename] = useState(null);
     const [additionalInfo, setAdditionalInfo] = useState("");
     const [feedbackInfo, setFeedbackInfo] = useState("");
+    const [outputType, setOutputType] = useState("pdf");
+    const [outputLanguage, setOutputLanguage] = useState("english");
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
@@ -38,11 +40,12 @@ export default function Application() {
         const formData = new FormData();
         selectedFiles.forEach((file) => formData.append("files", file));
         formData.append("additionalInfo", additionalInfo);
+        formData.append("outputType", outputType);
+        formData.append("outputLanguage", outputLanguage);
 
         setLoading(true);
         try {
-            // TEMP
-            const response = await fetch("http://172.21.0.3:5001/api/process", {
+            const response = await fetch("https://superhero-0X-0Y-150699885662.europe-west1.run.app/api/process", {
                 method: "POST",
                 body: formData,
             });
@@ -52,12 +55,17 @@ export default function Application() {
             }
 
             const blob = await response.blob();
-            const contentDisposition = response.headers.get("content-disposition");
-            const filename = contentDisposition
-                ?.split("filename=")[1]
-                ?.split(";")[0]
-                ?.replace(/"/g, "") || "classification.txt";
-
+            let filename;
+            switch (blob.type) {
+                case "application/pdf":
+                    filename = "report.pdf";
+                    break;
+                case "text/plain":
+                    filename = "report.txt";
+                    break;
+                default:
+                    filename = "report";
+            }
             const url = URL.createObjectURL(blob);
             setDownloadUrl(url);
             setDownloadFilename(filename);
@@ -72,7 +80,7 @@ export default function Application() {
         <>
             <div className="p-2 flex flex-col mx-auto bg-gray-300 shadow-md rounded-md w-5/6">
                 <form onSubmit={handleFormSubmit}>
-                    <Filters />
+                    <Filters onOutputTypeChange={setOutputType} onOutputLanguageChange={setOutputLanguage} />
                     <InputSubmission
                         selectedFiles={selectedFiles}
                         handleFileChange={handleFileChange}
