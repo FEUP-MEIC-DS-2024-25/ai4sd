@@ -1,0 +1,5 @@
+spark/__pycache__
+spark/migrations/__pycache__
+api/__pycache__
+api/services/__pycache__
+.env
