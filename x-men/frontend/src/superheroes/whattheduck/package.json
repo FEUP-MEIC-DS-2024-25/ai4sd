@@ -1,0 +1,74 @@
+{
+    "name": "whattheduck",
+    "displayName": "WhatTheDuck",
+    "description": "WhatTheDuck is an AI-powered assistant designed to boost your refactoring experience in VSCode. Not only is it a powerful tool, but it also takes the form of a Rubber Duck: the iconic problem-solving companion every developer needs.",
+    "publisher": "WhatTheDuck",
+    "icon": "resources/whattheduck.jpg",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/FEUP-MEIC-DS-2024-25/T08_G01"
+    },
+    "version": "1.1.0",
+    "engines": {
+        "vscode": "^1.94.0"
+    },
+    "categories": [
+        "Other"
+    ],
+    "activationEvents": [],
+    "main": "./out/extension.js",
+    "contributes": {
+        "commands": [
+            {
+                "command": "whattheduck.helloWorld",
+                "title": "Hello World"
+            },
+            {
+                "command": "whattheduck.refactor",
+                "title": "Refactor Code"
+            }
+        ],
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "whattheduck",
+                    "title": "WhatTheDuck",
+                    "icon": "resources/duck.svg"
+                }
+            ]
+        },
+        "views": {
+            "whattheduck": [
+                {
+                    "type": "webview",
+                    "id": "whattheduck.webview",
+                    "name": "Refactor Options"
+                }
+            ]
+        }
+    },
+    "scripts": {
+        "vscode:prepublish": "npm run compile",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "pretest": "npm run compile && npm run lint",
+        "lint": "eslint src",
+        "test": "vscode-test"
+    },
+    "devDependencies": {
+        "@types/mocha": "^10.0.8",
+        "@types/node": "20.x",
+        "@types/vscode": "^1.94.0",
+        "@typescript-eslint/eslint-plugin": "^8.7.0",
+        "@typescript-eslint/parser": "^8.7.0",
+        "@vscode/test-cli": "^0.0.10",
+        "@vscode/test-electron": "^2.4.1",
+        "eslint": "^9.11.1",
+        "typescript": "^5.6.2",
+        "vscode": "^1.1.37"
+    },
+    "dependencies": {
+        "axios": "^1.7.7",
+        "fast-xml-parser": "^4.5.0"
+    }
+}
