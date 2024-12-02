@@ -39,13 +39,18 @@ const UploadFilePage = () => {
           console.error("Error uploading file:", xhr.statusText);
         }
       }
+
+      xhr.onerror = function () {
+        setResponseData({ "error": "Sorry, but we had a problem rendering vulnerabilities. Please try again later." });
+      };
+
       xhr.send(JSON.stringify(contents_data))
 
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
       setLoading(false);
-    // }
+    }
     // setResponseData({
     //   data: [
     //     {
@@ -61,13 +66,14 @@ const UploadFilePage = () => {
     //       fix: "To fix a SQL injection vulnerability, you can use a technique called \"parameterized queries.\" This involves using a database library that automatically escapes special characters in user input, preventing them from being interpreted as SQL commands. This technique is commonly used in web applications to prevent SQL injection attacks.",
     //     }
     //   ]
-      // })
+    //   })
+
+    
     };
-  }
 
   return (
     <div className="bg-light container-fluid d-flex justify-content-center align-items-center min-vh-100 text-dark">
-      {!(responseData != null) ? (
+      {responseData == null ? (
         <div className="card shadow-lg p-4 bg-light" style={{ maxWidth: '500px', width: '100%' }}>
           <h1 className="text-primary mb-4">Upload Your File</h1>
           <form onSubmit={handleSubmit}>
@@ -98,28 +104,34 @@ const UploadFilePage = () => {
           </form>
         </div>
       ) : (
-        <div className="container p-4 m-4">
-          {responseData.data.map((vulnerability) => (
-            <div key={vulnerability.title} className="card mb-4 p-3 bg-light shadow-sm">
-              <h2 className="text-success">{vulnerability.title}</h2>
-              <Markdown>{vulnerability.description}</Markdown>
-              <div>
-                <h5 className="mt-3">Lines:</h5>
+        responseData.error ? (
+          <div className="alert alert-danger" role="alert">
+            {responseData.error}
+          </div>
+        ) : (
+          <div className="container p-4 m-4">
+            {responseData.data.map((vulnerability) => (
+              <div key={vulnerability.title} className="card mb-4 p-3 bg-light shadow-sm">
+                <h2 className="text-success">{vulnerability.title}</h2>
+                <Markdown>{vulnerability.description}</Markdown>
+                <div>
+                  <h5 className="mt-3">Lines:</h5>
+                  <Markdown className="bg-light p-2 rounded border">
+                    {"```" + vulnerability.lines + "```"}
+                  </Markdown>
+                </div>
+                <h5 className="mt-3">Fix:</h5>
                 <Markdown className="bg-light p-2 rounded border">
-                  {"```" + vulnerability.lines + "```"}
+                  {vulnerability.fix}
                 </Markdown>
               </div>
-              <h5 className="mt-3">Fix:</h5>
-              <Markdown className="bg-light p-2 rounded border">
-                {vulnerability.fix}
-              </Markdown>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       )}
     </div>
   );
-};
+};  
 
 // (() => {
 //   try {} catch (error) {
