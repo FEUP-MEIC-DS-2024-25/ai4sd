@@ -14,4 +14,7 @@ COPY . .
 # Expose the port that the app will run on
 EXPOSE 8080
 
+RUN useradd app
+USER app
+
 CMD ["npm", "run", "dev"]
