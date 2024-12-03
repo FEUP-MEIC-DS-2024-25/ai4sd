@@ -696,13 +696,11 @@ resource "null_resource" "cleanup_old_superhero_secret_versions" {
 
   provisioner "local-exec" {
     command = <<EOT
-      # List all the versions of the secret and delete old versions beyond the desired limit
       gcloud secrets versions list ${each.value.secret_id} \
         --project=${var.project_id} \
         --filter="state=ENABLED" \
         --format="value(name)" | tail -n +2 | xargs -I {} gcloud secrets versions destroy {} \
-        --secret=${each.value.secret_id} \
-        --project=${var.project_id}
+        --secret=${each.value.secret_id}
     EOT
   }
 
@@ -714,13 +712,11 @@ resource "null_resource" "cleanup_old_superhero_secret_versions" {
 resource "null_resource" "cleanup_old_jarvis_secret_versions" {
   provisioner "local-exec" {
     command = <<EOT
-      # List all the versions of the secret and delete old versions beyond the desired limit
       gcloud secrets versions list jarvis-secret \
         --project=${var.project_id} \
         --filter="state=ENABLED" \
         --format="value(name)" | tail -n +2 | xargs -I {} gcloud secrets versions destroy {} \
-        --secret=jarvis-secret \
-        --project=${var.project_id}
+        --secret=jarvis-secret
     EOT
   }
 
@@ -732,13 +728,11 @@ resource "null_resource" "cleanup_old_jarvis_secret_versions" {
 resource "null_resource" "cleanup_old_strange_secret_versions" {
   provisioner "local-exec" {
     command = <<EOT
-      # List all the versions of the secret and delete old versions beyond the desired limit
       gcloud secrets versions list strange-secret \
         --project=${var.project_id} \
         --filter="state=ENABLED" \
         --format="value(name)" | tail -n +2 | xargs -I {} gcloud secrets versions destroy {} \
-        --secret=strange-secret \
-        --project=${var.project_id}
+        --secret=strange-secret
     EOT
   }
 
