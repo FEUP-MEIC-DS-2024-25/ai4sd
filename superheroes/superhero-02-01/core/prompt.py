@@ -2,11 +2,7 @@ import os
 import textwrap
 from pathlib import Path
 from dotenv import load_dotenv
-import google.generativeai as genai
 from openai import OpenAI
-import chromadb
-from sentence_transformers import SentenceTransformer
-from chromadb.config import DEFAULT_TENANT, DEFAULT_DATABASE, Settings
 import subprocess
 import re
 
@@ -17,10 +13,11 @@ load_dotenv(dotenv_path=env_path)
 #GOOGLE_API_KEY = os.getenv('CLOUD_KEY')
 
 # Get the OpenAI API key
-OPENAI_API_KEY = os.getenv('OPENAI')
+# OPENAI_API_KEY = os.getenv('OPENAI')
+OPENAI_API_KEY = "teste"
 client = OpenAI(
     # This is the default and can be omitted
-    api_key= OPENAI_API_KEY
+    api_key=OPENAI_API_KEY
 )
 
 # Initialize Google generative AI model
