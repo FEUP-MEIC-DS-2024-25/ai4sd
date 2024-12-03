@@ -1,4 +1,4 @@
-import { fetchRepoContents, fetchFileContent } from "./githubClient.js";
+import { fetchRepoContents, fetchFileContents } from "./githubClient.js";
 
 /**
  * Extracts organization and repository details from a GitHub URL.
@@ -28,18 +28,17 @@ export function extractRepoDetails(repoUrl) {
 export async function fetchFiles(octokit, org, repo, path = "", files = []) {
     try {
         const contents = await fetchRepoContents(octokit, org, repo, path);
-        console.log(`Found ${contents.length} items in ${path}`);
+        console.log(`Found ${contents.length} items in /${path}`);
 
         for (const content of contents) {
             if (content.type === "file") {
                 console.log(`Reading file: ${content.name}`);
-                const fileDetails = await fetchFileContent(octokit, org, repo, content.path);
-                const fileContent = Buffer.from(fileDetails.content, fileDetails.encoding).toString("utf-8");
+                const fileDetails = await fetchFileContents(octokit, org, repo, content.path);
 
                 files.push({
                     name: content.name,
                     path: content.path,
-                    content: fileContent,
+                    content: fileDetails,
                 });
             } else if (content.type === "dir") {
                 console.log(`Entering directory: ${content.name}`);

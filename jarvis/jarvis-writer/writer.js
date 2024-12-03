@@ -8,16 +8,19 @@ import { BUCKET_NAME, STORAGE_CLIENT } from "../consts.js";
  * @param {string} repo - Repository name.
  * @param {string} filePath - Path of the file within the repository.
  * @param {string} fileContents - Content of the file to upload.
+ * @param {boolean} isBinary - Flag indicating whether the file is binary (image, etc.)
  */
-export async function writeToBucket(org, repo, filePath, fileContents) {
+export async function writeToBucket(org, repo, filePath, fileContents, isBinary = false) {
     const absolutePath = `${org}/${repo}/${filePath}`;
 
     try {
         // Reference the file in the bucket
         const file = STORAGE_CLIENT.bucket(BUCKET_NAME).file(absolutePath);
 
+        const options = isBinary ? { contentType: 'application/octet-stream' } : {};
+
         // Write file contents
-        await file.save(fileContents);
+        await file.save(fileContents, options);
 
         console.log(
             `File "${filePath.split('/').pop()}" written to bucket "${BUCKET_NAME}" successfully.`
@@ -33,15 +36,41 @@ export async function writeToBucket(org, repo, filePath, fileContents) {
  * @param {object} octokit - Authenticated Octokit instance.
  * @param {string} repoUrl - GitHub repository URL.
  */
-export async function uploadRepo(octokit, repoUrl) {
+export async function uploadRepoByURL(octokit, repoUrl) {
     try {
         const [org, repo] = extractRepoDetails(repoUrl);
+        _uploadRepo(octokit, org, repo);
+    } catch (error) {
+        console.error("Error during repository upload process:", error.message);
+    }
+}
 
+/**
+ * Processes a GitHub repository by fetching files and uploading them to a storage bucket.
+ * @param {object} octokit - Authenticated Octokit instance.
+ * @param {string} org - GitHub organization name.
+ * @param {string} repo - Repository name.
+ */
+export async function uploadRepo(octokit, org, repo) {
+    try {
+        _uploadRepo(octokit, org, repo);
+    } catch (error) {
+        console.error("Error during repository upload process:", error.message);
+    }
+}
+
+/**
+ * Processes a GitHub repository by fetching files and uploading them to a storage bucket.
+ * @param {object} octokit - Authenticated Octokit instance.
+ * @param {string} repoUrl - GitHub repository URL.
+ */
+async function _uploadRepo(octokit, org, repo) {
+    try {
         console.log(`Starting processing for repository: ${org}/${repo}`);
         const files = await fetchFiles(octokit, org, repo);
 
         if (files.length === 0) {
-            console.log(`No files found in the repository: ${repoUrl}`);
+            console.warn(`No files found in the repository: ${repoUrl}`);
             return;
         }
 
@@ -49,8 +78,8 @@ export async function uploadRepo(octokit, repoUrl) {
             await writeToBucket(org, repo, file.path, file.content);
         }
 
-        console.log(`Successfully processed ${files.length} files from ${repoUrl}`);
+        console.log(`Successfully processed ${files.length} files from ${org}/${repo}`);
     } catch (error) {
-        console.error("Error during repository upload process:", error.message);
+        throw error;  // Re-throw error to be handled at the higher level
     }
 }
