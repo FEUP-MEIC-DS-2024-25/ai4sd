@@ -22,8 +22,7 @@ export async function execute(context: vscode.ExtensionContext) {
         console.log('GET response data:', apiData);
   
         // Read markdown content from the info.md file
-        const markdownPath = path.join(context.extensionPath, 'src', 'superheroes', 'ArchDetect', 'info.md');
-        console.log('Markdown path:', markdownPath);
+        const markdownPath = path.join(context.extensionPath, 'src', 'superheroes', 'ArchiDetect', 'info.md');
         if (!fs.existsSync(markdownPath)) {
           throw new Error('Markdown file not found at: ' + markdownPath);
         }
