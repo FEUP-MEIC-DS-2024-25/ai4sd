@@ -153,3 +153,6 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ]
 }
+
+# Plant Uml server url
+PLANTUML_SERVER_URL = "https://superhero-02-05-150699885662.europe-west1.run.app/generate"
