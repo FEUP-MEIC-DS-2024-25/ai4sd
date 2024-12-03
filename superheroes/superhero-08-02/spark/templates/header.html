@@ -1,0 +1,29 @@
+{% load static %}
+
+<div class="nav">
+    <div class="together">
+        <img src="{% static 'images/favicon.ico' %}" alt="logo" height="50" width="auto">     
+        <h1 id="spark-title">SPARK</h1>
+    </div>
+    <div class="expand">
+        <span class="expand-icon" onclick="toggleMenu()">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 12H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M3 18H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </span>
+        <div class="expandable-menu" id="expandableMenu">
+            <a href="/option1">Option 1</a>
+            <a href="/option2">Option 2</a>
+            <a href="/option3">Option 3</a>
+        </div>
+    </div>
+</div>
+
+<script>
+     function toggleMenu() {
+          var menu = document.getElementById("expandableMenu");
+          menu.style.display = menu.style.display === "block" ? "none" : "block";
+     }
+</script>

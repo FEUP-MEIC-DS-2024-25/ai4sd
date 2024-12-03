@@ -1,0 +1,21 @@
+{
+  "name": "lavraai-server",
+  "version": "1.0.0",
+  "description": "Server for LavraAI to communicate with GEMINI",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "body-parser": "^1.19.0",
+    "@google/generative-ai": "^0.21.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2",
+    "@types/express": "^4.17.13",
+    "@types/body-parser": "^1.19.2",
+    "@types/node": "^20.x"
+  }
+}

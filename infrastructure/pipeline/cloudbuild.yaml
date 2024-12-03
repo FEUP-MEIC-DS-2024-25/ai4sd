@@ -1,214 +1,198 @@
+# Cloud Build Configuration
 options:
   logging: CLOUD_LOGGING_ONLY
 
 substitutions:
-  _FALLBACK_IMAGE: "gcr.io/<your-project-id>/hello-world"  # Use your fallback image path
+  _PROJECT_ID: "hero-alliance-feup-ds-24-25"
+  _FALLBACK_IMAGE: "gcr.io/hero-alliance-feup-ds-24-25/testapp"
+  _BUCKET_NAME: "hero-alliance-state"
+  _REGION: "europe-west1"
 
 steps:
-  # Step 1: Fetch and decode service account key
-  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+  # Step 1: Fetch and activate the service account key
+  - id: "Fetch and Activate Service Account Key"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-          set -e
-          echo "Fetching service account key from Secret Manager..."
-          gcloud secrets versions access latest --secret="cloudbuild-sa-key" > /tmp/encoded-key.b64
-          echo "Base64 secret retrieved..."
-          
-          # Decode the Base64 secret
-          base64 -d /tmp/encoded-key.b64 > /tmp/cloudbuild-sa-key.json || {
-            echo "ERROR: Failed to decode the Base64 secret."
-            exit 1
-          }
-          echo "Service account JSON key decoded successfully."
+          echo "Fetching and activating the Cloud Build service account key..."
+          gcloud secrets versions access latest --secret="cloudbuild-sa-key" --project="${_PROJECT_ID}" > /tmp/cloudbuild-sa-key.b64
+          base64 --decode /tmp/cloudbuild-sa-key.b64 > /tmp/cloudbuild-sa-key.json
+          gcloud auth activate-service-account --key-file=/tmp/cloudbuild-sa-key.json
 
-          # Check if the JSON is valid
-          if [ ! -s /tmp/cloudbuild-sa-key.json ]; then
-            echo "ERROR: Secret file /tmp/cloudbuild-sa-key.json is empty or invalid."
-            exit 1
-          fi
+  # Step 2: Authenticate Docker with Google Cloud
+  - id: "Authenticate Docker"
+    name: "gcr.io/cloud-builders/gcloud"
+    args: ["auth", "configure-docker"]
 
-          echo "Authenticating using the service account..."
-          gcloud auth activate-service-account --key-file=/tmp/cloudbuild-sa-key.json || {
-            echo "ERROR: Authentication failed."
-            exit 1
-          }
+  # Step 3: Sync Avengers folder to Cloud Storage bucket
+  - id: "Sync Avengers Folder to Bucket"
+    name: "gcr.io/cloud-builders/gsutil"
+    args:
+      - "rsync"
+      - "-r"
+      - "./avengers/"
+      - "gs://hero-alliance-avengers"
 
-  # Step 2: Reinitialize Terraform (configure backend and remote state)
-  - name: "hashicorp/terraform"
+  # Step 4: Reinitialize Terraform
+  - id: "Initialize Terraform"
+    name: "hashicorp/terraform"
     entrypoint: "sh"
-    env:
-      - _PROJECT_ID="hero-alliance-feup-ds-24-25"
     args:
       - "-c"
       - |
-          set -e
-          echo "Reinitializing Terraform..."
+          echo "Initializing Terraform..."
           cd infrastructure/terraform
-          terraform init \
-            -backend-config="bucket=hero-alliance-terraform-state-bucket" \
-            -backend-config="prefix=terraform/state" \
-            -reconfigure || {
-              echo "ERROR: Terraform initialization failed."
-              exit 1
-            }
-          echo "Terraform initialization completed successfully."
+          terraform init -backend-config="bucket=${_BUCKET_NAME}" -backend-config="prefix=terraform/state"
 
-  # Step 3: Import existing service accounts into Terraform state if they exist
-  - name: "hashicorp/terraform"
+  # Step 5: Terraform Refresh
+  - id: "Terraform Refresh"
+    name: "hashicorp/terraform"
     entrypoint: "sh"
-    env:
-      - _PROJECT_ID="hero-alliance-feup-ds-24-25"
     args:
       - "-c"
       - |
-          set -e
-          echo "Checking and importing existing service accounts into Terraform state..."
-          cd infrastructure/terraform
-          
-          # Attempt to import each service account if it exists
-          for i in $(seq -w 1 8); do
-            for j in $(seq -w 1 5); do
-              service_account_email="superhero-0${i}-0${j}@${_PROJECT_ID}.iam.gserviceaccount.com"
-              resource_name="superhero-0${i}-0${j}"
-              
-              # Check if the service account exists
-              if gcloud iam service-accounts describe "${service_account_email}" --project="${_PROJECT_ID}" > /dev/null 2>&1; then
-                echo "Service account ${service_account_email} exists. Importing into Terraform state..."
-                terraform import google_service_account.superhero-${i}-${j} "projects/${_PROJECT_ID}/serviceAccounts/${service_account_email}" || {
-                  echo "ERROR: Failed to import service account ${service_account_email}."
-                  exit 1
-                }
-              else
-                echo "Service account ${service_account_email} does not exist. Skipping import."
-              fi
-            done
-          done
-          echo "Service account import completed."
-
-  # Step 4: Run Terraform refresh (to sync Terraform state with real-world state)
-  - name: "hashicorp/terraform"
-    entrypoint: "sh"
-    env:
-      - _PROJECT_ID="hero-alliance-feup-ds-24-25"
-    args:
-      - "-c"
-      - |
-          set -e
           echo "Refreshing Terraform state..."
           cd infrastructure/terraform
-          terraform refresh || {
-            echo "ERROR: Terraform refresh failed."
-            exit 1
-          }
-          echo "Terraform state refreshed successfully."
+          terraform refresh -var "build_id=${BUILD_ID}"
 
-  # Step 5: Run Terraform Plan (to check what Terraform will do)
-  - name: "hashicorp/terraform"
+  # Step 6: Terraform Plan
+  - id: "Terraform Plan"
+    name: "hashicorp/terraform"
     entrypoint: "sh"
-    env:
-      - _PROJECT_ID="hero-alliance-feup-ds-24-25"
     args:
       - "-c"
       - |
-          set -e
-          echo "Running terraform plan..."
+          echo "Running Terraform Plan..."
           cd infrastructure/terraform
-          terraform plan -var "image_timestamp=${BUILD_ID}" || {
-            echo "ERROR: Terraform plan failed."
-            exit 1
-          }
-          echo "Terraform plan completed successfully."
+          terraform plan -out=tfplan -var "build_id=${BUILD_ID}" -refresh-only
 
-  # Step 6: Apply Terraform configuration
-  - name: "hashicorp/terraform"
+  # Step 7: Terraform Apply
+  - id: "Terraform Apply"
+    name: "hashicorp/terraform"
     entrypoint: "sh"
-    env:
-      - _PROJECT_ID="hero-alliance-feup-ds-24-25"
     args:
       - "-c"
       - |
-          set -e
-          echo "Applying terraform configuration..."
+          echo "Applying Terraform Plan..."
           cd infrastructure/terraform
-          terraform apply -var "image_timestamp=${BUILD_ID}" -auto-approve || {
-            echo "ERROR: Terraform apply failed."
-            exit 1
-          }
-          echo "Terraform applied successfully."
+          terraform apply -auto-approve tfplan
 
-  # Step 7: Build Docker images
-  - name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'bash'
+  # Step 8: Build and Push Docker Images for Superheroes
+  - id: "Build and Push Docker Images"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
     args:
-      - '-c'
+      - "-c"
       - |
-          set -e
-          echo "Building and pushing Docker images for superheroes..."
-          fallback_image="${_FALLBACK_IMAGE}"  # Use substitution variable
-          docker pull "${fallback_image}" || {
-            echo "ERROR: Failed to pull fallback image. Exiting."
-            exit 1
-          }
-
+          echo "Building and pushing Docker images for superhero services..."
           for group in $(seq -w 1 8); do
             for hero in $(seq -w 1 5); do
               hero_name="superhero-0${group}-0${hero}"
-              dir="../superheroes/${hero_name}"  # Adjust path to reflect location
-              dockerfile="${dir}/Dockerfile"    # Path to Dockerfile
-              image="gcr.io/${_PROJECT_ID}/${hero_name}-${BUILD_ID}"
+              dir="superheroes/${hero_name}"
+              dockerfile="${dir}/Dockerfile"
+              image="gcr.io/${_PROJECT_ID}/${hero_name}"
+              image_with_build_id="${image}-${BUILD_ID}"
 
               if [ -f "${dockerfile}" ]; then
-                echo "Dockerfile found in ${dir}. Building image for ${hero_name}..."
-                docker build --no-cache -t "${image}" "${dir}" && \
-                echo "Successfully built image for ${hero_name}."
-
-                # Push image to GCR
-                echo "Pushing image for ${hero_name} to GCR..."
-                docker push "${image}" && \
-                echo "Successfully pushed image for ${hero_name}."
+                echo "Building image for ${hero_name}..."
+                docker build -t "${image_with_build_id}" "${dir}" || exit 1
+                docker push "${image_with_build_id}" || exit 1
               else
-                echo "No Dockerfile found in ${dir}. Using fallback image for ${hero_name} (${fallback_image})..."
-                docker tag "${fallback_image}" "${image}" && \
-                docker push "${image}" && \
-                echo "Successfully pushed fallback image for ${hero_name}."
+                echo "No Dockerfile found for ${hero_name}, using fallback image."
+                sleep 10  # Wait for GCR image propagation
               fi
             done
           done
 
-  # Step 8: Deploy Cloud Run services for superheroes (if they don't already exist)
-  - name: 'gcr.io/cloud-builders/gcloud'
-    entrypoint: 'bash'
-    env:
-      - _PROJECT_ID="hero-alliance-feup-ds-24-25"
+  # Step 9: Build and Push Docker Images for Jarvis and Strange
+  - id: "Build and Push Jarvis and Strange"
+    name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
     args:
-      - '-c'
+      - "-c"
       - |
-          set -e
-          echo "Deploying Cloud Run services for superheroes..."
+          echo "Building and pushing Docker images for jarvis and strange..."
+          for service in jarvis strange; do
+            dir="./${service}"
+            dockerfile="${dir}/Dockerfile"
+            image="gcr.io/${_PROJECT_ID}/${service}"
+            image_with_build_id="${image}-${BUILD_ID}"
+
+            if [ -f "${dockerfile}" ]; then
+              echo "Building image for ${service}..."
+              docker build -t "${image_with_build_id}" "${dir}" || exit 1
+              docker push "${image_with_build_id}" || exit 1
+            else
+              echo "No Dockerfile found for ${service}, using fallback image."
+            fi
+          done
+
+  # Step 10: Deploy Services to Cloud Run
+  - id: "Deploy to Cloud Run"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Deploying services to Cloud Run..."
+          for service in jarvis strange; do
+            image="gcr.io/${_PROJECT_ID}/${service}-${BUILD_ID}"
+            fallback_image="${_FALLBACK_IMAGE}"
+
+            echo "Deploying ${service}..."
+            if gcloud container images describe "${image}" --project="${_PROJECT_ID}" > /dev/null 2>&1; then
+              gcloud run deploy "${service}" \
+                --image="${image}" \
+                --platform=managed \
+                --region="${_REGION}" \
+                --project="${_PROJECT_ID}" \
+                --allow-unauthenticated
+            else
+              echo "Image for ${service} not found, deploying using fallback image."
+              gcloud run deploy "${service}" \
+                --image="${fallback_image}" \
+                --platform=managed \
+                --region="${_REGION}" \
+                --project="${_PROJECT_ID}" \
+                --allow-unauthenticated
+            fi
+          done
+
+          # Deploy superheroes
           for group in $(seq -w 1 8); do
             for hero in $(seq -w 1 5); do
-              service_name="superhero-0${group}-0${hero}"
-              image="gcr.io/${_PROJECT_ID}/${service_name}-${BUILD_ID}:latest"
-              service_account_email="${service_name}@${_PROJECT_ID}.iam.gserviceaccount.com"
-              
-              # Check if the Cloud Run service already exists
-              echo "Checking if Cloud Run service ${service_name} exists..."
-              if gcloud run services describe "${service_name}" --region="europe-west1" --platform=managed --project="${_PROJECT_ID}" > /dev/null 2>&1; then
-                echo "Cloud Run service ${service_name} already exists. Skipping deployment."
-              else
-                echo "Cloud Run service ${service_name} does not exist. Deploying..."
-                gcloud run deploy "${service_name}" \
+              hero_name="superhero-0${group}-0${hero}"
+              image="gcr.io/${_PROJECT_ID}/${hero_name}-${BUILD_ID}"
+              fallback_image="${_FALLBACK_IMAGE}"
+
+              echo "Deploying ${hero_name}..."
+              if gcloud container images describe "${image}" --project="${_PROJECT_ID}" > /dev/null 2>&1; then
+                gcloud run deploy "${hero_name}" \
                   --image="${image}" \
-                  --region="europe-west1" \
                   --platform=managed \
-                  --service-account="${service_account_email}" \
-                  --project="${_PROJECT_ID}" || {
-                    echo "ERROR: Failed to deploy Cloud Run service ${service_name}."
-                    exit 1
-                  }
-                echo "Cloud Run service ${service_name} deployed successfully."
+                  --region="${_REGION}" \
+                  --project="${_PROJECT_ID}" \
+                  --allow-unauthenticated
+              else
+                echo "Image for ${hero_name} not found, deploying using fallback image."
+                gcloud run deploy "${hero_name}" \
+                  --image="${fallback_image}" \
+                  --platform=managed \
+                  --region="${_REGION}" \
+                  --project="${_PROJECT_ID}" \
+                  --allow-unauthenticated
               fi
             done
           done
+
+  # Step 11: Verify Deployment
+  - id: "Verify Deployment"
+    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Verifying deployed services..."
+          gcloud run services list --platform=managed --region="${_REGION}" --project="${_PROJECT_ID}"

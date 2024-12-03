@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ user.username }} Profile
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1 class="mb-4">User Profile</h1>
+
+    <!-- Link to go back to home page -->
+    <p>
+        <a href="{% url 'home' %}" class="btn btn-secondary">Go back to Home Page</a>
+    </p>
+
+    <!-- User Profile Information -->
+    <h2>User Information</h2>
+    <ul class="list-group mb-4">
+        <li class="list-group-item">Username: {{ user.username }}</li>
+        <li class="list-group-item">
+            Github Username:
+            {% if user.profile.github_username %}
+                <a href="https://github.com/{{ user.profile.github_username }}" target="_blank">
+                    {{ user.profile.github_username }}
+                </a>
+                {% if request.user == user %}
+                <!-- Unlink Button (only for your own profile) -->
+                <form action="{% url 'github_unlink' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Unlink
+                    </button>
+                </form>
+                {% endif %}
+            {% else %}
+                Not associated
+            {% endif %}
+        </li>
+        
+        <!-- Add Miro Token Management -->
+        <li class="list-group-item">
+            Miro Token:
+            {% if user.profile.miro_token %}
+                <span>Token is associated</span>
+                {% if request.user == user %}
+                <!-- Unlink Button (only for your own profile) -->
+                <form action="{% url 'delete_miro_token' %}" method="post" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm">
+                        Delete Miro Token
+                    </button>
+                </form>
+                {% endif %}
+            {% else %}
+                Not associated
+                {% if request.user == user %}
+                <!-- Add Miro Token Input (only for your own profile) -->
+                <form action="{% url 'add_miro_token' %}" method="post" class="mt-3">
+                    {% csrf_token %}
+                    <input type="text" id="miro_token" name="miro_token" class="form-control mb-2" placeholder="Enter your Miro token">
+                    <button type="submit" class="btn btn-primary">Save Miro Token</button>
+                </form>
+                {% endif %}
+            {% endif %}
+        </li>
+    </ul>
+
+    <!-- Associate Github Button (only for your own profile) -->
+    {% if request.user == user %}
+    <a href="{% url 'github_login' %}" class="btn btn-primary">Associate Github Account</a>
+    {% endif %}
+</div>
+{% endblock %}

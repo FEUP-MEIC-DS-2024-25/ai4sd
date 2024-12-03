@@ -1,0 +1,11 @@
+python-dotenv==1.0.1
+google-ai-generativelanguage==0.6.10
+google-generativeai==0.8.3
+ipython==8.28.0
+beautifulsoup4==4.12.3
+markdown==3.7.0
+django==5.1.2
+openai==1.52.2
+django-crispy-forms==2.3
+crispy-bootstrap4==2024.10
+djangorestframework
