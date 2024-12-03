@@ -1,0 +1,61 @@
+plaintext
+@startuml
+skinparam linetype ortho
+
+package "Multi-Agent System for Traffic Control" {
+    class Agent {
+        +id: String
+        +password: String
+        +setup(): void
+    }
+    class TrafficLight {
+        -colorfront: String
+        -colorleft: String
+        -intersection: Intersection
+        -road: Road
+        -cordX: int
+        -cordY: int
+        +setup(): void
+        +change(color: String): void
+        +heuristic(waiting_times: list): dict
+        +get_color(): String
+    }
+    class Car {
+        -x: int
+        -y: int
+        +setup(): void
+        +move(x: int, y: int): void
+    }
+    class EmergencyVehicle {
+        -x: int
+        -y: int
+        +move(x: int, y: int): void
+        +emergency_call(): tuple
+        +setup(): void
+    }
+    class Intersection {
+        -id: String
+        -tlights: list
+        +add_tlight(tlight: TrafficLight): void
+        +setup(): void
+        +change(color1: String, color2: String): void
+    }
+    class Environment {
+        -lanes: list
+        -intersections: list
+        -car1: Car
+        -emergency_vehicle: EmergencyVehicle
+        +display(): void
+    }
+
+    Agent <|-- TrafficLight
+    Agent <|-- Car
+    Agent <|-- EmergencyVehicle
+    TrafficLight "1" *-- "1" Intersection : has>
+    Car *-- "many" Lane : travels >
+    EmergencyVehicle *-- "many" Lane : travels faster >
+    Intersection "1" *-- "many" TrafficLight : controls >
+    Environment *-- "many" Intersection : contains >
+    Environment *-- "many" Lane : contains >
+}
+@enduml

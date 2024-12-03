@@ -1,0 +1,64 @@
+plaintext
+@startuml
+skinparam linetype ortho
+
+package "org.netflixpp" {
+    class ConnectionDB {
+        - connection : Connection
+        + openDB() : void
+        + closeDB() : void
+        + getMovies() : String
+    }
+
+    class AccessUser {
+        + getLink(credentialsJson : String) : String
+        + createUser(credentialsJson : String) : String
+    }
+
+    class AccessMoviesDB {
+        + getLink() : String
+        + streamMovie(fileName : String) : Response
+        + createMovieDB(credentialsJson : String) : String
+    }
+
+    class Main {
+        + startServer() : Server
+        + main(args : String[]) : void
+    }
+
+    ConnectionDB "1" --> "1" AccessUser : uses
+    ConnectionDB "1" --> "1" AccessMoviesDB : uses
+}
+
+package "com.netflixpp" {
+    class MainActivity {
+        + onCreate(savedInstanceState : Bundle) : void
+        + onItemClick(movie : Movie) : void
+    }
+
+    class LoginPage {
+        + onCreate(savedInstanceState : Bundle) : void
+    }
+
+    class AdminMain {
+        + onCreate(savedInstanceState : Bundle) : void
+    }
+
+    class MovieCatalogue {
+        - movies : ArrayList<Movie>
+        + onBindViewHolder(holder : MyViewHolder, position : int) : void
+    }
+
+    class Movie {
+        - id : String
+        - titlemovie : String
+        - duration : String
+        ...
+    }
+}
+
+AccessUser <-- MainActivity : data flow
+AccessMoviesDB <-- MainActivity : data flow
+MovieCatalogue ..> Movie : contains
+
+@enduml
