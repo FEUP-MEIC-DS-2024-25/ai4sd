@@ -5,3 +5,4 @@ protobuf
 python-dotenv
 google-generativeai
 fpdf
+google-cloud-secret-manager
