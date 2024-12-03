@@ -1,22 +1,56 @@
-import { Storage } from '@google-cloud/storage';
-import { config } from '../config.js';
+import { extractRepoDetails, fetchFiles } from "../jarvis-fetcher/fetcher.js";
+import { BUCKET_NAME, STORAGE_CLIENT } from "../consts.js";
 
-const storage = new Storage({
-    keyFilename: config.serviceAccountKeyPath,
-});
 
-const bucketName = 'hero-alliance-nexus';
-
+/**
+ * Writes a file to a Google Cloud Storage bucket at `org/repo/filePath`.
+ * @param {string} org - GitHub organization name.
+ * @param {string} repo - Repository name.
+ * @param {string} filePath - Path of the file within the repository.
+ * @param {string} fileContents - Content of the file to upload.
+ */
 export async function writeToBucket(org, repo, filePath, fileContents) {
+    const absolutePath = `${org}/${repo}/${filePath}`;
+
     try {
-        const absolutePath = `${org}/${repo}/${filePath}`;
         // Reference the file in the bucket
-        const file = storage.bucket(bucketName).file(absolutePath);
+        const file = STORAGE_CLIENT.bucket(BUCKET_NAME).file(absolutePath);
 
         // Write file contents
         await file.save(fileContents);
-        console.log(`File "${absolutePath.substring(absolutePath.lastIndexOf('/') + 1)}" written to bucket "${bucketName}" successfully.`);
+
+        console.log(
+            `File "${filePath.split('/').pop()}" written to bucket "${BUCKET_NAME}" successfully.`
+        );
     } catch (err) {
-        console.error('Error writing file to bucket:', err);
+        console.error(`Error writing file "${absolutePath}" to bucket:`, err.message);
+        throw err; // Re-throw error to handle at a higher level if necessary
+    }
+}
+
+/**
+ * Processes a GitHub repository by fetching files and uploading them to a storage bucket.
+ * @param {object} octokit - Authenticated Octokit instance.
+ * @param {string} repoUrl - GitHub repository URL.
+ */
+export async function uploadRepo(octokit, repoUrl) {
+    try {
+        const [org, repo] = extractRepoDetails(repoUrl);
+
+        console.log(`Starting processing for repository: ${org}/${repo}`);
+        const files = await fetchFiles(octokit, org, repo);
+
+        if (files.length === 0) {
+            console.log(`No files found in the repository: ${repoUrl}`);
+            return;
+        }
+
+        for (const file of files) {
+            await writeToBucket(org, repo, file.path, file.content);
+        }
+
+        console.log(`Successfully processed ${files.length} files from ${repoUrl}`);
+    } catch (error) {
+        console.error("Error during repository upload process:", error.message);
     }
 }

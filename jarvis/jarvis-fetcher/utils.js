@@ -13,3 +13,15 @@ export function ensureDownloadDir() {
         fs.mkdirSync(config.downloadDir);
     }
 }
+
+export async function downloadAndSaveFiles(files) {
+    for (const file of files) {
+        try {
+            const fileStream = await downloadFile(file.download_url);
+            saveFile(fileStream, file.name, config.downloadDir);
+        } catch (error) {
+            console.error(`Error downloading file ${file.name}:`, error.message);
+            throw error; // Rethrow to handle at higher level
+        }
+    }
+}

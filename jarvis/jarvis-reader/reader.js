@@ -1,9 +1,4 @@
-import { Storage } from '@google-cloud/storage';
-import { config } from '../config.js';
-
-const storage = new Storage({
-    keyFilename: config.serviceAccountKeyPath,
-});
+import { BUCKET_NAME, STORAGE_CLIENT } from "../consts";
 
 const bucketName = 'hero-alliance-nexus';
 const fileName = 'helloworld.txt';
@@ -11,7 +6,7 @@ const fileName = 'helloworld.txt';
 async function readFromBucket() {
     try {
         // Reference the file in the bucket
-        const file = storage.bucket(bucketName).file(fileName);
+        const file = STORAGE_CLIENT.bucket(BUCKET_NAME).file(fileName);
 
         // Read file contents
         const [contents] = await file.download();
