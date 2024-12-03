@@ -1,0 +1,58 @@
+@startuml
+skinparam linetype ortho
+skinparam packageStyle rectangle
+
+package maps {
+  class CustomUser {
+    + username: string
+    + email: string
+    - groups: set
+  }
+  
+  class GPXData {
+    + gpx_file: file
+    - user: CustomUser
+  }
+  
+  class PointOfInterest {
+    + name: string
+    + description: string
+    + latitude: float
+    + longitude: float
+    + layer: string
+  }
+  
+  CustomUser "1" -- "*" GPXData
+}
+
+package views {
+  class Views {
+    + index(request)
+    + upload_gpx(request)
+    + display_gpx_data(request)
+    + register(request)
+    + import_strava_rides(request)
+    + serve_gpx_file(request, id)
+    + display_gpx_data_detail(request, id)
+    + strava_callback(request)
+    + add_poi(request)
+    + recordeGPX(request)
+  }
+}
+
+package django.contrib.auth {
+  class User {
+    + username: string
+    + password: string
+  }
+}
+
+package django.db.models {
+  class Model
+}
+
+maps.CustomUser --|> django.contrib.auth.User
+maps.GPXData --|> django.db.models.Model
+maps.PointOfInterest --|> django.db.models.Model
+
+@enduml
