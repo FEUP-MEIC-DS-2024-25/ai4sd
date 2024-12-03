@@ -4,6 +4,8 @@ import subprocess
 from django.conf import settings
 import shutil
 from .prompt import generate_description_uml
+import requests
+
 
 class Project(models.Model):
     name = models.CharField(max_length=255)
@@ -26,39 +28,25 @@ class Project(models.Model):
             self.repo_path = repo_dir
             self.save()
 
-
     def generate_plantuml_image(self):
-        """ Compiles PlantUML code to generate an image and stores it. """
+        """ Sends PlantUML code to a server to generate an image and stores it. """
+        print("Generating PlantUML image")
         if self.plantuml_code:
-            plantuml_jar = os.path.join(settings.BASE_DIR, 'plantuml.jar')
-            plantuml_dir = os.path.join(settings.MEDIA_DIR, 'plantuml_input')
-            output_dir = os.path.join(settings.MEDIA_DIR, 'plantuml_images')  # Correctly set output dir
-            os.makedirs(plantuml_dir, exist_ok=True)
-            os.makedirs(output_dir, exist_ok=True)
+            url = settings.PLANTUML_SERVER_URL
+            headers = {'Content-Type': 'text/plain'}
+            response = requests.post(url, headers=headers, data=self.plantuml_code)
 
-            plantuml_input = os.path.join(plantuml_dir, f'{self.id}.txt')
+            if response.status_code == 200:
+                output_dir = os.path.join(settings.MEDIA_DIR, 'plantuml_images')
+                os.makedirs(output_dir, exist_ok=True)
+                final_image_path = os.path.join(output_dir, f'{self.id}_diagram.png')
 
-            # Save PlantUML code to a .txt file
-            with open(plantuml_input, 'w') as f:
-                f.write(self.plantuml_code)
+                with open(final_image_path, 'wb') as f:
+                    f.write(response.content)
 
-            # Run PlantUML and generate the image (output to the directory, not the file)
-            subprocess.run([
-                'java', '-jar', plantuml_jar, plantuml_input,
-                '-o', output_dir  # Only specify the directory here
-            ])
-
-            # After generating, rename the output file to match {self.id}_diagram.png
-            generated_image_path = os.path.join(output_dir, f'{self.id}.png')
-            final_image_path = os.path.join(output_dir, f'{self.id}_diagram.png')
-
-            # Rename the image file
-            if os.path.exists(generated_image_path):
-                shutil.move(generated_image_path, final_image_path)
-
-            # Assign the renamed image to the plantuml_image field
-            self.plantuml_image = f'plantuml_images/{self.id}_diagram.png'
-            self.save()
+                self.plantuml_image = f'plantuml_images/{self.id}_diagram.png'
+                print(f"PlantUML image saved to {self.plantuml_image}")
+                self.save()
 
 
     def save(self, *args, **kwargs):

@@ -6,9 +6,7 @@ WORKDIR /app
 
 # Install system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    graphviz \
-    git \
-    openjdk-17-jdk
+    git
 
 # Copy the entire project into the container
 COPY . .
@@ -17,7 +15,7 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the port the app runs on
-EXPOSE 8080
+EXPOSE 8081
 
 # Run the application
-CMD python manage.py runserver 8080
+CMD python manage.py runserver 0.0.0.0:8080 --insecure --noreload
