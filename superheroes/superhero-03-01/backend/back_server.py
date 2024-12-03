@@ -12,15 +12,8 @@ from .JSONValidation.validators import new_chat_validator, ValidationError
 
 # Load the API key from .env file
 load_dotenv()
-LLM_API_KEY = os.getenv("LLM_API_KEY")
-
-DB_HOST = os.getenv("DB_HOST")
-DB_PORT = os.getenv("DB_PORT")
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-DB_URI = f"mongodb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}"
-CORS_URL = os.getenv("CORS_URL")
+LLM_API_KEY = os.getenv("C3T1_LLM_API_KEY")
+CORS_URL = os.getenv("C3T1_CORS_URL")
 
 
 # collection_name its the name of the collection like if was a table in a database. Data is a dictionary with the data

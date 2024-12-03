@@ -3,48 +3,20 @@ version: '3.8'
 services:
   featurecraft:
     build:
-      context: ../../../T03_G01
+      context: .
       dockerfile: Dockerfile
     image: t03_g01_featurecraft:latest
     ports:
-      - "8000:8000" # Backend
+      - "8080:8080" # Backend
     volumes:
       - .:/app
     environment:
       - NAME=FeatureCraft
       - PYTHONUNBUFFERED=1
-      - LLM_API_KEY=${LLM_API_KEY} # Load from .env file
-      - DB_HOST=mongo
-      - DB_PORT=${DB_PORT}
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-      - DB_NAME=${DB_NAME}
+      - C3T1_LLM_API_KEY=${C3T1_LLM_API_KEY}
+      - C3T1_CORS_URL=${C3T1_CORS_URL}
+      - C3T1_DB_COLLECTION=${C3T1_DB_COLLECTION}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/firebase.json
-    #depends_on:
-      #- mongo
-  #mongo:
-  #  image: mongo
-  #  container_name: mongo
-  #  ports:
-  #    - "27017:27017"
-  #  environment:
-  #    MONGO_INITDB_ROOT_USERNAME: ${DB_USER}
-  #    MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
-  #    MONGO_INITDB_DATABASE: ${DB_NAME}
-  #mongo-express:
-  #  image: mongo-express
-  #  restart: always
-  #  ports:
-  #    - "8081:8081"
-  #  environment:
-  #    ME_CONFIG_MONGODB_ADMINUSERNAME: ${DB_USER}
-  #    ME_CONFIG_MONGODB_ADMINPASSWORD: ${DB_PASSWORD}
-  #    ME_CONFIG_MONGODB_URL: mongodb://${DB_USER}:${DB_PASSWORD}@mongo:27017/
-  #    ME_CONFIG_BASICAUTH: "false"
-  #  links:
-  #    - mongo:mongo
-  #  depends_on:
-  #    - mongo
   swagger:
     image: swaggerapi/swagger-ui
     ports:
