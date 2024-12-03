@@ -1,4 +1,8 @@
 import requests
+# from os import getenv
+# from dotenv import load_dotenv
+
+# load_dotenv()
 
 class GitHubGraphQLAPI:
 
@@ -81,6 +85,16 @@ class GitHubGraphQLAPI:
                 ... on ProjectV2 {
                     title
                     url
+                    fields(first: 20) {
+                        nodes {
+                            ... on ProjectV2SingleSelectField {
+                                name
+                                options {
+                                    name
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -91,7 +105,19 @@ class GitHubGraphQLAPI:
         response = self.send_request(query, variables)
         
         if response and "data" in response and "node" in response['data']:
-            return response['data']['node']
+            project = response['data']['node']
+            fields = project['fields']['nodes']
+
+            status_list = [field for field in fields if field and field['name'] == 'Status'][0]['options']
+            cleaned_status_list = [status['name'] for status in status_list]
+
+            project_info = { 
+                'title': project['title'],
+                'url': project['url'],
+                'status_list': cleaned_status_list
+            }
+
+            return project_info
         
         return None
 
@@ -145,3 +171,10 @@ class GitHubGraphQLAPI:
         variables = {"username": username, "cursor": None}
 
         return self.fetch_all_pages(query, variables, 'user')
+    
+""" def main():
+    api = GitHubGraphQLAPI(getenv('GITHUB_TOKEN'))
+    print(api.get_project("PVT_kwDOCtw04M4Ap0aW"))
+
+if __name__ == "__main__":
+    main() """
