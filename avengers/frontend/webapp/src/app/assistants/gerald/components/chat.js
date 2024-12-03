@@ -28,7 +28,7 @@ export default function AssistantChat(props) {
             <div className="scrollable">
                 <div >
                     {messages.map((message, index) => (
-                        <Message index={index}>{message}</Message> // Render each message as a <p>
+                        <Message index={index} key ={index}>{message}</Message> // Render each message as a <p>
                     ))}
                 </div>
                 <div ref={messagesEndRef} /> 
@@ -36,4 +36,4 @@ export default function AssistantChat(props) {
             <AssistantForm callback={handleCallback} />
         </div>
     );
-}
+};

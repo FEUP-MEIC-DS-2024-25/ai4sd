@@ -23,7 +23,7 @@ export default function Assistant() {
                 </header>
             <div className="main">
             {!hasMsg ?(
-                <div>
+                <div className="info">
                     <h1 className="">gerald.</h1>
                     <p className="">not your average assistant</p>
                 </div>
