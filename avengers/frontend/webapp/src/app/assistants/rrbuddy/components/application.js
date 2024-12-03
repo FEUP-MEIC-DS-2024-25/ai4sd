@@ -45,6 +45,7 @@ export default function Application() {
 
         setLoading(true);
         try {
+            // const response = await fetch("http://172.23.0.3:5001/api/process", {
             const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/process", {
                 method: "POST",
                 body: formData,
