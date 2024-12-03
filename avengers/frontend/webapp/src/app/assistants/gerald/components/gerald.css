@@ -1,10 +1,52 @@
+:root {
+
+    --primary-color: #2C2F57;
+    --primary-text-color: white; 
+    --hover: #6165A4;
+    --gradient:linear-gradient(45deg,#6165A4,#d0d0d0,#B895B9); 
+    --input-primary: #272727 ;
+}
+
+
 .assistantInteraction{
-    background-color: #2C2F57;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
+    display: flex;
+    flex-direction: column;
+   
+    align-items: center;
+}
+
+.main{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    width: 100%;
+    height: 100%;
+
+}
+
+header{
+    width: 100%;
+    display: flex;
+}
+
+header h2{
+   
+    font-size: 1.2em;
+}
+
+header a{
+    padding: 1em;
+    border-radius: 5em;
+}
+header a:hover{
+    background-color: var(--hover);
+}
+
+header .aboutus{
+    margin-left: auto;
 }
 
 .assistantInteraction h1{
@@ -18,7 +60,7 @@
 }
 .assistantInteraction form.input{
     padding: 4px;
-    background-color: #272727;
+    background-color: var(--input-primary);
     width: 40rem;
     height: 3em;
     border-radius: 10rem;
@@ -34,7 +76,7 @@
     inset: 0;
     border-radius: 10rem; 
     padding: 4px; 
-    background:linear-gradient(45deg,#6165A4,#B895B9); 
+    background: var(--gradient); 
     mask: 
       linear-gradient(#000 0 0) content-box, 
       linear-gradient(#000 0 0);
@@ -63,14 +105,14 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    color: white;
+    color: var(--primary-text-color);
     cursor: pointer;
     transition: background-color 0.3s ease;
     border-radius:  10rem ;
   }
 
   .assistantInteraction .custom-file-label:hover {
-    background-color: #3b3f92; /* Darker indigo */
+    background-color: var(--hover); /* Darker indigo */
   }
 
   .assistantInteraction .custom-file-label i {
