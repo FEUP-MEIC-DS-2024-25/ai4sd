@@ -4,8 +4,8 @@ import { sendMsg } from "../services/gerald";
 import Message from "./message.js"
 
 export default function AssistantChat(props) {
-    const [messages, setMessages] = useState([]); // State to store the list of messages
-    const messagesEndRef = useRef(null); // Ref for the end of the messages
+    const [messages, setMessages] = useState([]);
+    const messagesEndRef = useRef(null);
     const scrollToBottom = () => {
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
@@ -14,7 +14,7 @@ export default function AssistantChat(props) {
 
     const handleCallback = (newMessage) => {
         props.callback()
-        setMessages((prevMessages) => [...prevMessages, newMessage]); // Add the new message to the list
+        setMessages((prevMessages) => [...prevMessages, newMessage]); 
         
         sendMsg(newMessage).then((response)=>{ setMessages((prevMessages) => [...prevMessages, response]);})
     };
@@ -25,14 +25,15 @@ export default function AssistantChat(props) {
 
     return (
         <div>
-            <div className="scrollable">
+            {messages.length>0 ?(<div className="scrollable">
                 <div >
                     {messages.map((message, index) => (
-                        <Message index={index} key ={index}>{message}</Message> // Render each message as a <p>
+                        <Message index={index} key ={index}>{message}</Message>
                     ))}
                 </div>
                 <div ref={messagesEndRef} /> 
             </div>
+            ):<></>}
             <AssistantForm callback={handleCallback} />
         </div>
     );
