@@ -1,5 +1,6 @@
-//const API_BASE_URL = "http://localhost:3000";
-const API_BASE_URL = "http://localhost:3001";
+// It will probably be like this
+//const API_BASE_URL = "superhero-06-04@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com";
+const API_BASE_URL = "";
 
 export const generateContent = async (prompt, assistantId) => {
   const response = await fetch(`${API_BASE_URL}/generate`, {
