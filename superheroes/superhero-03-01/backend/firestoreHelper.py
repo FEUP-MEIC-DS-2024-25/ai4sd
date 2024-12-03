@@ -8,6 +8,8 @@ from firebase_admin import firestore
 import uuid
 
 
+db_collection = os.getenv("C3T1_DB_COLLECTION")
+
 class FirestoreHelper:
     def __init__(self, collectionName="featurecraft"):
         self.database_name = collectionName
@@ -15,7 +17,7 @@ class FirestoreHelper:
         self.db = firestore.client(app=self.app)
         self.collection = self.db.collection(self.database_name)
         print(f"Connected to Firestore : {self.app.project_id}")
-        #self.test()
+        self.test()
 
 
     def test(self):
@@ -43,9 +45,9 @@ class FirestoreHelper:
         addmessage= self.addMessagesToChat(newMessageId, [new_message])
 
         self.addPinnedToChat(newMessageId, "this is a pinned 1")
-        self.addPinnedToChat(newMessageId, "this is a pinned 2")
-        print(self.addPinnedToChat(newMessageId, "this is a pinned 3"))
-        print(self.addPinnedToChat("newMessageId", "this is a pinned 3"))
+        #self.addPinnedToChat(newMessageId, "this is a pinned 2")
+        #print(self.addPinnedToChat(newMessageId, "this is a pinned 3"))
+        #print(self.addPinnedToChat("newMessageId", "this is a pinned 3"))
 
     def create(self, document_name,collection_name, data):
         uuid = str(uuid4())
@@ -123,13 +125,18 @@ class FirestoreHelper:
     def addPinnedToChat(self, conversation_id, message):
         """Add a group of messages to an existing chat conversation."""
 
+        pinned = {
+            "id": str(uuid4()),
+            "message": message
+        }
+
         try:
             # Reference to the specific chat document
             chat = self.collection.document("chat").collection("history").document(conversation_id)
             # Update the document by adding the message to the pinnedMessages array
             chat.update(
                 {
-                    "pinnedMessages": firestore.ArrayUnion([message])
+                    "pinnedMessages": firestore.ArrayUnion([pinned])
                 }
             )
 
@@ -168,4 +175,4 @@ class FirestoreHelper:
             return None
 
 # Initialize Firestore helper
-db_helper = FirestoreHelper()
+db_helper = FirestoreHelper(collectionName=db_collection)
