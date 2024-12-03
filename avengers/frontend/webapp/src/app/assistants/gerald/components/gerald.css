@@ -16,21 +16,64 @@
     font-size: 2em;
     font-weight: 300;
 }
-.assistantInteraction .input{
+.assistantInteraction form.input{
+    padding: 4px;
     background-color: #272727;
     width: 40rem;
     height: 3em;
-  
     border-radius: 10rem;
     display: flex;
     margin-top: 5em;
+    position: relative;
+    z-index: 1;
 }
 
-.assistantInteraction input{
+.assistantInteraction form.input::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 10rem; 
+    padding: 4px; 
+    background:linear-gradient(45deg,#6165A4,#B895B9); 
+    mask: 
+      linear-gradient(#000 0 0) content-box, 
+      linear-gradient(#000 0 0);
+    mask-composite: exclude; 
+    z-index: -1;
+  }
+
+
+
+.assistantInteraction input[type=text]{
     background-color: inherit;
     outline: none;
-    font-size: 1rem;
-    width: 75%;
-    margin-left: 15%;
+    font-size: 1.2rem;
+    width: 30em;
 }
+
+.assistantInteraction input[type=file], .assistantInteraction input[type=submit]{
+  display: none;
+
+}
+
+
+.assistantInteraction .custom-file-label {
+
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius:  10rem ;
+  }
+
+  .assistantInteraction .custom-file-label:hover {
+    background-color: #3b3f92; /* Darker indigo */
+  }
+
+  .assistantInteraction .custom-file-label i {
+    font-size: 1.2em; /* Adjust icon size */
+  }
 
