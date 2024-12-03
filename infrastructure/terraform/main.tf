@@ -617,7 +617,7 @@ resource "google_project_iam_member" "strange_firestore_permissions" {
 resource "google_secret_manager_secret" "superhero_secrets" {
   for_each = toset(local.superhero_names)
 
-  secret_id = "${each.key}-secrets"
+  secret_id = "${each.key}-secret"
   replication {
     user_managed {
       replicas {
@@ -627,18 +627,20 @@ resource "google_secret_manager_secret" "superhero_secrets" {
   }
 }
 
-resource "google_secret_manager_secret_version" "superhero_secret_versions" {
-  for_each = google_secret_manager_secret.superhero_secrets
-
-  secret = google_secret_manager_secret.superhero_secrets[each.key].id
-  secret_data = "Initial secret data for ${each.key}"
-}
 
 resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
   for_each = google_secret_manager_secret.superhero_secrets
 
   secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
   role      = "roles/secretmanager.secretAccessor"
+  member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
+}
+
+resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
+  for_each = google_secret_manager_secret.superhero_secrets
+
+  secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
+  role      = "roles/secretmanager.SecretVersionManager"
   member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
 }
 
