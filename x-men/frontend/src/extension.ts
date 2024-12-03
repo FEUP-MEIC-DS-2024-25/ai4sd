@@ -17,6 +17,7 @@ export function activate(context: vscode.ExtensionContext) {
 		// The code you place here will be executed every time your command is executed
 		
 		const options: vscode.QuickPickItem[] = [
+            { label: "ArchiDetect", description: "Executes ArchiDetect superhero" },
 			{ label: "SARA", description: "Executes SARA superhero" },
 			{ label: "Template", description: "Executes Template superhero" },
 		  ];
@@ -30,6 +31,10 @@ export function activate(context: vscode.ExtensionContext) {
 		  // Import and execute different superheros based on selection
 		  if (selectedOption) {
 			switch (selectedOption.label) {
+              case "ArchiDetect":
+                // Import and execute ArchiDetect
+                (await import('./superheroes/ArchiDetect/ArchiDetect.js')).execute(context);
+                break;
 			  case "SARA":
 				// Import and execute SARA
 				(await import('./superheroes/SARA/SARA.js')).execute(context);
