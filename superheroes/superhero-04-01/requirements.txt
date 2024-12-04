@@ -5,3 +5,5 @@ protobuf
 python-dotenv
 google-generativeai
 fpdf
+google-cloud-firestore
+google-cloud-storage
