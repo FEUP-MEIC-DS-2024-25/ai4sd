@@ -227,7 +227,7 @@ class MiroAPI:
 
 
     def get_iteration_tasks(self, board_id, sticky_notes_dict):
-        url = f"{self.BASE_URL}/{board_id}/items"
+        url = f"{self.BASE_URL}/{board_id}/items?limit=50"
 
         headers = {
             "accept": "application/json",
@@ -435,144 +435,162 @@ class MiroAPI:
 
 def main():
     #------TEST FUNCTIONS------
-
-    # 1. Get Project data from github 
-    GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
-    github_api = GitHubGraphQLAPI(GITHUB_TOKEN)
-
-     # Query to get the project data
-    query = """
-    {
-      node(id: "PVT_kwDOCtw04M4Ap0aW") {
-        ... on ProjectV2 {
-          items(first: 20) {
-            nodes {
-              id  
-              fieldValues(first: 8) {
-                nodes {
-                  ... on ProjectV2ItemFieldTextValue {
-                    text
-                    field {
-                      ... on ProjectV2FieldCommon {
-                        name
-                      }
-                    }
-                  }
-                  ... on ProjectV2ItemFieldDateValue {
-                    date
-                    field {
-                      ... on ProjectV2FieldCommon {
-                        name
-                      }
-                    }
-                  }
-                  ... on ProjectV2ItemFieldSingleSelectValue {
-                    name
-                    field {
-                      ... on ProjectV2FieldCommon {
-                        name
-                      }
-                    }
-                  }
-                }
-              }
-              content {
-                ... on DraftIssue {
-                  title
-                  body
-                }
-                ... on Issue {
-                  title
-                  assignees(first: 10) {
-                    nodes {
-                      login
-                    }
-                  }
-                }
-                ... on PullRequest {
-                  title
-                  assignees(first: 10) {
-                    nodes {
-                      login
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-    """
-
-    # Send the request to the API to get the project data
-    project_data = github_api.send_request(query)
-    print("PROJECT DATA:", project_data)
-
-    # 2. Gemini choose tasks to move to the 'Iteration Backlog'
-
-    geminiAPI = GeminiAPI()
-
-    prompt = (
-        "Based on the provided project data, " + project_data + """\n
-        Identify the tasks that should be moved to the 'Iteration Backlog' for the upcoming iteration, prioritizing tasks with the highest impact.
-        Leave tasks not selected in their current status and do not modify their position.
-        Provide the response in a Python list with the names of all the tasks in the backlog. 
-        Additionally, provide two more Python lists with the priorities of the tasks and their sizes for all the tasks in the backlog in the same order.
-        Finally, provide one more Python list with the names of the tasks that should be moved to the 'Iteration Backlog'.
-        Don't give an explanation, just the lists.
-        """
-    )
-    
-    gemini_response = geminiAPI.prompt_gemini(prompt)
-
-    # 3. Create sticky notes in Miro for the tasks that should be moved to the 'Iteration Backlog'
-    print("Extracting lists from gemini response...")
+    flag = False # (FALSE) - Just to test the MIRO -> GITHUB API functionality
     MIRO_TOKEN = os.getenv('MIRO_TOKEN')    
     miro_api = MiroAPI(MIRO_TOKEN)
 
-    print("Creating Miro template...")
-    miro_api.create_miro_template("uXjVLQTokqg%3D")
+    GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+    github_api = GitHubGraphQLAPI(GITHUB_TOKEN)
 
-    lists = miro_api.extract_lists_from_response(gemini_response)
-    all_tasks = lists[0]
-    priorities = lists[1]
-    sizes = lists[2]
-    iteration_tasks = lists[3]
+    query = """
+        {
+        node(id: "PVT_kwDOCtw04M4Ap0aW") {
+            ... on ProjectV2 {
+            items(first: 20) {
+                nodes {
+                id  
+                fieldValues(first: 8) {
+                    nodes {
+                    ... on ProjectV2ItemFieldTextValue {
+                        text
+                        field {
+                        ... on ProjectV2FieldCommon {
+                            name
+                        }
+                        }
+                    }
+                    ... on ProjectV2ItemFieldDateValue {
+                        date
+                        field {
+                        ... on ProjectV2FieldCommon {
+                            name
+                        }
+                        }
+                    }
+                    ... on ProjectV2ItemFieldSingleSelectValue {
+                        name
+                        field {
+                        ... on ProjectV2FieldCommon {
+                            name
+                        }
+                        }
+                    }
+                    }
+                }
+                content {
+                    ... on DraftIssue {
+                    title
+                    body
+                    }
+                    ... on Issue {
+                    title
+                    assignees(first: 10) {
+                        nodes {
+                        login
+                        }
+                    }
+                    }
+                    ... on PullRequest {
+                    title
+                    assignees(first: 10) {
+                        nodes {
+                        login
+                        }
+                    }
+                    }
+                }
+                }
+            }
+            }
+        }
+        }
+        """
 
-    print("Creating sticky notes...")
-    for i in range(len(all_tasks)):
-        miro_api.create_sticky_note("uXjVLQTokqg%3D", all_tasks[i])
+    # Send the request to the API to get the project data
+    project_data = github_api.send_request(query)
 
-    print("Creating priority tags...")
-    for i in range(len(priorities)):
-        miro_api.create_priority_tag("uXjVLQTokqg%3D", priorities[i])
+    if flag:
+        # 1. Get Project data from github 
+        # Query to get the project data
+        
 
-    print("Creating size tags...")
-    for i in range(len(sizes)):
-        miro_api.create_size_tag("uXjVLQTokqg%3D", sizes[i])
+        # 2. Gemini choose tasks to move to the 'Iteration Backlog'
 
-    print("Attaching notes to tags...")
-    tags_dict = miro_api.get_tag_id("uXjVLQTokqg%3D")
-    sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")
+        geminiAPI = GeminiAPI()
 
-    for note in all_tasks:
-        note_id = sticky_notes_dict[note]
-        priority_id = tags_dict[priorities[all_tasks.index(note)]]
-        size_id = tags_dict[sizes[all_tasks.index(note)]]
+        prompt = (
+            "Based on the provided project data, " + project_data + """\n
+            Identify the tasks that should be moved to the 'Iteration Backlog' for the upcoming iteration, prioritizing tasks with the highest impact.
+            Leave tasks not selected in their current status and do not modify their position.
+            Provide the response in a Python list with the names of all the tasks in the backlog. 
+            Additionally, provide two more Python lists with the priorities of the tasks and their sizes for all the tasks in the backlog in the same order.
+            Finally, provide one more Python list with the names of the tasks that should be moved to the 'Iteration Backlog'.
+            Don't give an explanation, just the lists.
+            """
+        )
+        
+        gemini_response = geminiAPI.prompt_gemini(prompt)
 
-        miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, priority_id)
-        miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, size_id)
+        # 3. Create sticky notes in Miro for the tasks that should be moved to the 'Iteration Backlog'
+        print("Extracting lists from gemini response...")
+    
 
-    print("Updating sticky notes...")
-    for note in iteration_tasks:
-        note_id = sticky_notes_dict[note]
-        miro_api.update_sticky_note("uXjVLQTokqg%3D", note_id)
+        print("Creating Miro template...")
+        miro_api.create_miro_template("uXjVLQTokqg%3D")
 
-    print("Miro is updated with the tasks for the upcoming iteration successfully!")
+        lists = miro_api.extract_lists_from_response(gemini_response)
+        all_tasks = lists[0]
+        priorities = lists[1]
+        sizes = lists[2]
+        iteration_tasks = lists[3]
+
+        print("Creating sticky notes...")
+        for i in range(len(all_tasks)):
+            miro_api.create_sticky_note("uXjVLQTokqg%3D", all_tasks[i])
+
+        print("Creating priority tags...")
+        for i in range(len(priorities)):
+            miro_api.create_priority_tag("uXjVLQTokqg%3D", priorities[i])
+
+        print("Creating size tags...")
+        for i in range(len(sizes)):
+            miro_api.create_size_tag("uXjVLQTokqg%3D", sizes[i])
+
+        print("Attaching notes to tags...")
+        tags_dict = miro_api.get_tag_id("uXjVLQTokqg%3D")
+        sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")
+
+        for note in all_tasks:
+            note_id = sticky_notes_dict[note]
+            priority_id = tags_dict[priorities[all_tasks.index(note)]]
+            size_id = tags_dict[sizes[all_tasks.index(note)]]
+
+            miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, priority_id)
+            miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, size_id)
+
+        print("Updating sticky notes...")
+        for note in iteration_tasks:
+            note_id = sticky_notes_dict[note]
+            miro_api.update_sticky_note("uXjVLQTokqg%3D", note_id)
+
+        print("Miro is updated with the tasks for the upcoming iteration successfully!")
 
     # Get iteration tasks from Miro
     sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")    
+
+    iteration_tasks, priority_tasks, size_tasks = miro_api.get_iteration_tasks("uXjVLQTokqg%3D", sticky_notes_dict)
+
+    project_fields = github_api.get_project_fields("PVT_kwDOCtw04M4Ap0aW")
+
+    status_info = github_api.extract_field_info(project_fields, "Status")
+    priority_info = github_api.extract_field_info(project_fields, "Priority")
+    size_info = github_api.extract_field_info(project_fields, "Size")
+
+    print("STATUS INFO:", status_info)
+    print("PRIORITY INFO:", priority_info)
+    print("SIZE INFO:", size_info)
+
+    github_api.update_tasks_to_iteration_backlog(project_data, iteration_tasks)
 
 if __name__ == "__main__":
     main()
