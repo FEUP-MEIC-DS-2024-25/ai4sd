@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/app/lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "@/app/components/ui/shad/avatar";
 import MessageLoading from "./message-loading";
-import { Button, ButtonProps } from "../shad/button";
+import { Button, ButtonProps } from "../button";
 
 // ChatBubble
 const chatBubbleVariant = cva(
