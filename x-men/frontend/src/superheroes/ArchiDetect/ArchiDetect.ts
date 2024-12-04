@@ -15,12 +15,16 @@ export async function execute(context: vscode.ExtensionContext) {
       try {
         // Fetch GET request
         // const apiResponse = await fetch('http://127.0.0.1:8080/api/analyze_repo/fs-feup/autonomous-systems');
+        
+        //future request?
+        // const apiResponse = await fetch("https://superhero-06-01-150699885662.europe-west1.run.app/${repoOwner}/${repoName}");
+        
         // if (!apiResponse.ok) {
         //   throw new Error('Failed to fetch API response: ' + apiResponse.statusText);
         // }
         // const apiData = await apiResponse.json();
         // console.log('GET response data:', apiData);
-        
+
         //stub
         const apiResponse = 
         `{
