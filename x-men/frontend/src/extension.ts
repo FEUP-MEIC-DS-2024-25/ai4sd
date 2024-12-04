@@ -2,9 +2,15 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
+export interface AI4SDMenuOption extends vscode.QuickPickItem{
+	execute: Function
+};
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+
+	const options: AI4SDMenuOption[] = [];
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -15,11 +21,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 	const disposable = vscode.commands.registerCommand('ai4sd.ai4sd', async () => {
 		// The code you place here will be executed every time your command is executed
-		
-		const options: vscode.QuickPickItem[] = [
-			{ label: "SARA", description: "Executes SARA superhero" },
-			{ label: "Template", description: "Executes Template superhero" },
-		  ];
 	  
 		  // Show dropdown and await user's choice
 		  const selectedOption = await vscode.window.showQuickPick(options, {
@@ -46,7 +47,14 @@ export function activate(context: vscode.ExtensionContext) {
 		  }
 	});
 
+	const api = {
+		register(newOption: AI4SDMenuOption) {
+			options.push(newOption);
+		}
+	};
+
 	context.subscriptions.push(disposable);
+	return api;
 }
 
 // This method is called when your extension is deactivated
