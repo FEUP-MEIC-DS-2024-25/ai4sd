@@ -155,6 +155,30 @@ class FirestoreHelper:
             print(f"Failed: {e}")
             return None
 
+    def getPinnedMessages(self, conversation_id):
+        """Retrieve all pinned messages for a given conversation ID from Firestore."""
+        if not conversation_id:
+            return False, {"status": "error", "message": "Invalid conversation ID"}
+
+
+        try:
+            chat = self.collection.document("chat").collection("history").document(conversation_id)
+            docs = chat.get()
+            #print(docs,"HERE")
+
+            if not docs.exists:
+                return False, {"status": "error", "message": "The provided ID does not exist"}
+
+
+            result={
+                    "id": docs.id,
+                    "pinnedMessage": docs.to_dict().get("pinnedMessages"),
+                }
+            print(result,"HERE2")
+            return True, result
+        
+        except Exception as e:
+            return {"status": "error", "message": f"Failed to retrieve pinned messages: {e}"}
 
     def createChat(self, new_message):
         try:

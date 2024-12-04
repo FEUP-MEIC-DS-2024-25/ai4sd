@@ -236,6 +236,89 @@
             }
           }
         }
+      },
+      "get": {
+        "summary": "Get the pinned messages of a conversation",
+        "description": "The conversation identifier should be used to obtain a full conversation.",
+        "operationId": "getPinnedMessagesById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved pinned messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example":"chatId"
+                      },
+                      "pinneMessages": {
+                        "type": "array",
+                        "items":{
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string",
+                              "example": "This is a pinned message"
+                            },
+                            "id": {
+                              "type": "string",
+                              "example": "pinMessageId"
+                            }
+                          }
+                        }
+                      }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Chat document does not exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
