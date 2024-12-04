@@ -16,8 +16,17 @@
         </p>
         {% if project.miro_board_id %}
         <p><strong>Miro Board:</strong>
-            <a href="{{ project.miro_board_id }}" target="_blank">{{ project.miro_board_id }}</a>
+            <a href="{{ project.miro_board_url }}" target="_blank">{{ project.miro_board_id }}</a>
         </p>
+        
+        {% else %}
+        <div class="container mt-4">
+            <form method="post" action="{% url 'add_miro_board_id_to_spark_project' project.id %}">
+                {% csrf_token %}
+                <input type="text" name="miro_board_id" placeholder="Enter Miro Board ID" class="form-control mb-2" required>
+                <button type="submit" class="btn btn-primary">Add Miro Board ID</button>
+            </form>
+        </div>
         {% endif %}
     </div>
 
@@ -29,7 +38,6 @@
     </ul>
 
     <div class="container mt-4">
-        <h2>Add Member</h2>
         <form method="post" action="{% url 'add_member_to_spark_project' project.id %}">
             {% csrf_token %}
             <input type="text" name="username" placeholder="Enter username" class="form-control mb-2" required>
