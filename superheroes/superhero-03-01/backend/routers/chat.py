@@ -117,15 +117,16 @@ async def send_message(message: Message):
         # TODO
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
+
 @router.get("/pin/{id}")
-async def pin_message_by_id(id: str):
+async def get_pin_message_by_id(id: str):
     try:
-        exists, chat = db_helper.getChat(id)
+        exists, chat = db_helper.getPinnedMessages(id)
+        print(chat,"HERE")
         if not exists:
             raise HTTPException(status_code=404, detail="Chat not found")
 
-        pinned_message = chat['pinnedMessages']
-        return pinned_message
+        return JSONResponse(content=chat, status_code=200)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
