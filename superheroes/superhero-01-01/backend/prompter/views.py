@@ -39,6 +39,7 @@ PROMPT = '''Evaluate the following code according to Good Coding Practices and s
 
 @csrf_exempt
 def evaluate_code(request):
+    print("WE GOT HERE")
     if request.method != "POST":
         return JsonResponse({"error": "Only POST method is allowed."}, status=405)
 

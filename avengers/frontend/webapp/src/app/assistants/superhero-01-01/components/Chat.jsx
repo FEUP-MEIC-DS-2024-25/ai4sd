@@ -24,20 +24,21 @@ import axios from 'axios';
 
 export const Chatbot = () => {
 
-  // const message = {
-  //   role: "ai",
-  //   message: "Hello! How can I help you today?",
-  //   isLoading: false,
-  // }
-  const [data, setData] = useState([]);
+  const message = {
+    role: "ai",
+    message: "Hello! How can I help you today?",
+    isLoading: false,
+  }
 
-  // const [input, setInput] = useState("");
-
-  // const [file, setFile] = useState(null);
+  const [formData, setFormData] = useState({
+  type: '', 
+  data: null 
+});
+  const [isLoading, setIsLoading] = useState(false)
 
   const fetchData = async () => {
     try {
-      const response = await axios.get('https://api.example.com/data');
+      const response = await axios.get('https://localhost:8000/api/export-evaluation');
       setData(response.data);
     } catch (error) {
       console.error('Error fetching data:',  
@@ -47,20 +48,70 @@ export const Chatbot = () => {
   
   const handleSubmit = async (event) => {
     event.preventDefault();
-  
+    setIsLoading(true);
+
     try {
-      const response = await axios.post('https://api.example.com/submit',  
-   formData);
-      // Handle success or error based on response
+      if (formData.type === 'file') {
+        // Handle file upload, e.g., using FormData
+        console.log(formData)
+        const formDataToSend = new FormData();
+        formDataToSend.append('file', formData.data);
+        console.log(formDataToSend)
+  
+        const response = await axios.post('https://localhost:8000/api/prompt', formDataToSend, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        console.log('Data submitted successfully:', response.data);
+  
+        // ... handle response
+      } else if (formData.type === 'code') {
+        // Handle text input
+        console.log(formData)
+        const response = await axios.post('https://localhost:8000/api/prompt', {
+          code: formData.data
+        });
+  
+        console.log('Data submitted successfully:', response.data);
+        // ... handle response
+      }
     } catch (error) {
       console.error('Error submitting data:', error);
     }
+    finally{
+      setIsLoading(false);
+    }
+  //   try {
+  //     const response = await axios.post('https://localhost:8000/api/prompt',  
+  //  formData);
+  //   console.log('Data submitted successfully:', response.data);
+  //   setFormData('')
+  //     // Handle success or error based on response
+  //   } catch (error) {
+  //     console.error('Error submitting data:', error);
+  //   }
+  //   finally{
+  //     setIsLoading(false);
+  //   }
   };
   
 
   const handleInputChange = (e) => {
-    setInput(e.target.value);
-  }
+    if (e.target.files) {
+      
+      setFormData({
+        type: 'file',
+        data: e.target.files[0]
+      });
+    } else {
+      // Text input case
+      setFormData({
+        type: 'code',
+        data: e.target.value
+      });
+    }
+  };
 
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -90,7 +141,7 @@ export const Chatbot = () => {
       </ChatMessageList>
 
       <form
-          onSubmit={handleSendMessage}
+          onSubmit={handleSubmit}
           className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
         >
           <ChatInput
@@ -106,7 +157,7 @@ export const Chatbot = () => {
             </Button>
 
             <Button
-              disabled={!input || isLoading}
+              disabled={!formData || isLoading}
               type="submit"
               size="sm"
               className="ml-auto gap-1.5"
