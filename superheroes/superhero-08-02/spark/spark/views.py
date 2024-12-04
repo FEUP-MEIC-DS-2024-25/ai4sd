@@ -85,7 +85,7 @@ def create_spark_project(request):
         project.owner = request.user.profile
         project.save()
         project.members.add(request.user.profile)
-        return redirect('home')
+        return redirect('spark_project_view', project.id)
 
     return render(request, 'spark/create.html', {'form': form})
 

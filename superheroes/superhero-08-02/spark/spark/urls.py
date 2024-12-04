@@ -39,6 +39,7 @@ urlpatterns = [
     path('spark/<int:id>/', views.spark_project_view, name='spark_project_view'),
     path('spark/<int:id>/delete/', views.delete_spark_project, name='delete_spark_project'),
     path('spark/<int:project_id>/add_member/', views.add_member_to_spark_project, name='add_member_to_spark_project'),
+    path('spark/<int:project_id>/add_miro_board_id/', views.add_miro_board_id_to_spark_project, name='add_miro_board_id_to_spark_project'),
 ]
 
 handler404 = 'spark.views.handler404'
