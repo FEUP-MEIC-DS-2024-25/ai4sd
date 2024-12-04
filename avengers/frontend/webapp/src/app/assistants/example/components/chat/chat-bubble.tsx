@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "../../lib/utils";
+import { cn } from "../../../../lib/utils";
 import { Avatar, AvatarImage, AvatarFallback } from "../ui/avatar";
 import MessageLoading from "./message-loading";
 import { Button, ButtonProps } from "../ui/button";

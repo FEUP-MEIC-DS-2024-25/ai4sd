@@ -28,6 +28,7 @@
     "typeface-josefin-sans": "^1.1.13"
   },
   "devDependencies": {
+    "@types/node": "22.10.1",
     "autoprefixer": "^10.4.20",
     "eslint": "^8",
     "eslint-config-next": "15.0.2",
