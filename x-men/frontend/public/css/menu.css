@@ -16,13 +16,20 @@ img {
     margin-top: 1em;
 }
 
+ul {
+    padding-left: 12px;
+}
+
+.wrapper {
+    width: 45%;
+}
+
 .options-wrapper {
     display: flex;
-    margin-bottom: 1em;
     flex-direction: column;
 }
 
-.options-wrapper div {
+.option-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -54,6 +61,7 @@ button {
     color: white;
     border: none;
     border-radius: 4px;
+    margin-top: 1em;
     padding: 10px 15px;
     cursor: pointer;
     font-size: 14px;
@@ -73,4 +81,34 @@ button:active {
 button:focus {
     outline: 2px solid #005f9e;
     outline-offset: 2px;
+}
+
+/* https://stackoverflow.com/a/65796881 */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+}
+  
+.tooltip .tooltiptext {
+    visibility: hidden;
+    padding-left: 0.25em;
+    padding-right: 0.25em;
+    background-color: #5a5a5a;
+    white-space: nowrap;
+    border: 1px solid #5a5a5a;
+    border-radius: 10px;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 100%;
+    transition-property: visibility;
+    transition-delay: 0s;
+}
+  
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    transition-delay: 0.3s;
 }
