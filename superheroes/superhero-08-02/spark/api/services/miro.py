@@ -518,8 +518,10 @@ def main():
 
         geminiAPI = GeminiAPI()
 
+        project_data_prompt = json.dumps(project_data)
+        
         prompt = (
-            "Based on the provided project data, " + project_data + """\n
+            "Based on the provided project data, " + project_data_prompt + """\n
             Identify the tasks that should be moved to the 'Iteration Backlog' for the upcoming iteration, prioritizing tasks with the highest impact.
             Leave tasks not selected in their current status and do not modify their position.
             Provide the response in a Python list with the names of all the tasks in the backlog. 
@@ -532,12 +534,12 @@ def main():
         gemini_response = geminiAPI.prompt_gemini(prompt)
 
         # 3. Create sticky notes in Miro for the tasks that should be moved to the 'Iteration Backlog'
-        print("Extracting lists from gemini response...")
     
 
         print("Creating Miro template...")
         miro_api.create_miro_template("uXjVLQTokqg%3D")
-
+        
+        print("Extracting lists from gemini response...")
         lists = miro_api.extract_lists_from_response(gemini_response)
         all_tasks = lists[0]
         priorities = lists[1]
@@ -575,22 +577,14 @@ def main():
 
         print("Miro is updated with the tasks for the upcoming iteration successfully!")
 
-    # Get iteration tasks from Miro
+    # MIRO -> GITHUB API FUNCTIONALITY
     sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")    
 
     iteration_tasks, priority_tasks, size_tasks = miro_api.get_iteration_tasks("uXjVLQTokqg%3D", sticky_notes_dict)
 
-    project_fields = github_api.get_project_fields("PVT_kwDOCtw04M4Ap0aW")
+    github_api.update_tasks_to_iteration_backlog(project_data, iteration_tasks, priority_tasks, size_tasks)
 
-    status_info = github_api.extract_field_info(project_fields, "Status")
-    priority_info = github_api.extract_field_info(project_fields, "Priority")
-    size_info = github_api.extract_field_info(project_fields, "Size")
-
-    print("STATUS INFO:", status_info)
-    print("PRIORITY INFO:", priority_info)
-    print("SIZE INFO:", size_info)
-
-    github_api.update_tasks_to_iteration_backlog(project_data, iteration_tasks)
+    print("GitHub is updated with the tasks for the upcoming iteration successfully!")
 
 if __name__ == "__main__":
     main()
