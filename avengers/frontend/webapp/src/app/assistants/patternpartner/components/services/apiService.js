@@ -1,6 +1,4 @@
-// It will probably be like this
-//const API_BASE_URL = "superhero-06-04@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com";
-const API_BASE_URL = "";
+const API_BASE_URL = "https://superhero-06-04-150699885662.europe-west1.run.app";
 
 export const generateContent = async (prompt, assistantId) => {
   const response = await fetch(`${API_BASE_URL}/generate`, {
