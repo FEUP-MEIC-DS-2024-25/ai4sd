@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 			switch (selectedOption.label) {
 			  case "SARA":
 				// Import and execute SARA
-				(await import('./superheroes/SARA.js')).execute();
+				(await import('./superheroes/SARA/SARA.js')).execute(context);
 				break;
 			  case "Template":
 				// Import and execute Template

@@ -1,0 +1,66 @@
+@startuml
+skinparam linetype ortho
+
+package "Server Components" {
+    class ChatServer {
+        - static final Charset charset
+        - static final CharsetDecoder decoder
+        - static final ByteBuffer byteB
+        - static HashMap<SocketChannel, Client> serverClients
+        - static HashMap<String, ArrayList<Client>> serverRooms
+        + main(String[] args)
+        - processInput(SocketChannel sc)
+        - isCommand(String msg)
+        - isEscape(String msg)
+        - cmdHandle(Client client, String cmd)
+        - privateMsg(String sender, String destin, String msg)
+        - changeNick(Client client, String nick)
+        - joinRoom(Client client, String room)
+        - leaveRoom(Client client)
+        - logout(Client client)
+        - sendToAll(Client sender, String msg)
+        - sendToOthers(Client sender, String msg)
+        - sendMsg(Client client, String msg)
+        - sendToOwner(Client client, String msg)
+    }
+
+    class Client {
+        - String nick
+        - String room
+        - SocketChannel socket
+        - ArrayList<String> buffer
+        + Client(String nick, String room, SocketChannel socket)
+        + getNick()
+        + getRoom()
+        + getSocket()
+        + getBuffer()
+        + setNick(String nick)
+        + setRoom(String room)
+    }
+
+    ChatServer --> Client : Manages
+
+}
+
+package "Client Components" {
+    class ChatClient {
+        - JFrame frame
+        - JTextField chatBox
+        - JTextArea chatArea
+        - Socket connection
+        - String[] lastReq
+        - OutputStreamWriter outputSW
+        - ChatClient chatClient
+        + ChatClient(String server, int port)
+        + printMessage(String message)
+        + newMessage(String message)
+        + run()
+        + processAnswer(String answer)
+        + main(String[] args)
+    }
+}
+
+ChatClient --> ChatServer : communicates
+
+
+@enduml
