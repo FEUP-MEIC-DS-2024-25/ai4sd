@@ -20,7 +20,7 @@ class SparkProject(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     github_project_link = models.URLField(blank=True, null=True, unique=True)
-    miro_board_link = models.URLField(blank=True, null=True, unique=True)
+    miro_board_id = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

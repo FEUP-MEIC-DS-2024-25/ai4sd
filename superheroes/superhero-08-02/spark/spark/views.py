@@ -233,7 +233,7 @@ def add_github_token(request):
 
 @login_required
 @require(['POST'])
-def add_miro_token(request):
+def add_miro_token_to_profile(request):
     miro_token = request.POST.get('miro_token')
 
     if miro_token:
@@ -242,6 +242,18 @@ def add_miro_token(request):
         profile.save()
 
     return redirect('profile_redirect')
+
+@login_required
+@require(['POST'])
+def add_miro_board_id_to_spark_project(request, project_id):
+    miro_board_id = request.POST.get('miro_board_id')
+    project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
+
+    if miro_board_id:
+        project.miro_board_id = miro_board_id
+        project.save()
+
+    return redirect('spark_project_view', project_id)
 
 @login_required
 @require(['POST'])
