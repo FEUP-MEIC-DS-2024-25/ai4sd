@@ -1,7 +1,6 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
 import * as path from "path";
-import { showError } from "./utils";
 
 export function getTemplate(fileName: string, webview: vscode.Webview, dirName: string): string {
     const extensionUri = vscode.Uri.file(path.join(dirName, "../../../"));
