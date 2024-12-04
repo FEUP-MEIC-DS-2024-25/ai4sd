@@ -64,7 +64,6 @@ async def send_message(message: Message):
         if success:
             # complete_messages = chat[0]['messages'] + [message.newMessage.model_dump()]
             context = createGeminiContext(chat, message.newMessage.model_dump())
-            print(context)
         else:
             context = message.newMessage.body
 
@@ -140,13 +139,11 @@ class PinMessageRequest(BaseModel):
 async def pin_message_by_id(id: str, body: PinMessageRequest):
     try:
         # Use the message from the request body
-        exists, chat = db_helper.addPinnedToChat(id, body.message)
-        print(chat)
-        if not exists:
+        chat = db_helper.addPinnedToChat(id, body.message)
+        if not chat:
             raise HTTPException(status_code=404, detail="Chat not found")
-
-        pinned_message = chat['pinnedMessages']
-        return pinned_message
+        print(chat)
+        return JSONResponse(content=chat['pinnedMessages'], status_code=200)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
