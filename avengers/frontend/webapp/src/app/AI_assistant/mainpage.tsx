@@ -5,7 +5,7 @@ import '@/app/globals.css';
 
 import Footer from "@/app/components/footer";
 import NavBar from "@/app/components/navbar";
-import { ChatBubble } from "./components/chat/chat-bubble";
+import { ChatBubble } from "./AI_assistant/components/chat/chat-bubble";
 
 
 
