@@ -17,7 +17,7 @@ class FirestoreHelper:
         self.db = firestore.client(app=self.app)
         self.collection = self.db.collection(self.database_name)
         print(f"Connected to Firestore : {self.app.project_id}")
-        self.test()
+        #self.test()
 
 
     def test(self):

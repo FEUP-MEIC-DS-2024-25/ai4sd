@@ -1,3 +1,5 @@
+from uuid import uuid4
+
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 import requests
@@ -25,11 +27,11 @@ class Message(BaseModel):
 #     return " ".join([message['body'] for message in messages])
 
 def createGeminiContext(chat, new_message):
-    if 'pinnedMessages' in chat[0] and len(chat[0]['pinnedMessages']) > 0:
+    if 'pinnedMessages' in chat and len(chat['pinnedMessages']) > 0:
         print(f"ERROR: Pinned messages exist but logic to handle is not implemented yet.")
         return "ERROR: Pinned messages exist but logic to handle is not implemented yet."
     else:  # No pinned messages - Context is done from messages only.
-        complete_messages = chat[0]['messages'] + [new_message]
+        complete_messages = chat['messages'] + [new_message]
         context = (
             "I am working on requirements engineering. I would like original features suggestions based on existing project requirements.\n"
             "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
@@ -52,15 +54,17 @@ async def send_message(message: Message):
         raise HTTPException(status_code=400, detail=f"Bad request: {e.message}")
     
     try:
-        LLM_API_KEY = os.getenv("LLM_API_KEY")
+        LLM_API_KEY = os.getenv("C3T1_LLM_API_KEY")
         if not LLM_API_KEY:
-            raise ValueError("LLM_API_KEY not found in environment variables")
+            raise ValueError("C3T1_LLM_API_KEY not found in environment variables")
 
         success, chat = db_helper.getChat(message.currentConversation)
+
         
         if success:
             # complete_messages = chat[0]['messages'] + [message.newMessage.model_dump()]
             context = createGeminiContext(chat, message.newMessage.model_dump())
+            print(context)
         else:
             context = message.newMessage.body
 
@@ -96,6 +100,8 @@ async def send_message(message: Message):
             "timestamp": datetime.datetime.now().isoformat(),
             "isDeleted": False
         }
+
+        print(new_message)
         
         # If everything is successful, update the database
         if success: # If the chat already exists
@@ -105,15 +111,10 @@ async def send_message(message: Message):
             return JSONResponse(content=new_message, status_code=200)
         
         else: # If the chat is new
-            conversationId = db_helper.createChat(message.newMessage.model_dump())
-            db_helper.addMessagesToChat(conversationId, [new_message])
-
-            # Get chat to send in the response
-            success, chat = db_helper.getChat(conversationId)
-            if success:
-                chat[0]['_id'] = str(chat[0]['_id'])
-                return JSONResponse(content=chat[0], status_code=201) # Explicit success code to be used for behaviour in the frontend
-
+            conversation = db_helper.createChat(message.newMessage.model_dump())
+            conversationId = conversation['id']
+            res= db_helper.addMessagesToChat(conversationId, [new_message])
+            return JSONResponse(content=res, status_code=201)
     except Exception as e:
         # Clean up the database if something goes wrong
         # TODO
