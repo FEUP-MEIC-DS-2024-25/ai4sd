@@ -10,7 +10,7 @@ const enum DiagramTypes {
 }
 
 const app = express();
-const port = 5000;
+const port = 8080;
 
 app.use(bodyParser.json());
 
