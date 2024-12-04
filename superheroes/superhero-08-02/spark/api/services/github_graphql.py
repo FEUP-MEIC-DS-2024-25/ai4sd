@@ -171,7 +171,6 @@ class GitHubGraphQLAPI:
 
         return self.fetch_all_pages(query, variables, 'user')
     
-    
     def update_tasks_to_iteration_backlog(self, project_data, iteration_tasks, priority_tasks, size_tasks):
 
         project_field = self.get_project_fields("PVT_kwDOCtw04M4Ap0aW")
@@ -300,4 +299,3 @@ class GitHubGraphQLAPI:
             'field_id': field_id,
             'options': option_ids
         }
-
