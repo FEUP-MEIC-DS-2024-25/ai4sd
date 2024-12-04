@@ -53,11 +53,11 @@ export function transformToMarkdown(json: AnalysisJson): string {
     repositoryAnalysis.predictedDesignPatterns.forEach((pattern) => {
       markdown += `### ${pattern.patternName}\n`;
       markdown += `**Confidence:** ${(pattern.confidence * 100).toFixed(2)}%\n\n`;
-      markdown += `#### Evidence:\n`;
       pattern.evidence.forEach((evidence, index) => {
+        markdown += `#### Evidence #${index + 1}\n`; 
         markdown += `- **Type:** ${evidence.type}\n`;
         markdown += `  - **Path:** ${evidence.path}\n`;
-        markdown += `  - **Reason:** ${evidence.reason}\n`;
+        markdown += `  - **Reason:** ${evidence.reason}\n\n`;
       });
       markdown += `\n`;
     });
@@ -71,8 +71,8 @@ export function transformToMarkdown(json: AnalysisJson): string {
     repositoryAnalysis.unusualPatterns.forEach((pattern) => {
       markdown += `### ${pattern.description}\n`;
       markdown += `**Confidence:** ${(pattern.confidence * 100).toFixed(2)}%\n\n`;
-      markdown += `#### Evidence:\n`;
       pattern.evidence.forEach((evidence, index) => {
+        markdown += `#### Evidence #${index +1}:\n`;
         markdown += `- **Type:** ${evidence.type}\n`;
         markdown += `  - **Path:** ${evidence.path}\n`;
         markdown += `  - **Reason:** ${evidence.reason}\n`;
