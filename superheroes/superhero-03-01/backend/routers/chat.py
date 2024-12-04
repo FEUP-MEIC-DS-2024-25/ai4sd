@@ -99,8 +99,6 @@ async def send_message(message: Message):
             "timestamp": datetime.datetime.now().isoformat(),
             "isDeleted": False
         }
-
-        print(new_message)
         
         # If everything is successful, update the database
         if success: # If the chat already exists
@@ -142,7 +140,6 @@ async def pin_message_by_id(id: str, body: PinMessageRequest):
         chat = db_helper.addPinnedToChat(id, body.message)
         if not chat:
             raise HTTPException(status_code=404, detail="Chat not found")
-        print(chat)
         return JSONResponse(content=chat['pinnedMessages'], status_code=200)
 
     except Exception as e:

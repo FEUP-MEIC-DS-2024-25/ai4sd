@@ -63,33 +63,31 @@ class FirestoreHelper:
             return None
 
 
-    def read(self, document_name, collection_name, query_json={}):
+    def getLatestConversations(self, limit):
         """Find documents in a collection based on a query."""
-        query = self.collection.document(document_name).collection(collection_name)
+        query =( self.collection.document("chat").collection("history"))
+        query = query.order_by("lastChanged", direction=firestore.Query.DESCENDING).limit(limit)
 
 
-        # Apply filters
-        for filter_item in query_json["filters"]:
-            query = query.where(
-                filter_item["field"], filter_item["operator"], filter_item["value"])
-
-        # Apply orderBy
-        if "orderBy" in query_json:
-            query = query.order_by(
-                query_json["orderBy"]["field"],
-                direction=query_json["orderBy"]["direction"].upper())
-
-        # Apply limit
-        if "limit" in query_json:
-            query = query.limit(query_json["limit"])
 
         # Execute query
-        doc=  query.stream()
-        if doc.exists:
-            return { "id": uuid, **doc.to_dict()}
+        docs = list(query.stream())
+
+
+        if docs:
+            result = [
+                {
+                    "id": doc.id,
+                    "description": doc.to_dict().get("description"),
+                    "lastChanged": doc.to_dict().get("lastChanged")
+                }
+                for doc in docs
+            ]
+            return result
         else:
-            print("Fail to create")
+            print("Fail to get")
             return None
+
 
     def getChat(self, conversation_id):
         try:
@@ -107,6 +105,7 @@ class FirestoreHelper:
             chat = self.collection.document("chat").collection("history").document(conversation_id)
             result = chat.update(
                 {
+                    "lastChanged": datetime.datetime.now().isoformat(),
                     "totalMessages": firestore.Increment(len(messages)),
                     "messages": firestore.ArrayUnion(messages),
                 }
@@ -136,6 +135,7 @@ class FirestoreHelper:
             # Update the document by adding the message to the pinnedMessages array
             chat.update(
                 {
+                    "lastChanged": datetime.datetime.now().isoformat(),
                     "pinnedMessages": firestore.ArrayUnion([pinned])
                 }
             )
@@ -165,6 +165,7 @@ class FirestoreHelper:
                 "description": description,
                 "messages": [new_message],
                 "pinnedMessages": [],
+                "lastChanged": datetime.datetime.now().isoformat(),
                 "totalMessages": 1
             }
             result = self.create("chat", "history", new_conversation)
