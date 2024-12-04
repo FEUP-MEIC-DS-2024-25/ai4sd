@@ -159,7 +159,7 @@ class FirestoreHelper:
     def createChat(self, new_message):
         try:
             members = ["You", "Gemini"]
-            description = "Conversation with Gemini"
+            description = new_message['body']
             new_conversation = {
                 "members": members,
                 "description": description,
