@@ -25,15 +25,11 @@ app.post('/generate', async (req: any, res: any) => {
     }
     let clientEntry = clientChats.get(clientID);
     let chat = clientEntry?clientEntry[1]:null;
-    let timeElapsed = clientEntry?clientEntry[0]:0;
+    let timeElapsed = Date.now();
     if(!chat){
         chat = model.startChat();
-        clientChats.set(clientID,[Date.now(),chat]);
     }
-    else{
-        timeElapsed = Date.now()-timeElapsed;
-        clientChats.set(clientID,[timeElapsed,chat]);
-    }
+    clientChats.set(clientID,[timeElapsed,chat]);
     // Read the JSON file
     const promptsPath = path.join(__dirname, 'strings.json');
     const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
@@ -62,7 +58,7 @@ app.post('/chat', async (req: any, res: any) => {
     const { action,clientID } = req.body;
     let clientEntry = clientChats.get(clientID);
     let chat = clientEntry?clientEntry[1]:null;
-    let timeElapsed = clientEntry?clientEntry[0]:0;
+    let timeElapsed = Date.now();
 
     if (!action || !clientID) {
         return res.status(400).json({ error: "'action' and 'clientID' are required!" });
@@ -70,10 +66,9 @@ app.post('/chat', async (req: any, res: any) => {
     if(!chat){
         return res.status(400).json({ error: "No chat found for the clientID. Maybe it wasn't initialized when generating the diagram for the first time." });
     }
-    else{;
-        timeElapsed = Date.now()-timeElapsed;
-        clientChats.set(clientID,[timeElapsed,chat]);
-    }
+    
+    clientChats.set(clientID,[timeElapsed,chat]);
+
 
     // Read the JSON file
     const promptsPath = path.join(__dirname, 'strings.json');
@@ -101,7 +96,7 @@ const minuteRange = 30; // If time elapsed since last request for each client is
 const checkInterval = 30; // interval in minutes for checking
 function periodicCleaning(){
     clientChats.forEach((value,key)=>{
-        if(value[0]>minuteRange*60*1000){
+        if(Date.now()-value[0] > minuteRange*60*1000){
             clientChats.delete(key);
         }
     });
