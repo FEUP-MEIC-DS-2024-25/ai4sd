@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Project List{% endblock %}
+
+{% block content %}
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">Project List</h1>
+
+        <div class="row">
+            {% for project in projects %}
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ project.name }}</h5>
+                            <p class="card-text"><strong>Response:</strong> {{ project.response|truncatewords:20 }}</p>
+                            <p class="card-text"><strong>GitHub Link:</strong>
+                                <a href="{{ project.github_link }}" class="text-decoration-none">{{ project.github_link }}</a>
+                            </p>
+                            <div class="mt-3">
+                                <a href="{% url 'view_project' project.id %}" class="btn btn-primary">View Project</a>
+                                <a href="{% url 'edit_project' project.id %}" class="btn btn-secondary">Edit Project</a>
+                                <a href="{% url 'delete_project' project.id %}" class="btn btn-danger">Delete Project</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="alert alert-warning" role="alert">
+                        No projects found.
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
