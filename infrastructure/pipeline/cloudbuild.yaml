@@ -7,6 +7,8 @@ substitutions:
   _FALLBACK_IMAGE: "gcr.io/hero-alliance-feup-ds-24-25/testapp"
   _BUCKET_NAME: "hero-alliance-state"
   _REGION: "europe-west1"
+  _JARVIS_APP_ID: "1063506"
+  _GITHUB_ORG: "FEUP-MEIC-DS-2024-25"
 
 steps:
   # Step 1: Fetch and activate the service account key
@@ -143,12 +145,22 @@ steps:
 
             echo "Deploying ${service}..."
             if gcloud container images describe "${image}" --project="${_PROJECT_ID}" > /dev/null 2>&1; then
-              gcloud run deploy "${service}" \
-                --image="${image}" \
-                --platform=managed \
-                --region="${_REGION}" \
-                --project="${_PROJECT_ID}" \
-                --allow-unauthenticated
+              if [ "$service" == "jarvis" ]; then
+                gcloud run deploy "${service}" \
+                  --image="${image}" \
+                  --platform=managed \
+                  --region="${_REGION}" \
+                  --project="${_PROJECT_ID}" \
+                  --allow-unauthenticated \
+                  --set-env-vars "APP_ID=${_JARVIS_APP_ID}, GITHUB_ORG=${_GITHUB_ORG}"
+              else
+                gcloud run deploy "${service}" \
+                  --image="${image}" \
+                  --platform=managed \
+                  --region="${_REGION}" \
+                  --project="${_PROJECT_ID}" \
+                  --allow-unauthenticated
+              fi
             else
               echo "Image for ${service} not found, deploying using fallback image."
               gcloud run deploy "${service}" \
