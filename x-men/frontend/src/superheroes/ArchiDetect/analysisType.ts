@@ -41,6 +41,7 @@ export function transformToMarkdown(json: AnalysisJson): string {
 
   let markdown = `# Repository Analysis: ${repositoryAnalysis.repoName}\n\n`;
 
+  repositoryAnalysis.analysisDate = new Date(repositoryAnalysis.analysisDate).toUTCString();
   markdown += `**Last Commit Hash:** ${repositoryAnalysis.lastCommitHash}\n`;
   markdown += `**Analysis Date:** ${repositoryAnalysis.analysisDate}\n\n`;
 
