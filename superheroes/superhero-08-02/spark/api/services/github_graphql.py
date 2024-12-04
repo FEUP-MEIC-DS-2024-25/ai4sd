@@ -1,4 +1,5 @@
 import requests
+import json
 
 class GitHubGraphQLAPI:
 
@@ -35,7 +36,11 @@ class GitHubGraphQLAPI:
 
         response = self.session.post(self.BASE_URL, headers=self.headers, json=data)
         if response.status_code == 200:
-            return response.json()
+            data = response.json()
+            data = json.dumps(data, indent=2)
+            return data
+        else:
+            print(f"Error: {response.status_code}")
 
         return None
         
@@ -145,3 +150,10 @@ class GitHubGraphQLAPI:
         variables = {"username": username, "cursor": None}
 
         return self.fetch_all_pages(query, variables, 'user')
+
+    def get_project_columns():
+        # Query to get the columns of a project -> Usar API do GitHub para ser dinâmico 
+
+        columns = ['📋 Product Backlog', '🔖 Iteration Backlog', '🏗 In progress', '✅ Done']    
+        return columns
+
