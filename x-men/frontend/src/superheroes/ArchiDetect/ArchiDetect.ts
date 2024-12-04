@@ -14,29 +14,99 @@ export async function execute(context: vscode.ExtensionContext) {
   
       try {
         // Fetch GET request
-        const apiResponse = await fetch('http://127.0.0.1:8000/api/analyze_repo/fs-feup/autonomous-systems');
-        if (!apiResponse.ok) {
-          throw new Error('Failed to fetch API response: ' + apiResponse.statusText);
-        }
-        const apiData = await apiResponse.json();
-        console.log('GET response data:', apiData);
-  
-        // Read markdown content from the info.md file
-        const markdownPath = path.join(context.extensionPath, 'src', 'superheroes', 'ArchiDetect', 'info.md');
-        if (!fs.existsSync(markdownPath)) {
-          throw new Error('Markdown file not found at: ' + markdownPath);
-        }
-        const markdownContent = fs.readFileSync(markdownPath, 'utf8');
-  
+        // const apiResponse = await fetch('http://127.0.0.1:8080/api/analyze_repo/fs-feup/autonomous-systems');
+        // if (!apiResponse.ok) {
+        //   throw new Error('Failed to fetch API response: ' + apiResponse.statusText);
+        // }
+        // const apiData = await apiResponse.json();
+        // console.log('GET response data:', apiData);
+        
+        //stub
+        const apiResponse = 
+        `{
+          "repositoryAnalysis": {
+            "repoName": "SampleRepo",
+            "lastCommitHash": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+            "analysisDate": "2024-12-04T14:00:00Z",
+            "predictedDesignPatterns": [
+              {
+                "patternName": "Singleton",
+                "confidence": 0.92,
+                "evidence": [
+                  {
+                    "type": "file",
+                    "path": "src/main/java/com/example/ConfigManager.java",
+                    "reason": "Contains a private constructor and a static instance method, typical of Singleton pattern."
+                  },
+                  {
+                    "type": "commit",
+                    "path": "commit_hash_12345",
+                    "reason": "Commit message mentions 'refactored to singleton for global config access'."
+                  }
+                ]
+              },
+              {
+                "patternName": "Factory Method",
+                "confidence": 0.87,
+                "evidence": [
+                  {
+                    "type": "file",
+                    "path": "src/main/java/com/example/shapes/ShapeFactory.java",
+                    "reason": "Defines a method returning different Shape subclasses based on input type."
+                  },
+                  {
+                    "type": "branch",
+                    "path": "feature/shape-factory",
+                    "reason": "Branch name explicitly refers to 'shape-factory', indicating development focus on this pattern."
+                  }
+                ]
+              }
+            ],
+            "unusualPatterns": [
+              {
+                "description": "Custom variation of Singleton with thread-local storage.",
+                "confidence": 0.78,
+                "evidence": [
+                  {
+                    "type": "file",
+                    "path": "src/main/java/com/example/ThreadLocalConfigManager.java",
+                    "reason": "Uses thread-local variables to implement instance storage, diverging from traditional Singleton."
+                  }
+                ]
+              },
+              {
+                "description": "Potential anti-pattern: Overuse of static methods.",
+                "confidence": 0.65,
+                "evidence": [
+                  {
+                    "type": "file",
+                    "path": "src/main/java/com/example/Utility.java",
+                    "reason": "Class consists entirely of static methods, which may lead to tight coupling."
+                  }
+                ]
+              }
+            ]
+          },
+          "meta": {
+            "analyzedCommits": 325,
+            "analyzedBranches": 12,
+            "linesOfCode": 48237,
+            "toolVersion": "1.0.0"
+          }
+        }`;
+        
+        const jsonData : analysisJson.AnalysisJson = JSON.parse(apiResponse);
+        const markdownData = analysisJson.transformToMarkdown(jsonData);
+        
         // Convert Markdown to HTML using Showdown.js
         const converter = new showdown.Converter();
-        const htmlContent = converter.makeHtml(markdownContent);
+        const responseContent = converter.makeHtml(markdownData);
   
         // Generate HTML with API data included
-        const apiDataHtml = converter.makeHtml(JSON.stringify(apiData, null, 2).replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/\n/g, '<br>')
-                    .replace(/  /g, '&nbsp;&nbsp;'));
+        // const apiDataHtml = converter.makeHtml(JSON.stringify(apiData, null, 2).replace(/</g, '&lt;')
+        //             .replace(/>/g, '&gt;')
+        //             .replace(/\n/g, '<br>')
+        //             .replace(/  /g, '&nbsp;&nbsp;'));
   
         // Inject both markdown and API data into the webview
         panel.webview.html = `
@@ -45,6 +115,7 @@ export async function execute(context: vscode.ExtensionContext) {
           <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>ArchiDetect Information</title>
             <style>
               body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.6; }
               h1, h2, h3 { color: #fffff; }
@@ -52,9 +123,7 @@ export async function execute(context: vscode.ExtensionContext) {
             </style>
           </head>
           <body>
-            <h1>ArchiDetect Information</h1>
-            ${htmlContent}
-            ${apiDataHtml}
+            ${responseContent}
           </body>
           </html>
         `;
