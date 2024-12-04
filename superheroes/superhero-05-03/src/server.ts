@@ -16,14 +16,18 @@ app.use(bodyParser.json());
 
 const genAI = new GoogleGenerativeAI("AIzaSyD8kleEGvzyFxtx8WOfhsIZSp7VuC1ypRM");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-const chat = model.startChat();
+const clientChats = new Map<string,any>();
 
 app.post('/generate', async (req: any, res: any) => {
-    const { code, diagramType } = req.body;
-    if (!code || !diagramType) {
-        return res.status(400).json({ error: "Both 'code' and 'diagramType' are required." });
+    const { code, diagramType,clientID} = req.body;
+    if (!code || !diagramType || !clientID) {
+        return res.status(400).json({ error: "All the 'code' and 'diagramType' and 'clientID' are required." });
     }
-
+    let chat:any = clientChats.get(clientID);
+    if(!chat){
+        chat = model.startChat();
+        clientChats.set(clientID,chat);
+    }
     // Read the JSON file
     const promptsPath = path.join(__dirname, 'strings.json');
     const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
@@ -49,11 +53,16 @@ app.post('/generate', async (req: any, res: any) => {
     }
 });
 app.post('/chat', async (req: any, res: any) => {
-    const { action } = req.body;
+    const { action,clientID } = req.body;
 
-    if (!action) {
-        return res.status(400).json({ error: "Request is lost, no prompt given." });
+    if (!action || !clientID) {
+        return res.status(400).json({ error: "'action' and 'clientID' are required!" });
     }
+    let chat:any = clientChats.get(clientID);
+    if(!chat){
+        return res.status(400).json({ error: "No chat found for the clientID. Maybe it wasn't initialized when generating the diagram for the first time." });
+    }
+
     // Read the JSON file
     const promptsPath = path.join(__dirname, 'strings.json');
     const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
