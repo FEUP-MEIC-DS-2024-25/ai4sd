@@ -1,8 +1,6 @@
-asgiref
 Django
 djangorestframework
 packaging
-sqlparse
 typing_extensions
 django-cors-headers
 google-generativeai
