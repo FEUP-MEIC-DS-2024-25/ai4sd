@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from firebase_admin import credentials
 import os
 from dotenv import load_dotenv
 
@@ -22,9 +23,13 @@ ASGI_APPLICATION = 'spark.asgi.application'
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
+
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
+
+# SECURITY WARNING: keep the Firebase credentials file path secret!
+# FIREBASE_CREDENTIALS_FILE
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -68,6 +73,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    
 ]
 
 INTERNAL_IPS = [
