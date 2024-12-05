@@ -251,24 +251,29 @@ a.secondary {
   border-right: 1px solid #303030;
 }
 
-.historyList{
+.historyList {
   border-bottom: 1px #ccc solid;
   flex-grow: 1;
   overflow-y: auto;
-  scrollbar-gutter: stable; 
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: var(--button-secondary-hover) var(--bs-body-color);
 }
 
-.historyList::-webkit-scrollbar{
+.historyList::-webkit-scrollbar {
   width: 8px;
 }
+
 .historyList::-webkit-scrollbar-track {
-  background-color: var(--bs-body-color); /* Background of the scrollbar track */
+  background-color: var(--bs-body-color);
+  /* Background of the scrollbar track */
 }
+
 .historyList::-webkit-scrollbar-thumb {
-  background-color: var(--button-secondary-hover); /* Color of the scrollbar thumb */
-  border-radius: 10px; /* Optional: round the edges of the scrollbar thumb */
+  background-color: var(--button-secondary-hover);
+  /* Color of the scrollbar thumb */
+  border-radius: 10px;
+  /* Optional: round the edges of the scrollbar thumb */
 }
 
 .historyItem {
@@ -278,7 +283,7 @@ a.secondary {
   padding: 0.5em;
   color: rgb(75%, 75%, 75%);
   text-decoration: none !important;
-  width:18rem;
+  width: 18rem;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -289,8 +294,12 @@ a.secondary {
 .historyItem:hover {
   border: solid 1px white;
   color: white;
-  white-space: normal; /* Allows text wrapping */
-  max-height: 100px; /* Maximum height for expanded item */
-  overflow: visible; /* Allow full content to show */
-  mask-image: none; /* Remove fade-out effect*/
+  white-space: normal;
+  /* Allows text wrapping */
+  max-height: 100px;
+  /* Maximum height for expanded item */
+  overflow: visible;
+  /* Allow full content to show */
+  mask-image: none;
+  /* Remove fade-out effect*/
 }
