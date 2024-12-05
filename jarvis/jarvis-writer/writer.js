@@ -1,5 +1,6 @@
 import { extractRepoDetails, fetchFiles } from "../jarvis-fetcher/fetcher.js";
 import { BUCKET_NAME, STORAGE_CLIENT } from "../consts.js";
+import { downloadFiles } from "../jarvis-fetcher/utils.js";
 
 
 /**
@@ -8,7 +9,6 @@ import { BUCKET_NAME, STORAGE_CLIENT } from "../consts.js";
  * @param {string} repo - Repository name.
  * @param {string} filePath - Path of the file within the repository.
  * @param {string} fileContents - Content of the file to upload.
- * @param {boolean} isBinary - Flag indicating whether the file is binary (image, etc.)
  */
 export async function writeToBucket(org, repo, filePath, fileContents, isBinary = false) {
     const absolutePath = `${org}/${repo}/${filePath}`;
@@ -16,16 +16,13 @@ export async function writeToBucket(org, repo, filePath, fileContents, isBinary 
     try {
         // Reference the file in the bucket
         const file = STORAGE_CLIENT.bucket(BUCKET_NAME).file(absolutePath);
-
-        const options = isBinary ? { contentType: 'application/octet-stream' } : {};
-
-        // Write file contents
-        await file.save(fileContents, options);
+        await file.save(fileContents);
 
         console.log(
             `File "${filePath.split('/').pop()}" written to bucket "${BUCKET_NAME}" successfully.`
         );
     } catch (err) {
+        console.log("#", fileContents, "#")
         console.error(`Error writing file "${absolutePath}" to bucket:`, err.message);
         throw err; // Re-throw error to handle at a higher level if necessary
     }
@@ -74,8 +71,9 @@ async function _uploadRepo(octokit, org, repo) {
             return;
         }
 
-        for (const file of files) {
-            await writeToBucket(org, repo, file.path, file.content);
+        const filesWContent = await downloadFiles(files, true);
+        for (const file of filesWContent) {
+            await writeToBucket(org, repo, file.path, file.content, file.isBinary);
         }
 
         console.log(`Successfully processed ${files.length} files from ${org}/${repo}`);
