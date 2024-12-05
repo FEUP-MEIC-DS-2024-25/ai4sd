@@ -11,6 +11,7 @@ import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
 import Assistant from "./components/assistant"
 import ChatNotFound from "./components/chatNotFound";
+import { getChats } from "./components/api";
 
 
 export default function Interactor() {
@@ -55,6 +56,9 @@ export default function Interactor() {
             setChat(mockChats[id - 1]);
             setChatExists(true);
         }
+        getChats().then((data) => {
+            console.log(data);
+        });
     }, [id]);
 
 
