@@ -608,10 +608,10 @@ resource "google_project_iam_member" "strange_firestore_permissions" {
 
   depends_on = [google_firestore_database.vault]
 }
-
 #################################
 ### SECRETS #####################
 #################################
+
 resource "google_secret_manager_secret" "superhero_secrets" {
   for_each = toset(flatten([for hero in local.superhero_names : ["${hero}-secret-1", "${hero}-secret-2", "${hero}-secret-3"]]))
 
@@ -641,13 +641,12 @@ resource "google_secret_manager_secret_iam_member" "cloud_build_sa_secret_admin"
   member    = "serviceAccount:${google_service_account.cloud_build_sa.email}"
 }
 
-
 resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
   for_each = google_secret_manager_secret.superhero_secrets
 
   secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
   role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
+  member    = "serviceAccount:${google_service_account.superhero[each.key]?.email}"
 }
 
 resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
@@ -655,7 +654,7 @@ resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
 
   secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
   role      = "roles/secretmanager.SecretVersionManager"
-  member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
+  member    = "serviceAccount:${google_service_account.superhero[each.key]?.email}"
 }
 
 resource "google_secret_manager_secret" "jarvis_secrets" {
@@ -674,6 +673,7 @@ resource "google_secret_manager_secret" "jarvis_secrets" {
     }
   }
 }
+
 resource "google_secret_manager_secret_iam_member" "jarvis_secret_version_manager" {
   for_each = google_secret_manager_secret.superhero_secrets
 
