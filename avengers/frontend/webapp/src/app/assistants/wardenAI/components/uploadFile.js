@@ -27,7 +27,8 @@ const UploadFilePage = () => {
 
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app', true)
+      // xhr.open('POST', 'http://localhost:8080/online', true)
+      xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app/online', true)
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
         console.log(xhr.responseText);
