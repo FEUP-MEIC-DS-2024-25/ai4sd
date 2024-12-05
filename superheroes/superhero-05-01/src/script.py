@@ -28,6 +28,9 @@ Only provide the JSON array of vulnerabilities.
 Please try to be synthetic in your answers.
 """
 
+with open('etc/gemini_token', 'r') as file:
+  gemini_token = file.read().strip()
+
 
 def run_online(file):
   # credentials = service_account.Credentials.from_service_account_file('wardenai-bbe86d6d2916.json')
@@ -36,12 +39,10 @@ def run_online(file):
   #     credentials=credentials,
   # )
 
-  genai.configure(api_key="AIzaSyAtSSHni87FP3Hy3GIsE3bQkwnJV5dz4-E")
+  genai.configure(api_key=gemini_token)
 
   model = genai.GenerativeModel("gemini-1.5-flash-002")
   response = model.generate_content(prompt1 + file + prompt2).text
-
-  print(resposnse)
 
   return response
 

@@ -30,10 +30,13 @@ RUN python3 -m pip install "fastapi[standard]"
 
 # RUN ollama serve & sleep 5 && ollama pull llama3.1
 
-COPY script.py .
+COPY ./src .
 
-COPY api.py .
+RUN --mount=type=secret,id=secret \
+    cat /run/secrets/secret > /etc/gemini_token
 
 ## COPY wardenai-bbe86d6d2916.json .
 
-CMD ["bash", "-c", "fastapi run api.py"]
+# CMD ["bash", "-c", "fastapi run api.py"]
+
+CMD ["uvicorn" ,"api:app", "--host", "0.0.0.0", "--port", "8080"]
