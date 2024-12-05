@@ -12,4 +12,4 @@ ENV PYTHONUNBUFFERED=1
 
 EXPOSE 8080
 
-CMD ["runserver", "0.0.0.0:8000"]
+CMD ["runserver", "0.0.0.0:8080"]
