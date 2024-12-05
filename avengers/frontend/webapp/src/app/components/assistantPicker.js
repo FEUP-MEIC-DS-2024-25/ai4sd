@@ -8,8 +8,6 @@ export default function AssistantPicker() {
         <div className={styles.assistantPicker}>
             <AssistantPickerItems />
         </div>
-
-
     )
 }
 
@@ -21,8 +19,9 @@ function getAssistantList() {
     let ai4 = { name: "ai4", type: "req", link: "#" };
     let ai5 = { name: "ai5", type: "arch", link: "#" };
     let ai6 = { name: "FeatureCraft", type: "req", link: "/assistants/featurecraft" };
+    let ai7 = { name: "APLens", type: "req", link: "/assistants/aplens"}
 
-    return [ai1, ai2, ai3, ai4, ai5, ai6]
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7]
 }
 
 function AssistantPickerItems() {
@@ -37,6 +36,4 @@ function AssistantPickerItems() {
             ))}
         </ul>
     );
-
-
 }
