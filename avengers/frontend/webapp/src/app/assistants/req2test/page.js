@@ -32,19 +32,19 @@ export default function Interactor() {
     }
 
 
-    useEffect(() => {
+        useEffect(() => {
         getChats().then((data) => {
-            console.log("Data from getChats:",data);
+            console.log("Data from getChats:", data);
             setChats(data);
             setAssistHistory(prepareHistory(data));
-            if (id !== 0) {
-                const chat = data.find((chat) => chat.id === id);
-                console.log("ChatFilter:",chat);
-                setChat(chat);
-            }
-            else {
-                setChat(data[0]);
-            }
+            console.log("Id:", id);
+    
+            const validId = data.some(chat => chat.id === id) ? id : data[0].id;
+            localStorage.setItem("req2testId", validId);
+    
+            const chat = data.find((chat) => chat.id === validId);
+            console.log("ChatFilter:", chat);
+            setChat(chat);
         });
     }, [id]);
 
