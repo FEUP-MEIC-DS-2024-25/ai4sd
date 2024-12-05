@@ -1,0 +1,103 @@
+/* Chat Container */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f5f5f5;
+    font-family: Arial, sans-serif;
+  }
+  
+  /* Chat Header */
+  .chat-header {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  /* Chat Box */
+  .chat-box {
+    width: 100%;
+    max-width: 500px;
+    height: 400px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    overflow-y: auto;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .chat-message {
+    background-color: #e0f7fa;
+    color: #00796b;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    max-width: 70%;
+    align-self: flex-start;
+    word-wrap: break-word;
+  }
+  
+  /* Chat Input */
+  .chat-input-container {
+    display: flex;
+    width: 100%;
+    max-width: 500px;
+    color: #ffffff
+  }
+  
+  .chat-input {
+    flex: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px 0 0 4px;
+    outline: none;
+  }
+  
+  .chat-input:focus {
+    border-color: #00796b;
+  }
+  
+  /* Send Button */
+  .chat-send-button {
+    background-color: #808080;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 0 4px 4px 0;
+    outline: none;
+  }
+  
+  .chat-send-button:hover {
+    background-color: #8080A0;
+  }
+
+/* General button styles */
+.button {
+    width: 100%;
+    padding: 0.5rem 1rem;
+    background-color: black;
+    color: white;
+    font-weight: 600; /* Equivalent to font-semibold */
+    border-radius: 0.375rem; /* Equivalent to rounded-md */
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    text-align: center;
+  }
+  
+  .button:hover {
+    background-color: #333333; /* Slightly lighter black for hover effect */
+  }
+  
+  .button:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px #4a5568; /* Focus ring (gray-600) */
+  }
+  
+  
