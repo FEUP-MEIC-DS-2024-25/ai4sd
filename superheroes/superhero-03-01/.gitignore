@@ -1,0 +1,6 @@
+.idea
+.env
+**/__pycache__/
+.DS_Store
+/featurecraft-63aeb-21df02758beb.json
+/firebase.json
