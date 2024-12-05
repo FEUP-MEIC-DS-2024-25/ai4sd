@@ -10,7 +10,7 @@ def check_if_user_story_format(user_story):
         return False
 
 def call_gemini_api(user_input):
-    genai.configure(api_key="AIzaSyCAhIoSs93i2maxH8A3ESi3LmqCygp2sxY")
+    genai.configure(api_key="")
     model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(user_input)
 

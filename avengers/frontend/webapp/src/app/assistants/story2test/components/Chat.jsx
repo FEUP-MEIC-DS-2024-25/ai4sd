@@ -85,20 +85,28 @@ export const Chatbot = () => {
     const convertUserStoryToText = async (userStory) => {
         return new Promise((resolve) => {
             setTimeout(() => {
-                /*const response = fetch('http://0.0.0.0:8000/api/gemini/', {
+                fetch('http://localhost:8000/api/gemini/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ user_story: userStory })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Server error: ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    resolve(data.answer);
+                })
+                .catch(error => {
+                    reject('Error: ' + error.message);
                 });
-
-                if (!response.ok) {
-                    throw new Error('Server error: ' + response.statusText);
-                }
-                resolve(`${response}`)*/
                 
-                resolve(`User Story: ${userStory}`)
+                //resolve(`User Story: ${userStory}`)
             }, 1000)
         })
     }
@@ -112,11 +120,8 @@ export const Chatbot = () => {
             };
             setSelectedChat(updatedChat);
             setChats(chats.map(chat => chat.id === selectedChat.id ? updatedChat : chat));
-            const allMessages = [...selectedChat.messages, { content: input }]
-                .map(msg => msg.content)
-                .join(" ");
 
-            convertUserStoryToText(allMessages).then(response => {
+            convertUserStoryToText(input).then(response => {
                 const botResponse = { content: "", sender: "bot" }; // Começa vazio
                 const chatWithBotResponse = {
                     ...updatedChat,
@@ -140,7 +145,7 @@ export const Chatbot = () => {
                     } else {
                         clearInterval(typingInterval);
                     }
-                }, 10);
+                }, 2);
             });
 
             setInput("");
