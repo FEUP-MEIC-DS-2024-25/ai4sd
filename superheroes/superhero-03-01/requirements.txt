@@ -1,0 +1,7 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+pymongo
+jsonschema
+firebase-admin

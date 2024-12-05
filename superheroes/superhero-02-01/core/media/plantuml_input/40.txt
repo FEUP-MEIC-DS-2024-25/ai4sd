@@ -1,0 +1,56 @@
+@startuml
+skinparam linetype ortho
+
+package "Package1" {
+    class Class1 {
+        + method1(Type1 param1)
+        + method2(Type2 param2)
+        + method3(Type3 param3)
+    }
+    
+    class Class2 {
+        - attribute1 : Type1
+        - attribute2 : Type2
+        + method1()
+        + method2(Type1 param)
+    }
+
+    class Class3 {
+        + method1(Type1 param1)
+        + method2()
+        + method3(Type2 param)
+    }
+
+    Class1 --> Class2 : Relation1
+    Class3 --> Class1 : Relation2
+    Class2 --> Class3 : Relation3
+}
+
+package "Package2" {
+    class Component1
+    class Component2
+    class Component3
+    class Component4
+
+    Class3 --> Component1
+    Class3 --> Component2
+    Class3 --> Component3
+    Class3 --> Component4
+}
+
+package "Package3" {
+    class Manager1 {
+        + operation1()
+    }
+    
+    class Manager2 {
+        + operation2()
+        + operation3()
+    }
+
+    Class1 --> Manager1 : Relation4
+    Manager1 --> Manager2 : Relation5
+    (...)
+}
+(...)
+@enduml
