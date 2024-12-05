@@ -11,6 +11,7 @@ import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
 import Assistant from "../components/assistant"
 import ChatNotFound from "../components/chatNotFound";
+import ChatLoading from "../components/chatLoading";
 import { getChats } from "../api/api";
 
 
@@ -20,9 +21,9 @@ export default function Interactor() {
     const assistName = "Req2Test";
     const assistType = "req";
     const [assistHistory, setAssistHistory] = useState([]);
-    const [chats, setChats] = useState(null);
     const [chat, setChat] = useState(null);
-    const [chatExists, setChatExists] = useState(true);
+    const [chatLoaded, setChatLoaded] = useState(false);
+
 
 
     const prepareHistory = (chats) => {
@@ -37,16 +38,17 @@ export default function Interactor() {
 
     useEffect(() => {
         getChats().then((data) => {
-            console.log("Data from getChats:",data);
-            setChats(data);
             setAssistHistory(prepareHistory(data));
             if (id !== 0) {
                 const chat = data.find((chat) => chat.id === id);
-                console.log("ChatFilter:",chat);
                 setChat(chat);
+                setChatLoaded(data.some(chat => chat.id === id));
+
+                const validId = data.some(chat => chat.id === id) ? id : data[0].id;
+                localStorage.setItem("req2testId", validId);
             }
             else {
-                setChat(data[0]);
+                setChatLoaded(false);
             }
         });
     }, [id]);
@@ -56,10 +58,14 @@ export default function Interactor() {
         <div className={styles.interactorLayout}>
             <AssistantPicker />
             <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
-            {chatExists && chat !== null ? (
-                <Assistant chat={chat}/>
+            {chatLoaded ? (
+                chat !== null ? (
+                    <Assistant chat={chat}/>
+                ) : (
+                    <ChatNotFound />
+                )
             ) : (
-                <ChatNotFound />
+                <ChatLoading />
             )}
         </div>
     )
