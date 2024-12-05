@@ -1,6 +1,5 @@
 "use client"
 import { useEffect, useState } from "react";
-import { useParams } from 'next/navigation';
 
 import styles from "@/app/page.module.css";
 
@@ -11,53 +10,41 @@ import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
 import Assistant from "./components/assistant"
 import ChatNotFound from "./components/chatNotFound";
-import { getChats } from "./components/api";
+import { getChats } from "./api/api";
 
 
 export default function Interactor() {
     // Retrieve the id from the local storage
-    const id = localStorage.getItem("req2testId") ? parseInt(localStorage.getItem("req2testId")) : 1;
+    const id = localStorage.getItem("req2testId") ? localStorage.getItem("req2testId") : 0;
     const assistName = "Req2Test";
     const assistType = "req";
-    const [assistHistory, setAssistHistory] = useState(prepareMockHistory);
+    const [assistHistory, setAssistHistory] = useState([]);
+    const [chats, setChats] = useState(null);
     const [chat, setChat] = useState(null);
-    const [chatExists, setChatExists] = useState(true);
 
-    const mockChats = [
-        { id: 1, name: "Chat 1", 
-            messages: [
-                { content: "1Welcome! I am here to help you convert your requirements into Gherkin tests. How can I assist you today?", sender: "bot" },
-                { content: "I need help with a requirement", sender: "user" },
-                { content: "Sure! Please paste your requirement here", sender: "bot" },
-            ] 
-        },
-        { id: 2, name: "Chat 2", 
-            messages: [
-                { content: "2Welcome! I am here to help you convert your requirements into Gherkin tests. How can I assist you today?", sender: "bot" },
-                { content: "I need help with a requirement", sender: "user" },
-                { content: "Sure! Please paste your requirement here", sender: "bot" },
-            ] 
-        },
-        { id: 3, name: "Chat 3", 
-            messages: [
-                { content: "3Welcome! I am here to help you convert your requirements into Gherkin tests. How can I assist you today?", sender: "bot" },
-                { content: "I need help with a requirement", sender: "user" },
-                { content: "Sure! Please paste your requirement here", sender: "bot" },
-            ] 
-        }
-    ]
-    
+    const prepareHistory = (chats) => {
+        const history = [];
+        chats.map((chat) => {
+            const chatObj = { text: chat.name, link: `/assistants/req2test/${chat.id}` };
+            history.push(chatObj);
+        });
+        return history;
+    }
+
 
     useEffect(() => {
-        if (id > 3) {
-            setChatExists(false);
-        } 
-        else if (id >= 1) {
-            setChat(mockChats[id - 1]);
-            setChatExists(true);
-        }
         getChats().then((data) => {
             console.log("Data from getChats:",data);
+            setChats(data);
+            setAssistHistory(prepareHistory(data));
+            if (id !== 0) {
+                const chat = data.find((chat) => chat.id === id);
+                console.log("ChatFilter:",chat);
+                setChat(chat);
+            }
+            else {
+                setChat(data[0]);
+            }
         });
     }, [id]);
 
@@ -66,20 +53,11 @@ export default function Interactor() {
         <div className={styles.interactorLayout}>
             <AssistantPicker />
             <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
-            {chatExists && chat !== null ? (
+            {chat !== null ? (
                 <Assistant chat={chat}/>
             ) : (
                 <ChatNotFound />
             )}
         </div>
     )
-}
-
-function prepareMockHistory() {
-    const history = [];
-    for (let i = 1; i <= 20; i++) {
-        const chat = { text: `Chat ${i}`, link: `/assistants/req2test/${i}` };
-        history.push(chat);
-    }
-    return history;
 }
