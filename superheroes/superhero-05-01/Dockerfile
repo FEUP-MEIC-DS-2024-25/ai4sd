@@ -32,8 +32,8 @@ RUN python3 -m pip install "fastapi[standard]"
 
 COPY ./src .
 
-RUN --mount=type=secret,id=secret \
-    cat /run/secrets/secret > /etc/gemini_token
+# RUN --mount=type=secret,id=secret \
+#     cat /run/secrets/secret > /etc/gemini_token
 
 ## COPY wardenai-bbe86d6d2916.json .
 
