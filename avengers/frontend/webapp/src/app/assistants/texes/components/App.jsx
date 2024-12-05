@@ -1,9 +1,10 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 
 import "./App.css";
 
 const App = () => {
+  const bottomRef = useRef(null);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [file, setFile] = useState(null);
@@ -84,8 +85,32 @@ const App = () => {
     }, 500);
   };
 
+  useEffect(() => {
+    // Scroll to the bottom whenever messages, response, or progress changes
+    if (bottomRef.current) {
+      bottomRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages, response, progress]);
+
   return (
     <div className="flex flex-col items-center space-y-6 p-6">
+        {/* Response Section */}
+      {response && (
+        <div className="prose mt-6 max-w-full">
+        <ReactMarkdown>{response}</ReactMarkdown>
+        </div>
+      )}
+      {/* Progress Bar */}
+      {progress > 0 && (
+        <div className="progress-bar-container">
+          <div
+            className="progress-bar"
+            style={{ width: `${progress}%` }}
+          >
+            {progress}%
+          </div>
+        </div>
+      )}
       <div className="form-container">
         {/* Ask a Question Form */}
         <form onSubmit={handleSubmit} className="form-box">
@@ -113,34 +138,7 @@ const App = () => {
           />
           <button type="submit" className="button">Send File</button>
         </form>
-      </div>
-
-      {/* Progress Bar */}
-      {progress > 0 && (
-        <div className="progress-bar-container">
-          <div
-            className="progress-bar"
-            style={{ width: `${progress}%` }}
-          >
-            {progress}%
-          </div>
-        </div>
-      )}
-
-      {/* Response Section */}
-      {response && (
-        <div className="prose mt-6 max-w-full">
-          <ReactMarkdown>{response}</ReactMarkdown>
-        </div>
-      )}
-
-      {/* Chat Messages */}
-      <div className="chat-box w-full max-w-md bg-gray-50 p-4 rounded-lg shadow-md">
-        {messages.map((msg, index) => (
-          <div key={index} className="chat-message bg-blue-100 p-2 my-2 rounded-lg">
-            {msg}
-          </div>
-        ))}
+        <div ref={bottomRef}></div>
       </div>
     </div>
   );
