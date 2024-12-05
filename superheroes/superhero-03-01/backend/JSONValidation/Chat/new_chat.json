@@ -1,0 +1,25 @@
+{
+  "type": "object",
+  "properties": {
+    "currentConversation": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{24}|[0-9a-fA-F-]{36}$"
+    },
+    "newMessage": {
+      "type": "object",
+      "properties": {
+        "authorName": {"type": "string"},
+        "body": {"type": "string"},
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "isDeleted": {"type": "boolean"}
+      },
+      "required": ["authorName", "body", "timestamp", "isDeleted"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["currentConversation", "newMessage"],
+  "additionalProperties": false
+}
