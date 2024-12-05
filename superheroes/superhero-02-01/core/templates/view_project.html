@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% load markdown_extras %}
+
+{% block title %} View Diagram - {{ project.name }}{% endblock %}
+
+{% block content %}
+    <style>
+        .img-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .img-bigger {
+            max-width: 100%; 
+            max-height: 700px;
+            height: auto;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+    </style>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4">{{ project.name }}</h1>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="card-text">{{ project.response|markdown_to_html|safe }}</div>
+                        <p class="card-text"><strong>GitHub Link:</strong> 
+                            <a href="{{ project.github_link }}" class="text-decoration-none">{{ project.github_link }}</a>
+                        </p>
+                        <div class="mt-3">
+                            <a href="{% url 'edit_project' project.id %}" class="btn btn-primary">EDIT Diagram</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-body">
+                        {% if project.plantuml_image %}
+                            <div class="img-container">
+                                <img src="{{ plantuml_image_url }}" alt="PlantUML Diagram" class="img-fluid img-bigger">
+                            </div>
+                        {% else %}
+                            <p>No PlantUML diagram available.</p>
+                            <p>{{ plantuml_image_url }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
