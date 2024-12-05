@@ -86,26 +86,29 @@ async def create_chat(chat: Chat):
     try:
         collection_ref = db.collection("req2test").document("development").collection("chats")
 
-        # Prepare chat data
         chat_data = chat.dict(exclude={"id"})  
-        chat_data["created_at"] = datetime.now()  
+        chat_data["created_at"] = datetime.now() 
 
         prompts_as_refs = []
         for prompt in chat.prompts:
-            prompt_ref = db.document(prompt.reference_id)
+            prompt_doc_path = f"req2test/development/prompts/{prompt.id}"  
+            prompt_ref = db.document(prompt_doc_path)
+
             if not prompt_ref.get().exists:
                 return {
-                    "error": f"Prompt with reference ID '{prompt.reference_id}' does not exist"
+                    "error": f"Prompt with reference ID '{prompt.id}' does not exist"
                 }
+
             prompts_as_refs.append(prompt_ref)
 
-        chat_data["prompts"] = prompts_as_refs  
+        chat_data["prompts"] = prompts_as_refs 
 
         new_doc_ref = collection_ref.add(chat_data)  
         return {"success": True, "message": "Chat created successfully", "id": new_doc_ref[1].id}
 
     except Exception as e:
-        return {"error": f"An error occurred while creating the chat: {str(e)}"}
+        raise HTTPException(status_code=500, detail=f"An error occurred while creating the chat: {str(e)}")
+
 
 @app.post("/create_prompt")
 async def create_prompt(prompt: Prompt):
@@ -113,28 +116,27 @@ async def create_prompt(prompt: Prompt):
     Endpoint to create a new prompt in Firestore.
     """
     try:
-        # Firestore collection reference for the prompts
         collection_ref = db.collection("req2test").document("development").collection("prompts")
 
-        # Prepare prompt data
-        prompt_data = prompt.dict(exclude={"id"})  # Exclude the `id` field, as Firestore will generate it
-        prompt_data["created_at"] = datetime.now()  # Ensure `created_at` is a Firestore-compatible timestamp
+        prompt_data = prompt.dict(exclude={"id"})  
+        prompt_data["created_at"] = datetime.now()  
 
-        # Convert the response to a Firestore reference
         if prompt.response:
-            response_ref = db.document(prompt.response.reference_id)
+            response_doc_path = f"req2test/development/ai_responses/{prompt.response.id}"  
+            response_ref = db.document(response_doc_path)
+
             if not response_ref.get().exists:
                 return {
-                    "error": f"Response with reference ID '{prompt.response.reference_id}' does not exist"
+                    "error": f"Response with reference ID '{prompt.response.id}' does not exist"
                 }
-            prompt_data["response"] = response_ref  # Replace the response with a Firestore reference
 
-        # Add prompt to Firestore
-        new_doc_ref = collection_ref.add(prompt_data)  # Firestore generates a new document ID
+            prompt_data["response"] = response_ref
+
+        new_doc_ref = collection_ref.add(prompt_data)  
         return {"success": True, "message": "Prompt created successfully", "id": new_doc_ref[1].id}
 
     except Exception as e:
-        return {"error": f"An error occurred while creating the prompt: {str(e)}"}
+        raise HTTPException(status_code=500, detail=f"An error occurred while creating the prompt: {str(e)}")
     
 @app.post("/create_response")
 async def create_response(response: Response):
@@ -142,15 +144,12 @@ async def create_response(response: Response):
     Endpoint to create a new response in Firestore.
     """
     try:
-        # Firestore collection reference for the responses
         collection_ref = db.collection("req2test").document("development").collection("ai_responses")
 
-        # Prepare response data
-        response_data = response.dict(exclude={"id"})  # Exclude the `id` field, as Firestore will generate it
-        response_data["created_at"] = datetime.now()  # Ensure `created_at` is a Firestore-compatible timestamp
+        response_data = response.dict(exclude={"id"})  
+        response_data["created_at"] = datetime.now()  
 
-        # Add response to Firestore
-        new_doc_ref = collection_ref.add(response_data)  # Firestore generates a new document ID
+        new_doc_ref = collection_ref.add(response_data)  
         return {"success": True, "message": "Response created successfully", "id": new_doc_ref[1].id}
 
     except Exception as e:
@@ -258,7 +257,7 @@ UPDATE ENDPOINTS
 @app.put("/update_chat/{chat_id}")
 async def update_chat(chat_id: str, updated_chat: Chat):
     """
-    Endpoint to update a certain chat specified by its ID in Firestore.
+    Endpoint to update a specific chat identified by its ID in Firestore.
     """
     try:
         chat_ref = db.collection("req2test").document("development").collection("chats").document(chat_id)
@@ -267,28 +266,33 @@ async def update_chat(chat_id: str, updated_chat: Chat):
         if not chat_doc.exists:
             raise HTTPException(status_code=404, detail="Chat not found")
 
-        # Convert the updated Chat object into a dictionary
-        chat_data = updated_chat.dict()
-        # Remove the 'id' field before saving to Firestore
-        chat_data.pop("id", None)
+        chat_data = updated_chat.dict(exclude={"id"})  
+        chat_data["created_at"] = datetime.now()  
 
-        # Convert FirestoreRef objects back to Firestore DocumentReferences
-        chat_data["prompts"] = [
-            db.document(ref.reference_id) for ref in updated_chat.prompts
-        ]
+        prompts_as_refs = []
+        for prompt in updated_chat.prompts:
+            prompt_doc_path = f"req2test/development/prompts/{prompt.id}"  
+            prompt_ref = db.document(prompt_doc_path)
 
-        # Save the updated data to Firestore
+            if not prompt_ref.get().exists:
+                raise HTTPException(status_code=400, detail=f"Prompt with ID '{prompt.id}' does not exist")
+
+            prompts_as_refs.append(prompt_ref)
+
+        chat_data["prompts"] = prompts_as_refs  
+
         chat_ref.set(chat_data)
 
         return {"success": True, "message": f"Chat {chat_id} updated successfully"}
     except Exception as e:
-        return {"error": f"An error occurred: {str(e)}"}
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
 
 
 @app.put("/update_prompt/{prompt_id}")
 async def update_prompt(prompt_id: str, updated_prompt: Prompt):
     """
-    Endpoint to update a certain prompt specified by its ID in Firestore.
+    Endpoint to update a specific prompt identified by its ID in Firestore.
     """
     try:
         prompt_ref = db.collection("req2test").document("development").collection("prompts").document(prompt_id)
@@ -297,21 +301,23 @@ async def update_prompt(prompt_id: str, updated_prompt: Prompt):
         if not prompt_doc.exists:
             raise HTTPException(status_code=404, detail="Prompt not found")
 
-        # Convert the updated Prompt object into a dictionary
-        prompt_data = updated_prompt.dict()
-        # Remove the 'id' field before saving to Firestore
-        prompt_data.pop("id", None)
-
-        # Convert FirestoreRef objects back to Firestore DocumentReferences
+        prompt_data = updated_prompt.dict(exclude={"id"})  
+        prompt_data["created_at"] = datetime.now()  
         if updated_prompt.response:
-            prompt_data["response"] = updated_prompt.response.to_firestore_ref()
+            response_doc_path = f"req2test/development/ai_responses/{updated_prompt.response.id}" 
+            response_ref = db.document(response_doc_path)
 
-        # Save the updated data to Firestore
+            if not response_ref.get().exists:
+                raise HTTPException(status_code=400, detail=f"Response with ID '{updated_prompt.response.id}' does not exist")
+
+            prompt_data["response"] = response_ref  
+
         prompt_ref.set(prompt_data)
 
         return {"success": True, "message": f"Prompt {prompt_id} updated successfully"}
     except Exception as e:
-        return {"error": f"An error occurred: {str(e)}"}
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
 
 """
 
@@ -327,7 +333,7 @@ async def delete_chat(chat_id: str):
     try:
         chat_ref = db.collection("req2test").document("development").collection("chats").document(chat_id)
         if chat_ref.get().exists:
-            chat_ref.delete()  # Delete the document
+            chat_ref.delete()  
             return {"success": True, "message": f"Chat with ID '{chat_id}' deleted successfully"}
         else:
             raise HTTPException(status_code=404, detail=f"Chat with ID '{chat_id}' not found")
@@ -342,7 +348,7 @@ async def delete_prompt(prompt_id: str):
     try:
         prompt_ref = db.collection("req2test").document("development").collection("prompts").document(prompt_id)
         if prompt_ref.get().exists:
-            prompt_ref.delete()  # Delete the document
+            prompt_ref.delete()  
             return {"success": True, "message": f"Prompt with ID '{prompt_id}' deleted successfully"}
         else:
             raise HTTPException(status_code=404, detail=f"Prompt with ID '{prompt_id}' not found")
@@ -357,7 +363,7 @@ async def delete_response(response_id: str):
     try:
         response_ref = db.collection("req2test").document("development").collection("ai_responses").document(response_id)
         if response_ref.get().exists:
-            response_ref.delete()  # Delete the document
+            response_ref.delete()
             return {"success": True, "message": f"Response with ID '{response_id}' deleted successfully"}
         else:
             raise HTTPException(status_code=404, detail=f"Response with ID '{response_id}' not found")
