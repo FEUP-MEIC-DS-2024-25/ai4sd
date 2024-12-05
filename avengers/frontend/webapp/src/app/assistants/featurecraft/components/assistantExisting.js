@@ -56,15 +56,15 @@ export default function ExistingFeaturecraftAssistant({ conversationId, setConve
         setTotalMessages,
         setError
     );
-
+    
     return (
         <div className={`${styles.assistantInteraction} w-full h-full`}>
             <div className="w-full h-full rounded-lg shadow-lg flex flex-col">
                 <div className="flex flex-row w-full h-full">
-                    <div className="h-full">
-                        <MessageBlock messages={messages} totalMessages={totalMessages} description={description} />
+                    <div className="h-full flex-grow">
+                        <MessageBlock messages={messages} totalMessages={totalMessages} description={description} conversationId={conversationId} pinnedMessages={pinnedMessages} setPinnedMessages={setPinnedMessages} />
                     </div>
-                    <div className="h-full">
+                    <div className="h-full flex-shrink-0">
                         <PinnedMessagesBlock pinnedMessages={pinnedMessages} />
                     </div>
                 </div>

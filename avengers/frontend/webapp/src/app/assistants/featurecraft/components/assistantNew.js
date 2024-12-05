@@ -44,7 +44,7 @@ export default function NewFeaturecraftAssistant({ conversationId, setConversati
             <div className="w-full h-full rounded-lg shadow-lg flex flex-col">
                 <div className="flex flex-row w-full h-full">
                     <div className="h-full flex-grow">
-                        <MessageBlock messages={messages} totalMessages={totalMessages} description={description} />
+                        <MessageBlock messages={messages} totalMessages={totalMessages} description={description} conversationId={conversationId} pinnedMessages={pinnedMessages} setPinnedMessages={setPinnedMessages} />
                     </div>
                     <div className="h-full">
                         <PinnedMessagesBlock pinnedMessages={pinnedMessages} />
