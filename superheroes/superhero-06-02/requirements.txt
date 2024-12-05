@@ -1,0 +1,8 @@
+Django
+djangorestframework
+django-cors-headers
+python-dotenv
+Image
+tenacity
+google-generativeai
+google-cloud-firestore
