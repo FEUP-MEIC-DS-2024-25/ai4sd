@@ -28,8 +28,10 @@ Only provide the JSON array of vulnerabilities.
 Please try to be synthetic in your answers.
 """
 
-with open('etc/gemini_token', 'r') as file:
-  gemini_token = file.read().strip()
+# with open('etc/gemini_token', 'r') as file:
+#   gemini_token = file.read().strip()
+
+gemini_token = "AIzaSyAtSSHni87FP3Hy3GIsE3bQkwnJV5dz4-E"
 
 
 def run_online(file):
