@@ -608,6 +608,7 @@ resource "google_project_iam_member" "strange_firestore_permissions" {
 
   depends_on = [google_firestore_database.vault]
 }
+
 #################################
 ### SECRETS #####################
 #################################
@@ -657,7 +658,9 @@ resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
 
   secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
   role      = "roles/secretmanager.SecretVersionManager"
-  member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
+
+  # Extract the superhero key to match the service account map
+  member    = "serviceAccount:${google_service_account.superhero[split("-", each.key)[0]].email}"
 }
 
 resource "google_secret_manager_secret" "jarvis_secrets" {
