@@ -676,7 +676,6 @@ resource "google_secret_manager_secret" "jarvis_secrets" {
     }
   }
 }
-
 resource "google_secret_manager_secret_iam_member" "jarvis_secret_version_manager" {
   for_each = google_secret_manager_secret.superhero_secrets
 
@@ -701,7 +700,6 @@ resource "google_secret_manager_secret_iam_member" "jarvis_secret_version" {
   member    = "serviceAccount:${google_service_account.jarvis.email}"
 }
 
-
 resource "google_secret_manager_secret" "strange_secrets" {
   for_each = {
     secret1 = "strange-secret-1"
@@ -720,9 +718,9 @@ resource "google_secret_manager_secret" "strange_secrets" {
 }
 
 resource "google_secret_manager_secret_iam_member" "strange_secret_version_manager" {
-  for_each = google_secret_manager_secret.superhero_secrets
+  for_each = google_secret_manager_secret.strange_secrets
 
-  secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
+  secret_id = google_secret_manager_secret.strange_secrets[each.key].id
   role      = "roles/secretmanager.secretVersionManager"
   member    = "serviceAccount:${google_service_account.strange.email}"
 }
