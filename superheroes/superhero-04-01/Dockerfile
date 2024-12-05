@@ -7,7 +7,7 @@ WORKDIR /usr/src/app
 COPY . .
 
 # Copy the .env file into the container
-COPY .env .env
+# COPY .env .env
 
 # install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
