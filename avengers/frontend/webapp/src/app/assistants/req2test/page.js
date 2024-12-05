@@ -57,7 +57,7 @@ export default function Interactor() {
             setChatExists(true);
         }
         getChats().then((data) => {
-            console.log(data);
+            console.log("Data from getChats:",data);
         });
     }, [id]);
 

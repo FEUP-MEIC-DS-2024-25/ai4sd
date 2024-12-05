@@ -24,14 +24,14 @@ class Response(BaseModel):
         return cls(**data)
 
 class FirestoreRef(BaseModel):
-    reference_id: str  
+    id: str  
 
     @classmethod
     def from_firestore(cls, ref: firestore.DocumentReference):
-        return cls(reference_id=ref.id) 
+        return cls(id=ref.id) 
 
     def to_firestore_ref(self):
-        return db.document(self.reference_id) 
+        return db.document(self.id) 
 
 class Prompt(BaseModel):
     id: str  
