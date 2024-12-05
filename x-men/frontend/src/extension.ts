@@ -32,7 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 		  if (selectedOption) {
 			switch (selectedOption.label) {
 			  case "Warden AI":
-				(await import('./superheroes/warden_ai.js')).execute();
+				(await import('./superheroes/warden_ai/warden_ai.js')).execute();
 				break;
 			  case "SARA":
 				// Import and execute SARA
