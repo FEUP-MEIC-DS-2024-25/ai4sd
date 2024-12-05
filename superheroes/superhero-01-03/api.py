@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 from typing import List, Optional
 from datetime import datetime
@@ -27,7 +28,7 @@ class FirestoreRef(BaseModel):
 
     @classmethod
     def from_firestore(cls, ref: firestore.DocumentReference):
-        return cls(reference_id=ref.path) 
+        return cls(reference_id=ref.id) 
 
     def to_firestore_ref(self):
         return db.document(self.reference_id) 
@@ -63,6 +64,13 @@ class Chat(BaseModel):
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins, change this to specific origins if needed
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
 
 """
 
