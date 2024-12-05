@@ -16,6 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ai4sd" is now active!');
 
+	const wakeUp = vscode.commands.registerCommand('ai4sd.wakeup', () => {});
+
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
 	// The commandId parameter must match the command field in package.json
@@ -30,18 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 	  
 		  // Import and execute different superheros based on selection
 		  if (selectedOption) {
-			switch (selectedOption.label) {
-			  case "SARA":
-				// Import and execute SARA
-				(await import('./superheroes/SARA.js')).execute();
-				break;
-			  case "Template":
-				// Import and execute Template
-				(await import('./superheroes/Template.js')).execute();
-				break;
-			  default:
-				vscode.window.showWarningMessage("Unknown option selected");
-			}
+			selectedOption.execute();
 		  } else {
 			vscode.window.showInformationMessage("No option selected");
 		  }
@@ -54,6 +45,8 @@ export function activate(context: vscode.ExtensionContext) {
 	};
 
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(wakeUp);
+	vscode.commands.executeCommand("ai4sd.wakeup");
 	return api;
 }
 

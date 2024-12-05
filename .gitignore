@@ -40,3 +40,4 @@ terraform.rc
 *.lock.hcl
 
 **node_modules/
+**out/

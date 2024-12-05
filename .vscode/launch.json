@@ -10,10 +10,12 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}/x-men/sara-example",
+				"--extensionDevelopmentPath=${workspaceFolder}/x-men/frontend"
 			],
 			"outFiles": [
-				"${workspaceFolder}/out/**/*.js"
+				"${workspaceFolder}/superheroes/sara-example/out/**/*.js",
+				"${workspaceFolder}/x-men/frontend/out/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
 		}
