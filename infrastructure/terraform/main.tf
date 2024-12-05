@@ -662,6 +662,10 @@ resource "google_secret_manager_secret" "jarvis_secret" {
   }
 }
 
+resource "google_secret_manager_version" "jarvis_secret" {
+  secret_id = google_secret_manager_secret.jarvis_secret
+  secret_data = "initial-secret-data for jarvis"
+
 resource "google_secret_manager_secret_iam_member" "jarvis_secret_access" {
   secret_id = google_secret_manager_secret.jarvis_secret.id
   role      = "roles/secretmanager.secretAccessor"
