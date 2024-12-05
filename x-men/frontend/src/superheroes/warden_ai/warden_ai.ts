@@ -21,25 +21,42 @@ export async function execute()
         input = editor.document.getText()
     }
 
-    const output = upload(input);
+    warden(input);
 }
 
-async function upload(input: string)
+async function warden(input: string)
 {
     const content = { "content": input };
 
-    fetch("http://localhost:8000/online", {
+    fetch("http://localhost:8000",
+    {
         method: "post",
-        headers: {
+        headers:
+        {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
         
         //make sure to serialize your JSON body
-        body: content
-        })
-        .then( (response) => { 
-            //do something awesome that makes the world a better place
-        }
-    );
+        body: JSON.stringify(content),
+
+        signal: AbortSignal.timeout(5000)
+    })
+    .then((response) =>
+    { 
+        const panel = vscode.window.createWebviewPanel
+        (
+            'warden_ai', // Identifies the type of the webview. Used internally
+            'Warden AI', // Title of the panel displayed to the user
+            vscode.ViewColumn.One, // Editor column to show the new webview panel in.
+            {} // Webview options. More on these later.
+        );
+
+        panel.webview.html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Warden AI</title></head><body><div>' + response + "</div></body></html>";
+    })
+    .catch((e) =>
+    {
+        vscode.window.showErrorMessage("An error has occured");
+        console.log(e);
+    });
 }
