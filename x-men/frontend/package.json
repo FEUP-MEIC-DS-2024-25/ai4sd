@@ -17,7 +17,25 @@
         "command": "ai4sd.ai4sd",
         "title": "AI4SD: Artificial Intelligence for Software Development"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "whattheduck",
+          "title": "WhatTheDuck",
+          "icon": "src/superheroes/whattheduck/resources/duck.svg"
+        }
+      ]
+    },
+    "views": {
+      "whattheduck": [
+        {
+          "type": "webview",
+          "id": "whattheduck.webview",
+          "name": "Refactor Options"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
