@@ -4,9 +4,12 @@ export interface CodeComment {
 }
 
 export function fullFileComments(document:string,response:string) {
-    console.log("Full file comments");
+    //console.log("Full file comments");
+    //console.log(response);
+    //console.log("cleaned");
     let cleanedComments = response.replace(/```/g, '').split('\n').slice(1, -1).join('\n');
-    console.log(cleanedComments);
+    cleanedComments = cleanedComments;
+    //console.log(cleanedComments);
     const commentsJson = JSON.parse(cleanedComments);
 
     const comments: CodeComment[] = [];

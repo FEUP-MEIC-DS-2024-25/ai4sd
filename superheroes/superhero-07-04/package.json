@@ -11,7 +11,12 @@
     "@google/generative-ai": "^0.21.0",
     "axios": "^1.7.7",
     "body-parser": "^1.20.3",
-    "express": "^4.21.1"
+    "client": "^0.0.1",
+    "e": "^0.2.33",
+    "express": "^4.21.1",
+    "no": "^0.0.1",
+    "server": "^1.0.41",
+    "side": "^0.0.1"
   },
   "devDependencies": {
     "@types/body-parser": "^1.19.5",
