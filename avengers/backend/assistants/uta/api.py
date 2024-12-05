@@ -42,6 +42,8 @@ def generate_unit_tests(function_code):
     4. Each test case should have a small comment
 
     Use the unittest framework and provide explanations for each test case.
+
+    If the code given is only unit tests, you should instead review the unit tests and give suggestions of how to improve them.
     """
     if not model:
         return "Model is not initialized. Check API key configuration."
