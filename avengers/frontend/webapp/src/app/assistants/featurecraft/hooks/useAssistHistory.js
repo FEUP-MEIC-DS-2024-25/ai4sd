@@ -6,8 +6,10 @@ export default function useAssistHistory(initialId) {
     const [conversationId, setConversationId] = useState(initialId);
     const [conversationExists, setConversationExists] = useState(true);
     const [error, setError] = useState("");
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
+        setLoading(true);
         axios.get("http://localhost:8080/history")
             .then(response => {
                 if (response.status === 200) {
@@ -34,9 +36,12 @@ export default function useAssistHistory(initialId) {
             .then(data => setAssistHistory(data))
             .catch(error => {
                 setError("Error connecting to the backend.\n" + error);
+            })
+            .finally(() => {
+                setLoading(false);
             });
 
     }, [initialId]);
 
-    return { assistHistory, setAssistHistory, conversationId, setConversationId, conversationExists, error, setError };
+    return { assistHistory, setAssistHistory, conversationId, setConversationId, conversationExists, error, loading, setError };
 }
