@@ -33,10 +33,10 @@ export default function Interactor() {
     }
 
 
-        useEffect(() => {
+    useEffect(() => {
         getChats().then((data) => {
             setAssistHistory(prepareHistory(data));
-    
+
             const chat = data.find((chat) => chat.id === id);
             setChat(chat);
             setChatLoaded(true);
@@ -47,10 +47,10 @@ export default function Interactor() {
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
-            <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
+            <AssistantHistory name={assistName} type={assistType} interactions={assistHistory} />
             {chatLoaded ? (
                 chat !== null ? (
-                    <Assistant chat={chat}/>
+                    <Assistant chat={chat} />
                 ) : (
                     <ChatNotFound />
                 )
