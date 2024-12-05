@@ -3,18 +3,24 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import fs from 'fs';
 import path from 'path';
+import * as dotenv from 'dotenv';
+
 
 const enum DiagramTypes {
     SEQUENCE = "Sequence Diagram",
     ACTIVITY = "Activity Diagram"
 }
 
+dotenv.config();
+
 const app = express();
 const port = 8080;
 
 app.use(bodyParser.json());
 
-const genAI = new GoogleGenerativeAI("AIzaSyD8kleEGvzyFxtx8WOfhsIZSp7VuC1ypRM");
+const key : string | undefined = process.env.GEMINI_API_KEY;
+
+const genAI = new GoogleGenerativeAI(key ?? "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 const clientChats = new Map<string,[number,any]>();
 
