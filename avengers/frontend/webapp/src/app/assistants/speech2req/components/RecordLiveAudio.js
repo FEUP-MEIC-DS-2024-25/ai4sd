@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 
-const RecordLiveAudio = () => {
+const RecordLiveAudio = ({ setTranscription }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorderRef = useRef(null);
@@ -22,7 +22,7 @@ const RecordLiveAudio = () => {
       mediaRecorderRef.current.onstop = () => {
         const blob = new Blob(audioChunks.current, { type: "audio/mp3" });
         setAudioBlob(blob);
-        audioChunks.current = []; // Reset chunks
+        audioChunks.current = [];
       };
 
       mediaRecorderRef.current.start();
@@ -49,23 +49,31 @@ const RecordLiveAudio = () => {
         body: formData,
       });
       const data = await response.json();
-      console.log("Server response:", data); // Handle data
+
+      if (data.transcription) {
+        setTranscription(data.transcription);
+      }
     } catch (err) {
       console.error("Error uploading audio:", err);
     }
   };
 
   return (
-    <div>
-      <h2>Live Audio Recorder</h2>
-      <button onClick={isRecording ? stopRecording : startRecording}>
+    <div className="d-flex flex-column gap-2 align-items-center">
+      <h2 className="text-center">Live Audio Recorder</h2>
+      <button 
+        className={`btn ${isRecording ? "btn-danger" : "btn-primary"}`}
+        onClick={isRecording ? stopRecording : startRecording}
+      >
         {isRecording ? "Stop Recording" : "Start Recording"}
       </button>
       {audioBlob && (
-        <div>
-          <p>Recording complete! You can play or upload it below:</p>
+        <div className="text-center">
+          <p className="mt-3">Recording complete! You can play or upload it below:</p>
           <audio controls src={URL.createObjectURL(audioBlob)} />
-          <button onClick={uploadRecording}>Upload Recording</button>
+          <button className="btn btn-success mt-2" onClick={uploadRecording}>
+            Upload Recording
+          </button>
         </div>
       )}
     </div>
