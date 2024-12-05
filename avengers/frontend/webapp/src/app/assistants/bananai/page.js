@@ -9,7 +9,7 @@ import Assistant from "./components/assistant";
 
 export default function Interactor() {
     //preparing mock data
-    const assistName = "YOUR ASSISTANT";
+    const assistName = "BANANAI";
     const assistType = "req"; // change according to the assistant type (req, arch, refact, verif)
     const assistHistory = prepareMockHistory();
     return (

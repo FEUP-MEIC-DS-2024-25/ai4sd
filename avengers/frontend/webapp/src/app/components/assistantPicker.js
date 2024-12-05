@@ -18,7 +18,7 @@ function getAssistantList() {
     let ai1 = { name: "ai1", type: "refact", link: "#" };
     let ai2 = { name: "Req2Test", type: "req", link: "/assistants/req2test" };
     let ai3 = { name: "ai3", type: "verif", link: "#" };
-    let ai4 = { name: "ai4", type: "req", link: "#" };
+    let ai4 = { name: "BANANAI", type: "req", link: "/assistants/bananai" };
     let ai5 = { name: "ai5", type: "arch", link: "#" };
     let ai6 = { name: "ai6", type: "arch", link: "#" };
 
