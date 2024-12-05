@@ -1,17 +1,22 @@
-FROM python:3.12
+FROM python:3.11.5-slim
 
-# set a directory for the app
 WORKDIR /usr/src/app
 
-# copy all the files to the container
+# Install dependencies
+RUN apt-get update && apt-get install -y \
+    ffmpeg && \
+    rm -rf /var/lib/apt/lists/*
+
+# Python dependencies
+RUN pip install --no-cache-dir \
+    openai-whisper \
+    flask \
+    flask-cors \
+    google-generativeai \
+    python-docx
+
 COPY . .
 
-# Copy the .env file into the container
-COPY .env .env
+EXPOSE 5000
 
-
-
-EXPOSE 5001
-
-# Run main.py when the container launches
 CMD ["python", "backend.py"]

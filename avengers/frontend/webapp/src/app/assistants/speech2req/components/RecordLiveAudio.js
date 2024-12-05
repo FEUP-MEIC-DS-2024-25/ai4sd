@@ -44,7 +44,7 @@ const RecordLiveAudio = ({ setTranscription }) => {
     formData.append("audio", audioBlob);
 
     try {
-      const response = await fetch("/api/your_assistant/upload", {
+      const response = await fetch("/api/transcribe", {
         method: "POST",
         body: formData,
       });
