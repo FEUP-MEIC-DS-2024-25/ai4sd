@@ -82,7 +82,7 @@ function Chat() {
                         }}
                     >
                         <strong
-                            className="p-2 m-2 h-100 rounded-circle text-center"
+                            className="p-2 m-2  rounded-circle text-center"
                             style={{
                                 display: 'flex',
                                 justifyContent: 'center',
@@ -90,6 +90,7 @@ function Chat() {
                                 backgroundColor: message.sender === 'user' ? 'rgb(240, 240, 240)' : 'rgb(34, 34, 34)',
                                 color: message.sender === 'user' ? 'black' : 'white',
                                 width: '60px',
+                                height: '60px',
                             }}
                         >
                             {message.sender}

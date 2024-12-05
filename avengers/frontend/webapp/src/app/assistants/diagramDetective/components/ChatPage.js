@@ -14,10 +14,7 @@ function ChatPage() {
 
     return (
         <ChatContext.Provider value={{ sharedVariable, setSharedVariable }} >
-            <Card style={{
-                backgroundColor: '#2f2f2f',
-                minHeight: '90vh',
-            }}>
+            <Card >
                 <div className="p-10 d-flex flex-column justify-content-center align-items-center" >
                     <div className="flex-grow-1 w-100">
                         <Chat />

@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { useChatContext } from './ChatPage';
 import paperclip from '../assets/paperclip.png';
 import Image from "next/image";
+import { Input as UIInput } from '@/app/components/ui/input';
+import { Button } from '@/app/components/ui/button';
+
 const BASE_URL = process.env.REACT_APP_API_URL;
 
 function Input() {
@@ -12,8 +15,6 @@ function Input() {
     const toggleMenu = () => {
         setIsMenuVisible(!isMenuVisible); // Toggle menu visibility
     };
-
-    
 
     const postContent = async (event) => {
         event.preventDefault();
@@ -26,17 +27,16 @@ function Input() {
         console.log(response);
     };
 
-
     return (
         <form onSubmit={postContent} encType="multipart/form-data">
             <div className="mb-3 mt-2">
-                <button
+                <Button
                     type="button"
-                    className="btn btn-secondary"
+                    variant="secondary"
                     onClick={toggleMenu}
                 >
                     {isMenuVisible ? "Hide Prompt Options" : "Show Suggested Prompt Options"}
-                </button>
+                </Button>
             </div>
             {isMenuVisible && (
                 <div className="mb-3 d-flex gap-3">
@@ -46,7 +46,7 @@ function Input() {
                             value="NoExtra" id="NoExtra"
                             defaultChecked
                         />
-                        <label className="form-check-label" htmlFor="noExtra">
+                        <label className="form-check-label" htmlFor="NoExtra">
                             Send the content without special requests
                         </label>
                     </div>
@@ -75,7 +75,7 @@ function Input() {
                     </div>
                 </div>)}
             <div className="input-group">
-                <input type="url" className="form-control bg-white text-black border-gray-300"  name="repo_url" placeholder="Insert your repository's URL here" aria-label="Insert your repository's URL here" aria-describedby="button-input" />
+                <UIInput type="url" className="form-control bg-white text-black border-gray-300" name="repo_url" placeholder="Insert your repository's URL here" aria-label="Insert your repository's URL here" aria-describedby="button-input" />
                 <label 
                     htmlFor="formFileMultiple" 
                     className="input-group-text cursor-pointer flex items-center"
@@ -86,20 +86,17 @@ function Input() {
                         objectFit: 'contain',
                     }} />
                 </label>
-                <input 
+                <UIInput 
                     type="file" 
                     className="hidden" 
                     name="image"
                     id="formFileMultiple" 
                     multiple 
                 />
-                <button className="btn btn-secondary" type="submit" id="button-input">Send</button>
+                <Button variant="secondary" type="submit" id="button-input">Send</Button>
             </div>
-
-            
-        </form >
+        </form>
     );
-
 }
 
 export default Input;
