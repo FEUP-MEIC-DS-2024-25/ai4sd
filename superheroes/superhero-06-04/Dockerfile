@@ -11,8 +11,10 @@ EXPOSE 8080
 #COPY package.json package-lock.json ./
 RUN npm install
 
+RUN --mount=type=secret,id=secret
+
 # Copy the remaining backend code
 COPY . .
 
 # Command to start the backend server with env file setup
-CMD ["node", "--env-file=.env", "src/index.js"]
+CMD ["node", "src/index.js"]
