@@ -28,19 +28,19 @@ async function warden(input: string)
 {
     const content = { "content": input };
 
-    fetch("http://localhost:8000",
+    fetch("http://localhost:8000/online",
     {
         method: "post",
         headers:
         {
-            'Accept': 'application/json',
+            'accept': 'application/json',
             'Content-Type': 'application/json'
         },
         
         //make sure to serialize your JSON body
         body: JSON.stringify(content),
 
-        signal: AbortSignal.timeout(5000)
+        // signal: AbortSignal.timeout(5000)
     })
     .then((response) =>
     { 
@@ -52,7 +52,12 @@ async function warden(input: string)
             {} // Webview options. More on these later.
         );
 
-        panel.webview.html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Warden AI</title></head><body><div>' + response + "</div></body></html>";
+        response.json().then((cont) => {
+            console.log(cont);
+            panel.webview.html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Warden AI</title></head><body><div>'
+            + JSON.stringify(cont.data)
+            + "</div></body></html>";
+        });
     })
     .catch((e) =>
     {
