@@ -627,6 +627,13 @@ resource "google_secret_manager_secret" "superhero_secrets" {
   }
 }
 
+resource "google_secret_manager_version" "superhero_secrets" {
+  for_each = toset(local.superhero_names)
+
+  secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
+  secret_data = "initial-secret-data for superhero ${each.key}"
+}
+
 resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
   for_each = google_secret_manager_secret.superhero_secrets
 
