@@ -58,7 +58,14 @@ const UploadFilePage = () => {
     };
 
   return (
-    <div className="bg-light container-fluid d-flex justify-content-center align-items-center min-vh-100 text-dark">
+    <div className="bg-light container-fluid min-vh-100 text-dark">
+      <div className="d-flex justify-content-center align-items-center">
+        <h1 className='text-center text-primary display-4 p-4' style={{ minHeight: '20vh' }}>
+          WardenAI
+        </h1>
+        <br />
+      </div>
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '80vh' }}>
       {responseData == null ? (
         <div className="card shadow-lg p-4 bg-light" style={{ maxWidth: '500px', width: '100%' }}>
           <h1 className="text-primary mb-4">Upload Your File</h1>
@@ -115,8 +122,10 @@ const UploadFilePage = () => {
           </div>
         )
       )}
+      </div>
     </div>
   );
+  
 };  
 
 export default UploadFilePage;
