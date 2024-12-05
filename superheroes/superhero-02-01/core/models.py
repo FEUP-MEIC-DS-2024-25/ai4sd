@@ -85,3 +85,11 @@ class Project(models.Model):
                 self.generate_plantuml_image()
                 super().save(*args, **kwargs)  # Update the instance with the new image path
             
+class DesignPattern(models.Model):
+    name = models.CharField(max_length=255, unique=True)
+    description = models.TextField()
+    code = models.TextField()
+    plantuml_code = models.TextField()
+
+    def __str__(self):
+        return self.name

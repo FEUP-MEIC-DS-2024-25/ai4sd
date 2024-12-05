@@ -6,7 +6,6 @@ from pathlib import Path
 from django.conf import settings
 from django.db import transaction
 from django.core.management.base import BaseCommand
-from core.models import DesignPattern
 
 import sys
 import django
@@ -16,6 +15,9 @@ sys.path.append(str(project_dir))
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.settings')
 django.setup()
+
+#importing the model after configuring the django setup
+from core.models import DesignPattern
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
@@ -136,6 +138,7 @@ def collect_design_pattern_data(pattern_links, pattern_descriptions, pattern_dir
     return design_patterns
 
 def store_design_patterns_in_db(design_patterns):
+    stored_patterns = []
     for pattern in design_patterns:
         design_pattern, created = DesignPattern.objects.update_or_create(
             name=pattern['name'],
@@ -145,10 +148,13 @@ def store_design_patterns_in_db(design_patterns):
                 'plantuml_code': pattern['plantuml_code']
             }
         )
+        stored_patterns.append(design_pattern)
         if created:
             logger.info(f"Created new DesignPattern: {pattern['name']}")
         else:
             logger.info(f"Updated DesignPattern: {pattern['name']}")
+    return stored_patterns
+
 
 def ingest_design_patterns():
     repo_url = 'https://github.com/plkpiotr/design-patterns.git'
@@ -159,9 +165,30 @@ def ingest_design_patterns():
     pattern_descriptions = extract_pattern_descriptions(readme_content, pattern_links)
     pattern_directory_mapping = create_pattern_directory_map(pattern_links, repo_path)
     design_patterns = collect_design_pattern_data(pattern_links, pattern_descriptions, pattern_directory_mapping)
-    store_design_patterns_in_db(design_patterns)
+    stored_patterns = store_design_patterns_in_db(design_patterns)
     logger.info("Ingestion of design patterns completed.")
+    return stored_patterns
+
+def main():
+    try:
+        logger.info("Starting context enhancement...")
+        stored_patterns = ingest_design_patterns()
+        logger.debug(f"Stored patterns: {stored_patterns}")
+        # Log an example document
+        if stored_patterns:
+            example_pattern = stored_patterns[0]  # Get the first pattern
+            logger.info("Example DesignPattern document:")
+            logger.info(f"Name: {example_pattern.name}")
+            logger.info(f"Description: {example_pattern.description[:100]}...")  # First 100 characters
+            logger.info(f"Code snippet:\n{example_pattern.code[:500]}...")  # First 500 characters
+            logger.info(f"PlantUML code:\n{example_pattern.plantuml_code[:500]}...")  # First 500 characters
+        else:
+            logger.warning("No DesignPattern documents were stored.")
+        logger.info("Context enhancement completed.")
+    except Exception as e:
+        logger.exception("An error occurred during context enhancement.")
+
 
 if __name__ == '__main__':
-    ingest_design_patterns()
+    main()
 

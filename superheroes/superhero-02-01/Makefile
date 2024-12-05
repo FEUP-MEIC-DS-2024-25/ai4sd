@@ -7,9 +7,12 @@ PORT = 8080
 build:
 	docker build --no-cache -t $(IMAGE_NAME) .
 
-# Run the container
+# Run the container (bottom option mounts volume for database file)
+#run:
+#	docker run -d -p $(PORT):8080 --name $(CONTAINER_NAME) $(IMAGE_NAME)
 run:
-	docker run -d -p $(PORT):8080 --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	docker run -d -p $(PORT):8080 -v $(PWD)/data:/app/data --name $(CONTAINER_NAME) $(IMAGE_NAME)
+
 
 # Stop and remove the container
 down:
@@ -31,6 +34,8 @@ logs:
 shell:
 	docker run -it --entrypoint /bin/bash ${IMAGE_NAME}
 
-# Run the context enhancing script inside the container
+# Run the context enhancing script inside the container (needs to create migrations for new designpattern model)
 enhance-context:
+	docker exec -it $(CONTAINER_NAME) python manage.py makemigrations
+	docker exec -it $(CONTAINER_NAME) python manage.py migrate
 	docker exec -it $(CONTAINER_NAME) python context_enhancing.py
