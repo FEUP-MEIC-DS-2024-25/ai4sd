@@ -53,11 +53,11 @@ function HistoryItem({ text }) {
     )
 }
 
-function prepareMockButtons(){
-    let b1 = {name: "New Interaction", icon:"plus", link:"#"}
-    let b2 = {name: "Download Report", icon: "download", link: "#"}
-    let b3 = {name: "Button3", icon: "border", link: "#"}
-    let b4 = {name: "Settings", icon: "gear", link: "#"}
+function prepareMockButtons() {
+    let b1 = { name: "New Interaction", icon: "plus", link: "#" }
+    let b2 = { name: "Download Report", icon: "download", link: "#" }
+    let b3 = { name: "Button3", icon: "border", link: "#" }
+    let b4 = { name: "Settings", icon: "gear", link: "#" }
 
     return [b1, b2, b3, b4]
 }
