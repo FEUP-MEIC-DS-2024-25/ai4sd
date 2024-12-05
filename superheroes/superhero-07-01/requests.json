@@ -1,0 +1,3 @@
+{
+    "gemini_prompt": "Convert the given user story to Gherkin format and give a quick explanation of the test. Also please try to create at least 5 scenarios for the tests."
+}
