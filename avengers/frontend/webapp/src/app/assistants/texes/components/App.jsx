@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import ReactMarkdown from "react-markdown";
 
+import "./App.css";
+
 const App = () => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
@@ -84,48 +86,40 @@ const App = () => {
 
   return (
     <div className="flex flex-col items-center space-y-6 p-6">
-      {/* Ask a Question Form */}
-      <form onSubmit={handleSubmit} className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Ask a Question</h2>
-        <input
+      <div className="form-container">
+        {/* Ask a Question Form */}
+        <form onSubmit={handleSubmit} className="form-box">
+          <h2>Ask a Question</h2>
+          <input
             type="text"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask a question..."
-            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white text-black"
-            />
-        <button
-          type="submit"
-          className="button"
-        >
-          Send
-        </button>
-      </form>
+            className="input-field"
+          />
+          <button type="submit" className="button">Send</button>
+        </form>
 
-      {/* Upload File Form */}
-      <form onSubmit={handleSubmitFile} className="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Upload a File</h2>
-        <input
-          type="file"
-          onChange={(e) => {
-            const selectedFile = e.target.files ? e.target.files[0] : null;
-            setFile(selectedFile);
-          }}
-          className="w-full p-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
-        />
-        <button
-          type="submit"
-          className="button"
-        >
-          Send File
-        </button>
-      </form>
+        {/* Upload File Form */}
+        <form onSubmit={handleSubmitFile} className="form-box">
+          <h2>Upload a File</h2>
+          <input
+            type="file"
+            onChange={(e) => {
+              const selectedFile = e.target.files ? e.target.files[0] : null;
+              setFile(selectedFile);
+            }}
+            className="input-field"
+          />
+          <button type="submit" className="button">Send File</button>
+        </form>
+      </div>
 
       {/* Progress Bar */}
       {progress > 0 && (
-        <div className="w-full max-w-md bg-gray-200 rounded-lg overflow-hidden">
+        <div className="progress-bar-container">
           <div
-            className="bg-primary text-xs leading-none py-1 text-center text-white"
+            className="progress-bar"
             style={{ width: `${progress}%` }}
           >
             {progress}%
