@@ -22,12 +22,12 @@ const UploadFilePage = () => {
     const fileContents = await file.text()
 
     const contents_data = {
-      "content": fileContents//"#include <stdio.h>\\n#include <string.h>\\n#include <stdlib.h>\\n\\nint main(int argc, char *argv[])\\n{\\n    char buffer[5];\\n\\n    if (argc < 2)\\n    {\\n        printf(\"Usage: %s <string>\\n\", argv[0]);\\n        exit(0);\\n    }\\n\\n    strcpy(buffer, argv[1]);\\n    printf(\"buffer content= %s\\n\", buffer);\\n\\n    return 0;\\n}"
+      "content": fileContents
     };
 
     try {
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://localhost:8000/online', true)
+      xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app/online', true)
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
         if (xhr.status === 200){
@@ -51,23 +51,6 @@ const UploadFilePage = () => {
     } finally {
       setLoading(false);
     }
-    // setResponseData({
-    //   data: [
-    //     {
-    //       title: "Buffer Overflow",
-    //       description: "Buffer Overflow is a type of security vulnerability that occurs when a program writes more data to a buffer than it can hold. This can cause the program to overwrite adjacent memory locations, which can lead to unexpected behavior or even crashes. Buffer overflows are a common attack vector for hackers, who can use them to gain unauthorized access to a system or steal sensitive data.",
-    //       lines: "10-15",
-    //       fix: "To fix a buffer overflow vulnerability, you can use a technique called \"stack smashing.\" This involves overwriting the return address on the stack with a pointer to a malicious function. When the program returns from the vulnerable function, it will execute the malicious code instead of the intended code. This technique is commonly used in buffer overflow attacks.",
-    //     },
-    //     {
-    //       title: "SQL Injection",
-    //       description: "SQL Injection is a type of security vulnerability that occurs when a user inputs malicious SQL code into a web application. This can allow an attacker to execute arbitrary SQL commands on the database, which can lead to unauthorized access to sensitive data or even complete system compromise.",
-    //       lines: "20-25",
-    //       fix: "To fix a SQL injection vulnerability, you can use a technique called \"parameterized queries.\" This involves using a database library that automatically escapes special characters in user input, preventing them from being interpreted as SQL commands. This technique is commonly used in web applications to prevent SQL injection attacks.",
-    //     }
-    //   ]
-    //   })
-
     
     };
 
@@ -132,16 +115,5 @@ const UploadFilePage = () => {
     </div>
   );
 };  
-
-// (() => {
-//   try {} catch (error) {
-//     console.error("Error rendering vulnerabilities:", error);
-//     return (
-//         <div className="alert alert-danger">
-//             <strong>Error:</strong> Unable to render vulnerabilities. Please try again.
-//         </div>
-//     );
-// }
-// })()
 
 export default UploadFilePage;
