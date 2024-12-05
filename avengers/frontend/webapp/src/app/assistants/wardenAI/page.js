@@ -7,7 +7,7 @@ import "@/app/globals.css";
 
 // Components
 import NavBar from "@/app/components/navbar";
-import UploadFile from "@/app/wardenAI/components/uploadFile";
+import UploadFile from "@/app/assistants/wardenAI/components/uploadFile";
 import Footer from "@/app/components/footer"
 
 export default function WardenAI() {
