@@ -4,6 +4,8 @@ import MessageBlock from "@/app/assistants/featurecraft/components/messageBlock"
 import useAssistChatSend from "@/app/assistants/featurecraft/hooks/useAssistChatSend";
 import useAssistChatReceive from "@/app/assistants/featurecraft/hooks/useAssistChatReceive";
 import ErrorNotification from "@/app/assistants/featurecraft/components/ui/errorNotification";
+import PinnedMessagesBlock from "@/app/assistants/featurecraft/components/pinnedMessageBlock";
+
 import { useState } from "react";
 
 export default function NewFeaturecraftAssistant({ conversationId, setConversationId, setAssistHistory }) {
@@ -40,7 +42,14 @@ export default function NewFeaturecraftAssistant({ conversationId, setConversati
     return (
         <div className={`${styles.assistantInteraction} w-full h-full`}>
             <div className="w-full h-full rounded-lg shadow-lg flex flex-col">
-                <MessageBlock messages={messages} totalMessages={totalMessages} description={description} />
+                <div className="flex flex-row w-full h-full">
+                    <div className="h-full flex-grow">
+                        <MessageBlock messages={messages} totalMessages={totalMessages} description={description} />
+                    </div>
+                    <div className="h-full">
+                        <PinnedMessagesBlock pinnedMessages={pinnedMessages} />
+                    </div>
+                </div>
                 <NewMessageBlock onSendMessage={handleSendMessage} onReceiveMessage={handleReceiveMessage} conversationId={conversationId} />
             </div>
             <ErrorNotification error={error} setError={setError} />

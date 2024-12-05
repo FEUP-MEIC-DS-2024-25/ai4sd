@@ -12,7 +12,7 @@ export default function MessageBlock({ messages, totalMessages, description }) {
     }, [messages]);
 
     return (
-        <div className="p-4 shadow-sm flex-grow">
+        <div className="p-4 shadow-sm flex-grow h-full">
             <h2 className="text-xl font-bold mb-2">Your Conversation</h2>
             <p className="text-sm text-gray-60 mb-4">{description}</p>
             <div className="overflow-y-auto max-h-[63vh]">
