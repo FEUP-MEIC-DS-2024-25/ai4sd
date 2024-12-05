@@ -13,24 +13,33 @@ const App = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const formData = new FormData();
-    if (input) formData.append("content", input);
-
+  
+    if (!input) {
+      console.error("Input is required");
+      return;
+    }
+  
     try {
       const response = await fetch("http://localhost:5000/Chat", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json", // Specify JSON content type
+        },
+        body: JSON.stringify({ content: input }), // Convert input to JSON
       });
+  
       if (response.ok) {
         const jsonResponse = await response.json();
-        setMessages((prev) => [...prev, jsonResponse.content]);
+        setMessages((prev) => [...prev, jsonResponse.content]); // Append response to messages
       } else {
-        throw new Error("POST request failed");
+        const errorDetails = await response.text();
+        throw new Error(`POST request failed: ${errorDetails}`);
       }
     } catch (error) {
       console.error("Error during API call:", error);
     }
   };
+  
 
   const handleSubmitFile = async (event) => {
     event.preventDefault();
@@ -94,12 +103,19 @@ const App = () => {
 
   return (
     <div className="flex flex-col items-center space-y-6 p-6">
-        {/* Response Section */}
-      {response && (
-        <div className="prose mt-6 max-w-full">
-        <ReactMarkdown>{response}</ReactMarkdown>
-        </div>
-      )}
+      {/* Combined Messages and Response Section */}
+      <div className="chat-box w-full max-w-4xl bg-gray-50 p-6 rounded-lg shadow-md">
+        {messages.map((msg, index) => (
+          <div key={index} className="chat-message bg-blue-100 p-2 my-2 rounded-lg">
+            {msg}
+          </div>
+        ))}
+        {response && (
+          <div className="prose mt-6 max-w-full">
+            <ReactMarkdown>{response}</ReactMarkdown>
+          </div>
+        )}
+      </div>
       {/* Progress Bar */}
       {progress > 0 && (
         <div className="progress-bar-container">
