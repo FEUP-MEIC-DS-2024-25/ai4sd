@@ -30,3 +30,7 @@ logs:
 # Open a shell in the container
 shell:
 	docker run -it --entrypoint /bin/bash ${IMAGE_NAME}
+
+# Run the context enhancing script inside the container
+enhance-context:
+	docker exec -it $(CONTAINER_NAME) python context_enhancing.py
