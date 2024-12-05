@@ -28,7 +28,7 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
                     textarea.style.height = 'auto';
                 }
                 
-                const response = await axios.post("http://localhost:8000/chat", newMessage);
+                const response = await axios.post("http://localhost:8080/chat", newMessage);
                 onReceiveMessage(response);
                 
             } catch (error) {

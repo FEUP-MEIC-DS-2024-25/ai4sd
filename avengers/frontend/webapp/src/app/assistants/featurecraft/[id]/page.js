@@ -11,42 +11,15 @@ import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
 import FeaturecraftAssistant from "@/app/assistants/featurecraft/components/assistant";
 import ConversationNotFound from "@/app/assistants/featurecraft/components/ui/conversationNotFound";
+import ErrorNotification from "@/app/assistants/featurecraft/components/ui/errorNotification";
+import useAssistHistory from "@/app/assistants/featurecraft//hooks/useAssistHistory";
 
 export default function FeaturecraftConversationPage() {
     const { id } = useParams();
     const assistName = "FeatureCraft";
     const assistType = "req";
-    const [assistHistory, setAssistHistory] = useState([]);
-    const [conversationId, setConversationId] = useState(id);
-    const [conversationExists, setConversationExists] = useState(true);
 
-    useEffect(() => {
-        axios.get("http://localhost:8000/history")
-            .then(response => {
-                if (response.status === 200) {
-                    if (response.data && response.data.length > 0) {
-                        // Organize the data
-                        response.data.forEach((item) => {
-                            item.text = item.description;
-                            item.link = `/assistants/featurecraft/${item._id}`;
-                        });
-                        // Check if the conversation ID exists
-                        const conversation = response.data.find(item => item._id === id);
-                        if (!conversation) {
-                            setConversationExists(false);
-                        } else {
-                            setConversationExists(true);
-                        }
-                        return response.data;
-                    }
-                    return [{ text: "Nothing to show yet.", link: "" }];
-                } else {
-                    throw new Error("Unexpected response status");
-                }
-            })
-            .then(data => setAssistHistory(data))
-            .catch(error => console.error("Error fetching history:", error));
-    }, [id]);
+    const { assistHistory, setAssistHistory, conversationId, setConversationId, conversationExists, error, setError } = useAssistHistory(id);
 
     return (
         <div className={styles.interactorLayout}>
@@ -57,6 +30,7 @@ export default function FeaturecraftConversationPage() {
             ) : (
                 <ConversationNotFound />
             )}
+            <ErrorNotification error={error} setError={setError} />
         </div>
     )
 }

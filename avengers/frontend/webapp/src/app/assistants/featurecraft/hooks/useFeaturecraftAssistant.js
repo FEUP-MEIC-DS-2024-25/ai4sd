@@ -1,22 +1,25 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function useFeaturecraftAssistant(conversationId, setConversationId, setAssistHistory, shouldFetchData = true) {
+
+export default function useFeaturecraftAssistant(conversationId, setConversationId, setAssistHistory, shouldFetchData = true, error, setError) {
     const [members, setMembers] = useState(["You", "Gemini"]);
     const [description, setDescription] = useState("Welcome to the Featurecraft Assistant!");
     const [messages, setMessages] = useState([]);
     const [pinnedMessages, setPinnedMessages] = useState([]);
     const [totalMessages, setTotalMessages] = useState(0);
+    
 
     useEffect(() => {
         if (!shouldFetchData) return;
 
         async function fetchData() {
             try {
-                const response = await axios.get(`http://localhost:8000/chat/${conversationId}`);
+                const response = await axios.get(`http://localhost:8080/chat/${conversationId}`);
                 return response.data;
             } catch (error) {
-                console.error("Error fetching chat:", error);
+                // console.error("Error fetching chat:", error);
+                setError("Error connecting to the backend.\n" + error);
             }
         }
 
