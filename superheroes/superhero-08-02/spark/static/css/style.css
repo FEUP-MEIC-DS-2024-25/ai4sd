@@ -1,0 +1,222 @@
+@import url('https://fonts.googleapis.com/css2?family=Jockey+One&family=Metrophobic&display=swap');
+
+/******* GLOBALS *******/
+:root {
+    --blue: #215A75;
+    --dark-blue: #283C4C;
+    --cyan: #307484;
+    --grey: #DFE3E7;
+    --white: #EEEEEE;
+    --red: #8B0000;
+
+}
+
+body, html {
+     background-color: var(--white);
+     line-height: 1.6; 
+     display: flex;
+     justify-content: center;
+     align-items: center;
+     min-height: 100vh;
+     font-family: "Jockey One", serif;
+     font-weight: 400;
+     margin-top: 0;
+     padding: 0;
+}
+
+* {
+     box-sizing: border-box;
+     margin: 0;
+     padding: 0;
+     font-family: "Jockey One", sans-serif;
+}
+
+/******* NAV *******/
+.nav {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     background-color: var(--blue);
+     padding: 0.3em 1em;
+     border-bottom: var(--cyan) 0.1em solid;
+     position: fixed;
+     top: 0;
+     left: 0;
+     right: 0;
+     z-index: 1000;
+}
+
+.nav #spark-title {
+     color: white;
+     font-size: 2em;
+     font-family: "Metrophobic", sans-serif;
+     font-weight: 400;
+     margin: 0;
+}
+
+.together {
+     display: flex;
+     align-items: center;
+     flex-direction: row;
+}
+
+.expand {
+     position: relative;
+}
+ 
+.expand-button {
+     background-color: var(--dark-blue);
+     color: white;
+     border: none;
+     padding: 0.5em 1em;
+     font-size: 1em;
+     cursor: pointer;
+     border-radius: 0.2em;
+}
+ 
+.expandable-menu {
+     display: none;
+     position: absolute;
+     right: 0;
+     top: 100%;
+     background-color: var(--grey);
+     padding: 1em;
+     border-radius: 0.3em;
+     box-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.2);
+     min-width: 10em;
+     text-align: left;
+}
+ 
+.expandable-menu a {
+     display: block;
+     color: var(--dark-blue);
+     text-decoration: none;
+     padding: 0.5em 0;
+     transition: color 0.3s;
+}
+ 
+.expandable-menu a:hover {
+     color: var(--cyan);
+}
+
+.expand-icon {
+     cursor: pointer;
+     color: var(--white); 
+     display: flex;
+     align-items: center;
+     transition: color 0.3s ease; 
+}
+ 
+.expand-icon:hover {
+     color: var(--grey); 
+}
+ 
+.expand-icon svg path {
+     stroke: currentColor; 
+}
+
+/******* FOOTER *******/
+footer {
+     background-color: var(--dark-blue);
+     color: var(--white);
+     padding: 0.7em 0;
+     text-align: center;
+     font-size: 1em;
+     width: 100%;
+     position: fixed;
+     bottom: 0;
+     left: 0;
+     border-top: 0.1em solid var(--cyan);
+}
+
+footer p {
+     margin: 0.5em 0;
+     line-height: 1.4;
+}
+
+footer a {
+     color: var(--cyan);
+     text-decoration: none;
+     font-weight: 500;
+     padding: 0 0.5em;
+     transition: color 0.3s ease;
+}
+
+footer a:hover {
+     color: var(--grey);
+}
+
+footer p:first-child {
+     font-size: 0.9em;
+     color: var(--grey);
+}
+
+/******* MAIN *******/
+.settings-container {
+     background-color: var(--grey);
+     padding: 2em;
+     border-radius: 1em;
+     width: 98vw; 
+     height: 80vh;
+     margin: 0; 
+     text-align: center;
+}
+
+.settings-container h2 {
+     font-weight: 600;
+     color: var(--dark-blue);
+     margin: 1em 0;
+     font-size: 2em;
+}
+
+.settings-container h2:last-of-type {
+     margin-top: 4em;
+}
+ 
+.buttons-container {
+     display: flex;
+     justify-content: space-evenly;
+     margin-bottom: 1.5em;
+}
+ 
+.token-section {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     gap: 0.5em;
+}
+ 
+.primary-button {
+     background-color: var(--blue);
+     color: var(--white);
+     border: none;
+     padding: 0.3em 8em;
+     border-radius: 0.2em;
+     font-size: 1.5em;
+     cursor: pointer;
+     transition: background-color 0.3s ease;
+}
+ 
+.primary-button:hover {
+     background-color: var(--dark-blue);
+}
+ 
+.token-section input[type="text"] {
+     padding: 0.4em 3em;
+     border: 0.1em solid var(--grey);
+     border-radius: 0.3em;
+     width: 95%;
+     color: var(--cyan);
+     text-align: left;
+     font-size: 1.2em;
+}
+ 
+.token-section input[type="text"]::placeholder {
+     color: var(--grey); 
+     opacity: 1; 
+}
+
+.token-section input[type="text"]:focus {
+     border-color: var(--dark-blue); 
+     outline: none; 
+}
