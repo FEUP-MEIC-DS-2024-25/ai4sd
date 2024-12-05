@@ -18,7 +18,6 @@ import {
 //Notifications 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-console.log("URL=====>",process.env.NEXT_PUBLIC_BACKEND_URL)
 
 export default function LandingPage() {
     const [message, setMessage] = useState("");
@@ -30,7 +29,6 @@ export default function LandingPage() {
     const handleSubmit = async () => {
         try {
             const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-            console.log(backendUrl)
             const response = await fetch(`${backendUrl}/api/prompt`, {
                 method: "POST",
                 headers: {
