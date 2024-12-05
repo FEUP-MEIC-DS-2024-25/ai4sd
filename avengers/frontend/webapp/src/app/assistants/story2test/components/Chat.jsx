@@ -1,6 +1,7 @@
 "use client"
 
 import Image from 'next/image'
+import Link from 'next/link'
 import React, {useState, useEffect, useRef} from 'react'
 import {Avatar, AvatarFallback} from "@/app/components/ui/avatar";
 import {Card, CardContent, CardFooter, CardHeader} from "@/app/components/ui/card";
@@ -26,15 +27,17 @@ const UserAvatar = () => (<Avatar className='border-1 border-neutral-700'>
     <AvatarFallback className="!bg-black !text-white">U</AvatarFallback>
 </Avatar>);
 
-const Req2TestLink = () => (<a href={mergedAssistants[0].link}>
-    <Avatar className='border border-neutral-700 h-14 w-14'>
-        <AvatarFallback className="!bg-black">
-            <div className={"rounded-full p-1.5 "}>
-                <Image src={req2TestLogo} alt='Req2Test Logo'/>
-            </div>
-        </AvatarFallback>
-    </Avatar>
-</a>);
+const Req2TestLink = () => (
+    <Link href={mergedAssistants[0].link} title='Try Req2Test'>
+        <Avatar className='border border-neutral-700 h-14 w-14'>
+            <AvatarFallback className="!bg-black hover:!bg-indigo-600 transition-all duration-300 ease-in-out">
+                <div className={"rounded-full p-2.5 "}>
+                    <Image src={req2TestLogo} alt='Req2Test Logo'/>
+                </div>
+            </AvatarFallback>
+        </Avatar>
+    </Link>
+);
 
 const mergedAssistants = {
     0: {name: "Req2Test", link: "/assistants/req2test"}
