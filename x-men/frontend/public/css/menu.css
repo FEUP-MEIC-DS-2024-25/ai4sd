@@ -22,6 +22,7 @@ ul {
 
 .wrapper {
     width: 45%;
+    min-width: 13em;
 }
 
 .options-wrapper {
@@ -92,8 +93,8 @@ button:focus {
   
 .tooltip .tooltiptext {
     visibility: hidden;
-    padding-left: 0.25em;
-    padding-right: 0.25em;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
     background-color: #5a5a5a;
     white-space: nowrap;
     border: 1px solid #5a5a5a;
