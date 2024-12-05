@@ -18,6 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
 		
 		const options: vscode.QuickPickItem[] = [
 			{ label: "SARA", description: "Executes SARA superhero" },
+			{ label: "Archy", description: "Executes Archy superhero" },
 			{ label: "Template", description: "Executes Template superhero" },
 		  ];
 	  
@@ -33,6 +34,10 @@ export function activate(context: vscode.ExtensionContext) {
 			  case "SARA":
 				// Import and execute SARA
 				(await import('./superheroes/SARA/SARA.js')).execute(context);
+				break;
+			  case "Archy":
+				// Import and execute Archy
+				(await import('./superheroes/archy/Archy.js')).execute(context);
 				break;
 			  case "Template":
 				// Import and execute Template
