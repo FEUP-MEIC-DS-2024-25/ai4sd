@@ -1,0 +1,72 @@
+@startuml
+skinparam linetype ortho
+
+package "Client-Server Architecture" {
+    class ChatServer {
+        + main(String[] args)
+        + processInput(SocketChannel sc)
+        + cmdHandle(Client client, String cmd)
+        + privateMsg(String sender, String destin, String msg)
+        + changeNick(Client client, String nick)
+        + joinRoom(Client client, String room)
+        + leaveRoom(Client client)
+        + logout(Client client)
+        + sendToAll(Client sender, String msg)
+        + sendToOthers(Client sender, String msg)
+        + sendMsg(Client client, String msg)
+        + sendToOwner(Client client, String msg)
+    }
+    
+    class Client {
+        - String nick
+        - String room
+        - SocketChannel socket
+        - ArrayList<String> buffer
+        + getNick()
+        + getRoom()
+        + getSocket()
+        + getBuffer()
+        + setNick(String nick)
+        + setRoom(String room)
+    }
+
+    class ChatClient {
+        + printMessage(String message)
+        + newMessage(String message)
+        + run()
+        + processAnswer(String answer)
+    }
+
+    ChatServer --> Client : Uses
+    ChatClient --> ChatServer : Sends Commands
+    Client --> ChatClient : Receives Commands
+}
+
+package "MVC - Client" {
+    class JFrame
+    class JTextField
+    class JTextArea
+    class JPanel
+    class ActionListener
+
+    ChatClient --> JFrame
+    ChatClient --> JTextField
+    ChatClient --> JTextArea
+    ChatClient --> ActionListener
+}
+
+package "Observer - Server IO Management" {
+    class Selector {
+        + select()
+    }
+    
+    class SelectionKey {
+        + OP_ACCEPT
+        + OP_READ
+    }
+
+    ChatServer --> Selector : Registers Channels
+    Selector --> SelectionKey : Monitors Keys
+}
+
+@enduml
