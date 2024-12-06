@@ -4,18 +4,20 @@
   "description": "Example for extension mixing",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.95.0"
+    "vscode": "^1.94.0"
   },
   "categories": [
     "Other"
   ],
-  "activationEvents": ["onCommand:ai4sd.wakeup"],
+  "activationEvents": [
+    "onCommand:ai4sd.wakeup"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "sara-example.helloWorld",
-        "title": "Hello World"
+        "title": "sara-example"
       }
     ]
   },
@@ -28,6 +30,7 @@
     "test": "vscode-test"
   },
   "devDependencies": {
+    "@types/archiver": "^6.0.3",
     "@types/mocha": "^10.0.9",
     "@types/node": "20.x",
     "@types/vscode": "^1.95.0",
@@ -39,6 +42,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "archiver": "^7.0.1",
     "dotenv": "^16.4.7"
   }
 }

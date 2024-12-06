@@ -14,7 +14,7 @@
 				"--extensionDevelopmentPath=${workspaceFolder}/x-men/frontend"
 			],
 			"outFiles": [
-				"${workspaceFolder}/superheroes/sara-example/out/**/*.js",
+				"${workspaceFolder}/x-men/sara-example/out/**/*.js",
 				"${workspaceFolder}/x-men/frontend/out/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
