@@ -7,6 +7,7 @@ import Loading from "./loading";
 import DownloadOutput from "./downloadOutput";
 import "tailwindcss/tailwind.css";
 import "bootstrap/dist/css/bootstrap.css";
+import { Button } from "@/app/components/ui/button";
 
 export default function Application() {
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -45,8 +46,8 @@ export default function Application() {
 
         setLoading(true);
         try {
-            const response = await fetch("http://172.23.0.3:5001/api/process", {
-                // const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/process", {
+            // const response = await fetch("http://172.23.0.3:5001/api/process", {
+            const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/process", {
                 method: "POST",
                 body: formData,
             });
@@ -78,9 +79,38 @@ export default function Application() {
         }
     };
 
+    const resetHistory = async (event) => {
+        event.preventDefault();
+        try {
+            // const response = await fetch("http://172.23.0.3:5001/api/reset", {
+            const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/reset", {
+                method: "POST",
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error: ${response.statusText}`);
+            }
+
+            setFeedbackInfo("History reset successfully");
+
+        } catch (error) {
+            console.error("Error:", error.message);
+        } finally {
+            setTimeout(() => setFeedbackInfo(""), 5000);
+        }
+    }
+
     return (
         <>
             <div className="p-2 flex flex-col mx-auto bg-gray-300 shadow-md rounded-md w-5/6">
+                <div className="p-2 flex flex-col mx-auto bg-gray-300 shadow-md rounded-md w-5/6">
+                    <Button className="m-2" onClick={() => setSelectedFiles([])}>
+                        Clear
+                    </Button>
+                    <Button className="m-2" onClick={resetHistory}>
+                        Reset history
+                    </Button>
+                </div>
                 <form onSubmit={handleFormSubmit}>
                     <Filters onOutputTypeChange={setOutputType} onOutputLanguageChange={setOutputLanguage} />
                     <InputSubmission
