@@ -24,6 +24,52 @@ const UploadFilePage = () => {
     });
   };
 
+  const handleDownload = () => {
+    // Create a Markdown string from the vulnerabilities
+    let markdownContent = "# Vulnerability Report\n\n";
+
+    responseData.data.forEach((vuln, index) => {
+      markdownContent += `## ${index + 1}. ${vuln.title}\n\n`;
+      markdownContent += `**File:** \`${vuln.file}\`\n\n`;
+      markdownContent += `**Description:**\n${vuln.description}\n\n`;
+      
+      markdownContent += `**Lines Affected:**\n`;
+      markdownContent += "```plaintext\n" + vuln.lines + "\n```\n\n";
+      
+      markdownContent += `**Fix:**\n`;
+      markdownContent += "```plaintext\n" + vuln.fix + "\n```\n\n";
+      
+      markdownContent += "---\n\n";
+    });
+
+    // Create a Blob object for the data
+    const blob = new Blob([markdownContent], { type: 'text/markdown' });
+
+    // Get timestamp for the file name
+    const currentDate = new Date();
+
+    // Get day, month, year, hour, minute, and second
+    const day = String(currentDate.getDate()).padStart(2, '0');
+    const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // months are 0-based
+    const year = currentDate.getFullYear();
+    const hour = String(currentDate.getHours()).padStart(2, '0');
+    const minute = String(currentDate.getMinutes()).padStart(2, '0');
+    const second = String(currentDate.getSeconds()).padStart(2, '0');
+
+    // Combine them into a string in the desired format
+    const timestamp = `${day}${month}${year}_${hour}${minute}${second}`;
+    
+    // Create a URL for the Blob and set it to a temporary link
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'vulnerabilities_report'+ timestamp +'.md'; // Markdown file name
+    
+    // Trigger the download and clean up
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Handle file removal
   const handleRemoveFile = (fileName) => {
     setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
@@ -47,8 +93,8 @@ const UploadFilePage = () => {
       );
       
       const xhr = new XMLHttpRequest();
-      xhr.open('POST', 'http://localhost:8080/online', true)
-      // xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app/online', true)
+      // xhr.open('POST', 'http://localhost:8080/online', true)
+      xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app/online', true)
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
         console.log(xhr.responseText);
@@ -139,6 +185,12 @@ const UploadFilePage = () => {
           </div>
         ) : (
           <div className="container p-4 m-4">
+            <button 
+              className="btn btn-success mb-4" 
+              onClick={handleDownload}
+            >
+              Download Vulnerability Report
+            </button>
             {responseData.data.map((vulnerability) => (
               <div key={vulnerability.title} className="card mb-4 p-3 bg-light shadow-sm">
                 <h2 className="text-success">{vulnerability.title}</h2>
