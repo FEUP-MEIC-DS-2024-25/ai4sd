@@ -52,7 +52,7 @@ export default function UnitTestAssistant() {
     if (file?.type === "text/x-python") {
       handleFileRead(file);
     } else {
-      alert("Please upload a valid Python file.");
+      alert("Please upload a valid file.");
     }
   };
 
@@ -95,7 +95,7 @@ export default function UnitTestAssistant() {
             <textarea
               value={functionCode}
               onChange={(e) => setFunctionCode(e.target.value)}
-              placeholder="Enter your Python function here..."
+              placeholder="Enter your code here..."
               className="w-3/4 p-2 sm:p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-32 sm:h-auto resize-y"
             />
             <div

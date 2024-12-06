@@ -17,7 +17,7 @@ function getAssistantList() {
     //creating mock data
     let ai1 = { name: "ai1", type: "refact", link: "#" };
     let ai2 = { name: "Req2Test", type: "req", link: "/assistants/req2test" };
-    let ai3 = { name: "UTA", type: "req", link: "/assistants/uta" };
+    let ai3 = { name: "UTA", type: "verif", link: "/assistants/uta" };
     let ai4 = { name: "ai4", type: "req", link: "#" };
     let ai5 = { name: "ai5", type: "arch", link: "#" };
     let ai6 = { name: "ai6", type: "arch", link: "#" };
