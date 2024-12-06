@@ -15,7 +15,7 @@ function FormsComponent({ setActiveView  }) {
   const [response, setResponse] = useState(null);
   const [repoUrl, setRepoUrl] = useState("");
   const [authToken, setAuthToken] = useState("");
-  const [selectedOption, setSelectedOption] = useState("mvc");
+  const [selectedOption, setSelectedOption] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [loading, setLoading] = useState(false);
 

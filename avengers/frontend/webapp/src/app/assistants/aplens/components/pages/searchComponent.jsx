@@ -52,7 +52,7 @@ const SearchComponent = ({activeView, setActiveView, reports}) => {
             className="flex flex-col pt-3 gap-2 w-48 h-80 overflow-auto box-content pr-4 ml-4 border-opacity-0 transition-all duration-300 ease-in-out">
             {reports.current.map((report, index) => (
               <button
-              key={report.id}
+              key={report.id ? report.id : `report-${index}`}
               className={`flex flex-col items-start px-4 py-4 w-full h-auto border-1.5 border-zinc-800 rounded-sm text-ellipsis overflow-hidden whitespace-nowrap transition duration-300 ease-in-out ${
                 selectedReportId === report.retrievedData.id
                   ? "bg-zinc-800 text-white"
