@@ -98,7 +98,6 @@ steps:
               image_with_build_id="${image}-${BUILD_ID}"
 
               if [ -f "${dockerfile}" ]; then
-
                 echo "Fetching secret for ${hero_name}..."
                 secret_file="/tmp/${hero_name}_secret"
 
@@ -107,12 +106,16 @@ steps:
                   --project="${_PROJECT_ID}" > "${secret_file}"
 
                 echo "Building image for ${hero_name}..."
-                DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}" || exit 1
-                docker push "${image_with_build_id}" || exit 1
+                if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
+                  echo "Pushing image for ${hero_name}..."
+                  docker push "${image_with_build_id}" || echo "Failed to push image for ${hero_name}. Skipping."
+                else
+                  echo "Failed to build image for ${hero_name}. Skipping."
+                fi
                 
                 rm -rf "${secret_file}"
               else
-                echo "No Dockerfile found for ${hero_name}, using fallback image."
+                echo "No Dockerfile found for ${hero_name}, skipping build."
                 sleep 10  # Wait for GCR image propagation
               fi
             done
