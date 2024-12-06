@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/FEUP-MEIC-DS-2024-25/ai4sd#readme",
   "dependencies": {
+    "@google-cloud/storage": "^7.14.0",
     "@octokit/app": "^15.1.1",
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",

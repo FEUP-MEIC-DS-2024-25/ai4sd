@@ -1,63 +1,52 @@
-import { fetchRepoContents, downloadFile } from "./githubClient.js";
-import { saveFile, ensureDownloadDir } from "./utils.js";
-import { config } from "../config.js";
+import { fetchRepoContents } from "./githubClient.js";
+import { downloadFiles } from "./utils.js";
 
-function extractRepoDetails(repoUrl) {
+/**
+ * Extracts organization and repository details from a GitHub URL.
+ * @param {string} repoUrl - GitHub repository URL.
+ * @returns {[string, string]} - Organization and repository name.
+ * @throws {Error} - If the URL format is invalid.
+ */
+export function extractRepoDetails(repoUrl) {
     const repoPath = repoUrl.replace("https://github.com/", "").split("/");
     if (repoPath.length !== 2) {
-        throw new Error("Invalid repository URL format. Expected format: https://github.com/{org}/{repo}");
+        throw new Error(
+            "Invalid repository URL format. Expected format: https://github.com/{org}/{repo}"
+        );
     }
     return repoPath;
 }
 
-async function findFiles(octokit, org, repo, path = "", files = []) {
+/**
+ * Recursively finds files in a GitHub repository and reads their content.
+ * @param {object} octokit - Authenticated Octokit instance.
+ * @param {string} org - GitHub organization name.
+ * @param {string} repo - Repository name.
+ * @param {string} [path=""] - Directory path within the repository.
+ * @param {Array} [files=[]] - Accumulator for storing file details.
+ * @returns {Promise<Array>} - Array of file details with content.
+ */
+export async function fetchFiles(octokit, org, repo, path = "", files = []) {
     try {
         const contents = await fetchRepoContents(octokit, org, repo, path);
+        console.log(`Found ${contents.length} items in /${path}`);
 
         for (const content of contents) {
-            //TODO: Adapt to more types of code files
-            if (content.type === "file" && content.name.endsWith(".py")) {
+            if (content.type === "file") {
+                console.log(`Reading file: ${content.name}`);
                 files.push({
                     name: content.name,
+                    path: content.path,
                     download_url: content.download_url,
                 });
-                console.log(`Found Python file: ${content.name}`);
             } else if (content.type === "dir") {
                 console.log(`Entering directory: ${content.name}`);
-                await findFiles(octokit, org, repo, content.path, files);
+                await fetchFiles(octokit, org, repo, content.path, files);
             }
         }
         return files;
     } catch (error) {
         console.error("Error fetching repository contents:", error.message);
-        throw error;  // Rethrow to handle at higher level
+        throw error; // Rethrow to handle at a higher level.
     }
 }
-
-async function downloadAndSaveFiles(pythonFiles) {
-    for (const file of pythonFiles) {
-        try {
-            const fileStream = await downloadFile(file.download_url);
-            saveFile(fileStream, file.name, config.downloadDir);
-        } catch (error) {
-            console.error(`Error downloading file ${file.name}:`, error.message);
-            throw error; // Rethrow to handle at higher level
-        }
-    }
-}
-
-async function processRepo(octokit, repoUrl) {
-    try {
-        const [org, repo] = extractRepoDetails(repoUrl);
-
-        const pythonFiles = await findFiles(octokit, org, repo);
-        ensureDownloadDir();
-        await downloadAndSaveFiles(pythonFiles);
-
-        console.log(`Downloaded ${pythonFiles.length} Python files from ${repoUrl}`);
-    } catch (error) {
-        console.error("Error processing repository:", error.message);
-    }
-}
-
-export { processRepo };
