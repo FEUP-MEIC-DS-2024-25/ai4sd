@@ -102,7 +102,6 @@ function FormsComponent({ setActiveView  }) {
 
       {/* Repository Link */}
       <Input
-        isClearable
         isRequired
         label="Repository Link"
         labelPlacement="outside"
@@ -114,8 +113,8 @@ function FormsComponent({ setActiveView  }) {
         onValueChange={setRepoUrl}
         classNames={{
           mainWrapper: "pb-2",
-          label: "block text-lg text-black font-rubik pb-20 mb-2",
-          inputWrapper: "bg-ivory border-1.5 border-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          label: "block text-lg text-black pb-20 mb-2",
+          inputWrapper: "bg-ivory border-1.5 border-zinc-800 duration-0 group-hover:border-1.5 group-hover:border-zinc-800 group-hover:duration-0"
         }}
       />
 
@@ -130,7 +129,6 @@ function FormsComponent({ setActiveView  }) {
       {/* Repository Token */}
       {isPrivate && (
         <Input
-          isClearable
           label="Access Token"
           labelPlacement="outside"
           placeholder="Enter the access token"
@@ -141,8 +139,8 @@ function FormsComponent({ setActiveView  }) {
           onValueChange={setAuthToken}
           classNames={{
             mainWrapper: "pt-4",
-            label: "block text-lg text-black font-rubik pb-20 mb-2",
-            inputWrapper: "bg-ivory border-1.5 border-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            label: "block text-lg text-black pb-20 mb-2",
+            inputWrapper: "bg-ivory border-1.5 border-zinc-800 duration-0 group-hover:border-1.5 group-hover:border-zinc-800 group-hover:duration-0"
           }}
         />
       )}
@@ -160,8 +158,9 @@ function FormsComponent({ setActiveView  }) {
         onSelectionChange={setSelectedOption}
         classNames={{
           mainWrapper: "py-8",
-          label: "block text-lg font-rubik mb-2",
-          trigger: "bg-ivory border-1.5 border-zinc-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          label: "block text-lg text-black ml-3 mb-2",
+          trigger: "bg-ivory border-1.5 border-zinc-800 group-hover:bg-ivory",
+          listbox: "text-black"
         }}
       >
         {(arch) => <SelectItem>{arch.label}</SelectItem>}
@@ -172,7 +171,7 @@ function FormsComponent({ setActiveView  }) {
         radius="sm"
         size="md"
         onClick={handleTestClick}
-        className={`px-10 text-lg text-rubik bg-zinc-800 border-zinc-800 border-1.5 text-white transition duration-300 hover:bg-white hover:border-1.5 hover:border-zinc-800 hover:text-zinc-800 ${
+        className={`px-10 text-lg text-rubik bg-zinc-800 border-zinc-800 border-1.5 text-white transition duration-300 hover:bg-white hover:border-1.5 hover:border-zinc-800 hover:text-black ${
           loading
             ? "bg-zinc-800 cursor-not-allowed"
             : "bg-zinc-800 hover:bg-white"
