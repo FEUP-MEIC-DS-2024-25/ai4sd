@@ -1,0 +1,4 @@
+@startuml
+object firstObject
+object "My Second Objwecst" as o2
+@enduml

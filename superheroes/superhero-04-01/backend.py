@@ -11,8 +11,24 @@ from google.cloud import firestore
 from google.cloud import storage
 from datetime import datetime
 import base64
+from google.cloud import secretmanager
 
-load_dotenv()
+# def get_secret(secret_id):
+#     client = secretmanager.SecretManagerServiceClient()
+#     project_id = os.getenv("GOOGLE_CLOUD_PROJECT")
+#     name = f"projects/{project_id}/secrets/{secret_id}/versions/latest"
+#     response = client.access_secret_version(name=name)
+#     return response.payload.data.decode("UTF-8")
+
+# load_dotenv()
+
+# on_google_cloud = os.getenv("GOOGLE_CLOUD_PROJECT") is not None
+
+# if on_google_cloud:
+#     os.environ["API_KEY"] = get_secret("RRBUDDY_API_KEY")
+
+os.environ["API_KEY"] = "AIzaSyCWobjVmSeZWRE9nSh78rqUr9CWduURChE"
+print(os.environ["API_KEY"])
 
 genai.configure(api_key=os.environ["API_KEY"])
 model = genai.GenerativeModel("gemini-1.5-flash")

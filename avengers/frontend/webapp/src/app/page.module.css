@@ -233,6 +233,13 @@ a.secondary {
   padding: 2em;
 }
 
+.assistantInteractionDark {
+  background-color: #121212;
+  color: var(--bs-body-color);
+  flex: 1;
+  padding: 2em;
+}
+
 .interactorLayout {
   display: flex;
   height: 100vh;
