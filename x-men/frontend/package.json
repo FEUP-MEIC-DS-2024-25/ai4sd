@@ -17,7 +17,25 @@
         "command": "ai4sd.ai4sd",
         "title": "AI4SD: Artificial Intelligence for Software Development"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "whattheduck",
+          "title": "WhatTheDuck",
+          "icon": "src/superheroes/whattheduck/resources/duck.svg"
+        }
+      ]
+    },
+    "views": {
+      "whattheduck": [
+        {
+          "type": "webview",
+          "id": "whattheduck.webview",
+          "name": "Refactor Options"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -28,8 +46,10 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/mocha": "^10.0.9",
-    "@types/node": "20.x",
+    "@types/archiver": "^6.0.3",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.17.9",
+    "@types/showdown": "^2.0.6",
     "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.7.0",
@@ -39,6 +59,8 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
-    "dotenv": "^16.4.5"
+    "archiver": "^7.0.1",
+    "dotenv": "^16.4.5",
+    "showdown": "^2.1.0"
   }
 }
