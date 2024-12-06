@@ -3,32 +3,58 @@
 // Extra components
 import  ExpandingTextarea  from "./ui/expanding-textarea";
 import { Button } from "./ui/button";
-import { useState, useRef } from "react";
-import { Mic } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import SpeechToText from "./SpeechToText";
 import ReactMarkdown from "react-markdown";
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "./ui/dialog";
-
+import { Mic } from "lucide-react"; 
+ 
 //Notifications 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function LandingPage() {
+    
     const [message, setMessage] = useState("");
     const [conversations, setConversations] = useState([]);
     const [disabled, setDisabled] = useState(false);
     const disableTimerMult = useRef(5); 
     const disabeTimerCntr = useRef(0); 
 
+    //Detect if the browser is Brave
+    const isBrave = (window.navigator.brave != undefined && window.navigator.brave.isBrave.name == "isBrave") 
+    const [isBraveBrowser, setIsBraveBrowser] = useState(isBrave);
+
+    //Text To Speech Dialog Trigger
+    const [activeDialog, setActiveDialog] = useState(false);
+    const [showSpeechDialog, setShowSpeechDialog] = useState(false);
+
+    //Show Speech Dialog
+    useEffect(() => {
+
+        console.log("Mostra-te filho da puta", activeDialog)
+
+        if (activeDialog) {
+
+            // Delay showing the dialog to ensure state has updated
+            const timer = setTimeout(() => setShowSpeechDialog(true), 0);
+            return () => clearTimeout(timer);
+
+        } else {
+            setShowSpeechDialog(false);
+        }
+
+    }, [activeDialog]);
+
     const handleSubmit = async () => {
+
         try {
-            const backendUrl = import.meta.env.VITE_BACKEND_URL;
+            const backendUrl = import.meta.env.VITE_BACKEND_URL || null; // Fallback URL
+
+            if(backendUrl ===null){
+                console.warn("Backend URL is not defined. Please check your .env file.");
+                return; 
+            }
+            
             const response = await fetch(`${backendUrl}/api/prompt`, {
                 method: "POST",
                 headers: {
@@ -128,28 +154,22 @@ export default function LandingPage() {
                     />
                 </div>
                 <div className="flex justify-center mt-8">
-                    <Dialog>
-                        <DialogTrigger>
-                            <Button
-                                type="button"
-                                size="sm"
-                                className="rounded-xl text-xs bg-neutral-950 dark:bg-gray-200  dark:hover:bg-gray-400 h-10"
-                            >
-                                <span className="p-2">
-                                    <Mic size={16} />
-                                </span>
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Text to Speech?</DialogTitle>
-                                <DialogDescription>
-                                    This feature is not available yet.
-                                </DialogDescription>
-                            </DialogHeader>
-                        </DialogContent>
-                    </Dialog>
-
+                    {showSpeechDialog && <SpeechToText setMessage={setMessage} isBraveBrowser={isBraveBrowser} dialogOpen={activeDialog} setDialogOpen={setActiveDialog}/>}
+                    <Button
+                        type="button"
+                        size="sm"
+                        className="rounded-full text-xs"
+                        onClick={() => {
+                            if(isBraveBrowser){
+                                toast.error('Speech-to-text is not supported in Brave browser. Please use a different browser.');
+                            }
+                            setActiveDialog(true);
+                        }}
+                    >
+                        <span className={`p-2`}>
+                            <Mic size={16} />
+                        </span>
+                    </Button>
                     <Button
                         onClick={handleSubmit}
                         disabled={disabled}
