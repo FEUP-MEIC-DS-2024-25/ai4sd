@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Create Project{% endblock %}
+
+{% block content %}
+    <div class="card">
+        <div class="card-body">
+            <h1 class="card-title">Create a new diagram for a project</h1>
+            <form method="POST" class="mt-3">
+                {% csrf_token %}
+                {{ form|crispy }}
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">Create Diagram</button>
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}

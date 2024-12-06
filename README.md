@@ -30,7 +30,7 @@
     - **avengers** cloud storage bucket: the web app of AI4SD *(up to you to develop)*
         - This is not a VM but a data container. Because you will be using ReactJS to develop the frontend of the app, its output are just static files. Thus, this is a cost effective approach for maintaining a frontend.
     - **superhero-0X-0Y** cloud run instance: your superhero service powered by GenAI capabilities *(up to you to develop by us)*
-        - The service account name of your superhero follows the format `superhero-0X-0Y@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com`
+        - The service account name of your superhero follows the format `superhero-0X-0Y@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com    `
     - **nexus** cloud storage bucket: a data bucket that will hold the repositories your superhero will use *(already deployed by us)*
         - We recommend creating one folder per superhero. Inside that folder you can put whatever you want there
     - **vault** firestore: data storage for holding information specific to your superhero (internally it is mandatory that it is referred by GCP as `(default)`) *(already deployed by us)*

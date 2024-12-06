@@ -1,0 +1,8 @@
+Django
+djangorestframework
+packaging
+typing_extensions
+django-cors-headers
+google-generativeai
+PyGithub
+whitenoise
