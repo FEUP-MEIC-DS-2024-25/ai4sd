@@ -12,11 +12,19 @@
       "static/css/app/page.css",
       "static/chunks/app/page.js"
     ],
+<<<<<<< HEAD
+    "/interactor/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/interactor/page.css",
+      "static/chunks/app/interactor/page.js"
+=======
     "/assistants/toopai/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/css/app/assistants/toopai/page.css",
       "static/chunks/app/assistants/toopai/page.js"
+>>>>>>> main
     ]
   }
 }
