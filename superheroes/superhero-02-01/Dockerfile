@@ -15,7 +15,7 @@ COPY . .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Expose the port the app runs on
-EXPOSE 8081
+EXPOSE 8080
 
 # Run the application
 CMD python manage.py runserver 0.0.0.0:8080 --insecure --noreload
