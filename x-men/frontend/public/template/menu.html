@@ -13,7 +13,7 @@
             <div class="option-wrapper">
                 <div class="info-label-wrapper">
                     <div class="tooltip"> &#9432;
-                        <span class="tooltiptext">
+                        <div class="tooltiptext">
                             <p>Selects which repository will be analyzed.</p>
                             <ul>
                                 <li>
@@ -23,18 +23,19 @@
                                     <p><b>Remote</b> will analyze the remote (GitHub) repository.</p>
                                 </li>
                             </ul>
-                        </span>
+                        </div>
                     </div>
                     <label for="location">Location:</label>
                 </div>
                 <div>
                     <select name="location" id="location">
-                        <option value="local" selected="selected">Local</option>
+                        <option value="local" selected>Local</option>
                         <option value="remote">Remote</option>
                     </select>
                 </div>
             </div>
-        <button id="submit">Submit</button>
+        </div>
+        <button id="submit" type="submit">Submit</button>
     </div>
 </body>
 </html>
