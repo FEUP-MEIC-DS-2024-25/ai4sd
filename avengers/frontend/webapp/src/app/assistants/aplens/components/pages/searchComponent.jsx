@@ -14,7 +14,7 @@ const SearchComponent = ({activeView, setActiveView, reports}) => {
 
       return (
         <div className="flex flex-col items-center pt-10 px-6">
-          <div className="flex items-center mb-4 border-1.5 border-zinc-800">
+          <div className="flex items-center mb-2 border-1.5 border-zinc-800">
                 <button
                 className={`w-24 px-4 py-1 transition duration-300 ${
                     activeView === "Forms"
