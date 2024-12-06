@@ -75,16 +75,13 @@ function Input() {
                     </div>
                 </div>)}
             <div className="input-group">
-                <UIInput type="url" className="form-control bg-white text-black border-gray-300" name="repo_url" placeholder="Insert your repository's URL here" aria-label="Insert your repository's URL here" aria-describedby="button-input" />
+                <UIInput type="url" className="form-control bg-white text-black border-gray-300" style={{ height: '35px' }} name="repo_url" placeholder="Insert your repository's URL here" aria-label="Insert your repository's URL here" aria-describedby="button-input" />
                 <label 
                     htmlFor="formFileMultiple" 
                     className="input-group-text cursor-pointer flex items-center"
+                    style={{height: '35px'}}
                 >
-                    <Image src={paperclip} alt='Upload file image' style={{
-                        width: '30px',
-                        height: '30px',
-                        objectFit: 'contain',
-                    }} />
+                    <Image src={paperclip} style={{height: '25px', width:'20px'}} alt='Upload file image'  />
                 </label>
                 <UIInput 
                     type="file" 
@@ -93,7 +90,7 @@ function Input() {
                     id="formFileMultiple" 
                     multiple 
                 />
-                <Button variant="secondary" type="submit" id="button-input">Send</Button>
+                <Button variant="secondary" type="submit" id="button-input" style={{ height: '35px' }}>Send</Button>
             </div>
         </form>
     );
