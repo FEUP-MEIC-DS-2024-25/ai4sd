@@ -106,7 +106,7 @@ steps:
                   --project="${_PROJECT_ID}" > "${secret_file}"
 
                 echo "Building image for ${hero_name}..."
-                if docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
+                if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
                   echo "Pushing image for ${hero_name}..."
                   docker push "${image_with_build_id}" || echo "Failed to push image for ${hero_name}. Skipping."
                 else
