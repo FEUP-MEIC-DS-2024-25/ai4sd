@@ -12515,6 +12515,7 @@ video {
   margin-left: auto;
   margin-right: auto;
 }
+<<<<<<< HEAD
 .mb-2 {
   margin-bottom: 0.5rem;
 }
@@ -12551,6 +12552,14 @@ video {
 .block {
   display: block;
 }
+=======
+.mb-auto {
+  margin-bottom: auto;
+}
+.mt-3 {
+  margin-top: 0.75rem;
+}
+>>>>>>> main
 .flex {
   display: flex;
 }
@@ -12560,6 +12569,7 @@ video {
 .inline-grid {
   display: inline-grid;
 }
+<<<<<<< HEAD
 .hidden {
   display: none;
 }
@@ -12671,10 +12681,22 @@ video {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
 }
+=======
+.gap-3 {
+  gap: 0.75rem;
+}
+.border {
+  border-width: 1px;
+}
+.p-3 {
+  padding: 0.75rem;
+}
+>>>>>>> main
 .px-3 {
   padding-left: 0.75rem;
   padding-right: 0.75rem;
 }
+<<<<<<< HEAD
 .px-4 {
   padding-left: 1rem;
   padding-right: 1rem;
@@ -12683,20 +12705,26 @@ video {
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
 }
+=======
+>>>>>>> main
 .text-left {
   text-align: left;
 }
 .text-center {
   text-align: center;
 }
+<<<<<<< HEAD
 .text-2xl {
   font-size: 1.5rem;
   line-height: 2rem;
 }
+=======
+>>>>>>> main
 .text-3xl {
   font-size: 1.875rem;
   line-height: 2.25rem;
 }
+<<<<<<< HEAD
 .text-6xl {
   font-size: 3.75rem;
   line-height: 1;
@@ -12746,6 +12774,14 @@ video {
 }
 .duration-300 {
   transition-duration: 300ms;
+=======
+.font-bold {
+  font-weight: 700;
+}
+.text-indigo-600 {
+  --tw-text-opacity: 1;
+  color: rgb(79 70 229 / var(--tw-text-opacity));
+>>>>>>> main
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
@@ -12793,6 +12829,7 @@ a {
   }
 }
 
+<<<<<<< HEAD
 .hover\:bg-gray-100:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(243 244 246 / var(--tw-bg-opacity));
@@ -12808,3 +12845,5 @@ a {
   color: rgb(239 68 68 / var(--tw-text-opacity));
 }
 
+=======
+>>>>>>> main
