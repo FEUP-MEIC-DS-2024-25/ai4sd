@@ -52,10 +52,11 @@ function Chat() {
                 }}>
                 <div style={{
                         position: 'sticky',
-                        width: '180px',
-                        top: '10px',
-                        left: '85%',
+                        width: '185px',
                         zIndex: 1,
+                        left: '100%',
+                        paddingRight: '10px',
+                        paddingTop: '10px',
                     }}>
                     <select 
                         className="form-control bg-white text-black" 
@@ -105,19 +106,19 @@ function Chat() {
                                 borderRadius: '10px',
                             }}
                         >
-                            {message.chat_content ? (
+                            {message.chat_content && message.chat_content != "" &&
                                 <div>
                                     <ReactMarkdown>{message.chat_content}</ReactMarkdown>
                                 </div>
-                            ) : (
-                                <div>
-                                    <img
-                                        src={message.chat_image.url}
-                                        alt="Uploaded diagram"
-                                        style={{ maxWidth: '100%', height: 'auto' }}
-                                    />
-                                </div>
-                            )}
+                            }
+
+                            {message.chat_image && 
+                                <img
+                                    src={`data:image/jpeg;base64,${message.chat_image}`}
+                                    alt="Uploaded diagram"
+                                    style={{ maxWidth: '100%', height: 'auto' }}
+                                />
+                            }
                         </div>
                     </div>
                 ))}
