@@ -6,7 +6,6 @@ import axios from "axios";
 
 export function saveFile(content, filename, outputDir, isBinary = false) {
     const filePath = path.join(outputDir, filename);
-    console.log(filePath, isBinary, content)
 
     if (isBinary) {
         // Write binary content directly
@@ -58,7 +57,7 @@ export async function downloadFiles(files, save_to_fs = false) {
         try {
             const response = await downloadFile(file.download_url);
             result.push({ name: file.name, path: file.path, content: response.content, isBinary: response.isBinary });
-            if (save_to_fs) saveFile(response.content, file.name, config.downloadDir, response.isBinary);
+            if (save_to_fs) { ensureDownloadDir(); saveFile(response.content, file.name, config.downloadDir, response.isBinary); }
         } catch (error) {
             console.error(`Error downloading file ${file.name}:`, error.message);
             throw error; // Rethrow to handle at higher level

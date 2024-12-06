@@ -10,7 +10,7 @@ import { downloadFiles } from "../jarvis-fetcher/utils.js";
  * @param {string} filePath - Path of the file within the repository.
  * @param {string} fileContents - Content of the file to upload.
  */
-export async function writeToBucket(org, repo, filePath, fileContents, isBinary = false) {
+export async function writeToBucket(org, repo, filePath, fileContents) {
     const absolutePath = `${org}/${repo}/${filePath}`;
 
     try {
@@ -22,7 +22,6 @@ export async function writeToBucket(org, repo, filePath, fileContents, isBinary 
             `File "${filePath.split('/').pop()}" written to bucket "${BUCKET_NAME}" successfully.`
         );
     } catch (err) {
-        console.log("#", fileContents, "#")
         console.error(`Error writing file "${absolutePath}" to bucket:`, err.message);
         throw err; // Re-throw error to handle at a higher level if necessary
     }
@@ -71,9 +70,9 @@ async function _uploadRepo(octokit, org, repo) {
             return;
         }
 
-        const filesWContent = await downloadFiles(files, true);
+        const filesWContent = await downloadFiles(files);
         for (const file of filesWContent) {
-            await writeToBucket(org, repo, file.path, file.content, file.isBinary);
+            await writeToBucket(org, repo, file.path, file.content);
         }
 
         console.log(`Successfully processed ${files.length} files from ${org}/${repo}`);
