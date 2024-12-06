@@ -8,9 +8,7 @@ export default function useAssistPinSend() {
                 const newPinnedMessage = {
                     message: pinnedMessage
                 };
-                console.log("Id: " + conversationId);
                 const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, newPinnedMessage);
-                console.log(response);
                 return response;
             } catch (error) {
                 //Return the error

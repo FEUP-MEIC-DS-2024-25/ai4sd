@@ -46,6 +46,7 @@ export default function MessageBlock({ messages, totalMessages, description, con
         if (response.status === 200) {
             updatePinnedMessages(pinnedMessages, setPinnedMessages, response.data);
             setIsPopupVisible(false);
+            setSelectedText('');
         } else {
             setError(response);
             console.error(response); // TODO - handle

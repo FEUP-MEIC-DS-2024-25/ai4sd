@@ -7,7 +7,7 @@ import FeaturecraftLayout from "@/app/assistants/featurecraft/components/assista
 export default function Interactor() {
     const assistName = "FeatureCraft";
     const assistType = "req";
-    const newConversationId = "673d10aa792f5dc2123f0895";
+    const newConversationId = "";
 
     return (
         <FeaturecraftLayout

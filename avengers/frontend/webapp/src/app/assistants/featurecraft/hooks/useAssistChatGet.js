@@ -18,7 +18,6 @@ export default function useAssistChatGet(
     setError
 ) {
     useEffect(() => {
-        console.log("Calling useAssistChatGet");
         
         async function fetchData() {
             try {

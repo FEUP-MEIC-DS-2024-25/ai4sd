@@ -37,6 +37,9 @@ export default function useAssistHistory(initialId) {
                         return response.data;
                     }
                     return [{ text: "Nothing to show yet.", link: "" }];
+                } if (response.status === 204) {
+                    setConversationExists(false);
+                    return [{ text: "Nothing to show yet.", link: "" }];
                 } else {
                     throw new Error("Unexpected response status");
                 }
