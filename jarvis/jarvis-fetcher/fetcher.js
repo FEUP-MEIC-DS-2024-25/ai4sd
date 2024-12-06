@@ -1,11 +1,10 @@
 import { fetchRepoContents } from "./githubClient.js";
-import { downloadFiles } from "./utils.js";
 
 /**
  * Extracts organization and repository details from a GitHub URL.
- * @param {string} repoUrl - GitHub repository URL.
- * @returns {[string, string]} - Organization and repository name.
- * @throws {Error} - If the URL format is invalid.
+ * @param {string} repoUrl - The GitHub repository URL (e.g., "https://github.com/org/repo").
+ * @returns {[string, string]} - A tuple containing the organization name and repository name.
+ * @throws {Error} - Throws an error if the URL format is invalid.
  */
 export function extractRepoDetails(repoUrl) {
     const repoPath = repoUrl.replace("https://github.com/", "").split("/");
@@ -18,13 +17,17 @@ export function extractRepoDetails(repoUrl) {
 }
 
 /**
- * Recursively finds files in a GitHub repository and reads their content.
- * @param {object} octokit - Authenticated Octokit instance.
- * @param {string} org - GitHub organization name.
- * @param {string} repo - Repository name.
- * @param {string} [path=""] - Directory path within the repository.
- * @param {Array} [files=[]] - Accumulator for storing file details.
- * @returns {Promise<Array>} - Array of file details with content.
+ * Recursively fetches files from a GitHub repository and collects their metadata.
+ * @param {object} octokit - An authenticated Octokit.
+ * @param {string} org - The GitHub organization name.
+ * @param {string} repo - The repository name.
+ * @param {string} [path=""] - The directory path within the repository. Defaults to the root directory.
+ * @param {Array} [files=[]] - An accumulator array for storing file metadata (used for recursion).
+ * @returns {Promise<Array>} - A promise that resolves to an array of file objects containing:
+ * @returns {string} returns[].name - The name of the file.
+ * @returns {string} returns[].path - The path of the file in the repository.
+ * @returns {string} returns[].download_url - The URL to download the file's content.
+ * @throws {Error} - Throws an error if fetching repository contents fails.
  */
 export async function fetchFiles(octokit, org, repo, path = "", files = []) {
     try {

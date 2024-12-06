@@ -58,7 +58,8 @@ export async function uploadRepo(octokit, org, repo) {
 /**
  * Processes a GitHub repository by fetching files and uploading them to a storage bucket.
  * @param {object} octokit - Authenticated Octokit instance.
- * @param {string} repoUrl - GitHub repository URL.
+ * @param {string} org - GitHub organization name.
+ * @param {string} repo - Repository name.
  */
 async function _uploadRepo(octokit, org, repo) {
     try {

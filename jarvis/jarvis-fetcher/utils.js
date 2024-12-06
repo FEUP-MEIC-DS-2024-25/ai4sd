@@ -3,7 +3,13 @@ import fs from "fs";
 import path from "path";
 import axios from "axios";
 
-
+/**
+ * Saves content to a file in the specified directory.
+ * @param {Buffer|string} content - The content to write to the file.
+ * @param {string} filename - The name of the file to save.
+ * @param {string} outputDir - The directory where the file will be saved.
+ * @param {boolean} [isBinary=false] - Whether the content is binary.
+ */
 export function saveFile(content, filename, outputDir, isBinary = false) {
     const filePath = path.join(outputDir, filename);
 
@@ -18,12 +24,20 @@ export function saveFile(content, filename, outputDir, isBinary = false) {
     console.log(`Saved file: ${filePath}`);
 }
 
+/**
+ * Ensures the download directory exists, creating it if necessary.
+ */
 export function ensureDownloadDir() {
     if (!fs.existsSync(config.downloadDir)) {
         fs.mkdirSync(config.downloadDir);
     }
 }
 
+/**
+ * Downloads a file from the specified URL.
+ * @param {string} url - The URL of the file to download.
+ * @returns {Promise<{content: Buffer|string, isBinary: boolean}>} - An object containing the file content and whether it is binary.
+ */
 export async function downloadFile(url) {
     try {
         const response = await axios.get(url, {
@@ -51,6 +65,16 @@ export async function downloadFile(url) {
     }
 }
 
+/**
+ * Downloads a list of files and optionally saves them to the file system.
+ * @param {Array} files - An array of file objects containing the download URL and other metadata.
+ * @param {boolean} [save_to_fs=false] - Whether to save the files to the file system.
+ * @returns {Promise<Array<Object>>} - A promise that resolves to an array of objects with file metadata and content.
+ * @returns {string} returns[].name - The name of the downloaded file.
+ * @returns {string} returns[].path - The path of the downloaded file.
+ * @returns {Buffer|string} returns[].content - The content of the downloaded file (binary or text).
+ * @returns {boolean} returns[].isBinary - A flag indicating whether the content is binary.
+ */
 export async function downloadFiles(files, save_to_fs = false) {
     let result = []
     for (const file of files) {

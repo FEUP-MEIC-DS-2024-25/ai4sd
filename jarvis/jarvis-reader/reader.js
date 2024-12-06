@@ -1,8 +1,10 @@
 import { BUCKET_NAME, STORAGE_CLIENT } from "../consts";
 
-const bucketName = 'hero-alliance-nexus';
 const fileName = 'helloworld.txt';
 
+/**
+ * Example function that reads a file from a Google Cloud Storage bucket and logs its contents.
+ */
 async function readFromBucket() {
     try {
         // Reference the file in the bucket

@@ -1,19 +1,19 @@
 import dotenv from "dotenv";
+import { DOWNLOAD_DIR, GITHUB_APP_PRIVATE_KEY_PATH, SERVICE_ACCOUNT_KEY_PATH } from "./consts.js";
 
 dotenv.config();
 
 export const config = {
     appId: process.env.APP_ID,
-    privateKeyPath: process.env.PRIVATE_KEY_PATH,
     org: process.env.GITHUB_ORG,
-    serviceAccountKeyPath: process.env.SERVICE_ACCOUNT_KEY_PATH,
-    downloadDir: "./downloads"
+    privateKeyPath: GITHUB_APP_PRIVATE_KEY_PATH,
+    serviceAccountKeyPath: SERVICE_ACCOUNT_KEY_PATH,
+    downloadDir: DOWNLOAD_DIR
 };
 
-if (!config.appId || !config.privateKeyPath || !config.org) {
+if (!config.appId || !config.org) {
     const missingVars = [];
     if (!config.appId) missingVars.push("APP_ID");
-    if (!config.privateKeyPath) missingVars.push("PRIVATE_KEY_PATH");
     if (!config.org) missingVars.push("GITHUB_ORG");
     throw new Error(`Missing required environment variables: ${missingVars.join(", ")}`);
 }
