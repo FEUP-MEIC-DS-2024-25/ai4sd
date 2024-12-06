@@ -59,7 +59,7 @@ export default function PinnedMessagesBlock({ pinnedMessages }) {
                 <div className="overflow-y-auto max-h-[63vh] pb-4">
                     <ul className="space-y-2">
                         {pinnedMessages.map((pinnedMessage, index) => (
-                            <li key={index} className="p-2 bg-white rounded-md shadow-sm">
+                            <li key={index} className="p-2 bg-white rounded-md shadow-sm max-w-96">
                                 <p className="font-semibold">{pinnedMessage.message}</p>
                             </li>
                         ))}

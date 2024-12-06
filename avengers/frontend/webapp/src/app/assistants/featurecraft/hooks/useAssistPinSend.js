@@ -10,6 +10,7 @@ export default function useAssistPinSend() {
                 };
                 console.log("Id: " + conversationId);
                 const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, newPinnedMessage);
+                console.log(response);
                 return response;
             } catch (error) {
                 //Return the error
@@ -19,8 +20,13 @@ export default function useAssistPinSend() {
     };
 
     const updatePinnedMessages = async (pinnedMessages, setPinnedMessages, responseData) => {
-        const newPinnedMessages = responseData;
-        setPinnedMessages(newPinnedMessages);
+        // Extract message from response data
+        const newMessage = {
+            message: responseData.message
+        };
+
+        // Add new message to existing messages array
+        setPinnedMessages(prevMessages => [...prevMessages, newMessage]);
     }
 
     return { handleSendPin, updatePinnedMessages };

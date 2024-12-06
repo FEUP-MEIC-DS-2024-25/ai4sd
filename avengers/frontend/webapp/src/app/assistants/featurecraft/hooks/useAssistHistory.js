@@ -14,11 +14,19 @@ export default function useAssistHistory(initialId) {
             .then(response => {
                 if (response.status === 200) {
                     if (response.data && response.data.length > 0) {
+                        const MAX_DESC_LENGTH = 130;
+                        
                         // Organize the data
                         response.data.forEach((item) => {
-                            item.text = item.description;
+                            // Truncate description if too long
+                            const truncated = item.description.length > MAX_DESC_LENGTH 
+                                ? item.description.substring(0, MAX_DESC_LENGTH) + ' ...'
+                                : item.description;
+                                
+                            item.text = truncated;
                             item.link = `/assistants/featurecraft/${item.id}`;
                         });
+
                         // Check if the conversation ID exists
                         const conversation = response.data.find(item => item.id === initialId);
                         if (!conversation) {

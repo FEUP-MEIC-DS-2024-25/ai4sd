@@ -4,11 +4,12 @@ import styles from "@/app/page.module.css";
 import useAssistPinSend from "@/app/assistants/featurecraft/hooks/useAssistPinSend";
 
 export default function MessageBlock({ messages, totalMessages, description, conversationId, pinnedMessages, setPinnedMessages }) {
-    
+
     const [selectedText, setSelectedText] = useState('');
     const [selectionPosition, setSelectionPosition] = useState({ top: 0, left: 0 });
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [error, setError] = useState("");
+    const [showFullDescription, setShowFullDescription] = useState(false);
 
     const { handleSendPin, updatePinnedMessages } = useAssistPinSend();
 
@@ -42,7 +43,7 @@ export default function MessageBlock({ messages, totalMessages, description, con
 
     const handlePinMessage = async () => {
         const response = await handleSendPin(selectedText, conversationId);
-        if(response.status === 200) {
+        if (response.status === 200) {
             updatePinnedMessages(pinnedMessages, setPinnedMessages, response.data);
             setIsPopupVisible(false);
         } else {
@@ -52,10 +53,33 @@ export default function MessageBlock({ messages, totalMessages, description, con
 
     };
 
+    const truncateDescription = (text, wordLimit) => {
+        const words = text.split(' ');
+        if (words.length > wordLimit) {
+            return words.slice(0, wordLimit).join(' ') + '...';
+        }
+        return text;
+    };
+
+    const displayedDescription = showFullDescription ? description : truncateDescription(description, 20);
+
+
     return (
         <div className="p-4 shadow-sm flex-grow h-full">
             <h2 className="text-xl font-bold mb-2">Your Conversation</h2>
-            <p className="text-sm text-gray-60 mb-4">{description}</p>
+            <div className="text-sm text-gray-600 mb-4">
+                <div className="flex flex-wrap items-center gap-2">
+                    <p className="inline">{displayedDescription}</p>
+                    {description.split(' ').length > 20 && (
+                        <button
+                            onClick={() => setShowFullDescription(!showFullDescription)}
+                            className="inline-flex text-blue-500 hover:text-blue-700 text-sm"
+                        >
+                            {showFullDescription ? 'Show Less' : 'Show More'}
+                        </button>
+                    )}
+                </div>
+            </div>
             <div className="overflow-y-auto max-h-[63vh]">
                 <ul className="space-y-2">
                     {messages.filter(Boolean).map((message, index) => (
