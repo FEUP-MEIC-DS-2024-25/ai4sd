@@ -22,8 +22,9 @@ function getAssistantList() {
     let ai6 = { name: "FeatureCraft", type: "req", link: "/assistants/featurecraft" };
     let ai8 = { name: "APLens", type: "req", link: "/assistants/aplens"}
     let ai9 = { name: "Req2Speech", type: "req", link: "/assistants/req2speech" };
+    let ai10 = { name: "DiagramIt", type: "req", link: "/assistants/diagramit" };
 
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9]
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10]
 }
 
 function AssistantPickerItems() {
