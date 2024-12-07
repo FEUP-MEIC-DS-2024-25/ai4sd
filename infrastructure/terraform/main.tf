@@ -671,7 +671,7 @@ resource "google_secret_manager_secret" "jarvis_secret" {
 }
 
 resource "google_secret_manager_secret_version" "jarvis_secret" {
-  secret = google_secret_manager_secret.jarvis_secret
+  secret = google_secret_manager_secret.jarvis_secret.id
   secret_data = "initial-secret-data for jarvis"
 }
 
