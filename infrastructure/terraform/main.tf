@@ -550,6 +550,13 @@ resource "google_firestore_database" "vault" {
   location_id = "europe-west1"
   type        = "FIRESTORE_NATIVE"
   depends_on  = [google_project_service.enable_services]
+  
+  lifecycle {
+    ignore_changes = [
+      earliest_version_time,
+      etag
+    ]
+  }
 }
 
 #################################
