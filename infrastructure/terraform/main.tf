@@ -706,9 +706,9 @@ output "created_superhero_secrets" {
   value = google_secret_manager_secret.superhero_secrets
 }
 
-output "superhero_secret_versions" {
-  value = google_secret_manager_secret_version.superhero_secrets
-}
+# output "superhero_secret_versions" {
+#   value = google_secret_manager_secret_version.superhero_secrets
+# }
 
 output "superhero_secret_access" {
   value = google_secret_manager_secret_iam_member.superhero_secret_access
