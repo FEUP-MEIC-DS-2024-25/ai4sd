@@ -42,6 +42,7 @@ resource "google_project_service" "enable_services" {
     "compute.googleapis.com", 
     "cloudresourcemanager.googleapis.com",
     "iam.googleapis.com"
+    "secretmanager.googleapis.com"
   ])
   service = each.key
 }
