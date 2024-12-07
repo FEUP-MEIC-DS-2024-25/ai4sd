@@ -635,7 +635,7 @@ resource "google_secret_manager_secret" "superhero_secrets" {
   }
 }
 
-resource "google_secret_manager_version" "superhero_secrets" {
+resource "google_secret_manager_secret_version" "superhero_secrets" {
   for_each = toset(local.superhero_names)
 
   secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
@@ -666,11 +666,11 @@ resource "google_secret_manager_secret" "jarvis_secret" {
       replicas {
         location = "europe-west1"
       }
-    }
+    }   
   }
 }
 
-resource "google_secret_manager_version" "jarvis_secret" {
+resource "google_secret_manager_secret_version" "jarvis_secret" {
   secret_id = google_secret_manager_secret.jarvis_secret
   secret_data = "initial-secret-data for jarvis"
 }
