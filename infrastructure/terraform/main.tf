@@ -650,7 +650,7 @@ resource "google_secret_manager_secret_version" "superhero_secrets" {
   secret = google_secret_manager_secret.superhero_secrets[each.key].id
   secret_data = "initial-secret-data for this superhero"
 
-  depends_on = [google_service_account.superhero]
+  depends_on = [google_service_account.superhero, google_secret_manager_secret.superhero_secrets]
 }
 
 resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
@@ -660,7 +660,7 @@ resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
 
-  depends_on = [google_service_account.superhero]
+  depends_on = [google_service_account.superhero, google_secret_manager_secret.superhero_secrets]
 }
 
 resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
