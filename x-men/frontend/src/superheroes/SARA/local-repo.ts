@@ -25,10 +25,12 @@ export async function analyzeLocal(): Promise<void> {
         const jsonData = await sendFile();
         const markdownContent = utils.parseApiMdResponse(jsonData);
         repoUtils.writeToFile(markdownFilePath, markdownContent);
-        panel.dispose();
         utils.openMarkdownFile(markdownFilePath);
     } catch (error) {
         utils.showError("Command Execution", error);
+    }
+    finally {
+        panel.dispose();
     }
 }
 

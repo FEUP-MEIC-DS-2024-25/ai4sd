@@ -7,9 +7,12 @@ export function getTemplate(fileName: string, webview: vscode.Webview, dirName: 
     const templatePath = vscode.Uri.joinPath(extensionUri, 'public', 'template', fileName + '.html');
     const styleUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'public', 'css', fileName +'.css'));
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'public', 'js', fileName + '.js'));
+    const imageUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'public', 'images')) + "/";
+
     const content = fs.readFileSync(templatePath.fsPath, 'utf-8');
 
     return content
         .replace('{{styleUri}}', styleUri.toString())
-        .replace('{{scriptUri}}', scriptUri.toString());
+        .replace('{{scriptUri}}', scriptUri.toString())
+        .replaceAll('{{imageUri}}', imageUri.toString());
 }

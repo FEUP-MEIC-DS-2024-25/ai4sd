@@ -35,7 +35,6 @@ export async function execute(context: vscode.ExtensionContext) {
       context.subscriptions
     );
   
-  // const extensionUri = vscode.Uri.file(path.join(__dirname, "../../../"));
   panel.webview.html = getTemplate("menu", panel.webview, __dirname);
 }
 

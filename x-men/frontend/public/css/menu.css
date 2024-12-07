@@ -1,13 +1,115 @@
-.options-wrapper{
+body {
+    font-size: 14px;
+    margin: 0;
+    padding: 0;
+    color: #d4d4d4;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
+    height: 100vh;
+}
+
+img {
+    width: 200px;
+    height: auto;
+    border-radius: 8px;
+    margin-top: 1em;
+}
+
+ul {
+    padding-left: 12px;
+}
+
+.wrapper {
+    width: 45%;
+    min-width: 13em;
+}
+
+.options-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.option-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+label {
+    font-weight: bold;
+    margin-right: 0.5em;
+    color: #9cdcfe;
 }
 
 select {
-    margin-left: 0.5em;
+    background-color: #252526;
+    color: #d4d4d4;
+    border: 1px solid #3c3c3c;
+    border-radius: 4px;
+    padding: 5px 10px;
+    outline: none;
 }
 
-#submit {
+select:focus {
+    border-color: #007acc;
+    box-shadow: 0 0 5px #007acc;
+}
+
+button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    border-radius: 4px;
     margin-top: 1em;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #005f9e;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+button:focus {
+    outline: 2px solid #005f9e;
+    outline-offset: 2px;
+}
+
+/* https://stackoverflow.com/a/65796881 */
+.tooltip {
+    position: relative;
+    display: inline-block;
+    cursor: default;
+}
+  
+.tooltip .tooltiptext {
+    visibility: hidden;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    background-color: #5a5a5a;
+    white-space: nowrap;
+    border: 1px solid #5a5a5a;
+    border-radius: 10px;
+
+    /* Position the tooltip */
+    position: absolute;
+    z-index: 1;
+    top: 100%;
+    left: 100%;
+    transition-property: visibility;
+    transition-delay: 0s;
+}
+  
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    transition-delay: 0.3s;
 }

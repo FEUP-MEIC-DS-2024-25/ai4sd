@@ -27,10 +27,12 @@ export async function analyzeRemote(): Promise<void> {
         const jsonData = await fetchJsonData(buildApiUrl(remote_url));
         const markdownContent = utils.parseApiMdResponse(jsonData);
         repoUtils.writeToFile(markdownFilePath, markdownContent);
-        panel.dispose();
         utils.openMarkdownFile(markdownFilePath);
     } catch (error) {
         utils.showError("Command Execution", error);
+    }
+    finally {
+        panel.dispose();
     }
 }
 
