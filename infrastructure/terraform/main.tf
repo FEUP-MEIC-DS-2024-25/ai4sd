@@ -646,7 +646,7 @@ resource "google_secret_manager_secret_version" "superhero_secrets" {
   for_each = toset(local.superhero_names)
 
   secret = google_secret_manager_secret.superhero_secrets[each.key].id
-  secret_data = "initial-secret-data for superhero ${each.key}"
+  secret_data = "initial-secret-data for this superhero"
 }
 
 resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
@@ -655,6 +655,8 @@ resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
   secret_id = each.value.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
+
+  depends_on = [google_service_account.superhero]
 }
 
 resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
@@ -663,6 +665,8 @@ resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
   secret_id = each.value.id
   role      = "roles/secretmanager.SecretVersionManager"
   member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
+
+  depends_on = [google_service_account.superhero]
 }
 
 
