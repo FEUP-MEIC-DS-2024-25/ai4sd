@@ -713,3 +713,11 @@ output "created_superhero_secrets" {
 output "superhero_secret_access" {
   value = google_secret_manager_secret_iam_member.superhero_secret_access
 }
+
+output "debug_superhero_names" {
+  value = local.superhero_names
+}
+
+output "superhero_secret_ids_debug" {
+  value = [for name in local.superhero_names : "${name}-secret"]
+}
