@@ -553,7 +553,8 @@ resource "google_firestore_database" "vault" {
 
   lifecycle {
     ignore_changes = [
-      etag
+      etag,
+      earliest_version_time
     ]
   }
 }
@@ -615,7 +616,6 @@ resource "google_storage_bucket_iam_member" "public_read_access" {
   member = "allUsers"
 }
 
-
 resource "google_project_iam_member" "strange_firestore_permissions" {
   project  = var.project_id
   member   = "serviceAccount:${google_service_account.strange.email}"
@@ -630,7 +630,7 @@ resource "google_project_iam_member" "strange_firestore_permissions" {
 
 
 resource "google_secret_manager_secret" "superhero_secrets" {
-  for_each = toset(local.superhero_names)
+  for_each = { for name in local.superhero_names : name => name }
 
   secret_id = "${each.key}-secret"
   replication {
@@ -645,9 +645,9 @@ resource "google_secret_manager_secret" "superhero_secrets" {
 }
 
 resource "google_secret_manager_secret_version" "superhero_secrets" {
-  for_each = toset(local.superhero_names)
+  for_each = { for name in local.superhero_names : name => name }
 
-  secret = google_secret_manager_secret.superhero_secrets[each.key].id
+  secret      = google_secret_manager_secret.superhero_secrets[each.key].id
   secret_data = "initial-secret-data for this superhero"
 
   depends_on = [google_service_account.superhero, google_secret_manager_secret.superhero_secrets]
@@ -724,4 +724,20 @@ output "debug_superhero_names" {
 
 output "superhero_secret_ids_debug" {
   value = [for name in local.superhero_names : "${name}-secret"]
+}
+
+output "superhero_secrets_names" {
+  value = [for secret in google_secret_manager_secret.superhero_secrets : secret.secret_id]
+}
+
+output "superhero_secrets_count" {
+  value = length(google_secret_manager_secret.superhero_secrets)
+}
+
+output "superhero_secret_access_details" {
+  value = google_secret_manager_secret_iam_member.superhero_secret_access
+}
+
+output "superhero_secret_version_details" {
+  value = google_secret_manager_secret_iam_member.superhero_secret_version
 }
