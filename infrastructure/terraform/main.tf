@@ -96,6 +96,14 @@ resource "google_secret_manager_secret_version" "cloudbuild_sa_key_version" {
   secret_data = google_service_account_key.cloud_build_sa_key.private_key
 }
 
+resource "google_secret_manager_secret_iam_member" "cloudbuild_sa_admin" {
+  for_each = google_secret_manager_secret.superhero_secrets
+
+  secret_id = each.value.id
+  role = "roles/secretmanager.admin"
+  member = "serviceAccount:${google_service_account.cloud_build_sa.email}"
+}
+
 resource "google_project_iam_member" "cloud_build_service_account_admin" {
   project = var.project_id
   member  = "serviceAccount:${google_service_account.cloud_build_sa.email}"
@@ -627,10 +635,17 @@ resource "google_secret_manager_secret" "superhero_secrets" {
   }
 }
 
+resource "google_secret_manager_version" "superhero_secrets" {
+  for_each = toset(local.superhero_names)
+
+  secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
+  secret_data = "initial-secret-data for superhero ${each.key}"
+}
+
 resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
   for_each = google_secret_manager_secret.superhero_secrets
 
-  secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
+  secret_id = each.value.id
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
 }
@@ -638,7 +653,7 @@ resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
 resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
   for_each = google_secret_manager_secret.superhero_secrets
 
-  secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
+  secret_id = each.value.id
   role      = "roles/secretmanager.SecretVersionManager"
   member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
 }
@@ -653,6 +668,11 @@ resource "google_secret_manager_secret" "jarvis_secret" {
       }
     }
   }
+}
+
+resource "google_secret_manager_version" "jarvis_secret" {
+  secret_id = google_secret_manager_secret.jarvis_secret
+  secret_data = "initial-secret-data for jarvis"
 }
 
 resource "google_secret_manager_secret_iam_member" "jarvis_secret_access" {
