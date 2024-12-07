@@ -640,6 +640,8 @@ resource "google_secret_manager_secret" "superhero_secrets" {
       }
     }
   }
+
+  depends_on = [google_service_account.superhero]
 }
 
 resource "google_secret_manager_secret_version" "superhero_secrets" {
@@ -647,6 +649,8 @@ resource "google_secret_manager_secret_version" "superhero_secrets" {
 
   secret = google_secret_manager_secret.superhero_secrets[each.key].id
   secret_data = "initial-secret-data for this superhero"
+
+  depends_on = [google_service_account.superhero]
 }
 
 resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
