@@ -638,7 +638,7 @@ resource "google_secret_manager_secret" "superhero_secrets" {
 resource "google_secret_manager_secret_version" "superhero_secrets" {
   for_each = toset(local.superhero_names)
 
-  secret_id = google_secret_manager_secret.superhero_secrets[each.key].id
+  secret = google_secret_manager_secret.superhero_secrets[each.key].id
   secret_data = "initial-secret-data for superhero ${each.key}"
 }
 
@@ -671,7 +671,7 @@ resource "google_secret_manager_secret" "jarvis_secret" {
 }
 
 resource "google_secret_manager_secret_version" "jarvis_secret" {
-  secret_id = google_secret_manager_secret.jarvis_secret
+  secret = google_secret_manager_secret.jarvis_secret.id
   secret_data = "initial-secret-data for jarvis"
 }
 
