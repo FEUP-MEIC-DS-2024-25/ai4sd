@@ -1,107 +1,130 @@
+from flask import Flask, request, jsonify
 import os
 import google.generativeai as genai
 import re
 import time
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="PATH/TO/ENV")
-api_key = os.environ.get("API_KEY")
+LAST_REQUEST_TIME = 0
+
+app = Flask(__name__)
+
+# Load environment variables
+load_dotenv()
+api_key = os.getenv("API_KEY")
 output_dir = "./backend"
 genai.configure(api_key=api_key)
 
-# Create the model
+# Model configuration
 generation_config = {
-  "temperature": 0.7, 
-  "top_p": 0.85,
-  "top_k": 55,
-  "max_output_tokens": 8192,
-  "response_mime_type": "text/plain",
-} 
+    "temperature": 0.7,
+    "top_p": 0.85,
+    "top_k": 55,
+    "max_output_tokens": 8192,
+    "response_mime_type": "text/plain",
+}
 
 safety_settings = [
     {"category": "HARM_CATEGORY_HARASSMENT", "threshold": 2},
     {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": 2},
     {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": 2},
-    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": 2}
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": 2},
 ]
 
 model = genai.GenerativeModel(
-  model_name="gemini-1.5-pro",
-  generation_config=generation_config,
-  safety_settings=safety_settings
-  # See https://ai.google.dev/gemini-api/docs/safety-settings
+    model_name="gemini-1.5-pro",
+    generation_config=generation_config,
+    safety_settings=safety_settings,
 )
 
-chat_session = model.start_chat(
-  history=[
-  ]
-)
+chat_session = model.start_chat(history=[])
 
-# Function to validate GitHub URL format
+# Validation functions
 def validate_github_url(url):
+    if not url:
+        return False
     pattern = r"^https://github\.com/[\w-]+/[\w-]+$"
-    if re.match(pattern, url):
-        return True
-    else:
-        print("Invalid GitHub URL format. Please provide a valid URL.")
-        return False
+    return bool(re.match(pattern, url))
 
-# Function to validate architectural patterns input
 def validate_architectural_patterns(patterns):
-    if patterns.strip():
-        return True
-    else:
-        print("Architectural patterns cannot be empty. Please provide valid patterns.")
+    if not patterns:
         return False
+    return bool(patterns.strip())
 
-# Prompt user for input (GitHub URL and architectural patterns)
-github_link = input("Link github:")
-# Validate the GitHub URL
-while not validate_github_url(github_link):
-    github_link = input("Link github:")
+# API endpoint to generate ADR
+@app.route("/generate-adr", methods=["GET", "POST"])
+def generate_adr():
+    try:
+        if request.method == "POST":
+            # Ensure the Content-Type is application/json
+            if request.content_type != "application/json":
+                return jsonify({"error": "Unsupported Media Type. Please set 'Content-Type: application/json'"}), 415
+            
+            data = request.get_json()
+            if not data:
+                return jsonify({"error": "Invalid or missing JSON data"}), 400
+            
+            github_link = data.get("github_link")
+            architectural_patterns = data.get("architectural_patterns")
+        else:  # GET request
+            github_link = request.args.get("github_link")
+            architectural_patterns = request.args.get("architectural_patterns")
+        
+        # Validate inputs
+        if not validate_github_url(github_link):
+            return jsonify({"error": "Invalid GitHub URL format"}), 400
 
-architectural_patterns = input("Architectural Patterns:")
+        if not validate_architectural_patterns(architectural_patterns):
+            return jsonify({"error": "Architectural patterns cannot be empty"}), 400
 
-# Validate the architectural patterns
-while not validate_architectural_patterns(architectural_patterns):
-    architectural_patterns = input("Architectural Patterns:")
-
-prompt = f"""
+        prompt = f"""
 Create an ADR in Markdown format for the project at {github_link}. 
 Base the ADR on this template:
-"# Title 
-## Status 
+# Title
+## Status
 Define the status (e.g., proposed, accepted, rejected, deprecated, superseded).
-## Context 
+## Context
 Describe the specific issue motivating this decision and why these architectural patterns were chosen: {architectural_patterns}.
-## Decision 
+## Decision
 State the specific changes proposed or implemented, focusing on the architectural approach.
-## Consequences 
-Explain what becomes easier or harder due to this decision."
-
-Include as much relevant information as possible for each section based on the provided GitHub link and architectural patterns. Use concise and precise language without any additional comments.
+## Consequences
+Explain what becomes easier or harder due to this decision.
 """
 
-# Rate limiting logic (API limit check)
-RATE_LIMIT = 60  # Example rate limit of 60 requests per minute
-LAST_REQUEST_TIME = 0
+        # Rate-limiting logic
+        RATE_LIMIT = 60  # requests per minute
+        global LAST_REQUEST_TIME
+        current_time = time.time()
 
-def rate_limit_check():
-    global LAST_REQUEST_TIME
-    current_time = time.time()
-    if current_time - LAST_REQUEST_TIME < 60 / RATE_LIMIT:
-        time.sleep(60 / RATE_LIMIT - (current_time - LAST_REQUEST_TIME))
-    LAST_REQUEST_TIME = time.time()
+        time_since_last_request = current_time - LAST_REQUEST_TIME
+        min_interval = 60 / RATE_LIMIT  # minimum interval between requests in seconds
 
-try:
-    rate_limit_check()
-    response = chat_session.send_message(prompt)
-    
-    if response and response.text:
-        with open(output_dir +  "/ADR.md", "w") as file:
-            file.write(response.text.strip())
-        print("ADR written to ADR.md")
-    else:
-        print("No response from the model. Please check your input or try again.")
-except Exception as e:
-    print(f"An error occurred: {e}")
+        if time_since_last_request < min_interval:
+            time_to_wait = min_interval - time_since_last_request
+            time.sleep(time_to_wait)
+
+        LAST_REQUEST_TIME = time.time()
+
+
+        # Generate ADR
+        response = chat_session.send_message(prompt)
+        if response and response.text:
+            os.makedirs(output_dir, exist_ok=True)
+            adr_path = os.path.join(output_dir, "ADR.md")
+            with open(adr_path, "w") as file:
+                file.write(response.text.strip())
+            return jsonify({"message": "ADR generated successfully", "path": adr_path}), 200
+        else:
+            return jsonify({"error": "No response from the model"}), 500
+
+    except Exception as e:
+        app.logger.error(f"Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+# Health check endpoint
+@app.route("/", methods=["GET"])
+def health_check():
+    return "ADR Generator API is running!"
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8080)

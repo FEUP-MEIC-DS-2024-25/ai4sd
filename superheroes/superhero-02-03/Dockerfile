@@ -6,12 +6,25 @@ WORKDIR /app
 
 # Copy the current directory contents into the container
 COPY . .
+COPY .env .env
 
-# Install required Python packages
-RUN pip install flask
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+RUN pip install --no-cache-dir \
+    flask \
+    python-dotenv \
+    google-generativeai \
+    gunicorn
+
+# Set environment variable for runtime configuration
+ENV PYTHONUNBUFFERED=1
 
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Command to run the application
-CMD ["python", "prompt.py"]
+# Command to run the application using Gunicorn
+CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8080", "prompt:app"]
