@@ -1,7 +1,7 @@
 FROM python:3.11-alpine
 
 # Install FastAPI and Uvicorn (ASGI server)
-RUN pip install --no-cache-dir fastapi uvicorn google-generativeai python-dotenv
+RUN pip install --no-cache-dir fastapi uvicorn
 
 # Set environment variable for Cloud Run to expect the port
 ENV PORT 8080
@@ -10,8 +10,7 @@ ENV PORT 8080
 COPY app.py /app.py
 
 # Copy the superheroes folder as well
-# COPY ../superheroes /superheroes
-COPY assistants /assistants
+COPY ../superheroes /superheroes
 
 # Expose the correct port
 EXPOSE 8080
