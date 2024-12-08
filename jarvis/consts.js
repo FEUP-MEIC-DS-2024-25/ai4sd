@@ -1,0 +1,12 @@
+import { Storage } from '@google-cloud/storage';
+
+const GITHUB_APP_PRIVATE_KEY_PATH = "jarvis-fetcher/keys/github_app_private.pem"
+const SERVICE_ACCOUNT_KEY_PATH = "jarvis-key-02-02.json";
+const BUCKET_NAME = "hero-alliance-nexus";
+const STORAGE_CLIENT = new Storage({
+    keyFilename: SERVICE_ACCOUNT_KEY_PATH,
+});
+const DOWNLOAD_DIR = "/downloads"
+
+
+export { GITHUB_APP_PRIVATE_KEY_PATH, SERVICE_ACCOUNT_KEY_PATH, BUCKET_NAME, STORAGE_CLIENT, DOWNLOAD_DIR };

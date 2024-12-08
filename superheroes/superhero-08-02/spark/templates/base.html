@@ -1,0 +1,39 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Django App{% endblock %}</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+    
+    <!-- Additional styles can go here -->
+    {% block styles %}{% endblock %}
+</head>
+<body>
+
+    <!-- Navbar or other common elements can go here -->
+
+    <div class="container mt-4">
+        <!-- Message display block -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="container">
+        {% block content %}
+        <!-- Child template content will go here -->
+        {% endblock %}
+    </div>
+
+    <!-- Additional scripts can go here -->
+    {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,38 @@
+@startuml
+skinparam linetype ortho
+
+Package "WebApp-Wine-DataBase" {
+    class app {
+        + index()
+        + getFields(table)
+        + getDados(table)
+        + search_movie(expr)
+        + search_produtor(expr)
+        + get_loja(Id)
+        + get_regiao_tipo(Id_l,Id_t)
+        + get_tipo(Id)
+        + get_regiao(Id)
+        + get_produtor(Id)
+        + get_classificacao(Id)
+        + get_vinho(IdVinho)
+    }
+
+    class db {
+        + connect()
+        + execute(sql,args)
+        + commit()
+        + rollback()
+        + close()
+    }
+
+    class server {
+        + main()
+    }
+
+    app --> db : Uses
+    server --> app : Uses
+}
+
+
+
+@enduml
