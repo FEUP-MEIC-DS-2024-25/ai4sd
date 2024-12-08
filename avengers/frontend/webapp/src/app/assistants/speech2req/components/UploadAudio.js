@@ -2,20 +2,24 @@
 
 import React, { useState } from "react";
 
-const UploadAudio = ({ setTranscription }) => {
+
+const UploadAudio = ({ setTranscription, setSummary }) => {
   const [file, setFile] = useState(null);
 
-  const handleSubmit = async () => {
+  // Replacing handleSubmit with uploadFile function
+  const uploadFile = async (file) => {
     if (!file) {
       alert("Please upload a file first.");
       return;
     }
 
+    console.log("Uploading file...");
     const formData = new FormData();
     formData.append("audio", file);
+    formData.append("title", "Test Meeting");
 
     try {
-      const response = await fetch("api/transcribe", {
+      const response = await fetch("http://localhost:5000/transcribe", {
         method: "POST",
         body: formData,
       });
@@ -25,9 +29,11 @@ const UploadAudio = ({ setTranscription }) => {
       }
 
       const data = await response.json();
+      console.log("Response:", data);
 
       if (data.transcription) {
         setTranscription(data.transcription);
+        setSummary(data.summary);
       } else {
         console.error("No transcription received:", data);
       }
@@ -53,7 +59,7 @@ const UploadAudio = ({ setTranscription }) => {
       />
       <button 
         className="btn btn-primary w-50 align-self-center" 
-        onClick={handleSubmit}
+        onClick={() => uploadFile(file)} // Call uploadFile when the button is clicked
       >
         Upload and Transcribe
       </button>

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef } from "react";
 
-const RecordLiveAudio = ({ setTranscription }) => {
+const RecordLiveAudio = ({ setTranscription,  }) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorderRef = useRef(null);
@@ -60,7 +60,7 @@ const RecordLiveAudio = ({ setTranscription }) => {
 
   return (
     <div className="d-flex flex-column gap-2 align-items-center">
-      <h2 className="text-center">Live Audio Recorder</h2>
+      <h2 className="text-center text-dark">Live Audio Recorder</h2>
       <button 
         className={`btn ${isRecording ? "btn-danger" : "btn-primary"}`}
         onClick={isRecording ? stopRecording : startRecording}

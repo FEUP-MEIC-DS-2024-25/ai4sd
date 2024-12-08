@@ -82,6 +82,8 @@ def generate_srs(transcription, summary):
 
 @app.route("/transcribe", methods=["POST"])
 def transcribe():
+
+    print("Request received:", request)
     # Get the meeting title and uploaded file
     meeting_title = request.form.get("title")
     mp3_file = request.files.get("audio")
@@ -131,4 +133,5 @@ def history():
     return jsonify(load_history())
 
 if __name__ == "__main__":
+    print("Starting Flask app on port 5000...")
     app.run(host="0.0.0.0", port=5000)

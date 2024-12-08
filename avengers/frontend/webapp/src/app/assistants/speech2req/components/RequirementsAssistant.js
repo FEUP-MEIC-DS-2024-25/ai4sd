@@ -9,7 +9,7 @@ import DownloadSRS from "./DownloadSRS";
 
 const RequirementsAssistant = () => {
   const [transcription, setTranscription] = useState("");
-  const [summary, setSummary] = useState([]);
+  const [summary, setSummary] = useState("");
 
   return (
     <div className="p-4 bg-light rounded shadow">
@@ -17,8 +17,8 @@ const RequirementsAssistant = () => {
         Speech2Req
       </h1>
       <div className="d-flex flex-column gap-3">
-        <UploadAudio setTranscription={setTranscription} />
-        <RecordLiveAudio setTranscription={setTranscription} />
+        <UploadAudio setTranscription={setTranscription} setSummary={setSummary} />
+        <RecordLiveAudio setTranscription={setTranscription} setSummary={setSummary} />
         <DisplayTranscription transcription={transcription} />
         <ShowSummary summary={summary} />
         <DownloadSRS transcription={transcription} summary={summary} />
