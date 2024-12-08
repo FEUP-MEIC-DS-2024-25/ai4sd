@@ -1,15 +1,13 @@
 import fs from "fs";
 import { App } from "octokit";
 import { config } from "../config.js";
+import { readFileContents } from "./utils.js";
+import { GITHUB_APP_PRIVATE_KEY_PATH, PASSPHRASE } from "../consts.js";
+import { fetchAndDecryptDocument } from "../utils/secrets.js";
 
-let PRIVATE_KEY;
 
-try {
-    PRIVATE_KEY = fs.readFileSync(config.privateKeyPath, "utf-8");
-} catch (error) {
-    throw new Error(`Failed to read private key file: ${config.privateKeyPath}. ${error.message}`);
-}
-
+if (!fs.existsSync(GITHUB_APP_PRIVATE_KEY_PATH)) await fetchAndDecryptDocument(PASSPHRASE);
+const PRIVATE_KEY = await readFileContents(GITHUB_APP_PRIVATE_KEY_PATH);
 
 /**
  * GitHub App instance for authenticating API requests.
