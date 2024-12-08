@@ -1,26 +1,22 @@
 import { initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
+import { encryptData, decryptData } from "./encryption.js";
+import { readFileContents } from "../jarvis-fetcher/utils.js";
+import { GITHUB_APP_PRIVATE_KEY_PATH, PASSPHRASE, SERVICE_ACCOUNT_KEY_PATH } from "../consts.js";
 import fs from "fs/promises";
 
-// Initialize Firebase Admin SDK using service account JSON
-const serviceAccountPath = "jarvis-key-02-02.json";
 
 initializeApp({
-  credential: cert(serviceAccountPath), // Load credentials from JSON
+  credential: cert(SERVICE_ACCOUNT_KEY_PATH),
   databaseURL: "https://hero-alliance-feup-ds-24-25.firebaseio.com"
 });
 
 const db = getFirestore();
 
-async function createEncryptedDocument(passphrase) {
+export async function createEncryptedDocument(passphrase) {
   try {
-    // Paths to files
-    const githubAppKeyPath = "jarvis-fetcher/keys/github_app_private.pem";
+    const githubAppKey = await readFileContents(GITHUB_APP_PRIVATE_KEY_PATH);
 
-    // Read file contents
-    const githubAppKey = await readFileContents(githubAppKeyPath);
-
-    // Sensitive data to encrypt
     const sensitiveData = {
       github_app_key: githubAppKey,
     };
@@ -43,7 +39,7 @@ async function createEncryptedDocument(passphrase) {
   }
 }
 
-async function fetchAndDecryptDocument(passphrase) {
+export async function fetchAndDecryptDocument(passphrase) {
   try {
     const docRef = db.collection("jarvis").doc("secrets");
     const doc = await docRef.get();
@@ -52,16 +48,12 @@ async function fetchAndDecryptDocument(passphrase) {
       console.log("No such document!");
       return;
     }
-
     const { iv, salt, encrypted_message } = doc.data();
 
     // Decrypt the message
     const decryptedData = decryptData(encrypted_message, iv, salt, passphrase);
 
-    console.log("Decrypted data:", decryptedData);
-
-    // Optionally, write the decrypted data back to files
-    await fs.writeFile('./decrypted_github_app_key.txt', decryptedData.github_app_key);
+    await fs.writeFile(GITHUB_APP_PRIVATE_KEY_PATH, decryptedData.github_app_key);
 
     console.log("Decrypted files written to disk.");
   } catch (error) {
@@ -69,8 +61,3 @@ async function fetchAndDecryptDocument(passphrase) {
   }
 }
 
-(async () => {
-  const passphrase = "jarvis-secrets";
-  //await createEncryptedDocument(passphrase);
-  await fetchAndDecryptDocument(passphrase);
-})();

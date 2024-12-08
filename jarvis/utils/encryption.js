@@ -25,7 +25,7 @@ function deriveKey(passphrase, salt) {
  * @param {string} passphrase - The passphrase used to derive the key for encryption.
  * @returns {Object} The encrypted data, including the IV, salt, and the encrypted message.
  */
-function encryptData(data, passphrase) {
+export function encryptData(data, passphrase) {
     const iv = crypto.randomBytes(16); // Generate a random Initialization Vector
     const salt = crypto.randomBytes(16); // Generate a random salt for the KDF
     const key = deriveKey(passphrase, salt); // Derive key from passphrase and salt
@@ -49,7 +49,7 @@ function encryptData(data, passphrase) {
  * @param {string} passphrase - The passphrase used to derive the key for decryption.
  * @returns {Object} The decrypted data, parsed as a JSON object.
  */
-function decryptData(encryptedData, iv, salt, passphrase) {
+export function decryptData(encryptedData, iv, salt, passphrase) {
     const key = deriveKey(passphrase, Buffer.from(salt, 'hex')); // Derive the same key using the salt and passphrase
     const decipher = crypto.createDecipheriv('aes-256-cbc', key, Buffer.from(iv, 'hex'));
 

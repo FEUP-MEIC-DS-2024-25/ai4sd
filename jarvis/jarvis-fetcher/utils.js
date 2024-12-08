@@ -34,7 +34,7 @@ export function saveFile(content, filename, outputDir, isBinary = false) {
  **/
 export async function readFileContents(filePath) {
     try {
-        return await fs.readFile(filePath, 'utf8');
+        return await fs.promises.readFile(filePath, 'utf8');
     } catch (error) {
         console.error(`Error reading file ${filePath}:`, error);
         throw error;
