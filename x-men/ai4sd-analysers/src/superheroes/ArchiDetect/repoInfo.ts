@@ -27,7 +27,7 @@ export async function getCurrentRepositoryInfo() : Promise<{repoOwner: string, r
     if (match) {
         const repoOwner = match[1];
         const repoName = match[2];
-        vscode.window.showInformationMessage(`Repository: ${repoOwner}/${repoName}`);
+        //vscode.window.showInformationMessage(`Repository: ${repoOwner}/${repoName}`);
         return { repoOwner, repoName };
     } else {
         vscode.window.showErrorMessage("Not a GitHub repository.");

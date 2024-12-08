@@ -45,7 +45,7 @@ export async function execute(context: vscode.ExtensionContext) {
     const { repoOwner, repoName } = await repoInfo.getRepositoryInfo();
     const serviceName = await getSelectedServiceName();
 
-    vscode.window.showInformationMessage(`Analyzing repository: ${repoOwner}/${repoName} with service: ${serviceName}`);
+    //vscode.window.showInformationMessage(`Analyzing repository: ${repoOwner}/${repoName} with service: ${serviceName}`);
 
     if (serviceName === "" || repoOwner === "" || repoName === "") {
       return;
