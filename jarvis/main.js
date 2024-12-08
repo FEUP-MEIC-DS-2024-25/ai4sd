@@ -56,4 +56,4 @@ export async function uploadAllReposInOrg(octokit, org) {
 
 
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-await uploadRepo(octokit, config.org, "RRBuddy"); // Upload all repositories in the organization
+await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
