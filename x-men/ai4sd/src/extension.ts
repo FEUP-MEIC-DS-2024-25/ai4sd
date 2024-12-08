@@ -42,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
 		register(newOption: AI4SDMenuOption) {
 			options.push(newOption);
 		}
-	}
+	};
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(wakeUp);
