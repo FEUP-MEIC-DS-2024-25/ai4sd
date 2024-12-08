@@ -1,0 +1,1 @@
+{"version":3,"file":"gitignore-writer.d.ts","sourceRoot":"","sources":["../../../src/initializer/gitignore-writer.ts"],"names":[],"mappings":"AAWA,qBAAa,eAAe;IAEd,OAAO,CAAC,QAAQ,CAAC,GAAG;IADhC,OAAc,MAAM,UAAiC;gBACxB,GAAG,EAAE,OAAO,OAAO,CAAC,GAAG;IAEvC,oBAAoB,IAAI,OAAO,CAAC,IAAI,CAAC;CAanD"}

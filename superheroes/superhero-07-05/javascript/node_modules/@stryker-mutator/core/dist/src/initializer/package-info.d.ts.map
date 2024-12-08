@@ -1,0 +1,1 @@
+{"version":3,"file":"package-info.d.ts","sourceRoot":"","sources":["../../../src/initializer/package-info.ts"],"names":[],"mappings":"AAAA,MAAM,WAAW,WAAY,SAAQ,cAAc;IACjD,QAAQ,CAAC,EAAE,MAAM,CAAC;IAClB,iBAAiB,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,CAAC;CAC7C;AAED,MAAM,WAAW,cAAc;IAC7B,IAAI,EAAE,MAAM,CAAC;IACb,QAAQ,EAAE,MAAM,EAAE,CAAC;IACnB,OAAO,EAAE,MAAM,CAAC;CACjB"}

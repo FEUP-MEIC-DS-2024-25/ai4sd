@@ -1,0 +1,1 @@
+{"version":3,"file":"report.d.ts","sourceRoot":"","sources":["../../../../src/reporters/dashboard-reporter/report.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,MAAM,EAAE,MAAM,2BAA2B,CAAC;AAEnD,MAAM,WAAW,uBAAuB;IACtC,aAAa,EAAE,MAAM,CAAC;CACvB;AACD,MAAM,MAAM,MAAM,GAAG,uBAAuB,GAAG,MAAM,CAAC,kBAAkB,CAAC"}

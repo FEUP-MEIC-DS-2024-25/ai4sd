@@ -1,0 +1,2 @@
+export type BinaryOperator = '-' | '!=' | '!==' | '*' | '**' | '/' | '&' | '%' | '^' | '+' | '<' | '<<' | '<=' | '==' | '===' | '>' | '>=' | '>>' | '>>>' | '|' | 'in' | 'instanceof';
+//# sourceMappingURL=binary-operator.d.ts.map

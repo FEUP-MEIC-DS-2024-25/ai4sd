@@ -1,0 +1,1 @@
+{"version":3,"file":"child-process-as-promised.js","sourceRoot":"","sources":["../../src/child-process-as-promised.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,YAAY,MAAM,eAAe,CAAC;AAC9C,OAAO,EAAE,SAAS,EAAE,MAAM,MAAM,CAAC;AAEjC,MAAM,CAAC,MAAM,sBAAsB,GAAG;IACpC,IAAI,EAAE,SAAS,CAAC,YAAY,CAAC,IAAI,CAAC;CACnC,CAAC"}

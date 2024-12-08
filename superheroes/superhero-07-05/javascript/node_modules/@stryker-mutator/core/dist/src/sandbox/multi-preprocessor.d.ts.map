@@ -1,0 +1,1 @@
+{"version":3,"file":"multi-preprocessor.d.ts","sourceRoot":"","sources":["../../../src/sandbox/multi-preprocessor.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,kBAAkB,CAAC;AAE3C,OAAO,EAAE,gBAAgB,EAAE,MAAM,wBAAwB,CAAC;AAE1D,qBAAa,iBAAkB,YAAW,gBAAgB;IAC5C,OAAO,CAAC,QAAQ,CAAC,aAAa;gBAAb,aAAa,EAAE,gBAAgB,EAAE;IAEjD,UAAU,CAAC,OAAO,EAAE,OAAO,GAAG,OAAO,CAAC,IAAI,CAAC;CAKzD"}

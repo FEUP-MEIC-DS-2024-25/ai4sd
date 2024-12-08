@@ -1,0 +1,18 @@
+/**
+ * @license
+ * Copyright Google LLC All Rights Reserved.
+ *
+ * Use of this source code is governed by an MIT-style license that can be
+ * found in the LICENSE file at https://angular.io/license
+ */
+import { TokenizeOptions } from "./lexer.js";
+import { Parser, ParseTreeResult } from "./parser.js";
+import { TagContentType } from "./tags.js";
+export declare class HtmlParser extends Parser {
+    constructor();
+    parse(source: string, url: string, options?: TokenizeOptions, isTagNameCaseSensitive?: boolean, getTagContentType?: (tagName: string, prefix: string, hasParent: boolean, attrs: Array<{
+        prefix: string;
+        name: string;
+        value?: string;
+    }>) => void | TagContentType): ParseTreeResult;
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"dots-reporter.d.ts","sourceRoot":"","sources":["../../../src/reporters/dots-reporter.ts"],"names":[],"mappings":"AAGA,OAAO,EAAE,QAAQ,EAAE,MAAM,6BAA6B,CAAC;AACvD,OAAO,KAAK,EAAE,YAAY,EAAE,MAAM,2BAA2B,CAAC;AAE9D,qBAAa,YAAa,YAAW,QAAQ;IACpC,cAAc,CAAC,MAAM,EAAE,YAAY,GAAG,IAAI;IAsB1C,yBAAyB,IAAI,IAAI;CAGzC"}

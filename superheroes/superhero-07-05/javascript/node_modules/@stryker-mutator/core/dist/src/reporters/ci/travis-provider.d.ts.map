@@ -1,0 +1,1 @@
+{"version":3,"file":"travis-provider.d.ts","sourceRoot":"","sources":["../../../../src/reporters/ci/travis-provider.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,UAAU,EAAE,MAAM,eAAe,CAAC;AAE3C;;GAEG;AACH,qBAAa,cAAe,YAAW,UAAU;IACxC,gBAAgB,IAAI,MAAM,GAAG,SAAS;IAQtC,gBAAgB,IAAI,MAAM,GAAG,SAAS;CAM9C"}
