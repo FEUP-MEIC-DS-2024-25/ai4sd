@@ -18,9 +18,10 @@ export async function execute(context: vscode.ExtensionContext) {
     vscode.ViewColumn.Two,
     {
       enableScripts: true,
-      localResourceRoots: [vscode.Uri.file(path.join(path.join(__dirname, "../"), 'public'))]
+      localResourceRoots: [vscode.Uri.file(path.join(path.join(__dirname, "../../"), 'public'))]
     }
   );
+  console.log(vscode.Uri.file(path.join(path.join(__dirname, "../../"), 'public')).toString());
 
   panel.webview.onDidReceiveMessage(
     async message => {

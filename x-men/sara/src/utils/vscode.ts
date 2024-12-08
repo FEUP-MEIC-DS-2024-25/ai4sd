@@ -9,6 +9,7 @@ export function getTemplate(fileName: string, webview: vscode.Webview, dirName: 
     const scriptUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'public', 'js', fileName + '.js'));
     const imageUri = webview.asWebviewUri(vscode.Uri.joinPath(extensionUri, 'public', 'images')) + "/";
 
+    console.log(styleUri.fsPath);
     const content = fs.readFileSync(templatePath.fsPath, 'utf-8');
 
     return content
