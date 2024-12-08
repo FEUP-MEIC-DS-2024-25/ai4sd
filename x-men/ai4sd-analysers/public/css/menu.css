@@ -113,3 +113,29 @@ button:focus {
     visibility: visible;
     transition-delay: 0.3s;
 }
+
+@media (max-width: 750px) {
+
+    .wrapper {
+        width: auto;
+        min-width: none;
+    }
+
+    .option-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-bottom: 1em;
+    }
+
+    .info-label-wrapper {
+        margin-bottom: 0.5em; 
+    }
+}
+
+@media (max-width: 300px) {
+    .option-wrapper {
+        flex-direction: column;
+        align-items:center;
+        margin-bottom: 1em;
+    }
+}

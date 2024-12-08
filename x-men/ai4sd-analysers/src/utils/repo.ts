@@ -21,12 +21,3 @@ export function writeToFile(filePath: string, content: string): void {
     showError("Writing to File", error);
   }
 }
-
-export function buildApiUrl(remoteUrl: string): string {
-  const remoteUrlEncoded = encodeURIComponent(remoteUrl);
-  const apiUrl = new URL(
-    `${process.env.API_ENDPOINT}/${remoteUrlEncoded}`,
-    process.env.API_BASE_URL
-  );
-  return apiUrl.href;
-}

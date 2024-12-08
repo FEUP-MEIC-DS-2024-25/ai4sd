@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import * as http from "http";
 import * as fs from "fs";
 
 import * as repoUtils from "../../utils/repo";
 import * as utils from "../../utils/utils";
 import { getTemplate } from '../../utils/vscode';
-import { buildApiUrl } from "../../utils/repo";
+import { sendRequest, buildApiUrl } from "./utils/request";
+import { API_REMOTE_ENDPOINT } from "./utils/constants";
 
-export async function analyzeRemote(): Promise<void> {
+export async function analyzeRemote(llm: string): Promise<void> {
     const markdownFilePath = path.join(
         __dirname,
         "remote_architectural_patterns.md"
@@ -20,11 +20,17 @@ export async function analyzeRemote(): Promise<void> {
     }
 
     const panel = vscode.window.createWebviewPanel('progress','Analyzing Remote Repository',vscode.ViewColumn.Two,{});
-    const html = getTemplate("progressId", panel.webview, __dirname);
+    const html = getTemplate("progressId.html", panel.webview, __dirname);
     panel.webview.html = html.replace("Analyzing Repository...", "Analyzing Remote Repository...");
+
+    const apiUrl = buildApiUrl(API_REMOTE_ENDPOINT);
+    const params = {
+        'repo': remote_url,
+        'llm': llm
+    };
         
     try {
-        const jsonData = await fetchJsonData(buildApiUrl(remote_url));
+        const jsonData = await sendRequest(apiUrl, "POST", params);
         const markdownContent = utils.parseApiMdResponse(jsonData);
         repoUtils.writeToFile(markdownFilePath, markdownContent);
         utils.openMarkdownFile(markdownFilePath);
@@ -34,37 +40,6 @@ export async function analyzeRemote(): Promise<void> {
     finally {
         panel.dispose();
     }
-}
-
-async function fetchJsonData(url: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-        http
-        .get(url, (res) => {
-            let data = "";
-
-            if (res.statusCode !== 200) {
-                reject(new Error(`Request to SARA API failed with status ${res.statusCode}: ${res.statusMessage}}`));
-                res.resume(); // Consume the response data to free up memory
-                return;
-            }
-
-            res.on("data", (chunk) => {
-            data += chunk;
-            });
-
-            res.on("end", () => {
-            try {
-                const jsonData = JSON.parse(data);
-                resolve(jsonData);
-            } catch (error) {
-                utils.showError("Parsing Data", error);
-            }
-            });
-        })
-        .on("error", (err) => {
-            reject(new Error(`Error fetching from the URL: ${err.message}`));
-        });
-    });
 }
 
 function getGitRemoteUrl(workspacePath: string): string | null {
