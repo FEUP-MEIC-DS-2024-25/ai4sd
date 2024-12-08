@@ -1,7 +1,13 @@
+version: '1.0'
+
 services:
-  web:
-    build: .
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docker-py
     ports:
-      - 8000:8000
+      - '3333:3333'
     volumes:
       - .:/app
+      - /app/node_modules      
