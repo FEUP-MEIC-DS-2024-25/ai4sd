@@ -1,7 +1,16 @@
+"use strict";
+
 const vscode = acquireVsCodeApi();
 
 document.getElementById('submit').addEventListener('click', () => {
-    const loc = document.getElementById('location');
-    const locOption = loc.options[loc.selectedIndex].innerHTML;
-    vscode.postMessage({ command: 'location', text: locOption });
+    const locationElement = document.getElementById('location');
+    const location = locationElement.value;
+
+    const llmElement = document.getElementById('llm');
+    const llm = llmElement.value;
+
+    vscode.postMessage({
+        location: location,
+        llm: llm
+    });
 });
