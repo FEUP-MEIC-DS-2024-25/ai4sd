@@ -25,6 +25,23 @@ export function saveFile(content, filename, outputDir, isBinary = false) {
 }
 
 /**
+ * Reads the contents of a file at the specified path and returns it as a string.
+ * 
+ * @param {string} filePath - The path to the file to be read.
+ * @returns {Promise<string>} A promise that resolves to the file's contents as a UTF-8 string.
+ * @throws {Error} If the file cannot be read, the error is logged and re-thrown for further handling.
+ * 
+ **/
+export async function readFileContents(filePath) {
+    try {
+        return await fs.promises.readFile(filePath, 'utf8');
+    } catch (error) {
+        console.error(`Error reading file ${filePath}:`, error);
+        throw error;
+    }
+}
+
+/**
  * Ensures the download directory exists, creating it if necessary.
  */
 export function ensureDownloadDir() {
