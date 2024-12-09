@@ -1,126 +1,176 @@
-import React, { useState, useEffect } from "react";
-import UserInputSection from "./userInputSection";
-import GeneratedStoriesSection from "./generateStoriesSection";
+import React, { useState } from "react";
+import ModalInfo from "./modalInfo";
+import { useRouter } from "next/navigation";
+import LanguageSelector from "./languageSelector";
 import styles from "@/app/page.module.css";
 
-export default function Assistant() {
-  const [projects, setProjects] = useState([]);
-  const [selectedProjectId, setSelectedProjectId] = useState(null);
-  const [userInput, setUserInput] = useState("");
+const Assistant = () => {
+  const [reqInput, setReqInput] = useState("");
+  const [nameInput, setNameInput] = useState("");
   const [file, setFile] = useState(null);
-  const [userStories, setUserStories] = useState([]);
   const [error, setError] = useState("");
-  const [editingStory, setEditingStory] = useState(null);
-  const [tempContent, setTempContent] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter()
 
-  useEffect(() => {
-    fetchProjects();
-  }, []);
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+        if (selectedFile.size > 5 * 1024 * 1024) {
+            setError("File size exceeds 5MB limit.");
+            return;
+        }
 
-  const fetchProjects = async () => {
-    try {
-      const response = await fetch("http://localhost:8080/projects");
-      if (!response.ok) throw new Error(`Failed to fetch projects: ${response.statusText}`);
-      const data = await response.json();
-      setProjects(data.response);
-    } catch (error) {
-      console.error(error);
-      setError("Failed to load projects.");
+        const validExtensions = ["txt", "md", "csv"];
+        const extension = selectedFile.name.split(".").pop().toLowerCase();
+        const validMIMETypes = ["text/plain", "text/markdown", "text/csv"];
+        const isValidExtension = validExtensions.includes(extension);
+        const isValidMIMEType = validMIMETypes.includes(selectedFile.type);
+
+        if (!isValidExtension || !isValidMIMEType) {
+            setError("Only text files (.txt, .md, .csv) are supported.");
+            return;
+        }
+
+        setFile(selectedFile);
+        setError("");
     }
-  };
+};
 
   const handleSubmit = async () => {
-    setIsLoading(true);
     try {
-      let content = userInput.trim();
-      if (file) content = await file.text();
+      setIsLoading(true);
+      let name = nameInput.trim();
+      let content = reqInput.trim();
+      if (file) {
+        const fileContent = await file.text();
+        content = fileContent;
+      }
+
+      if (!name) {
+        throw new Error("Name cannot be null or an empty string.");
+      }
       if (!content) {
-        setError("Input cannot be empty.");
-        return;
+        throw new Error("Content cannot be null or an empty string.");
       }
 
       const response = await fetch("http://localhost:8080/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query: content, language: selectedLanguage }),
+        body: JSON.stringify({ name: name, query: content, language: selectedLanguage}),
       });
-
-      if (!response.ok) throw new Error(`Error: ${response.status}`);
-
-      const data = await response.json();
-      const parsedStories = JSON.parse(data.response.replace("```json", "").replace("```", ""));
-      setUserStories(parsedStories);
-    } catch (error) {
-      setError("Failed to generate user stories.");
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const fetchProjectContent = async (projectId) => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/project/${projectId}/content`
-      );
       if (!response.ok) {
-        throw new Error(`Failed to fetch project: ${response.statusText}`);
+        throw new Error(`Error: ${response.status}`);
       }
       const data = await response.json();
-      console.log("Project Content:", data.response);
+      const projectId = parseInt(data.response.project_id)
+      const userStories = data.response.user_stories.replace("```json", "").replace("```", "")
+      const version = createVersion(projectId, content, userStories)
+
+      //setUpdate(true);
+
+      router.push(`assistant/reqtostory/project/${projectId}?name=${encodeURIComponent(name)}`);
+
+      navigate(`/project/${projectId}`, {
+        state: { name:name},
+      });
+      
     } catch (error) {
+      setError(`Failed to generate user stories:  ${error}.`);
       console.error(error);
     }
+    finally{
+      setIsLoading(false);
+    }
+    
   };
+
+  const createVersion = (requirements, user_stories) => {
+    const userStories = {
+      "version": 1,
+      "user_stories": user_stories
+    }
+    const version1 = {
+      "version": 1,
+      "content": requirements,
+      "user_stories": [userStories]
+    }
+    const versions = [version1]
+    return versions
+  }
 
   return (
     <div className={`${styles.assistantInteraction} bg-[#e1e1e1] text-[#171717] overflow-y-scroll m-0`}>
-      <h1 className="text-3xl font-bold text-center">ReqToStory</h1>
-      <div className="selectors-container">
-          <div id="divProject" className="relative min-w-[200px]">
-            <select
-              id="project-dropdown" className="w-full py-3 bg-[rgba(47,47,47,0.5)] border border-[rgba(225,225,225,0.1)] rounded-lg text-[var(--header-text-color)] text-[0.95rem] cursor-pointer transition-all ease-in-out duration-300 appearance-none backdrop-blur-sm shadow-md hover:bg-[rgba(47,47,47,0.8)] hover:border-[rgba(225,225,225,0.3)] hover:transform hover:translate-y-[-1px] hover:shadow-lg focus:outline-none focus:border-[rgba(225,225,225,0.5)] focus:shadow-[0_0_0_2px_rgba(225,225,225,0.1)]"
-              value={selectedProjectId || ""}
-              onChange={(e) => {
-                const projectId = e.target.value;
-                setSelectedProjectId(projectId);
-                if (projectId) {
-                  fetchProjectContent(projectId);
-                }
-              }}
+      <section className="bg-[#171717] text-[#e1e1e1] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 m-8 flex flex-col items-center gap-6">
+        <h2>User Story Generator</h2>
+        <LanguageSelector
+          selectedLanguage={selectedLanguage}
+          onLanguageChange={setSelectedLanguage}
+        />
+        <ModalInfo/>
+        <input
+          className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] block mx-auto p-4 w-[40%]"
+          id="nameInput"
+          type="text"
+          value={nameInput}
+          onChange={(e) => setNameInput(e.target.value)}
+          placeholder="Project name"
+          maxLength={255}
+        />
+        <textarea
+          className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] block mx-auto p-8 w-[80%] resize-none"
+          id="userInput"
+          value={reqInput}
+          onChange={(e) => setReqInput(e.target.value)}
+          placeholder="Enter text or leave empty to upload a file."
+          rows={5}
+        />
+        <div id="fileControlsContainer">
+          <input
+            id="uploadButton"
+            type="file"
+            accept=".txt,.md,.csv"
+            onChange={handleFileChange}
+          />
+          {file && (
+            <button
+              id="deleteButton"
+              className="btn hover:bg-[#e1e1e1] submitButton bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] px-4 py-2 ml-4"
+              onClick={() => setFile(null)}
             >
-              <option value="">Select a Project</option>
-              {projects.map((project) => (
-                <option key={project.id} value={project.id}>
-                  {project.name}
-                </option>
-              ))}
-            </select>
-            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-[var(--header-text-color)] text-sm pointer-events-none">▼</span>
-          </div>
+              <i className="fa fa-trash"></i> Remove File
+            </button>
+          )}
         </div>
-      <UserInputSection
-        userInput={userInput}
-        setUserInput={setUserInput}
-        file={file}
-        setFile={setFile}
-        error={error}
-        setError={setError}
-        handleSubmit={handleSubmit}
-        isLoading={isLoading}
-        selectedLanguage={selectedLanguage}
-        setSelectedLanguage={setSelectedLanguage}
-      />
-      <GeneratedStoriesSection
-        userStories={userStories}
-        setUserStories={setUserStories}
-        editingStory={editingStory}
-        setEditingStory={setEditingStory}
-        tempContent={tempContent}
-        setTempContent={setTempContent}
-      />
+        {error && (
+          <div
+            id="fileError"
+            className="text-[#ff4444] my-2 text-sm text-left"
+          >
+            {error}
+          </div>
+        )}
+        {isLoading ? (
+          <button className="btn hover:bg-[#e1e1e1] submitButton bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] px-4 py-2 ml-4" type="button" disabled>
+            <span
+              className="spinner-border spinner-border-sm"
+              role="status"
+              aria-hidden="true"
+            ></span>
+            Generating...
+          </button>
+        ) : (
+          <button
+            className="btn  hover:bg-[#e1e1e1] submitButton bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] px-4 py-2 ml-4"
+            id="submitButton"
+            onClick={handleSubmit}
+          >
+            Generate User Stories
+          </button>
+        )}
+      </section>
     </div>
   );
-}
+};
+
+export default Assistant;

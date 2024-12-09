@@ -1,0 +1,175 @@
+header {
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1em;
+}
+
+header i {
+  font-size: 2em;
+  color: var(--header-text-color);
+}
+
+header div {
+  text-align: center;
+}
+
+header h1, header p {
+  margin: 0;
+  padding: 0 10px;
+}
+
+header div a, header div button {
+  margin-right: 10px;
+}
+
+.settings-container {
+  position: relative;
+}
+
+.settings-dropdown {
+  display: none;
+  position: absolute;
+  right: 0;
+  width: 300px;
+  min-width: 300px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  margin-top: 10px;
+  padding: 20px;
+}
+
+.settings-dropdown h2 {
+  margin: 0;
+  font-size: 1.5em;
+  color: #333;
+}
+
+.settings-dropdown hr {
+  border: none;
+  border-top: 1px solid #eee;
+  margin: 15px 0;
+}
+
+.settings-item {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+.settings-item h3 {
+  margin: 0 0 10px 0;
+  font-size: 1em;
+  color: #333;
+  font-weight: 500;
+}
+
+.settings-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+
+.settings-options label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #666;
+  cursor: pointer;
+  width: 100%;
+  padding: 4px 0;
+}
+
+.settings-options input[type="radio"] {
+  margin: 0;
+}
+
+.settings-select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  color: #666;
+  background: white;
+  margin: 4px 0;
+}
+
+.date-picker {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.settings-dropdown.show {
+  display: block;
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-10px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}
+
+.settings-footer {
+  position: sticky;
+  bottom: 0;
+  padding-top: 15px;
+  background: white;
+  border-top: 1px solid var(--header-background-color);
+  margin-top: 20px;
+}
+
+.settings-save-btn {
+  width: 100%;
+  padding: 10px;
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 20px;
+  font-weight: 500;
+  text-align: center;
+}
+
+.settings-save-btn:hover {
+  opacity: 0.9;
+}
+
+.input-instructions {
+  text-align: center;
+  margin: 1em 0;
+  color: var(--text-color);
+  font-size: 1.1em;
+}
+
+header div a {
+  color: var(--header-text-color);
+  text-decoration: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  transition: background-color 0.2s, color 0.2s;
+  margin-right: 10px;
+}
+
+header div a:hover {
+  background-color: var(--header-text-color);
+  color: var(--header-background-color);
+}
+
+header div a:active {
+  transform: scale(0.98);
+}

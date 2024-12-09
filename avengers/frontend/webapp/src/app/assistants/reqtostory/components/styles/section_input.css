@@ -1,0 +1,230 @@
+#divModalInfo {
+  color: var(--body-text-color);
+}
+
+#divModalInfo #infoButton {
+  color: var(--input-background-color);
+  font-size: 2em;
+  margin: 0.5em;
+}
+
+#divModalInfo #infoButton i {
+  color: var(--input-text-color);
+}
+
+#sectionInput, #sectionRequirements{
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  padding: 2em;
+  margin: 2em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5em;
+}
+
+.editReq, .editReq #reqInput {
+  width: 100%;
+}
+
+.selectors-container {
+  display: flex;
+  gap: 1em;
+  justify-content: center;
+  width: 100%;
+  margin-top: 0.5em;
+}
+
+#divProject, #languageSelector {
+  position: relative;
+  min-width: 200px;
+}
+
+#project-dropdown, .language-dropdown {
+  width: 100%;
+  padding: 12px;
+  background-color: rgba(47, 47, 47, 0.5);
+  border: 1px solid rgba(225, 225, 225, 0.1);
+  border-radius: 12px;
+  color: var(--header-text-color);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  margin: 1em;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#project-dropdown:hover, .language-dropdown:hover {
+  background-color: rgba(47, 47, 47, 0.8);
+  border-color: rgba(225, 225, 225, 0.3);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+#project-dropdown:focus, .language-dropdown:focus {
+  outline: none;
+  border-color: rgba(225, 225, 225, 0.5);
+  box-shadow: 0 0 0 2px rgba(225, 225, 225, 0.1);
+}
+
+#divProject::after, #languageSelector::after {
+  content: '▼';
+  font-size: 0.8em;
+  color: var(--header-text-color);
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+
+#projectInput {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+}
+
+#divProject,  #project-dropdown {
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+  justify-content: flex-start;
+  margin: 1em 2em 1em 2em;
+  display: flex;
+}
+
+#sectionInput #reqInput{
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  display: block;
+  margin: auto;
+  padding: 2em;
+  width: 80%;
+  resize: none;
+}
+
+#sectionRequirements p, #sectionRequirements .editReq #reqInput{
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  display: block;
+  margin: 0;
+  padding: 1em;
+  width: 100%;
+  overflow-y: auto;
+  text-align:left;
+  resize: none;
+  margin: 1em 0 1em 0;
+}
+
+#sectionRequirements .editReq #reqInput{
+  resize:vertical;
+  height: 40vh;
+  max-height: 40vh;
+}
+
+#sectionInput #nameInput {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  display: block;
+  width: 33%;
+  padding: 1em;
+  margin-bottom: 1em;
+}
+
+#sectionInput #submitButton, 
+#sectionInput::file-selector-button {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  margin: 1em;
+  padding: 0.5em;
+}
+
+#sectionInput #submitButton:hover, 
+#sectionInput input[type="file"]::file-selector-button:hover {
+  color: var(--input-background-color);
+  background-color: var(--input-text-color);
+  border: 5px solid var(--input-text-color);
+  cursor: pointer;
+}
+
+#sectionInput {
+  width: 80%;
+  margin: 2em auto auto auto;
+}
+
+#fileControlsContainer {
+  display: inline-block;
+  margin: 1em;
+}
+
+#uploadButton::file-selector-button {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  padding: 0.5em;
+}
+
+#uploadButton::file-selector-button:hover {
+  color: var(--input-background-color);
+  background-color: var(--input-text-color);
+  border: 5px solid var(--input-text-color);
+  cursor: pointer;
+}
+
+#deleteButton {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  padding: 0.5em;
+  margin-left: 1em;
+}
+
+#deleteButton:hover {
+  color: var(--input-background-color);
+  background-color: var(--input-text-color);
+  border: 5px solid var(--input-text-color);
+  cursor: pointer;
+}
+
+#deleteButton i {
+  margin-right: 5px;
+}
+
+#fileError {
+  color: #ff4444;
+  margin: 0.5em 0;
+  font-size: 0.9em;
+  text-align: left;
+}
+
+.versionSelect{
+  display: flex;
+  color: var(--input-text-color);
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items:center;
+}
+
+.versionSelect button{
+  display: flex;
+  color: var(--input-text-color);
+  flex-direction: row;
+  justify-content: flex-end;
+}

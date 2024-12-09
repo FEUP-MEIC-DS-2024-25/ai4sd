@@ -1,0 +1,117 @@
+
+#sectionUserStories {
+  background-color: var(--header-background-color);
+  color: var(--header-text-color);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+  text-align: center;
+  padding: 2em;
+  margin: 2em
+}
+
+#sectionUserStories #exportButton, #sectionUserStories #regenerateButton{
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  margin: 1em;
+  padding: 0.5em;
+}
+
+#sectionUserStories #exportButton:hover, #sectionUserStories #regenerateButton:hover{
+  color: var(--input-background-color);
+  background-color: var(--input-text-color);
+  border: 5px solid var(--input-text-color);
+  cursor: pointer;
+}
+
+#userStoriesTable i {
+  color: var(--body-background-color);
+}
+
+#userStoriesTable {
+  color: var(--body-background-color);
+  padding: 1em;
+  width: 100%;
+}
+
+#userStoriesTable th, #userStoriesTable td{
+  min-height: 2em;
+  min-width: 3em;
+  text-align: center;
+  border: 1px solid var(--input-text-color);
+  padding: 0.5em;
+}
+
+#tableContainer {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  padding: 1em;
+  margin: 1em auto;
+  display: inline-block;
+  width: 95%;
+}
+
+#buttonContainer{
+  display: block;
+}
+
+#userStoriesTable ul{
+  color: var(--body-text-color);
+  background-color: var(--body-background-color);
+  border: 1px solid var(--body-text-color);
+  margin: 1em;
+  padding: 0.5em;
+}
+
+#userStoriesTable li{
+  border-collapse: collapse;
+  padding: 0.5em;
+  display:none;
+}
+
+#userStoriesTable li.show {
+  display: block;
+  transition: all 0.3s ease;
+}
+
+#userStoriesTable p {
+  margin: 0.5em;
+}
+
+.feedback-container {
+  display: inline-block;
+}
+
+.feedback-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  margin: 0 5px;
+}
+
+.feedback-btn i {
+  font-size: 1.2em;
+  color: #000;
+}
+
+.feedback-btn:hover {
+  opacity: 0.7;
+}
+
+.saveEdit {
+  color: white;
+}
+
+#editUserStory {
+  background-color: var(--input-background-color);
+  color: var(--input-text-color);
+  border: 5px solid var(--input-background-color);
+  border-radius: 20px;
+  display: block;
+  margin: auto;
+  padding: 1em;
+  resize: none;
+}
