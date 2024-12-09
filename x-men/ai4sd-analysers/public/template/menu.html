@@ -3,8 +3,8 @@
 <head>
     <title>SARA Menu</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{styleUri}}">
-    <script src="{{scriptUri}}" defer></script>
+    <link rel="stylesheet" href="{{styleUri}}menu.css">
+    <script src="{{scriptUri}}menu.js" defer></script>
 </head>
 <body>
     <img src="{{imageUri}}sara.png" alt="SARA logo">
@@ -31,6 +31,22 @@
                     <select name="location" id="location">
                         <option value="local" selected>Local</option>
                         <option value="remote">Remote</option>
+                    </select>
+                </div>
+            </div>
+            <div class="option-wrapper">
+                <div class="info-label-wrapper">
+                    <div class="tooltip"> &#9432;
+                        <div class="tooltiptext">
+                            <p>Selects which LLM will analyze the files.</p>
+                        </div>
+                    </div>
+                    <label for="llm">LLM:</label>
+                </div>
+                <div>
+                    <select name="llm" id="llm">
+                        <option value="gemini" selected>Gemini</option>
+                        <div id="substitute-with-options"></div>
                     </select>
                 </div>
             </div>
