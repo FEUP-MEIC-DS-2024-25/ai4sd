@@ -5,9 +5,9 @@ function UserMessage({ message, index }) {
   return (
     <li key={index} className="self-end">
       <div className="flex justify-end align-items-end gap-3">
-        <div className="py-2 px-3 bg-white rounded-2 shadow-sm w-50" style={{borderRight: "7px solid #02040F"}}>
+        <div className="py-2 pl-3 pr-6 bg-white rounded-2 shadow-sm w-50 " style={{borderRight: "7px solid #02040F"}}>
 
-          <p style={{color: "#292929CC"}}>{message.body}</p>
+          <p className="" style={{color: "#292929CC"}}>{message.body}</p>
           {message.isDeleted && (
               <p className="text-red-500">This message has been deleted</p>
           )}

@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import styles from "@/app/page.module.css";
 import Header from "./header";
 import UserMessage from "./userMessage";
+import MessageInput from "./messageInput";
 
 export default function Assistant({ messages: initialMessages, title = "DIAGRAMIT", prompt = "Create a UML class diagram" }) {
     const [messages, setMessages] = useState(initialMessages || []); // Track messages state
@@ -56,23 +57,7 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
                 </ul>
             </div>
 
-            {/* Footer */}
-            <footer className="p-4 bg-white shadow-md">
-                <form onSubmit={handleMessageSubmit} className="w-full">
-                    <input
-                        type="text"
-                        placeholder="Type a new message here"
-                        value={newMessage} // Bind input field value to newMessage state
-                        onChange={handleInputChange} // Update state on input change
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                handleMessageSubmit(e); // Trigger message submit on Enter
-                            }
-                        }}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-black" // Add text-black for black text
-                    />
-                </form>
-            </footer>
+            <MessageInput handleMessageSubmit={handleMessageSubmit} handleInputChange={handleInputChange} newMessage={newMessage} />
         </div>
     );
 }
