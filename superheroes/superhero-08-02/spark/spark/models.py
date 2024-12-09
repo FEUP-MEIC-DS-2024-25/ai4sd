@@ -17,10 +17,10 @@ class Profile(models.Model):
         return self.user.username
     
 class SparkProject(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
     github_project_link = models.URLField(blank=True, null=True, unique=True)
-    miro_board_link = models.URLField(blank=True, null=True, unique=True)
+    miro_board_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -29,3 +29,9 @@ class SparkProject(models.Model):
 
     def __str__(self):
         return self.name
+    
+    @property
+    def miro_board_url(self):
+        if self.miro_board_id:
+            return f'https://miro.com/app/board/{self.miro_board_id}/'
+        return None
