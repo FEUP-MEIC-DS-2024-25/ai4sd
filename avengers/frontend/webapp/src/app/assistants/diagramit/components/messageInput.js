@@ -3,7 +3,7 @@ import Image from "next/image";
 
 function MessageInput({handleMessageSubmit, handleInputChange, newMessage}) {
     return(
-        <footer className="mb-5 w-75">
+        <footer className="mb-5 w-100">
             <form onSubmit={handleMessageSubmit} className="bg-white rounded-3 flex g-3 p-2 w-100" style={{border: "2px solid #02040F"}}>
                 <input
                     type="text"

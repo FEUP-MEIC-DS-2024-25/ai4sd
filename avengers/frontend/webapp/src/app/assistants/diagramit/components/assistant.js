@@ -1,7 +1,6 @@
-"use client";
+"use client"; 
 
 import { useEffect, useRef, useState } from "react";
-import styles from "@/app/page.module.css";
 import Header from "./header";
 import UserMessage from "./userMessage";
 import MessageInput from "./messageInput";
@@ -14,50 +13,55 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
     // Automatically scroll to the bottom when messages change
     useEffect(() => {
         if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({ behavior: "smooth",  block: 'end' });
+            chatEndRef.current.scrollIntoView({ behavior: "smooth", block: "end" });
         }
     }, [messages]);
 
     // Handle input change
     const handleInputChange = (e) => {
-        setNewMessage(e.target.value); // Update the newMessage state as you type
+        setNewMessage(e.target.value);
     };
 
     // Handle message submit (when pressing Enter or clicking button)
     const handleMessageSubmit = (e) => {
-        e.preventDefault(); 
+        e.preventDefault();
         if (newMessage.trim()) {
             const newMsg = {
-                userMsg: true, // Set to true for user messages
+                userMsg: true,
                 body: newMessage,
-                isDeleted: false
+                isDeleted: false,
             };
-
-            // Add the new message to the list and reset input field
             setMessages((prevMessages) => [...prevMessages, newMsg]);
-            setNewMessage(""); // Clear the input field after submission
+            setNewMessage(""); // Clear input field
         }
     };
 
     return (
-        <div className="flex flex-col h-full items-center" style={{background: "#f8f8ff", fontFamily: "Montserrat"}}>
+        <div
+            className="flex flex-col h-full items-center"
+            style={{ background: "#f8f8ff", fontFamily: "Montserrat" }}
+        >
             <Header title={title} />
             {/* Chat Area */}
-            <div className="flex-grow pb-4 overflow-y-auto" style={{maxWidth: "1250px"}}>
-                {/*<p className="italic text-center mb-4" style={{color: "#02040F"}}>{prompt}</p>*/}
-
+            <div className="flex-grow pb-4 overflow-y-auto w-full">
                 {/* Messages */}
-                <ul className="space-y-4 flex flex-col">
-                    {messages?.filter(Boolean).map((message, index) => (
-                        message.userMsg ? <UserMessage message={message} index={index} />
-                        : <p key={index}>Assistant</p>
-                    ))}
-                    {/* Scroll Anchor */}
-                    <div ref={chatEndRef} />
+                <ul className="space-y-4 flex flex-col items-end w-full pr-4">
+                    {messages?.filter(Boolean).map((message, index) =>
+                        message.userMsg ? (
+                            <UserMessage key={index} message={message} />
+                        ) : (
+                            <p key={`assistant-${index}`}>Assistant</p>
+                        )
+                    )}
                 </ul>
+                <div ref={chatEndRef} />
             </div>
 
-            <MessageInput handleMessageSubmit={handleMessageSubmit} handleInputChange={handleInputChange} newMessage={newMessage} />
+            <MessageInput
+                handleMessageSubmit={handleMessageSubmit}
+                handleInputChange={handleInputChange}
+                newMessage={newMessage}
+            />
         </div>
     );
 }
