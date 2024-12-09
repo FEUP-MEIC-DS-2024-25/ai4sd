@@ -2,6 +2,7 @@
 
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const ShowSummary = ({ summary }) => (
   console.log("Summary:", summary),
@@ -40,7 +41,7 @@ const ShowSummary = ({ summary }) => (
           fontSize: "14px",
           lineHeight: "1.6",
         }}>
-        <ReactMarkdown>{summary}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
       </div>
     ) : (
       <p style={{ color: "#666", fontStyle: "italic" }}>
