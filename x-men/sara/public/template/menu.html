@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SARA Menu</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{styleUri}}">
+    <script src="{{scriptUri}}" defer></script>
+</head>
+<body>
+    <img src="{{imageUri}}sara.png" alt="SARA logo">
+    <div class="wrapper">
+        <div class="options-wrapper">
+            <div class="option-wrapper">
+                <div class="info-label-wrapper">
+                    <div class="tooltip"> &#9432;
+                        <div class="tooltiptext">
+                            <p>Selects which repository will be analyzed.</p>
+                            <ul>
+                                <li>
+                                    <p><b>Local</b> will analyze the local files.</p>
+                                </li>
+                                <li>
+                                    <p><b>Remote</b> will analyze the remote (GitHub) repository.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <label for="location">Location:</label>
+                </div>
+                <div>
+                    <select name="location" id="location">
+                        <option value="local" selected>Local</option>
+                        <option value="remote">Remote</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <button id="submit" type="submit">Submit</button>
+    </div>
+</body>
+</html>
