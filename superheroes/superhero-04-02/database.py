@@ -14,7 +14,6 @@ def get_project_content(project_id):
     project = get_project_by_id(project_id)
     if not project:
         return None
-    
     project_content = []
     requirements_ref = db.collection("ReqToStory").document(project_id).collection("Requirements").stream()
 
@@ -56,7 +55,8 @@ def save_project(name):
     existing_project = projects_ref.where("name", "==", name).stream()
 
     for project in existing_project:
-        return (project.id, project.n_versions) 
+        project_data = project.to_dict() 
+        return (project.id, project_data.get("n_versions", 0))
     
     docs = projects_ref.stream()
     
@@ -78,25 +78,31 @@ def save_project(name):
     return (new_project.id, 0) 
 
 
-def save_requirement(project_info, content, new):
-    project_ref = db.collection("ReqToStory").document(project_info[0])
+def save_requirement(project_id, content, new):
+    project_ref = db.collection("ReqToStory").document(project_id)
     requirements_ref = project_ref.collection("Requirements")
+
+    doc_snapshot = project_ref.get()
+    
+    if doc_snapshot.exists:
+        data = doc_snapshot.to_dict()
+        last_version = data.get("n_versions", 0)
+    else:
+        last_version = 0
 
     if new:
         requirement = requirements_ref.document()
         requirement.set({
-            "version": project_info[1] + 1,
+            "version": last_version + 1,
             "content": content,
             "n_us_versions": 0
         })
 
-        project_ref.update({"n_versions": project_info[1] + 1})
+        project_ref.update({"n_versions": last_version + 1})
 
         return requirement.id
 
     else:
-        last_version = len(list(requirements_ref.stream()))
-
         requirement = requirements_ref.where("version", "==", last_version).get()
 
         if requirement:
@@ -107,7 +113,18 @@ def save_requirement(project_info, content, new):
     if requirement:
         return requirement.id 
     else:
-        return None  
+        return None 
+
+def get_requirement_id(project_id, version):
+    project_ref = db.collection("ReqToStory").document(project_id)
+    requirements_ref = project_ref.collection("Requirements")
+    requirements = requirements_ref.where("version", "==", version).get()
+
+    if requirements:
+        requirement = requirements[0]
+        return requirement.id 
+    else:
+        return None 
 
 def save_user_stories(project_id, req_id, user_stories):
     req_ref = db.collection("ReqToStory").document(project_id).collection("Requirements").document(req_id)
@@ -128,3 +145,16 @@ def save_user_stories(project_id, req_id, user_stories):
         })
 
         req_ref.update({"n_us_versions": n_us_versions + 1})
+
+
+def delete_project(id):
+    project_ref = db.collection("ReqToStory").document(id)
+    if(project_ref):
+        project_ref.delete()
+
+
+def delete_requirement(project_id, req_id):
+    req_ref = db.collection("ReqToStory").document(project_id).collection("Requirements").document(req_id)
+    if(req_ref):
+        req_ref.delete()
+    

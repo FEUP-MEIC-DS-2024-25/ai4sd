@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify,  render_template
-import json
 
 from database import *
 
@@ -26,6 +25,16 @@ def get_content(project_id):
     except Exception as e:
         print(f"Error fetching content: {e}")
         return jsonify({"error": "Internal Server Error"}), 500
+    
+@api.route('/delete/projects/<int:project_id>', methods=['GET'])
+def delete_proj(project_id):
+    try:
+        delete_project(project_id)
+        return jsonify({"response": "Delete with success"}), 200
+    except Exception as e:
+        print(f"Error fetching projects: {e}")
+        error_message = str(e)
+        return jsonify({"error": error_message}), 500
 
 
 #@api.route("/create_project", methods=["POST"])
