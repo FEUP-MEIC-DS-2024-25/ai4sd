@@ -2,8 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "@/app/page.module.css";
-import logoDiagramIt from "../components/logoDiagramIt.png"
-import Image from "next/image";
+import Header from "./header";
+import UserMessage from "./userMessage";
 
 export default function Assistant({ messages: initialMessages, title = "DIAGRAMIT", prompt = "Create a UML class diagram" }) {
     const [messages, setMessages] = useState(initialMessages || []); // Track messages state
@@ -13,7 +13,7 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
     // Automatically scroll to the bottom when messages change
     useEffect(() => {
         if (chatEndRef.current) {
-            chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+            chatEndRef.current.scrollIntoView({ behavior: "smooth",  block: 'end' });
         }
     }, [messages]);
 
@@ -27,7 +27,7 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
         e.preventDefault(); 
         if (newMessage.trim()) {
             const newMsg = {
-                authorName: "You", 
+                userMsg: true, // Set to true for user messages
                 body: newMessage,
                 isDeleted: false
             };
@@ -39,35 +39,17 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
     };
 
     return (
-        <div className="flex flex-col h-full bg-gray-100">
-            {/* Header */}
-            <header className="p-4 bg-white shadow-md flex items-center justify-between">
-                {/* Title */}
-                <h1 className="text-xl font-bold text-blue-600">{title}</h1>
-
-                {/* Logo */}
-                <Image
-                    src={logoDiagramIt}
-                    alt="Logo"
-                    className="h-8 w-14.1 mb-1"
-                />
-            </header>
+        <div className="flex flex-col h-full items-center" style={{background: "#f8f8ff", fontFamily: "Montserrat"}}>
+            <Header title={title} />
             {/* Chat Area */}
-            <div className="flex-grow p-4 overflow-y-auto">
-                <div className="mb-4 p-4 bg-gray-200 rounded-lg">
-                    <p>{prompt}</p>
-                </div>
+            <div className="flex-grow pb-4 overflow-y-auto" style={{maxWidth: "1250px"}}>
+                {/*<p className="italic text-center mb-4" style={{color: "#02040F"}}>{prompt}</p>*/}
 
-                <ul className="space-y-4">
+                {/* Messages */}
+                <ul className="space-y-4 flex flex-col">
                     {messages?.filter(Boolean).map((message, index) => (
-                        <li key={index} className="p-4 bg-white rounded-lg shadow-md text-black">
-                            <p>{message.body}</p>
-                            {message.isDeleted && (
-                                <p className="text-red-500">This message has been deleted</p>
-                            )}
-                            {/* Author Name - Positioned Below and Aligned Right */}
-                            <p className="text-xs text-gray-500 text-right">{message.authorName}</p>
-                        </li>
+                        message.userMsg ? <UserMessage message={message} index={index} />
+                        : <p key={index}>Assistant</p>
                     ))}
                     {/* Scroll Anchor */}
                     <div ref={chatEndRef} />
