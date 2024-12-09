@@ -8,68 +8,12 @@ const Header = () => {
   };
 
   return (
-    <header>
-      <div>
-          <span>AI Generator of User Stories</span>
-      </div>
-      <div>
-        <h1>ReqToStory</h1>
-      </div>
-      <div>
-        <button 
-          type="button" 
-          aria-label="Settings" 
-          id="settingsButton"
-          onClick={toggleSettings}  
-        >
-          <i className="fa fa-bars"></i>
-        </button>
-        <SettingsDropdown show={showSettings} /> 
-      </div>
+    <header className="bg-[#171717] text-[#e1e1e1] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 mx-auto my-8 flex flex-col items-center gap-6  w-[90%]">
+        <h1 className="text-[2em]">ReqToStory</h1>
+        <h2>AI Generator of User Stories</h2>
     </header>
   );
 };
 
-const SettingsDropdown = ({ show }) => {  
-  return (
-    <div className={`settings-dropdown ${show ? 'show' : ''}`} id="settingsDropdown">
-      <h2>Settings</h2>
-      <hr />
-      <div className="settings-item">
-        <h3>Priority</h3>
-        <div className="settings-options">
-          <label>
-            <input type="radio" name="priority" value="high" />
-            High
-          </label>
-          <label>
-            <input type="radio" name="priority" value="medium" />
-            Medium
-          </label>
-          <label>
-            <input type="radio" name="priority" value="low" />
-            Low
-          </label>
-        </div>
-      </div>
-      <div className="settings-item">
-        <h3>Group By</h3>
-        <div className="settings-options">
-          <label>
-            <input type="radio" name="groupBy" value="theme" />
-            Group by Theme
-          </label>
-          <label>
-            <input type="radio" name="groupBy" value="priority" />
-            Group by Priority
-          </label>
-        </div>
-      </div>
-      <div className="settings-footer">
-        <button className="settings-save-btn">Save Settings</button>
-      </div>
-    </div>
-  );
-};
 
 export default Header;

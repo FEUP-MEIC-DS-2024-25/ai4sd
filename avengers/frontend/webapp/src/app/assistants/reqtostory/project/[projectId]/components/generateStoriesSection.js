@@ -21,7 +21,7 @@ export default function GeneratedStoriesSection({
 
   return (
     userStories.length > 0 && (
-      <section id="sectionUserStories" className="bg-[#171717] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 m-8 flex flex-col items-center gap-6">
+      <section id="sectionUserStories" className="bg-[#171717] text-[#e1e1e1] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 mx-auto my-8 flex flex-col items-center gap-6  w-[90%]">
         <h2 className="text-[#171717]">Generated User Stories</h2>
         <UserStoryTable
           userStories={userStories}
