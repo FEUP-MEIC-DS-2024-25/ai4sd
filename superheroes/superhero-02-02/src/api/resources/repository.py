@@ -3,23 +3,27 @@ import shutil
 import os, sys
 sys.path.append(os.path.dirname((os.path.abspath(__file__))))
 
+from typing import Union
+
 from zipfile import *
-from urllib.parse import unquote
 
 from flask import jsonify, abort, request
 from flask_restful import Resource
 
 from fetch import download_files_from_repo
-from comm import repository_as_prompt
 from utils.utils_misc import get_env_variable
+
+from communication.service import LLMService
 
 class Repository:
     def __init__(self):
         self.FILES_DIR = get_env_variable("FILES_DIR", "FILES_DIR key not found")
         self.PROMPT_DIR = get_env_variable("PROMPT_DIR", "PROMPT_DIR key not found")
 
-    def process_prompt_response(self):
-        repository_as_prompt(self.FILES_DIR, self.PROMPT_DIR)
+    def process_prompt_response(self, model_name: str, submodel_name: Union[str, None] = None):
+        service = LLMService(submodel_name)
+        service.run_model(model_name, self.FILES_DIR, self.PROMPT_DIR)
+
         content = self.__get_prompt_content()
         self.__clean_dirs()
 
@@ -42,11 +46,9 @@ class Repository:
 
 
 class RemoteRepository(Resource, Repository):
-    def get(self, repo):
-        if not repo:
-            abort(400, "Parameter is missing")
-
-        repo = unquote(repo)
+    def post(self):
+        repo = request.form['repo']
+        llm = request.form['llm']
 
         pattern = r'(?:git@github\.com:|https://github\.com/)([^/]+)/([^/]+)\.git$'
     
@@ -70,7 +72,15 @@ class RemoteRepository(Resource, Repository):
                 f"Failed to fetch repository contents: {e}",
             )
 
-        content = self.process_prompt_response()
+        content = None
+
+        # if llm has '/' is because llm has multiple models to choose from
+        # e.g. groq/llama ; groq/gemma
+        if "/" in llm:
+            [llm_name, model_subname] = llm.split("/")
+            content = self.process_prompt_response(llm_name, model_subname)
+        else:
+            content = self.process_prompt_response(llm)
 
         return jsonify({"data": content})
     
@@ -78,6 +88,7 @@ class RemoteRepository(Resource, Repository):
 class LocalRepository(Resource, Repository):
     def post(self):
         file = request.files['file']
+        llm =  request.form['llm']
 
         os.makedirs(self.FILES_DIR, exist_ok=True)
 
@@ -87,7 +98,16 @@ class LocalRepository(Resource, Repository):
         zip_file.close()
 
         self.clean_files(self.FILES_DIR)
-        content = self.process_prompt_response()
+
+        content = None
+
+        # if llm has '/' is because llm has multiple models to choose from
+        # e.g. groq/llama ; groq/gemma
+        if "/" in llm:
+            [llm_name, model_subname] = llm.split("/")
+            content = self.process_prompt_response(llm_name, model_subname)
+        else:
+            content = self.process_prompt_response(llm)
 
         return jsonify({"data": content})
     
