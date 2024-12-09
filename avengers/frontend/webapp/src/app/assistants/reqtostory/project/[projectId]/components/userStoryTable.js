@@ -1,4 +1,5 @@
 import React from "react";
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function UserStoryTable({
     userStories,
@@ -29,6 +30,36 @@ export default function UserStoryTable({
         setTempContent("");
     };
 
+    const handleLike = () => {
+        const likeButton = document.querySelector('.like');
+        if(likeButton.classList.contains('not-filled')){
+            likeButton.classList.remove('not-filled');
+            likeButton.classList.add('filled');
+            likeButton.children[0].classList.remove('far');
+            likeButton.children[0].classList.add('fas');
+        } else {
+            likeButton.classList.remove('filled');
+            likeButton.classList.add('not-filled');
+            likeButton.children[0].classList.remove('fas');
+            likeButton.children[0].classList.add('far');
+        }
+    }
+
+    const handleDislike = () => {
+        const dislikeButton = document.querySelector('.dislike');
+        if(dislikeButton.classList.contains('not-filled')){
+            dislikeButton.classList.remove('not-filled');
+            dislikeButton.classList.add('filled');
+            dislikeButton.children[0].classList.remove('far');
+            dislikeButton.children[0].classList.add('fas');
+        } else {
+            dislikeButton.classList.remove('filled');
+            dislikeButton.classList.add('not-filled');
+            dislikeButton.children[0].classList.remove('fas');
+            dislikeButton.children[0].classList.add('far');
+        }
+    }
+
     return (
         <table className="bg-[#e1e1e1] text-[#2f2f2f] p-4 m-auto w-[90%]">
             <thead>
@@ -41,6 +72,9 @@ export default function UserStoryTable({
                     </th>
                     <th className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
                         Actions
+                    </th>
+                    <th className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
+                        Feedback
                     </th>
                 </tr>
             </thead>
@@ -79,6 +113,15 @@ export default function UserStoryTable({
                                     Edit
                                 </button>
                             )}
+                        </td>
+                        <td className="min-h-[2em] min-w-[10em] text-center border border-[#e1e1e1] p-2">
+                            <button className="mx-2 like not-filled" onClick={() => handleLike()}>
+                                <i className="far fa-thumbs-up"></i>
+                            </button>
+
+                            <button className="mx-2 dislike not-filled" onClick={() => handleDislike()}>
+                                <i className="far fa-thumbs-down"></i>
+                            </button>
                         </td>
                     </tr>
                 ))}
