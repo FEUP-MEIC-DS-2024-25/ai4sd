@@ -232,32 +232,32 @@ steps:
           echo "Verifying deployed services..."
           gcloud run services list --platform=managed --region="${_REGION}" --project="${_PROJECT_ID}"
 
-  # Step 12: Remove Old Secret Versions
-  - id: "Remove Old Secret Versions"
-    name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-          echo "Removing old secret versions..."
+  # # Step 12: Remove Old Secret Versions
+  # - id: "Remove Old Secret Versions"
+  #   name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+  #   entrypoint: "bash"
+  #   args:
+  #     - "-c"
+  #     - |
+  #         echo "Removing old secret versions..."
           
-          # Remove old superhero secrets
-          for group in $(seq -w 1 8); do
-            for hero in $(seq -w 1 5); do
-              hero_name="superhero-0${group}-0${hero}"
-              echo "Cleaning up old versions for secret: ${hero_name}-secret"
+  #         # Remove old superhero secrets
+  #         for group in $(seq -w 1 8); do
+  #           for hero in $(seq -w 1 5); do
+  #             hero_name="superhero-0${group}-0${hero}"
+  #             echo "Cleaning up old versions for secret: ${hero_name}-secret"
               
-              gcloud secrets versions list "${hero_name}-secret" \
-                --project="${_PROJECT_ID}" \
-                --filter="state=ENABLED" \
-                --format="value(name)" | tail -n +2 | \
-                xargs -I {} gcloud secrets versions destroy {} --secret="${hero_name}-secret"
-            done
-          done
+  #             gcloud secrets versions list "${hero_name}-secret" \
+  #               --project="${_PROJECT_ID}" \
+  #               --filter="state=ENABLED" \
+  #               --format="value(name)" | tail -n +2 | \
+  #               xargs -I {} gcloud secrets versions destroy {} --secret="${hero_name}-secret"
+  #           done
+  #         done
           
-          echo "Cleaning up old versions for secret: jarvis-secret"
-          gcloud secrets versions list "jarvis-secret" \
-            --project="${_PROJECT_ID}" \
-            --filter="state=ENABLED" \
-            --format="value(name)" | tail -n +2 | \
-            xargs -I {} gcloud secrets versions destroy {} --secret="jarvis-secret"
+  #         echo "Cleaning up old versions for secret: jarvis-secret"
+  #         gcloud secrets versions list "jarvis-secret" \
+  #           --project="${_PROJECT_ID}" \
+  #           --filter="state=ENABLED" \
+  #           --format="value(name)" | tail -n +2 | \
+  #           xargs -I {} gcloud secrets versions destroy {} --secret="jarvis-secret"
