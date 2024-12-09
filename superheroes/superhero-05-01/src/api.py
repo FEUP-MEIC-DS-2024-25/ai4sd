@@ -21,7 +21,7 @@ app.add_middleware(
 )
 
 class file(BaseModel):
-    content: str
+    files: List[Any]
 
 class responseModel(BaseModel):
     message: str
@@ -33,9 +33,9 @@ def read_root():
 
 @app.post("/online")
 def run_online(file: file):
-    modelResponse = script.run_online(file.content)
-    modelResponse = modelResponse.splitlines()
-    modelResponse = "\n".join(modelResponse[1:-1])
+    modelResponse = script.run_online(file.files)
+    #modelResponse = modelResponse.splitlines()
+    #modelResponse = "\n".join(modelResponse[1:-1])
     try:
         modelResponse = json.loads(modelResponse)
     except:
@@ -44,15 +44,16 @@ def run_online(file: file):
         response = responseModel(message="Success", data=modelResponse)
     return response
 
-@app.post("/offline")
-def run_offline(file: file):
-    modelResponse = script.run_offline(file.content)
-    modelResponse = modelResponse.splitlines()
-    modelResponse = "\n".join(modelResponse[1:-1])
-    try:
-        modelResponse = json.loads(modelResponse)
-    except:
-        response = responseModel(message="Failure", data=["error: The model's response was not a valid JSON.", modelResponse])
-    else:
-        response = responseModel(message="Success", data=modelResponse)
-    return response
+
+#@app.post("/offline")
+#def run_offline(file: file):
+#    modelResponse = script.run_offline(file.content)
+#    modelResponse = modelResponse.splitlines()
+#    modelResponse = "\n".join(modelResponse[1:-1])
+#    try:
+#        modelResponse = json.loads(modelResponse)
+#    except:
+#        response = responseModel(message="Failure", data=["error: The model's response was not a valid JSON.", modelResponse])
+#    else:
+#        response = responseModel(message="Success", data=modelResponse)
+#    return response
