@@ -41,7 +41,8 @@ resource "google_project_service" "enable_services" {
     "firestore.googleapis.com",
     "compute.googleapis.com", 
     "cloudresourcemanager.googleapis.com",
-    "iam.googleapis.com"
+    "iam.googleapis.com",
+    "secretmanager.googleapis.com"
   ])
   service = each.key
 }
@@ -94,6 +95,14 @@ resource "google_secret_manager_secret" "cloudbuild_sa_key" {
 resource "google_secret_manager_secret_version" "cloudbuild_sa_key_version" {
   secret      = google_secret_manager_secret.cloudbuild_sa_key.id
   secret_data = google_service_account_key.cloud_build_sa_key.private_key
+}
+
+resource "google_secret_manager_secret_iam_member" "cloudbuild_sa_admin" {
+  for_each = google_secret_manager_secret.superhero_secrets
+
+  secret_id = each.value.id
+  role = "roles/secretmanager.admin"
+  member = "serviceAccount:${google_service_account.cloud_build_sa.email}"
 }
 
 resource "google_project_iam_member" "cloud_build_service_account_admin" {
@@ -541,6 +550,13 @@ resource "google_firestore_database" "vault" {
   location_id = "europe-west1"
   type        = "FIRESTORE_NATIVE"
   depends_on  = [google_project_service.enable_services]
+
+  lifecycle {
+    ignore_changes = [
+      etag,
+      earliest_version_time
+    ]
+  }
 }
 
 #################################
@@ -599,7 +615,6 @@ resource "google_storage_bucket_iam_member" "public_read_access" {
   role   = "roles/storage.objectViewer"
   member = "allUsers"
 }
-
 
 resource "google_project_iam_member" "strange_firestore_permissions" {
   project  = var.project_id

@@ -1,62 +1,59 @@
-import { App } from "octokit"; 
-import axios from "axios";
-import fs from "fs";
-import dotenv from "dotenv";
+import { getAuthOctokit } from "./jarvis-fetcher/auth.js";
+import { config } from "./config.js";
+import { uploadRepo } from "./jarvis-writer/writer.js";
 
-dotenv.config(); // Load environment variables from .env
-
-const APP_ID = process.env.APP_ID;
-const PRIVATE_KEY_PATH = process.env.PRIVATE_KEY_PATH;
-
-if (!PRIVATE_KEY_PATH) {
-    throw new Error("PRIVATE_KEY_PATH environment variable is not set.");
-}
-
-let PRIVATE_KEY;
-try {
-    PRIVATE_KEY = fs.readFileSync(PRIVATE_KEY_PATH, "utf-8");
-} catch (error) {
-    throw new Error(`Failed to read private key file: ${PRIVATE_KEY_PATH}. ${error.message}`);
-}
-
-const app = new App({
-    appId: APP_ID,
-    privateKey: PRIVATE_KEY,
-});
-
-async function fetchPythonFiles(repoUrl) {
-    const repoPath = repoUrl.replace("https://github.com/", "");
-    const apiUrl = `https://api.github.com/repos/${repoPath}/contents`;
-
+/**
+ * Fetches all repositories in an organization.
+ * @param {object} octokit - Authenticated Octokit instance.
+ * @param {string} org - GitHub organization name.
+ * @returns {Promise<Array>} - List of repository names.
+ */
+async function fetchOrgRepos(octokit, org) {
     try {
-        const response = await axios.get(apiUrl);
-        const files = response.data;
-
-        // Filter for Python files
-        const pythonFiles = files.filter((file) => file.name.endsWith(".py"));
-
-        for (const file of pythonFiles) {
-            const fileResponse = await axios.get(file.download_url);
-            console.log(`File: ${file.name}`);
-            console.log(fileResponse.data);
-        }
-    } catch (error) {
-        console.error("Error fetching files:", error.message);
-    }
-}
-
-async function main() {
-    try {
-        const installation = await app.octokit.request("GET /orgs/{org}/installation", {
-            org: "FEUP-MEIC-DS-2024-25",
+        const { data } = await octokit.request('GET /orgs/{org}/repos', {
+            org: org,
+            type: "all",
+            per_page: 100
         });
 
-        console.log(installation.data["id"]); // Installation ID
-
-        // await fetchPythonFiles("https://github.com/dbarnett/python-helloworld");
+        return data.map((repo) => repo.name);
     } catch (error) {
-        console.error("Error fetching installation:", error.message);
+        console.error(`Error fetching repositories for org "${org}":`, error.message);
+        throw error;
     }
 }
 
-main();
+/**
+ * Uploads all repositories in a GitHub organization to a Google Cloud Storage bucket.
+ * @param {object} octokit - Authenticated Octokit instance.
+ * @param {string} org - GitHub organization name.
+ */
+export async function uploadAllReposInOrg(octokit, org) {
+    try {
+        console.log(`Fetching repositories for organization: ${org}`);
+        const repos = await fetchOrgRepos(octokit, org);
+
+
+        if (repos.length === 0) {
+            console.log(`No repositories found for organization: ${org}`);
+            return;
+        }
+
+        console.log(`Found ${repos.length} repositories in organization: ${org}`);
+        for (const repo of repos) {
+            try {
+                await uploadRepo(octokit, org, repo);
+            } catch (error) {
+                console.error(`Error processing repository "${repo}":`, error.message);
+                // Continue with the next repository in case of errors
+            }
+        }
+        console.log(`Finished uploading all repositories for organization: ${org}`);
+    } catch (error) {
+        console.error(`Error during organization upload process:`, error.message);
+    }
+}
+
+
+const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
+await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
