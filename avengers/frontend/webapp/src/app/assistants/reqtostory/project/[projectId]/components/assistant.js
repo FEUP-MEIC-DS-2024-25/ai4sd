@@ -35,8 +35,6 @@ const Assistant = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
-        console.log("Teste");
-        console.log(projectId);
         if (!version) {
             fetchProjectContent(projectId);
         } else {
@@ -258,6 +256,7 @@ const Assistant = () => {
                     ) : (
                         <div className="w-[100%]">
                             <p>Project's Requirements</p>
+                            {console.log(requirements.content)}
                             <textarea
                                 className="bg-[#e1e1e1] text-[#2f2f2f] border-4 border-[#e1e1e1] rounded-[20px] mx-auto p-2 w-[80%] resize-none"
                                 placeholder={requirements.content}
