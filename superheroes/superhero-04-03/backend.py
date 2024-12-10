@@ -7,6 +7,12 @@ import whisper
 from docx import Document
 import google.generativeai as genai
 
+import markdown2
+from docx.shared import Pt
+from docx.oxml.ns import qn
+from docx.oxml import OxmlElement
+
+
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
 
@@ -52,6 +58,50 @@ def summarize_transcription(transcription):
     )
     return response.text
 
+
+
+
+def add_html_to_docx(doc, html):
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(html, "html.parser")
+
+    for element in soup:
+        if element.name == "p":
+            doc.add_paragraph(element.get_text())
+        elif element.name == "ul":
+            for li in element.find_all("li"):
+                doc.add_paragraph(li.get_text(), style='List Bullet')
+        elif element.name == "ol":
+            for li in element.find_all("li"):
+                doc.add_paragraph(li.get_text(), style='List Number')
+        elif element.name == "h1":
+            doc.add_heading(element.get_text(), level=1)
+        elif element.name == "h2":
+            doc.add_heading(element.get_text(), level=2)
+        elif element.name == "h3":
+            doc.add_heading(element.get_text(), level=3)
+        elif element.name == "h4":
+            doc.add_heading(element.get_text(), level=4)
+        elif element.name == "h5":
+            doc.add_heading(element.get_text(), level=5)
+        elif element.name == "h6":
+            doc.add_heading(element.get_text(), level=6)
+        elif element.name == "table":
+            table = doc.add_table(rows=0, cols=0)
+            for row in element.find_all("tr"):
+                cells = row.find_all(["td", "th"])
+                if len(cells) > 0:
+                    tr = table.add_row().cells
+                    for i, cell in enumerate(cells):
+                        if len(table.columns) < len(cells):
+                            table.add_column()
+                        tr[i].text = cell.get_text()
+                        if cell.name == "th":
+                            tr[i].paragraphs[0].runs[0].bold = True
+        
+
+
+
 # Function to generate IEEE SRS document
 def generate_srs(transcription, summary):
     output_file = "SRS_Document.docx"
@@ -59,14 +109,38 @@ def generate_srs(transcription, summary):
     doc.add_heading('Software Requirements Specification (SRS)', level=1)
 
     doc.add_heading('1. Introduction', level=2)
-    doc.add_paragraph("**Purpose:** This document defines the requirements extracted from a transcription of stakeholder meetings.")
-    doc.add_paragraph("**Scope:** The system is designed to facilitate transcription and requirement extraction for software development projects using Agile methodologies.")
-    doc.add_paragraph("**References:** IEEE STD 830-1998.")
+    
+    # Add bold text for "Purpose:"
+    p = doc.add_paragraph()
+    p.add_run("Purpose:").bold = True
+    p.add_run(" This document defines the requirements extracted from a transcription of stakeholder meetings.")
+    
+    # Add bold text for "Scope:"
+    p = doc.add_paragraph()
+    p.add_run("Scope:").bold = True
+    p.add_run(" The system is designed to facilitate transcription and requirement extraction for software development projects using Agile methodologies.")
+    
+    # Add bold text for "References:"
+    p = doc.add_paragraph()
+    p.add_run("References:").bold = True
+    p.add_run(" IEEE STD 830-1998.")
 
     doc.add_heading('2. Overall Description', level=2)
-    doc.add_paragraph("**Product Perspective:** The system integrates Whisper for transcription and Google Gemini for requirement extraction.")
-    doc.add_paragraph("**Product Functions:** The primary function is to convert audio meeting transcriptions into actionable requirements (epics, themes, and user stories).")
-    doc.add_paragraph("**Constraints:** The system relies on the Whisper and Google Gemini APIs for functionality.")
+    
+    # Add bold text for "Product Perspective:"
+    p = doc.add_paragraph()
+    p.add_run("Product Perspective:").bold = True
+    p.add_run(" The system integrates Whisper for transcription and Google Gemini for requirement extraction.")
+    
+    # Add bold text for "Product Functions:"
+    p = doc.add_paragraph()
+    p.add_run("Product Functions:").bold = True
+    p.add_run(" The primary function is to convert audio meeting transcriptions into actionable requirements (epics, themes, and user stories).")
+    
+    # Add bold text for "Constraints:"
+    p = doc.add_paragraph()
+    p.add_run("Constraints:").bold = True
+    p.add_run(" The system relies on the Whisper and Google Gemini APIs for functionality.")
 
     doc.add_heading('3. Specific Requirements', level=2)
     doc.add_paragraph("The requirements extracted are as follows:")
@@ -74,8 +148,10 @@ def generate_srs(transcription, summary):
     doc.add_heading('Original Transcription', level=3)
     doc.add_paragraph(transcription)
 
+
     doc.add_heading('Extracted Requirements', level=3)
-    doc.add_paragraph(summary)
+    html_summary = markdown2.markdown(summary)
+    add_html_to_docx(doc, html_summary)
 
     doc.save(output_file)
     return output_file

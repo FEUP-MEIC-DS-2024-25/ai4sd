@@ -2,11 +2,12 @@
 
 import React, { useState, useRef } from "react";
 
-const RecordLiveAudio = ({ setTranscription,  }) => {
+const RecordLiveAudio = ({ setTranscription, setSummary}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [audioBlob, setAudioBlob] = useState(null);
   const mediaRecorderRef = useRef(null);
   const audioChunks = useRef([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const startRecording = async () => {
     try {
@@ -40,11 +41,17 @@ const RecordLiveAudio = ({ setTranscription,  }) => {
   const uploadRecording = async () => {
     if (!audioBlob) return;
 
-    const formData = new FormData();
-    formData.append("audio", audioBlob);
 
+
+    const audioFile = new File([audioBlob], "recording.mp3", { type: "audio/mp3" });
+
+    const formData = new FormData();
+    formData.append("audio", audioFile);
+    formData.append("title", "Live Recording");
+
+    setIsLoading(true);
     try {
-      const response = await fetch("/api/transcribe", {
+      const response = await fetch("http://localhost:5000/transcribe", {
         method: "POST",
         body: formData,
       });
@@ -52,10 +59,14 @@ const RecordLiveAudio = ({ setTranscription,  }) => {
 
       if (data.transcription) {
         setTranscription(data.transcription);
-        
+        setSummary(data.summary);
+      } else {
+        console.error("No transcription received:", data);
       }
-    } catch (err) {
-      console.error("Error uploading audio:", err);
+    } catch (error) {
+      console.error("Error during transcription:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -75,9 +86,14 @@ const RecordLiveAudio = ({ setTranscription,  }) => {
       {audioBlob && (
         <div className="text-center">
           <audio controls src={URL.createObjectURL(audioBlob)} />
-          <button className="btn btn-success mt-2" onClick={uploadRecording}>
+          <button className="btn btn-success mt-2" onClick={uploadRecording} disabled={isLoading}>
             Upload Recording
           </button>
+          {isLoading && (
+          <div className="mt-2 text-info text-center">
+            <p>Loading...</p>
+          </div>
+          )}
         </div>
       )}
     </div>

@@ -13,7 +13,9 @@ RUN pip install --no-cache-dir \
     flask \
     flask-cors \
     google-generativeai \
-    python-docx
+    python-docx \
+    markdown2 \
+    beautifulsoup4
 
 COPY . .
 
