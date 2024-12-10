@@ -8,6 +8,7 @@ ENV PORT 8080
 
 # Copy the FastAPI app into the container
 COPY app.py /app.py
+copy .env /.env
 
 # Copy the superheroes folder as well
 # COPY ../superheroes /superheroes
