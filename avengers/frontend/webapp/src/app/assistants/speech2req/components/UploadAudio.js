@@ -5,6 +5,7 @@ import React, { useState } from "react";
 
 const UploadAudio = ({ setTranscription, setSummary }) => {
   const [file, setFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Replacing handleSubmit with uploadFile function
   const uploadFile = async (file) => {
@@ -18,6 +19,7 @@ const UploadAudio = ({ setTranscription, setSummary }) => {
     formData.append("audio", file);
     formData.append("title", "Test Meeting");
 
+    setIsLoading(true);
     try {
       const response = await fetch("http://localhost:5000/transcribe", {
         method: "POST",
@@ -39,6 +41,8 @@ const UploadAudio = ({ setTranscription, setSummary }) => {
       }
     } catch (error) {
       console.error("Error during transcription:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,9 +64,15 @@ const UploadAudio = ({ setTranscription, setSummary }) => {
       <button 
         className="btn btn-primary w-50 align-self-center" 
         onClick={() => uploadFile(file)} // Call uploadFile when the button is clicked
+        disabled={isLoading} // Disable the button when the form is submitting
       >
         Upload and Transcribe
       </button>
+      {isLoading && (
+      <div className="mt-2 text-info text-center">
+        <p>Loading...</p>
+      </div>
+      )}
     </div>
   );
 };

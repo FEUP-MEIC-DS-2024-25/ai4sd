@@ -52,6 +52,7 @@ const RecordLiveAudio = ({ setTranscription,  }) => {
 
       if (data.transcription) {
         setTranscription(data.transcription);
+        
       }
     } catch (err) {
       console.error("Error uploading audio:", err);
@@ -67,9 +68,12 @@ const RecordLiveAudio = ({ setTranscription,  }) => {
       >
         {isRecording ? "Stop Recording" : "Start Recording"}
       </button>
+      {isRecording && <p className="text-danger">Recording...</p>}
+      {(audioBlob && !isRecording) && (
+        <p className="text-secondary">Recording complete! You can play, download or upload it below:</p>
+      )}
       {audioBlob && (
         <div className="text-center">
-          <p className="mt-3">Recording complete! You can play or upload it below:</p>
           <audio controls src={URL.createObjectURL(audioBlob)} />
           <button className="btn btn-success mt-2" onClick={uploadRecording}>
             Upload Recording
