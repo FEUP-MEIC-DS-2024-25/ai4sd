@@ -12,6 +12,11 @@ RUN npm install
 
 # Copy the gemini key from google environment variable
 RUN echo 'GEMINI_API_KEY=$(superhero-02-04-secret)' > .env
+#RUN --mount=type=secret,id=apikey \
+#    if [ -f /run/secrets/apikey ]; then \
+#        ENV_CONTENT=$(cat /run/secrets/apikey) && \
+#        echo -e "GEMINI_API_KEY=${ENV_CONTENT}" > .env; \
+#    fi
 
 # Copy the rest of the application code
 COPY . .
