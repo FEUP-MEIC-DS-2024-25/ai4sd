@@ -146,9 +146,14 @@ export default function UserStoryTable({
                                     </button>
                                 </>
                             ) : (
-                                <button onClick={() => handleEditClick(idx)}>
-                                    Edit
-                                </button>
+                                <>
+                                    <button onClick={() => handleEditClick(idx)}>
+                                        Edit
+                                    </button>
+                                    <button className="text-red-600 hover:text-red-800 ml-2">
+                                        <i className="fas fa-trash"></i>
+                                    </button>
+                                </>
                             )}
                         </td>
                         <td className="min-h-[2em] min-w-[10em] text-center border border-[#e1e1e1] p-2">

@@ -211,7 +211,7 @@ const Assistant = () => {
 
     const updateVersion = (req, user_stories, newContent) => {
         const updatedVersions = [...versions];
-
+    
         if (newContent) {
             const lastVersion = Math.max(
                 ...updatedVersions.map((v) => v.version),
