@@ -85,10 +85,19 @@ export async function execute(context: vscode.ExtensionContext) {
             }
 
             try {
-                const response = await callBackendApi(repoUrl, patterns);
-                vscode.window.showInformationMessage("ADR successfully generated! Response: " + response);
+                const adrContent = await callBackendApi(repoUrl, patterns);
+                const document = await vscode.workspace.openTextDocument({
+                    language: "markdown",
+                    content: adrContent
+                });
+                vscode.window.showTextDocument(document);
             } catch (error) {
-                vscode.window.showErrorMessage("Error generating ADR: " + error);
+                const fallbackMarkdown = `# ADR Generation Failed\n\nUnfortunately, we could not generate an ADR for the provided input.\n\n**Repository URL**: ${repoUrl}\n**Patterns**: ${patterns}`;
+                const document = await vscode.workspace.openTextDocument({
+                    language: "markdown",
+                    content: fallbackMarkdown
+                });
+                vscode.window.showTextDocument(document);
             }
         }
     });
@@ -113,5 +122,5 @@ async function callBackendApi(repoUrl: string, patterns: string): Promise<string
     }
 
     const data = await response.json();
-    return data.message;
+    return data.response;
 }
