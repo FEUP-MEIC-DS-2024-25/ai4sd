@@ -93,7 +93,33 @@ def analyze_repo_issues(request, repo_owner, repo_name):
     issues = get_issues(repo_owner, repo_name)
     prompt = (
         f"I will send you issues, and you will answer with the architectural patterns that you can find from the issues. "
-        f"Be as extensive as you want to explain why you think the pattern is present.\n{issues}\n"
+        f"Be as extensive as you want to explain why you think the pattern is present.\n{issues}\n\n"
+        "Please output it in the following JSON format: {\n"
+        "  \"repositoryAnalysis\": {\n"
+        "    \"repoName\": \"\", // string\n"
+        "    \"lastIssueHash\": \"\", // string\n"
+        "    \"analysisDate\": \"\", // string (ISO date format)\n"
+        "    \"predictedDesignPatterns\": [\n"
+        "      {\n"
+        "        \"patternName\": \"\", // string\n"
+        "        \"confidence\": 0.0, // float (0.0 to 1.0)\n"
+        "        \"evidence\": [\n"
+        "          {\n"
+        "            \"type\": \"\", // string (\"file\", \"commit\", \"branch\", etc.)\n"
+        "            \"path\": \"\", // string (file path or branch name)\n"
+        "            \"reason\": \"\" // string (explanation of why this is evidence)\n"
+        "          }\n"
+        "        ]\n"
+        "      }\n"
+        "    ],\n"
+        "    \"unusualPatterns\": []\n"
+        "  },\n"
+        "  \"meta\": {\n"
+        "    \"analyzedIssues\": 0, // integer\n"
+        "    \"linesOfCode\": 0, // integer\n"
+        "    \"toolVersion\": \"\" // string\n"
+        "  }\n"
+        "}"
     )
     return handle_api_response(issues, prompt)
 
@@ -115,7 +141,20 @@ def analyze_user_stories(request, repo_owner, repo_name):
 
     prompt = (
         "Analyze the following user stories for complexity and identify potential architectural challenges. "
-        "Provide insights based on their descriptions and story points.\n\n"
+        "Provide insights based on their descriptions and story points. Please return your response in the following JSON format:\n"
+        "{\n"
+        "  \"repositoryAnalysis\": {\n"
+        "    \"repoName\": \"\", // string\n"
+        "    \"analysisDate\": \"\", // string (ISO date format)\n"
+        "    \"predictedDesignPatterns\": [],\n"
+        "    \"unusualPatterns\": []\n"
+        "  },\n"
+        "  \"meta\": {\n"
+        "    \"analyzedUserStories\": 0, // integer\n"
+        "    \"linesOfCode\": 0, // integer\n"
+        "    \"toolVersion\": \"\" // string\n"
+        "  }\n"
+        "}\n\n"
     )
     for story in user_stories:
         prompt += f"Description:\n{story['description']}\n"
