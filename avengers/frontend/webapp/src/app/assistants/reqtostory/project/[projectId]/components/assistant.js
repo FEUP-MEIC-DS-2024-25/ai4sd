@@ -154,7 +154,7 @@ const Assistant = () => {
 
     const updateVersion = (req, user_stories, newContent) => {
         const updatedVersions = [...versions];
-
+    
         if (newContent) {
             const lastVersion = Math.max(
                 ...updatedVersions.map((v) => v.version),
@@ -166,6 +166,7 @@ const Assistant = () => {
                 user_stories: [{ version: 1, user_stories }],
             };
             updatedVersions.push(newReqVersion);
+            setCurrentIndex(updatedVersions.length - 1);
         } else {
             const currentVersion = updatedVersions.find(
                 (v) => v.version === requirements.version
@@ -179,6 +180,7 @@ const Assistant = () => {
                     version: lastUSVersion + 1,
                     user_stories,
                 });
+                setUserStoryIndex(currentVersion.user_stories.length - 1);
             }
         }
 
