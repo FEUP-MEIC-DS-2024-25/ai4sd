@@ -145,9 +145,13 @@ steps:
                   --project="${_PROJECT_ID}" > "${secret_file}"
 
               echo "Building image for ${service}..."
-              DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}" || exit 1
-              docker push "${image_with_build_id}" || exit 1
-
+              if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
+                echo "Pushing image for ${service}..."
+                docker push "${image_with_build_id}" || echo "Failed to push image for ${service}. Skipping."
+              else
+                  echo "Failed to build image for ${service}. Skipping."
+              fi
+              
               rm -rf "${secret_file}"
             else
               echo "No Dockerfile found for ${service}, using fallback image."
