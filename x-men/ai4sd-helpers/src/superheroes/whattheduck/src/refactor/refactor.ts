@@ -7,6 +7,8 @@ export async function refactor(filters: string[]) {
         return;
     }
 
+    console.log("Did it ran the refactor?");
+
     const editor = vscode.window.activeTextEditor;
 
     if (!editor) {
@@ -22,7 +24,7 @@ export async function refactor(filters: string[]) {
         "Loading... waddling as fast as we can!",
         "Bubbling up your results... almost there!",
         "Patience is floating! Just a few more bubbles...",
-    ]
+    ];
     const progressMsg = progressMsgs[Math.floor(Math.random() * progressMsgs.length)];
 
     await vscode.window.withProgress(
@@ -36,7 +38,7 @@ export async function refactor(filters: string[]) {
             try {
                 newText = await fetchRefactorResponse(code, filters);
             } catch (error) {
-                vscode.window.showErrorMessage('An error occurred while fetching response.');
+                vscode.window.showErrorMessage('An error occurred while fetching response: ' + error);
                 return;
             }
             
@@ -59,7 +61,7 @@ export async function refactor(filters: string[]) {
 }
 
 async function fetchRefactorResponse(code: string, filters: string[]): Promise<string | null> {
-    const response = await fetch('http://superhero-08-01-150699885662.europe-west1.run.app/refactor', {
+    const response = await fetch('https://superhero-08-01-150699885662.europe-west1.run.app/refactor', {
         method: 'POST',
         body: JSON.stringify({ code: code, filters: filters }),
         headers: { 'Content-Type': 'application/json' },
@@ -75,6 +77,7 @@ async function fetchRefactorResponse(code: string, filters: string[]): Promise<s
     }
 
     let newText = result.response;
+
     newText = newText.split("```")[1];
     newText = newText.split("\n").slice(1).join("\n");
     return newText;
