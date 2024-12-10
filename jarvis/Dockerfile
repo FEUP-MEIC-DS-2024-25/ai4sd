@@ -14,6 +14,8 @@ COPY . .
 # Expose the port that the app will run on
 EXPOSE 8080
 
+RUN --mount=type=secret,id=secret sh -c "cat /run/secrets/secret > /tmp/secret.txt && echo 'Secret written to /tmp/secret.txt'"
+
 RUN useradd app
 USER app
 

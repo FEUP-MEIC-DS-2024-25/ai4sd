@@ -3,6 +3,9 @@ import { DOWNLOAD_DIR, GITHUB_APP_PRIVATE_KEY_PATH, SERVICE_ACCOUNT_KEY_PATH } f
 
 dotenv.config();
 
+console.log("APP_ID:", process.env.APP_ID);
+console.log("GITHUB_ORG:", process.env.GITHUB_ORG);
+
 export const config = {
     appId: process.env.APP_ID,
     org: process.env.GITHUB_ORG,
