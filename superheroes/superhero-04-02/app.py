@@ -8,7 +8,7 @@ from api import *
 
 
 load_dotenv()
-api_key = os.getenv("API_KEY")
+api_key = os.getenv("API_KEY", None)
 
 genai.configure(api_key=api_key)
 
