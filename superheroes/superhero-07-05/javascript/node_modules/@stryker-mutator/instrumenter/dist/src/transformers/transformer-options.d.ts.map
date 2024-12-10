@@ -1,0 +1,1 @@
+{"version":3,"file":"transformer-options.d.ts","sourceRoot":"","sources":["../../../src/transformers/transformer-options.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,6BAA6B,CAAC;AAEtD,OAAO,EAAE,cAAc,EAAE,MAAM,sBAAsB,CAAC;AAEtD,MAAM,WAAW,kBAAmB,SAAQ,cAAc;IACxD,QAAQ,EAAE,OAAO,EAAE,CAAC;CACrB"}
