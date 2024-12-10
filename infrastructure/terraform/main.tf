@@ -97,24 +97,6 @@ resource "google_secret_manager_secret_version" "cloudbuild_sa_key_version" {
   secret_data = google_service_account_key.cloud_build_sa_key.private_key
 }
 
-data "google_secret_manager_secret" "superhero_secrets" {
-  for_each = {
-    for name in local.superhero_names : 
-    for suffix in ["-secret", "-secret2", "-secret3"] : 
-    "${name}${suffix}" => "${name}${suffix}"
-  }
-
-  secret_id = each.value
-}
-
-resource "google_secret_manager_secret_iam_member" "cloudbuild_sa_admin" {
-  for_each = google_secret_manager_secret.superhero_secrets
-
-  secret_id = each.value.id
-  role = "roles/secretmanager.admin"
-  member = "serviceAccount:${google_service_account.cloud_build_sa.email}"
-}
-
 resource "google_project_iam_member" "cloud_build_service_account_admin" {
   project = var.project_id
   member  = "serviceAccount:${google_service_account.cloud_build_sa.email}"
@@ -632,28 +614,4 @@ resource "google_project_iam_member" "strange_firestore_permissions" {
   role     = "roles/datastore.user"
 
   depends_on = [google_firestore_database.vault]
-}
-
-#################################
-### ACCESSING EXISTING SECRETS ###
-#################################
-
-resource "google_secret_manager_secret_iam_member" "superhero_secret_access" {
-  for_each = google_secret_manager_secret.superhero_secrets
-
-  secret_id = each.value
-  role      = "roles/secretmanager.secretAccessor"
-  member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
-
-  depends_on = [google_service_account.superhero]
-}
-
-resource "google_secret_manager_secret_iam_member" "superhero_secret_version" {
-  for_each = google_secret_manager_secret.superhero_secrets
-
-  secret_id = each.value
-  role      = "roles/secretmanager.SecretVersionManager"
-  member    = "serviceAccount:${google_service_account.superhero[each.key].email}"
-
-  depends_on = [google_service_account.superhero]
 }
