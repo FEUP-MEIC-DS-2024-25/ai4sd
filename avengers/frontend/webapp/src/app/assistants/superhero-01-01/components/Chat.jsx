@@ -91,10 +91,14 @@ export const Chatbot = () => {
 
       } else if (payload.type === 'code'){
 
-        console.log("NAO TEMMMMMT\n\n\n\n\n")
+        
         
         response = await axios.post('http://localhost:8000/api/prompt', {
           code:payload.value
+        },{
+          headers: {
+            'Content-Type':'multipart/form-data'
+          },
         })
       
         console.log('Data submitted successfully:', response.data)
