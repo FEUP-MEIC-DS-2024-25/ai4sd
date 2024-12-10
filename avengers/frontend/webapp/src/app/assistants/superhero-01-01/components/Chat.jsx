@@ -58,7 +58,7 @@ export const Chatbot = () => {
         formDataToSend.append('file', formData.data);
         console.log(formDataToSend)
   
-        const response = await axios.post('https://localhost:8000/api/prompt', formDataToSend, {
+        const response = await axios.post('http://localhost:8000/api/prompt', formDataToSend, {
           headers: {
             'Content-Type': 'multipart/form-data'
           }
@@ -69,7 +69,7 @@ export const Chatbot = () => {
       } else if (formData.type === 'code') {
         // Handle text input
         console.log(formData)
-        const response = await axios.post('https://localhost:8000/api/prompt', {
+        const response = await axios.post('http://localhost:8000/api/prompt', {
           code: formData.data
         });
   
