@@ -77,13 +77,12 @@ export const Chatbot = () => {
 
       const formDataToSend = new FormData();
       formDataToSend.append('file', payload.value);
+      console.log("PAYPLOAD")
+      console.log(payload)
 
       console.log("WHATTTTTT\n\n\n\n\n")
-      response = await axios.post('http://locahost:8000/api/prompt', formDataToSend, {
+      response = await axios.post('http://localhost:8000/api/prompt', formDataToSend, {
 
-        headers:{
-          'Content-Type':'multipart/form-data'
-        }
 
       });
       console.log('Data submitted successfully:', response.data);
@@ -111,7 +110,7 @@ export const Chatbot = () => {
           avatar: "",
           name: "ChatBot",
           role: "ai",
-          message: response.data.message || "Analysis complete.",
+          message: JSON.stringify(response.data) || "Analysis complete.",
         },
       ]);
     } catch (error) {
@@ -179,8 +178,8 @@ export const Chatbot = () => {
         ]);
 
         sendToBackend({
-          key: "file",
-          value: fileContent
+          type: "file",
+          value: file
         });
       };
       reader.readAsText(file);

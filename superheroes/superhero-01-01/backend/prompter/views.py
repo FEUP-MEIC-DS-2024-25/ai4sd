@@ -39,11 +39,15 @@ PROMPT = '''Evaluate the following code according to Good Coding Practices and s
 
 @csrf_exempt
 def evaluate_code(request):
-    print("WE GOT HERE")
+    print("Request URL:", request.get_full_path(),flush=True)  # This prints the full path including query parameters (if any)
+    
+    print("WE GOT HERE",flush=True)
     if request.method != "POST":
         return JsonResponse({"error": "Only POST method is allowed."}, status=405)
 
     # Get inputs
+    print(request.POST,flush=True)
+    print(request.FILES.getlist("file"),flush= True)
     files = request.FILES.getlist("file")  # Get all files with name "file"
     text_input = request.POST.get("code")
 
@@ -57,6 +61,8 @@ def evaluate_code(request):
 
     # Get the single file if it exists
     file = files[0] if files else None
+
+    
 
     # Validate that at least one input is provided
     if not file and not text_input:
