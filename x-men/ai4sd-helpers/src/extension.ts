@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as whattheduck from './superheroes/whattheduck/src/extension.js';
+import * as easycomment from './superheroes/easycomment/src/extension.js';
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
@@ -19,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 		
 		const options: vscode.QuickPickItem[] = [
 			{ label: "Template", description: "Executes Template superhero" },
+			{ label: "EasyComment", description: "Executes EasyComment superhero" },
 		  ];
 	  
 		  // Show dropdown and await user's choice
@@ -34,6 +36,10 @@ export function activate(context: vscode.ExtensionContext) {
 				// Import and execute Template
 				(await import('./superheroes/Template.js')).execute();
 				break;
+			  case "EasyComment":
+				// Import and execute EasyComment
+				(await import('./superheroes/easycomment/src/extension.js')).execute();
+				break;
 			  default:
 				vscode.window.showWarningMessage("Unknown option selected");
 			}
@@ -45,6 +51,9 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(disposable);
 
 	whattheduck.activate(context);
+
+	easycomment.activate(context);
+
 }
 
 // This method is called when your extension is deactivated
