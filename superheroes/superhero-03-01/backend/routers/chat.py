@@ -1,3 +1,4 @@
+from typing import List
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
@@ -122,7 +123,6 @@ async def send_message(message: Message):
 async def get_pin_message_by_id(id: str):
     try:
         exists, chat = db_helper.getPinnedMessages(id)
-        print(chat,"HERE")
         if not exists:
             raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -135,13 +135,16 @@ class PinMessageRequest(BaseModel):
     message: str
 
 @router.post("/pin/{id}")
-async def pin_message_by_id(id: str, body: PinMessageRequest):
+async def pin_messages_by_id(id: str, messages: List[str]):
     try:
-        # Use the message from the request body
-        chat = db_helper.addPinnedToChat(id, body.message)
-        if not chat:
-            raise HTTPException(status_code=404, detail="Chat not found")
-        return JSONResponse(content=chat['pinnedMessages'][-1], status_code=200)
+        pinned_messages = []
+        for message in messages:
+            chat = db_helper.addPinnedToChat(id, message)
+            if not chat:
+                raise HTTPException(status_code=404, detail="Chat not found")
+            pinned_messages.append(chat['pinnedMessages'][-1])
+
+        return JSONResponse(content=pinned_messages, status_code=200)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
