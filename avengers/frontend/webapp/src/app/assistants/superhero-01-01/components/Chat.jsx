@@ -23,7 +23,11 @@ export const Chatbot = () => {
       avatar: "",
       name: "ChatBot",
       role: "ai",
-      message: "Hello! How can I assist you today?",
+      message: {
+        type: "text",
+        value: "Hello! How can I assist you today?"
+      },
+      loading: false,
     },
   ]);
   const [input, setInput] = useState("");
@@ -64,13 +68,9 @@ export const Chatbot = () => {
     }
   };
 
-  const sendToBackend = async (payload) => {
+  const sendToBackend = async (payload, messageId) => {
     let response;
-    setIsLoading(true);
     try {
-
-      
-
       console.log(payload)
 
       if (payload.type === 'file'){
@@ -103,27 +103,31 @@ export const Chatbot = () => {
         console.log('Data submitted successfully:', response.data)
       }
       
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          avatar: "",
-          name: "ChatBot",
-          role: "ai",
-          message: JSON.stringify(response.data) || "Analysis complete.",
-        },
-      ]);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        if (newMessages.length > messageId) {
+
+          newMessages[messageId].message = {
+            type: "text",
+            value: JSON.stringify(response.data)
+          }
+          newMessages[messageId].loading = false;
+          return newMessages;
+        }
+      });
     } catch (error) {
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: prev.length + 1,
-          avatar: "",
-          name: "ChatBot",
-          role: "ai",
-          message: error.response.data.error,
-        },
-      ]);
+      const newMessage ={
+        type: "text",
+        value: error.response.data.error || "An error occurred. Please try again later."
+      }
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        if (newMessages.length > messageId) {
+          newMessages[messageId].message = newMessage;
+          newMessages[messageId].loading = false;
+          return newMessages;
+        }
+      });
     } finally {
       setIsLoading(false);
     }
@@ -146,14 +150,33 @@ export const Chatbot = () => {
         avatar: "",
         name: "User",
         role: "user",
-        message: input,
+        message: {
+          type: "text",
+          value: input,
+        },
+        loading: false,
+      },
+    ]);
+
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: prev.length + 1,
+        avatar: "",
+        name: "ChatBot",
+        role: "ai",
+        message: {
+          type: "text",
+          value: "Thinking...",
+        },
+        loading: true,
       },
     ]);
 
     sendToBackend({
       type : "code",
       value : input
-    });
+    }, messages.length+1);
 
     setInput("");
     formRef.current?.reset();
@@ -173,14 +196,31 @@ export const Chatbot = () => {
             avatar: "",
             name: "User",
             role: "user",
-            message: `File uploaded: ${file.name}`,
+            message: {
+              type: "text",
+              value: `File uploaded: ${file.name}`},
+          },
+        ]);
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: prev.length + 1,
+            avatar: "",
+            name: "ChatBot",
+            role: "ai",
+            message: {
+              type: "text",
+              value: "Thinking...",
+            },
+            loading: true,
           },
         ]);
 
         sendToBackend({
           type: "file",
           value: file
-        });
+        }, messages.length+1);
       };
       reader.readAsText(file);
     }
@@ -202,7 +242,7 @@ export const Chatbot = () => {
                   key={index} 
                   message={message} 
                   variant={variant} 
-                  isLoading={isLoading}
+                  isLoading={message.loading}
                 />
               );
             })}
