@@ -10,12 +10,12 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}/ai4sd-analysers",
-				"--extensionDevelopmentPath=${workspaceFolder}/sara"
+				"--extensionDevelopmentPath=${workspaceFolder}/ai4sd-chat-bots",
+				"--extensionDevelopmentPath=${workspaceFolder}/lavraai"
 			],
 			"outFiles": [
-				"${workspaceFolder}/ai4sd-analysers/out/**/*.js",
-				"${workspaceFolder}/sara/out/**/*.js"
+				"${workspaceFolder}/ai4sd-chat-bots/out/**/*.js",
+				"${workspaceFolder}/lavraai/out/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
 		}
