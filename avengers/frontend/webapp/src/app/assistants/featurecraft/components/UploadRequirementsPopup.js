@@ -9,18 +9,21 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
     const [editingIndex, setEditingIndex] = useState(null);
     const [editingValue, setEditingValue] = useState("");
     const [error, setError] = useState("");
-    const { handleSendPin, updatePinnedMessages } = useAssistPinSend();
+    const { handleSendPin, updatePinnedMessages, updatePinnedMessagesText } = useAssistPinSend();
 
 
     const handlePinMessage = async (array) => {
-        const response = await handleSendPin(array, conversationId);
-        if (response.status === 200) {
-            updatePinnedMessages(pinnedMessages, setPinnedMessages, response.data);
-        } else {
-            setError(response);
-            console.error(response); // TODO - handle
+        if (conversationId !== "") {
+            const response = await handleSendPin(array, conversationId);
+            if (response.status === 200) {
+                updatePinnedMessages(pinnedMessages, setPinnedMessages, response.data);
+            } else {
+                setError(response);
+                console.error(response); // TODO - handle
+            }
+            return;
         }
-
+        updatePinnedMessagesText(pinnedMessages, setPinnedMessages, array);
     };
 
 
@@ -86,7 +89,7 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
             <div className="bg-white w-3/5 h-auto max-h-[80%] rounded-2xl shadow-lg flex flex-col">
                 {/* Header with Close Button */}
                 <div className="flex justify-between items-center p-4 border-b">
-                    <h2 className="text-xl font-bold">Uploaded Strings</h2>
+                    <h2 className="text-xl font-bold">Upload Requirements</h2>
                     <button
                         onClick={onClose}
                         className="text-gray-500 hover:text-gray-800 text-2xl"

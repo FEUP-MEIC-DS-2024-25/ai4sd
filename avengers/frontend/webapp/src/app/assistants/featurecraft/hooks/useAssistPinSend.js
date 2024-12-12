@@ -18,9 +18,27 @@ export default function useAssistPinSend() {
             message: item.message
         }));
 
+        if (pinnedMessages === undefined) {
+            setPinnedMessages(newMessages);
+            return;
+        }
         // Add new messages to the existing messages array
         setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
     }
 
-    return { handleSendPin, updatePinnedMessages };
+    const updatePinnedMessagesText = async (pinnedMessages, setPinnedMessages, data) => {
+
+        const newMessages = data.map(item => ({
+            message: item
+        }));
+
+        if (pinnedMessages === undefined) {
+            setPinnedMessages(newMessages);
+            return;
+        }
+        // Add new messages to the existing messages array
+        setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
+    }
+
+    return { handleSendPin, updatePinnedMessages, updatePinnedMessagesText };
 }
