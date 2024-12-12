@@ -31,6 +31,17 @@ export default function UserStoryTable({
         setTempContent("");
     };
 
+    const handleDelete = (index) => {
+        setUserStories((prevStories) => {
+            const updatedStories = [...prevStories];
+            updatedStories.splice(index, 1);
+            return updatedStories.map((story, idx) => ({
+                ...story,
+                index: idx + 1
+            }));
+        });
+    };
+
     const handleLike = (index) => {
         const likeButton = document.querySelector(`.like[data-index="${index}"]`);
         const dislikeButton = document.querySelector(`.dislike[data-index="${index}"]`);
@@ -49,11 +60,6 @@ export default function UserStoryTable({
             }
     
             queryAdders("like", index);
-
-            // likeButton.classList.remove("filled");
-            // likeButton.classList.add("not-filled");
-            // likeButton.children[0].classList.remove("fas");
-            // likeButton.children[0].classList.add("far");
         } else {
             likeButton.classList.remove("filled");
             likeButton.classList.add("not-filled");
@@ -82,18 +88,13 @@ export default function UserStoryTable({
             }
     
             queryAdders("dislike", index);
-
-            // dislikeButton.classList.remove("filled");
-            // dislikeButton.classList.add("not-filled");
-            // dislikeButton.children[0].classList.remove("fas");
-            // dislikeButton.children[0].classList.add("far");
         } else {
             dislikeButton.classList.remove("filled");
             dislikeButton.classList.add("not-filled");
             dislikeButton.children[0].classList.remove("fas");
             dislikeButton.children[0].classList.add("far");
     
-            queryAdders(null, index); // Clear feedback for the story
+            queryAdders(null, index);
         }
     };
 
@@ -126,9 +127,7 @@ export default function UserStoryTable({
                                 <textarea
                                     className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] m-2 p-2 w-[100%] resize-none"
                                     value={tempContent}
-                                    onChange={(e) =>
-                                        setTempContent(e.target.value)
-                                    }
+                                    onChange={(e) => setTempContent(e.target.value)}
                                     rows={3}
                                 />
                             ) : (
@@ -138,19 +137,31 @@ export default function UserStoryTable({
                         <td className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
                             {editingStory === idx ? (
                                 <>
-                                    <button onClick={handleSaveEdit}>
+                                    <button 
+                                        className="hover:bg-[#2f2f2f] hover:text-[#e1e1e1] px-2 py-1 rounded mr-2"
+                                        onClick={handleSaveEdit}
+                                    >
                                         Save
                                     </button>
-                                    <button onClick={handleCancelEdit}>
+                                    <button 
+                                        className="hover:bg-[#2f2f2f] hover:text-[#e1e1e1] px-2 py-1 rounded"
+                                        onClick={handleCancelEdit}
+                                    >
                                         Cancel
                                     </button>
                                 </>
                             ) : (
                                 <>
-                                    <button onClick={() => handleEditClick(idx)}>
+                                    <button 
+                                        className="hover:bg-[#2f2f2f] hover:text-[#e1e1e1] px-2 py-1 rounded mr-2"
+                                        onClick={() => handleEditClick(idx)}
+                                    >
                                         Edit
                                     </button>
-                                    <button className="text-red-600 hover:text-red-800 ml-2">
+                                    <button 
+                                        className="text-red-600 hover:text-red-800 hover:bg-[#2f2f2f] px-2 py-1 rounded"
+                                        onClick={() => handleDelete(idx)}
+                                    >
                                         <i className="fas fa-trash"></i>
                                     </button>
                                 </>
