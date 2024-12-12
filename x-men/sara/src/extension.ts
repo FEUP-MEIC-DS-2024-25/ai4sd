@@ -11,7 +11,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "sara" is now active!');
 
-	const baseExt = vscode.extensions.getExtension("undefined_publisher.ai4sd")?.exports;
+	const baseExt = vscode.extensions.getExtension("undefined_publisher.ai4sd-analysers")?.exports;
 	if (!baseExt) {
 		throw new Error("Base AI4SD extension not found.");
 	}

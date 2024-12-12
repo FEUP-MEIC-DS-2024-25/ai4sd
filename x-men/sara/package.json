@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onCommand:ai4sd.wakeup"
+    "onCommand:ai4sd-analysers.wakeup"
   ],
   "main": "./out/extension.js",
   "contributes": {
