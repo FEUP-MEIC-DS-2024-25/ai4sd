@@ -15,7 +15,7 @@ model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 # 5. Users can customize their notification preferences.
 
 load_dotenv()
-api_key = os.getenv("API_KEY")
+api_key = os.getenv("API_KEY", None)
 
 genai.configure(api_key=api_key)
 
