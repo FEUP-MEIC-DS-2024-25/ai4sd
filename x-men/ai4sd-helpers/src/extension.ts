@@ -3,6 +3,10 @@
 import * as vscode from 'vscode';
 import * as whattheduck from './superheroes/whattheduck/src/extension.js';
 
+export interface AI4SDMenuOption extends vscode.QuickPickItem {
+	execute: Function
+}
+
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
@@ -10,6 +14,8 @@ export function activate(context: vscode.ExtensionContext) {
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ai4sd-helpers" is now active!');
+	const options:AI4SDMenuOption[] = [
+	  ];
 
 	// The command has been defined in the package.json file
 	// Now provide the implementation of the command with registerCommand
@@ -17,9 +23,6 @@ export function activate(context: vscode.ExtensionContext) {
 	const disposable = vscode.commands.registerCommand('ai4sd-helpers.call', async () => {
 		// The code you place here will be executed every time your command is executed
 		
-		const options: vscode.QuickPickItem[] = [
-			{ label: "Template", description: "Executes Template superhero" },
-		  ];
 	  
 		  // Show dropdown and await user's choice
 		  const selectedOption = await vscode.window.showQuickPick(options, {
@@ -29,22 +32,24 @@ export function activate(context: vscode.ExtensionContext) {
 	  
 		  // Import and execute different superheros based on selection
 		  if (selectedOption) {
-			switch (selectedOption.label) {
-			  case "Template":
-				// Import and execute Template
-				(await import('./superheroes/Template.js')).execute();
-				break;
-			  default:
-				vscode.window.showWarningMessage("Unknown option selected");
-			}
+			selectedOption.execute(context);
 		  } else {
 			vscode.window.showInformationMessage("No option selected");
 		  }
 	});
 
-	context.subscriptions.push(disposable);
+	const wakeUp = vscode.commands.registerCommand('ai4sd-helpers.wakeup', () => {});
 
-	whattheduck.activate(context);
+	const api = {
+		register(newOption: AI4SDMenuOption) {
+			options.push(newOption);
+		}
+	};
+
+	context.subscriptions.push(disposable);
+	context.subscriptions.push(wakeUp);
+	vscode.commands.executeCommand('ai4sd-helpers.wakeup');
+	return api;
 }
 
 // This method is called when your extension is deactivated

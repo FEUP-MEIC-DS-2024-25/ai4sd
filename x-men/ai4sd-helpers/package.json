@@ -9,15 +9,27 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "ai4sd-helpers.call",
         "title": "AI4SD Helpers: Ask for help"
+      },
+      {
+        "command": "ai4sd-helpers.wakeup",
+        "title": "Wake up assistants"
       }
     ],
+    "menus": {
+        "commandPalette": [
+            {
+                "command": "ai4sd-helpers.wakeup",
+                "when": "false"
+            }
+        ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
