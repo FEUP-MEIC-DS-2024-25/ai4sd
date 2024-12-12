@@ -56,15 +56,28 @@ const Assistant = () => {
     }, [currentIndex, versions]);
 
     useEffect(() => {
-        if (
-            versions.length === 0 ||
-            !versions[currentIndex] ||
-            !versions[currentIndex].user_stories
-        )
-            return;
-        const userStories =
-            versions[currentIndex].user_stories[userStoryIndex].user_stories;
-        setUserStories(JSON.parse(userStories));
+        if (versions.length === 0) return;
+        
+        try {
+            if (versions[currentIndex] && 
+                versions[currentIndex].user_stories && 
+                versions[currentIndex].user_stories[userStoryIndex]) {
+                    
+                const userStoriesStr = versions[currentIndex].user_stories[userStoryIndex].user_stories;
+                
+                if (typeof userStoriesStr === 'string') {
+                    setUserStories(JSON.parse(userStoriesStr));
+                } else {
+                    console.warn('User stories data is not in expected string format');
+                    setUserStories([]);
+                }
+            } else {
+                setUserStories([]);
+            }
+        } catch (error) {
+            console.error('Error processing user stories:', error);
+            setUserStories([]);
+        }
     }, [currentIndex, versions, userStoryIndex]);
 
     const fetchProjectContent = async (projectId) => {
