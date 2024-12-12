@@ -10,12 +10,12 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}/x-men/ai4sd-analysers",
-				"--extensionDevelopmentPath=${workspaceFolder}/x-men/sara"
+				"--extensionDevelopmentPath=${workspaceFolder}/ai4sd-analysers",
+				"--extensionDevelopmentPath=${workspaceFolder}/sara"
 			],
 			"outFiles": [
-				"${workspaceFolder}/x-men/ai4sd-analysers/out/**/*.js",
-				"${workspaceFolder}/x-men/sara/out/**/*.js"
+				"${workspaceFolder}/ai4sd-analysers/out/**/*.js",
+				"${workspaceFolder}/sara/out/**/*.js"
 			],
 			"preLaunchTask": "${defaultBuildTask}"
 		}
