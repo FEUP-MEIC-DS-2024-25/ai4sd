@@ -10,6 +10,8 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/app/components/ui/c
 import { Input } from "@/app/components/ui/input"
 import { ScrollArea } from "@/app/components/ui/scroll-area"
 import Previewer from "./Previewer"
+import { createPrompt, createResponse } from '../api/api';
+
 
 import { Send } from "lucide-react"
 
@@ -69,7 +71,7 @@ export const Chatbot = ({ chat, setChat }) => {
     )
   }
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
       const newMessage = { content: input, sender: "user" }
       const updatedChat = {
@@ -77,17 +79,23 @@ export const Chatbot = ({ chat, setChat }) => {
         messages: [...chat.messages, newMessage]
       }
       setChat(updatedChat)
-      const allMessages = [...chat.messages, { content: input }]
-        .map(msg => msg.content)
-        .join(' ');
-      convertRequirementToText(allMessages).then((response) => {
-        const botResponse = { content: response.toString(), sender: "bot" }
-        const chatWithBotResponse = {
-          ...updatedChat,
-          messages: [...updatedChat.messages, botResponse]
-        }
-        setChat(chatWithBotResponse)
-      })
+
+      // Call createPrompt API
+      const prompt = await createPrompt(chat.id, input);
+      const promptId = prompt.id;
+
+      // Mock API call to get AI response
+      const aiResponseText = await convertRequirementToText(input);
+
+      // Call createResponse API
+      const response = await createResponse(promptId, aiResponseText);
+
+      const botResponse = { content: response.ai_response, sender: "bot" }
+      const chatWithBotResponse = {
+        ...updatedChat,
+        messages: [...updatedChat.messages, botResponse]
+      }
+      setChat(chatWithBotResponse)
 
       setInput("")
     }
