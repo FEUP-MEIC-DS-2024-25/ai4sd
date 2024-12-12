@@ -1,14 +1,41 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, firestore
+import os
+import gemini
 
-cred = credentials.Certificate("superhero-01-03.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+def initialize_firebase():
+    """Initializes Firebase using Application Default Credentials (ADC)."""
+    try:
+        # Use ADC by not passing explicit credentials.
+        cred = credentials.ApplicationDefault()
+        firebase_admin.initialize_app(cred)
+        print("Firebase initialized using Application Default Credentials")
+        return firestore.client()
+    except Exception as e:
+        print(f"Error initializing Firebase using ADC: {e}")
+        # Fallback for local development, trying to read credentials from GOOGLE_APPLICATION_CREDENTIALS
+        if "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
+            try:
+                 cred_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+                 if os.path.exists(cred_path):
+                    cred = credentials.Certificate(cred_path)
+                    firebase_admin.initialize_app(cred)
+                    print("Firebase initialized using Service Account from GOOGLE_APPLICATION_CREDENTIALS.")
+                    return firestore.client()
+                 else:
+                     print("Error: the file specified in GOOGLE_APPLICATION_CREDENTIALS doesn't exist")
+            except Exception as e:
+                    print(f"Error initializing Firebase from GOOGLE_APPLICATION_CREDENTIALS: {e}")
+        return None
+
+
+# No need to provide project_id or secret_id if using ADC
+db = initialize_firebase()
 
 class Response(BaseModel):
     id: str
@@ -61,6 +88,9 @@ class Chat(BaseModel):
         data["prompts"] = [FirestoreRef.from_firestore(ref) for ref in data.get("prompts", [])]
         data["created_at"] = data["created_at"].isoformat()  
         return cls(**data)
+    
+class RequirementRequest(BaseModel):
+    requirement: str
 
 app = FastAPI()
 
@@ -111,10 +141,17 @@ async def create_chat(chat: Chat):
 
 
 @app.post("/create_prompt")
-async def create_prompt(prompt: Prompt):
+async def create_prompt(chat_id: str, user_input: str):
     """
     Endpoint to create a new prompt in Firestore.
     """
+    prompt = Prompt(
+        id=chat_id,
+        created_at=datetime.now(),
+        response=None,
+        user_input=user_input
+    )
+
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("prompts")
 
@@ -369,3 +406,9 @@ async def delete_response(response_id: str):
             raise HTTPException(status_code=404, detail=f"Response with ID '{response_id}' not found")
     except Exception as e:
         return {"error": f"An error occurred while deleting the response: {str(e)}"}
+
+
+@app.post("/convert")
+async def convert_requirement(request: RequirementRequest):
+    gherkin_output = gemini.convert_to_gherkin(request.requirement)
+    return {"gherkin": gherkin_output}
