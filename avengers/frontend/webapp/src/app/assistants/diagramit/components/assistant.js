@@ -36,19 +36,19 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
             };
             setMessages((prevMessages) => [...prevMessages, newMsg]);
 
-            /*sendMessage(newMessage, conversationId).then((response) => {
+            sendMessage(newMessage, conversationId).then((response) => {
                 handleAiResponse(response);
             }).catch((error) => {
                 console.error(error);
-            });*/
+            });
 
             //Mock ai response
-            let response = {
+            /*let response = {
                 conversationId: "123",
                 imageUrl: "https://cdn.prod.website-files.com/6308b9e1771b56be92fe7491/641873c631076ea3b4f46f1f_uml-class-diagram.png"
             };
-            handleAiResponse(response);
-            
+            handleAiResponse(response);*/
+
             setNewMessage(""); // Clear input field
         }
     };
@@ -61,10 +61,15 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
         // Update messages with AI response
         let aiResponse = {
             userMsg: false,
-            body: response.imageUrl,
+            body: extractImageUrl(response.imageUrl),
             isDeleted: false,
         };
         setMessages((prevMessages) => [...prevMessages, aiResponse]);
+    };
+
+    const extractImageUrl = (imageUrl) => {
+        let newUrl = imageUrl.replace("https://plantuml.github.io/plantuml-core/png.html?", "https://www.plantuml.com/plantuml/png/");
+        return newUrl;
     };
 
     return (
