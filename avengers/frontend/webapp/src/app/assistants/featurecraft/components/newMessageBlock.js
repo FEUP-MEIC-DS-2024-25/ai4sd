@@ -21,14 +21,12 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
             try {
                 onSendMessage(newMessage);
                 setMessage("");
-                
                 // Reset the height of the textarea
                 const textarea = document.querySelector('textarea');
                 if (textarea) {
                     textarea.style.height = 'auto';
                 }
-                
-                const response = await axios.post("http://localhost:8000/chat", newMessage);
+                const response = await axios.post("http://localhost:8080/chat", newMessage);
                 onReceiveMessage(response);
                 
             } catch (error) {
@@ -60,5 +58,5 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
                 </div>
             </div>
         </div>
-    )
+    );
 }
