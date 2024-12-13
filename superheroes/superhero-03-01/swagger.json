@@ -320,6 +320,83 @@
           }
         }
       }
+    },
+    "/chat/pin/delete": {
+      "delete": {
+        "summary": "Delete a pinned message by ID",
+        "description": "Deletes a pinned message from a chat by the provided chat ID and pinned message ID.",
+        "operationId": "deletePinnedMessageById",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "The ID of the chat."
+                  },
+                  "pinnedMessageId": {
+                    "type": "string",
+                    "description": "The ID of the pinned message to delete."
+                  }
+                },
+                "required": ["chatId", "pinnedMessageId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pinned message deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Pinned message deleted successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pinned message not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Pinned message does not exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {

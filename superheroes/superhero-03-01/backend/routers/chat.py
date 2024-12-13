@@ -146,6 +146,20 @@ async def pin_message_by_id(id: str, body: PinMessageRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
+class DeletePinnedMessageRequest(BaseModel):
+    chatId: str
+    pinnedMessageId: str
+
+@router.delete("/pin/delete")
+async def delete_pinned_message_by_id(body: DeletePinnedMessageRequest):
+    try:
+        success = db_helper.deletePinnedMessage(body.chatId, body.pinnedMessageId)
+        if not success:
+            return JSONResponse(content={"detail": "Pinned message not found"}, status_code=404)
+        return JSONResponse(content={"message": "Pinned message deleted successfully."}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
 @router.get("/{id}")
 async def get_message_by_id(id: str):
     try:
