@@ -20,8 +20,8 @@ steps:
       - "-c"
       - |
           echo "Fetching the latest merged PR ID..."
-          PR_ID=$(gh pr list --repo FEUP-MEIC-DS-2024-25/ai4sd --state closed --base main --json number,mergedAt --jq '.[] | select(.mergedAt != null) | .number' | head -n1)
-          echo "PR_ID=${PR_ID}"
+          _PR_ID=$(gh pr list --repo FEUP-MEIC-DS-2024-25/ai4sd --state closed --base main --json number,mergedAt --jq '.[] | select(.mergedAt != null) | .number' | head -n1)
+          echo "PR_ID=${_PR_ID}"
 
   # Step 2: Fetch and activate the service account key
   - id: "Fetch and Activate Service Account Key"
@@ -100,40 +100,40 @@ steps:
     args:
       - "-c"
       - |
-          echo "Fetching changed superhero directories from the pull request..."
-          changed_dirs=$(gh pr view $PR_ID --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
-          
-          echo "PR_ID: $PR_ID"
-          echo "Changed superhero directories: $changed_dirs"
+        echo "Fetching changed superhero directories from the pull request..."
+        changed_dirs=$(gh pr view ${_PR_ID} --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+        
+        echo "_PR_ID: ${_PR_ID}"
+        echo "Changed superhero directories: $changed_dirs"
 
-          for dir in $changed_dirs; do
-            hero_name=$(basename $dir)
-            dockerfile="${dir}/Dockerfile"
-            image="gcr.io/${_PROJECT_ID}/${hero_name}"
-            image_with_build_id="${image}-${BUILD_ID}"
+        for dir in $changed_dirs; do
+          hero_name=$(basename $dir)
+          dockerfile="${dir}/Dockerfile"
+          image="gcr.io/${_PROJECT_ID}/${hero_name}"
+          image_with_build_id="${image}-${BUILD_ID}"
 
-            if [ -f "${dockerfile}" ]; then
-              echo "Fetching secret for ${hero_name}..."
-              secret_file="/tmp/${hero_name}_secret"
+          if [ -f "${dockerfile}" ]; then
+            echo "Fetching secret for ${hero_name}..."
+            secret_file="/tmp/${hero_name}_secret"
 
-              gcloud secrets versions access latest \
-                --secret="${hero_name}-secret" \
-                --project="${_PROJECT_ID}" > "${secret_file}"
+            gcloud secrets versions access latest \
+              --secret="${hero_name}-secret" \
+              --project="${_PROJECT_ID}" > "${secret_file}"
 
-              echo "Building image for ${hero_name}..."
-              if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
-                echo "Pushing image for ${hero_name}..."
-                docker push "${image_with_build_id}" || echo "Failed to push image for ${hero_name}. Skipping."
-              else
-                echo "Failed to build image for ${hero_name}. Skipping."
-              fi
-              
-              rm -rf "${secret_file}"
+            echo "Building image for ${hero_name}..."
+            if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
+              echo "Pushing image for ${hero_name}..."
+              docker push "${image_with_build_id}" || echo "Failed to push image for ${hero_name}. Skipping."
             else
-              echo "No Dockerfile found for ${hero_name}, skipping build."
-              sleep 10  # Wait for GCR image propagation
+              echo "Failed to build image for ${hero_name}. Skipping."
             fi
-          done
+            
+            rm -rf "${secret_file}"
+          else
+            echo "No Dockerfile found for ${hero_name}, skipping build."
+            sleep 10  # Wait for GCR image propagation
+          fi
+        done
 
   # Step 10: Build and Push Docker Images for Jarvis and Strange
   - id: "Build and Push Jarvis and Strange"
