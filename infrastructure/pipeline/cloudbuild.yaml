@@ -104,6 +104,9 @@ steps:
     - |
         echo "Fetching changed superhero directories from the pull request..."
         changed_dirs=$(gh pr view $PR_ID --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+        
+        echo "PR_ID: $PR_ID"
+        echo "Changed superhero directories: $changed_dirs"
 
         for dir in $changed_dirs; do
           hero_name=$(basename $dir)
