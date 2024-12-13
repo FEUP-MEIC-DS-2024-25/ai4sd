@@ -9,6 +9,7 @@ substitutions:
   _REGION: "europe-west1"
   _JARVIS_APP_ID: "1063506"
   _GITHUB_ORG: "FEUP-MEIC-DS-2024-25"
+  _PR_ID: ""
 
 steps:
   # Step 1: Fetch the latest merged PR number and set it as an environment variable
@@ -20,8 +21,7 @@ steps:
       - |
           echo "Fetching the latest merged PR ID..."
           PR_ID=$(gh pr list --repo FEUP-MEIC-DS-2024-25/ai4sd --state closed --base main --json number,mergedAt --jq '.[] | select(.mergedAt != null) | .number' | head -n1)
-          echo "${PR_ID}" > /tmp/pr_id.txt
-          echo "PR_ID set to: ${PR_ID}"
+          echo "PR_ID=${PR_ID}"
 
   # Step 2: Fetch and activate the service account key
   - id: "Fetch and Activate Service Account Key"
@@ -97,8 +97,6 @@ steps:
   - id: "Build and Push Docker Images"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
-    env:
-      - "PR_ID=$(cat /tmp/pr_id.txt)"  # Set PR_ID from the file
     args:
       - "-c"
       - |
