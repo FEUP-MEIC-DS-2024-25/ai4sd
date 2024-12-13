@@ -5,8 +5,36 @@ const fetch = require('node-fetch');
 const app = express();
 const port = 3001;
 
-// Use the API key from environment variables
-const API_KEY = process.env.GEMINI_API_KEY;
+/*-------------GET API KEY FORM FIRESTORE-------------*/
+const admin = require('firebase-admin');
+const serviceAccount = require('../serviceAccount.json');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+});
+
+const firestoreDatabase = admin.firestore();
+
+let API_KEY;
+
+const fetchApiKey = async () => {
+    try {
+        const doc = await firestoreDatabase.collection('superhero-06-04').doc('secrets').get();
+        if (!doc.exists) {
+            console.error('No secrets found in Firestore!');
+            process.exit(1);
+        }
+        API_KEY = doc.data().key;
+        console.log('API Key loaded successfully.');
+    } catch (error) {
+        console.error('Error fetching API key from Firestore:', error);
+        process.exit(1);
+    }
+};
+
+// Fetch API Key on server startup
+fetchApiKey();
+/*----------------------------------------------------*/
 
 //app.use(cors());
 //app.use(cors({ origin: 'http://localhost:3000/assistants/patternpartner' }));
