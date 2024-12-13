@@ -1,18 +1,22 @@
 "use client"
 
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react'
 
 import { Avatar, AvatarFallback } from "@/app/components/ui/avatar"
 import { Button } from "@/app/components/ui/button"
-import { Card, CardContent, CardFooter } from "@/app/components/ui/card"
+import { Card, CardHeader, CardContent, CardFooter } from "@/app/components/ui/card"
 import { Input } from "@/app/components/ui/input"
 import { ScrollArea } from "@/app/components/ui/scroll-area"
 import Previewer from "./Previewer"
+import { createPrompt, createResponse, convertRequirementToText } from '@/app/assistants/req2test/api/api'
 
 import { Send } from "lucide-react"
 
 import logo from '../assets/logo.png'
+import logoName from '../assets/logoName.png'
+import story2TestLogo from "../assets/story2testLogoWhite.png"
 
 const BotAvatar = ({ className }) => (
   <Avatar className='border border-neutral-700'>
@@ -32,119 +36,75 @@ const UserAvatar = () => (
   </Avatar>
 );
 
-export const Chatbot = () => {
-  const [chats, setChats] = useState([
-    { id: 1, name: "Chat 1", messages: [{ content: "Welcome! I am here to help you convert your requirements into Gherkin tests. How can I assist you today?", sender: "bot" }] },
-  ])
-  const [selectedChat, setSelectedChat] = useState(chats[0])
+const Story2TestLink = () => (
+  <Link href="/assistants/story2test" title='Try Story2Test'>
+    <Avatar className='border border-neutral-700 h-14 w-14'>
+        <AvatarFallback className="!bg-black hover:!bg-indigo-600 transition-all duration-300 ease-in-out">
+            <div className={"rounded-full p-1.5 "}>
+                <Image src={story2TestLogo} alt='Story2Test Logo'/>
+            </div>
+        </AvatarFallback>
+    </Avatar>
+  </Link>
+);
+
+export const Chatbot = ({ chat, setChat }) => {
   const [input, setInput] = useState("")
-  const [isAuthenticated, setIsAuthenticated] = useState(false)
   const messagesEndRef = useRef(null)
-  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
-    setIsClient(true);
-    const savedChats = localStorage.getItem('chats')
-    if (savedChats) {
-      const parsedChats = JSON.parse(savedChats)
-      setChats(parsedChats)
-      const savedSelectedChat = localStorage.getItem('selectedChat')
-      setSelectedChat(savedSelectedChat ? JSON.parse(savedSelectedChat) : parsedChats[0])
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isClient) {
-      localStorage.setItem('chats', JSON.stringify(chats))
-      localStorage.setItem('selectedChat', JSON.stringify(selectedChat))
-
-    }
-  }, [chats, selectedChat, isClient])
+    scrollToBottom()
+  }, [chat.messages])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-  useEffect(() => {
-    scrollToBottom()
-  }, [selectedChat.messages])
-
-  // Mock API call
-  const convertRequirementToText = async (req) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(`Feature: ${req}`)
-        }, 1000)
-        }
-    )
-}
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
       const newMessage = { content: input, sender: "user" }
       const updatedChat = {
-        ...selectedChat,
-        messages: [...selectedChat.messages, newMessage]
+        ...chat,
+        messages: [...chat.messages, newMessage]
       }
-      setSelectedChat(updatedChat)
-      setChats(chats.map(chat => chat.id === selectedChat.id ? updatedChat : chat))
-      const allMessages = [...selectedChat.messages, { content: input }]
-        .map(msg => msg.content)
-        .join(' ');
-      convertRequirementToText(allMessages).then((response) => {
-        const botResponse = { content: response.toString(), sender: "bot" }
-        const chatWithBotResponse = {
-          ...updatedChat,
-          messages: [...updatedChat.messages, botResponse]
-        }
-        setSelectedChat(chatWithBotResponse)
-        setChats(chats.map(chat => chat.id === selectedChat.id ? chatWithBotResponse : chat))
-      })
+      setChat(updatedChat)
+
+      // Call createPrompt API
+      //const prompt = await createPrompt(chat.id, input);
+      //const promptId = prompt.id;
+
+      // API call to get AI response
+      const aiResponseText = await convertRequirementToText(input);
+
+      // Call createResponse API
+      //const response = await createResponse(promptId, aiResponseText);
+
+      const botResponse = { content: aiResponseText, sender: "bot" }
+      const chatWithBotResponse = {
+        ...updatedChat,
+        messages: [...updatedChat.messages, botResponse]
+      }
+      setChat(chatWithBotResponse)
 
       setInput("")
     }
   }
 
-  const toggleAuth = () => {
-    setIsAuthenticated(!isAuthenticated)
-  }
-
-  const startNewChat = () => {
-    const newChatId = chats.length > 0 ? Math.max(...chats.map(chat => chat.id)) + 1 : 1;
-    const newChat = {
-      id: newChatId,
-      name: `Chat ${newChatId}`,
-      messages: [{ content: "Welcome! I am here to help you convert your requirements into Gherkin tests. How can I assist you today?", sender: "bot" }]
-    }
-    setChats([...chats, newChat])
-    setSelectedChat(newChat)
-  }
-
-
-  const setChatName = (chatId, newName) => {
-    const updatedChats = chats.map(chat => chat.id === chatId ? { ...chat, name: newName } : chat)
-    setChats(updatedChats)
-    if (selectedChat.id === chatId) {
-      setSelectedChat({ ...selectedChat, name: newName })
-    }
-  }
-
-  const deleteChat = (chatId) => {
-    const updatedChats = chats.filter(chat => chat.id !== chatId)
-    setChats(updatedChats)
-    if (selectedChat.id === chatId) {
-      setSelectedChat(updatedChats[0] || { id: 0, name: '', messages: [] })
-    }
-  }
-
-  
   return (
     <div className="flex bg-white dark:bg-neutral-950">
-
-      <Card className="flex flex-col w-full justify-between m-4">
+      <Card className="flex flex-col w-full justify-between">
+        <CardHeader className="flex flex-row justify-between">
+          <div>
+            <div className="w-1/5 flex justify-center p-2.5 rounded-md bg-black">
+              <Image src={logoName} alt='Req2Test Logo'/>
+            </div>
+            <h2 className="pl-2 text-xl font-medium text-neutral-900 dark:text-white">{chat.name}</h2>
+          </div>
+           <Story2TestLink/>
+        </CardHeader>
         <CardContent className="!p-3 md:p-6 mt-4">
-          <ScrollArea className="h-[calc(100vh-180px)]">
-            {selectedChat.messages.map((message, index) => (
+          <ScrollArea className="h-[calc(100vh-320px)]">
+            {chat.messages.map((message, index) => (
               <div key={index} className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'} p-2 md:p-4 mb-4`}>
                 <div className={`flex items-end ${message.sender === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
                   {message.sender === 'bot' ? <BotAvatar className="w-8 h-8" /> : <UserAvatar />}
@@ -178,4 +138,3 @@ export const Chatbot = () => {
     </div>
   )
 }
-

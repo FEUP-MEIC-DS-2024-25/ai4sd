@@ -59,11 +59,11 @@ class MyAuthenticationForm(forms.Form):
 class SparkProjectForm(forms.ModelForm):
     class Meta:
         model = SparkProject
-        fields = ['name', 'description', 'github_project_link', 'miro_board_link']
+        fields = ['name', 'description', 'github_project_link', 'miro_board_id']
 
         widgest = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
             'description': forms.Textarea(attrs={'class': 'form-control'}),
             'github_project_link': forms.URLInput(attrs={'class': 'form-control'}),
-            'miro_board_link': forms.URLInput(attrs={'class': 'form-control'}),
+            'miro_board_id': forms.URLInput(attrs={'class': 'form-control'}),
         }
