@@ -12,30 +12,18 @@ substitutions:
   _PR_ID: ""
 
 steps:
-
-  # Step 0: Install GitHub CLI
-  - id: "Install GitHub CLI"
+  # Step 1: Fetch the latest updated merged PR number
+  - id: "Fetch Last Updated Merged PR"
     name: "gcr.io/cloud-builders/curl"
     entrypoint: "bash"
     args:
       - "-c"
       - |
-          echo "Installing GitHub CLI..."
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-          apt-get update && apt-get install -y gh
-
-  # Step 1: Fetch the latest merged PR number and set it as an environment variable
-  - id: "Fetch PR ID"
-    name: "gcr.io/cloud-builders/gcloud"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-          echo "Fetching the latest merged PR ID..."
-          _PR_ID=$(gh pr list --repo FEUP-MEIC-DS-2024-25/ai4sd --state closed --base main --json number,mergedAt --jq '.[] | select(.mergedAt != null) | .number' | head -n1)
+          echo "Fetching the last updated merged PR ID..."
+          _PR_ID=$(curl -s \
+                  "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
+                  jq -r '[.[] | select(.merged_at != null)] | first | .number')
           echo "PR_ID=${_PR_ID}"
-
   # Step 2: Fetch and activate the service account key
   - id: "Fetch and Activate Service Account Key"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
