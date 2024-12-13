@@ -5,6 +5,7 @@ import Header from "./header";
 import UserMessage from "./userMessage";
 import MessageInput from "./messageInput";
 import { sendMessage } from "../api/api";
+import AiMessage from "./aiMessage";
 
 export default function Assistant({ messages: initialMessages, title = "DIAGRAMIT", prompt = "Create a UML class diagram" }) {
     const [messages, setMessages] = useState(initialMessages || []); // Track messages state
@@ -40,13 +41,30 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
             }).catch((error) => {
                 console.error(error);
             });*/
+
+            //Mock ai response
+            let response = {
+                conversationId: "123",
+                imageUrl: "https://cdn.prod.website-files.com/6308b9e1771b56be92fe7491/641873c631076ea3b4f46f1f_uml-class-diagram.png"
+            };
+            handleAiResponse(response);
+            
             setNewMessage(""); // Clear input field
         }
     };
 
     const handleAiResponse = (response) => {
         // Update conversation ID if null
+        if (!conversationId) {
+            setConversationId(response.conversationId);
+        }
         // Update messages with AI response
+        let aiResponse = {
+            userMsg: false,
+            body: response.imageUrl,
+            isDeleted: false,
+        };
+        setMessages((prevMessages) => [...prevMessages, aiResponse]);
     };
 
     return (
@@ -63,7 +81,7 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
                         message.userMsg ? (
                             <UserMessage key={index} message={message} />
                         ) : (
-                            <p key={`assistant-${index}`}>Assistant</p>
+                            <AiMessage key={index} message={message} />
                         )
                     )}
                 </ul>
