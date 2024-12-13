@@ -12,6 +12,9 @@ async function getSelectedServiceName() : Promise<string> {
     { label: "Analyse Issues", description: "Analysis based on Repository's Issues" },
     { label: "Analyse User Stories", description: "Analysis based on Repository's User Stories" },
     { label: "Analyse Commits", description: "Analysis based on Repository's commits" },
+    { label: "Analyse Commit Sizes", description: "Analysis based on Repository's commit sizes" },
+    { label: "Analyse Contributor Activity", description: "Analysis based on Repository's contributor activity" },
+    { label: "Analyse Architetural Trends", description: "Analysis based on Repository's architetural trends" }
     ];
   
     // Show dropdown and await user's choice
@@ -23,13 +26,19 @@ async function getSelectedServiceName() : Promise<string> {
     if (selectedOption) {
       switch (selectedOption.label) {
         case "Full Analysis":
-          return "analyze_repo";
+          return "analyze_full_repo";
         case "Analyse Issues":
           return "analyze_repo_issues";
         case "Analyse User Stories":
           return "analyze_user_stories";
         case "Analyse Commits":
-          return "analyze_commits";
+          return "analyze_commit";
+        case "Analyse Commit Sizes":
+          return "analyze_commit_sizes";
+        case "Analyse Contributor Activity":
+          return "analyze_contributor_activity";
+        case "Analyse Architetural Trends":
+          return "analyze_architeture_trends";
         default:
           vscode.window.showWarningMessage("Unknown analysis' type option selected");
           return "";
@@ -50,10 +59,17 @@ export async function execute(context: vscode.ExtensionContext) {
     if (serviceName === "" || repoOwner === "" || repoName === "") {
       return;
     }
+
+    const panel = vscode.window.createWebviewPanel(
+      'markdown.preview',
+      'ArchiDetect Information',
+      vscode.ViewColumn.Two,
+      { enableScripts: true }
+    );
   
     try {
       // Fetch GET request
-      // const apiResponse = await fetch(`https://superhero-06-01-150699885662.europe-west1.run.app/api/${serviceName}/${repoOwner}/${repoName}`);
+      const apiResponse = await fetch(`https://superhero-06-01-150699885662.europe-west1.run.app/api/${serviceName}/${repoOwner}/${repoName}`);
       
       // if (!apiResponse.ok) {
       //   throw new Error('Failed to fetch API response: ' + apiResponse.statusText);
@@ -62,92 +78,99 @@ export async function execute(context: vscode.ExtensionContext) {
       // console.log('GET response data:', apiData);
 
       //stub
-      const apiResponse = 
-      `{
-        "repositoryAnalysis": {
-          "repoName": "SampleRepo",
-          "lastCommitHash": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
-          "analysisDate": "2024-12-04T14:00:00Z",
-          "predictedDesignPatterns": [
-            {
-              "patternName": "Singleton",
-              "confidence": 0.92,
-              "evidence": [
-                {
-                  "type": "file",
-                  "path": "src/main/java/com/example/ConfigManager.java",
-                  "reason": "Contains a private constructor and a static instance method, typical of Singleton pattern."
-                },
-                {
-                  "type": "commit",
-                  "path": "commit_hash_12345",
-                  "reason": "Commit message mentions 'refactored to singleton for global config access'."
-                }
-              ]
-            },
-            {
-              "patternName": "Factory Method",
-              "confidence": 0.87,
-              "evidence": [
-                {
-                  "type": "file",
-                  "path": "src/main/java/com/example/shapes/ShapeFactory.java",
-                  "reason": "Defines a method returning different Shape subclasses based on input type."
-                },
-                {
-                  "type": "branch",
-                  "path": "feature/shape-factory",
-                  "reason": "Branch name explicitly refers to 'shape-factory', indicating development focus on this pattern."
-                }
-              ]
-            }
-          ],
-          "unusualPatterns": [
-            {
-              "description": "Custom variation of Singleton with thread-local storage.",
-              "confidence": 0.78,
-              "evidence": [
-                {
-                  "type": "file",
-                  "path": "src/main/java/com/example/ThreadLocalConfigManager.java",
-                  "reason": "Uses thread-local variables to implement instance storage, diverging from traditional Singleton."
-                }
-              ]
-            },
-            {
-              "description": "Potential anti-pattern: Overuse of static methods.",
-              "confidence": 0.65,
-              "evidence": [
-                {
-                  "type": "file",
-                  "path": "src/main/java/com/example/Utility.java",
-                  "reason": "Class consists entirely of static methods, which may lead to tight coupling."
-                }
-              ]
-            }
-          ]
-        },
-        "meta": {
-          "analyzedCommits": 325,
-          "analyzedBranches": 12,
-          "linesOfCode": 48237,
-          "toolVersion": "1.0.0"
-        }
-      }`;
+      //const apiResponse = 
+      //`{
+      //  "repositoryAnalysis": {
+      //    "repoName": "SampleRepo",
+      //    "lastCommitHash": "a1b2c3d4e5f6g7h8i9j0k1l2m3n4o5p6",
+      //    "analysisDate": "2024-12-04T14:00:00Z",
+      //    "predictedDesignPatterns": [
+      //      {
+      //        "patternName": "Singleton",
+      //        "confidence": 0.92,
+      //        "evidence": [
+      //          {
+      //            "type": "file",
+      //            "path": "src/main/java/com/example/ConfigManager.java",
+      //            "reason": "Contains a private constructor and a static instance method, typical of Singleton pattern."
+      //          },
+      //          {
+      //            "type": "commit",
+      //            "path": "commit_hash_12345",
+      //            "reason": "Commit message mentions 'refactored to singleton for global config access'."
+      //          }
+      //        ]
+      //      },
+      //      {
+      //        "patternName": "Factory Method",
+      //        "confidence": 0.87,
+      //        "evidence": [
+      //          {
+      //            "type": "file",
+      //            "path": "src/main/java/com/example/shapes/ShapeFactory.java",
+      //            "reason": "Defines a method returning different Shape subclasses based on input type."
+      //          },
+      //          {
+      //            "type": "branch",
+      //            "path": "feature/shape-factory",
+      //            "reason": "Branch name explicitly refers to 'shape-factory', indicating development focus on this pattern."
+      //          }
+      //        ]
+      //      }
+      //    ],
+      //    "unusualPatterns": [
+      //      {
+      //        "description": "Custom variation of Singleton with thread-local storage.",
+      //        "confidence": 0.78,
+      //        "evidence": [
+      //          {
+      //            "type": "file",
+      //            "path": "src/main/java/com/example/ThreadLocalConfigManager.java",
+      //            "reason": "Uses thread-local variables to implement instance storage, diverging from traditional Singleton."
+      //          }
+      //        ]
+      //      },
+      //      {
+      //        "description": "Potential anti-pattern: Overuse of static methods.",
+      //        "confidence": 0.65,
+      //        "evidence": [
+      //          {
+      //            "type": "file",
+      //            "path": "src/main/java/com/example/Utility.java",
+      //            "reason": "Class consists entirely of static methods, which may lead to tight coupling."
+      //          }
+      //        ]
+      //      }
+      //    ]
+      //  },
+      //  "meta": {
+      //    "analyzedCommits": 325,
+      //    "analyzedBranches": 12,
+      //    "linesOfCode": 48237,
+      //    "toolVersion": "1.0.0"
+      //  }
+      //}`;
+
+      let apiString = await apiResponse.text();
+
+      if (!apiResponse.ok){
+        const errorjson = JSON.parse(apiString);
+        vscode.window.showErrorMessage(errorjson.error);
+        return;
+      }
+
+      console.log('GET response full data:', apiString);
+      apiString = apiString.substring(10, apiString.length - 8);
+      apiString = apiString.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\/g, '');
+      console.log('GET response data:', apiString);
       
-      const jsonData : analysisJson.AnalysisJson = JSON.parse(apiResponse);
+      const jsonData : analysisJson.AnalysisJson = JSON.parse(apiString);
+      console.log("JSON: ", jsonData);
       const markdownData = analysisJson.transformToMarkdown(jsonData);
       
       // Convert Markdown to HTML using Showdown.js
       const converter = new showdown.Converter();
       const responseContent = converter.makeHtml(markdownData);
-
-      const panel = vscode.window.createWebviewPanel(
-        'markdown.preview',
-        'ArchiDetect Information',
-        vscode.ViewColumn.Two,
-        { enableScripts: true }
-      );
 
       // Generate HTML with API data included
       // const apiDataHtml = converter.makeHtml(JSON.stringify(apiData, null, 2).replace(/</g, '&lt;')
