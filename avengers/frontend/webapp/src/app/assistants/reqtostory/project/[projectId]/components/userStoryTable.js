@@ -31,6 +31,17 @@ export default function UserStoryTable({
         setTempContent("");
     };
 
+    const handleDelete = (index) => {
+        setUserStories((prevStories) => {
+            const updatedStories = [...prevStories];
+            updatedStories.splice(index, 1);
+            return updatedStories.map((story, idx) => ({
+                ...story,
+                index: idx + 1
+            }));
+        });
+    };
+
     const handleLike = (index) => {
         const button = document.querySelector(`.like[data-index="${index}"]`);
         const isCurrentlyLiked = button.getAttribute('data-filled') === 'true';
@@ -129,7 +140,10 @@ export default function UserStoryTable({
                                     >
                                         <Pencil size={18} />
                                     </button>
-                                    <button className="text-red-600 hover:text-red-800 ml-2 p-1">
+                                    <button 
+                                        className="text-red-600 hover:text-red-800 ml-2 p-1"
+                                        onClick={() => handleDelete(idx)}
+                                    >
                                         <Trash2 size={18} />
                                     </button>
                                 </>
