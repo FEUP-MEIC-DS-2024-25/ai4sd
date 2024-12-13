@@ -4,10 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import Header from "./header";
 import UserMessage from "./userMessage";
 import MessageInput from "./messageInput";
+import { sendMessage } from "../api/api";
 
 export default function Assistant({ messages: initialMessages, title = "DIAGRAMIT", prompt = "Create a UML class diagram" }) {
     const [messages, setMessages] = useState(initialMessages || []); // Track messages state
     const [newMessage, setNewMessage] = useState(""); // Track new message input
+    const [conversationId, setConversationId] = useState(null); // Track conversation ID
     const chatEndRef = useRef(null);
 
     // Automatically scroll to the bottom when messages change
@@ -32,8 +34,19 @@ export default function Assistant({ messages: initialMessages, title = "DIAGRAMI
                 isDeleted: false,
             };
             setMessages((prevMessages) => [...prevMessages, newMsg]);
+
+            /*sendMessage(newMessage, conversationId).then((response) => {
+                handleAiResponse(response);
+            }).catch((error) => {
+                console.error(error);
+            });*/
             setNewMessage(""); // Clear input field
         }
+    };
+
+    const handleAiResponse = (response) => {
+        // Update conversation ID if null
+        // Update messages with AI response
     };
 
     return (
