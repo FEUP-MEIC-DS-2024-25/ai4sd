@@ -33,12 +33,16 @@ export default function Interactor() {
     }
 
 
-        useEffect(() => {
+    useEffect(() => {
         getChats().then((data) => {
             setAssistHistory(prepareHistory(data));
-    
-            const chat = data.find((chat) => chat.id === id);
-            setChat(chat);
+
+            const chatObj = data.find((chat) => chat.id === id);
+            setChat(chatObj);
+
+            if (!chat) // If the chat is not found, set the chat to the first chat
+                setChat(data[0]);
+
             setChatLoaded(true);
         });
     }, [id]);
@@ -47,10 +51,10 @@ export default function Interactor() {
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
-            <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
+            <AssistantHistory name={assistName} type={assistType} interactions={assistHistory} />
             {chatLoaded ? (
                 chat !== null ? (
-                    <Assistant chat={chat}/>
+                    <Assistant chat={chat} />
                 ) : (
                     <ChatNotFound />
                 )

@@ -1,7 +1,7 @@
 # Variables
 IMAGE_NAME = superhero-02-01
 CONTAINER_NAME = superhero-02-01
-PORT = 8081
+PORT = 8080
 
 # Build the Docker image
 build:
@@ -9,7 +9,7 @@ build:
 
 # Run the container
 run:
-	docker run -d -p $(PORT):8081 --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	docker run -d -p $(PORT):8080 --name $(CONTAINER_NAME) $(IMAGE_NAME)
 
 # Stop and remove the container
 down:
