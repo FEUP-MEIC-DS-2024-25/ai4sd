@@ -141,7 +141,7 @@ async def pin_message_by_id(id: str, body: PinMessageRequest):
         chat = db_helper.addPinnedToChat(id, body.message)
         if not chat:
             raise HTTPException(status_code=404, detail="Chat not found")
-        return JSONResponse(content=chat['pinnedMessages'], status_code=200)
+        return JSONResponse(content=chat['pinnedMessages'][-1], status_code=200)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

@@ -8,10 +8,10 @@ from firebase_admin import firestore
 import uuid
 
 
-db_collection = os.getenv("C3T1_DB_COLLECTION")
+db_collection = "superhero-03-01"
 
 class FirestoreHelper:
-    def __init__(self, collectionName="featurecraft"):
+    def __init__(self, collectionName="superhero-03-01"):
         self.database_name = collectionName
         self.app = firebase_admin.initialize_app()
         self.db = firestore.client(app=self.app)
