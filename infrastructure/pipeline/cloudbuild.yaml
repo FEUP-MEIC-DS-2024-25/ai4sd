@@ -12,6 +12,19 @@ substitutions:
   _PR_ID: ""
 
 steps:
+
+  # Step 0: Install GitHub CLI
+  - id: "Install GitHub CLI"
+    name: "gcr.io/cloud-builders/curl"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Installing GitHub CLI..."
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          apt-get update && apt-get install -y gh
+
   # Step 1: Fetch the latest merged PR number and set it as an environment variable
   - id: "Fetch PR ID"
     name: "gcr.io/cloud-builders/gcloud"
