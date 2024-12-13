@@ -145,6 +145,38 @@ async def pin_message_by_id(id: str, body: PinMessageRequest):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    
+class UpdatePinMessageRequest(BaseModel):
+    pinned_id: str
+    message: str
+
+@router.put("/pin/{id}")
+async def update_pin_message_by_id(id: str, body: UpdatePinMessageRequest):
+    """
+    Update a pinned message's content.
+    - id: The conversation ID.
+    - body: Contains the pinned message ID and the new message content.
+    """
+    try:
+        # Call Firestore helper to edit the pinned message
+        result = db_helper.editPinnedMessage(
+            conversation_id=id,
+            pinned_id=body.pinned_id,
+            new_message=body.message
+        )
+        
+        if result.get("status") != "success":
+            raise HTTPException(status_code=404, detail=result.get("message", "Failed to update pinned message"))
+        
+        # Return the updated pinned message
+        updated_message = {
+            "id": body.pinned_id,
+            "message": body.message
+        }
+        return JSONResponse(content=updated_message, status_code=200)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 @router.get("/{id}")
 async def get_message_by_id(id: str):
