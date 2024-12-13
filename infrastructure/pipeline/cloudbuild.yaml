@@ -19,6 +19,8 @@ steps:
     args:
       - "-c"
       - |
+          echo "Installing jq..."
+          apt-get update && apt-get install -y jq
           echo "Fetching the last updated merged PR ID..."
           _PR_ID=$(curl -s \
                   "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
