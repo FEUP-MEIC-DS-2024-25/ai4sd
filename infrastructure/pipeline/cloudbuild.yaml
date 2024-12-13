@@ -20,7 +20,7 @@ steps:
       - |
           echo "Fetching the latest merged PR ID..."
           PR_ID=$(gh pr list --repo FEUP-MEIC-DS-2024-25/ai4sd --state closed --base main --json number,mergedAt --jq '.[] | select(.mergedAt != null) | .number' | head -n1)
-          echo "PR_ID=${PR_ID}" > /tmp/pr_id.txt
+          echo "${PR_ID}" > /tmp/pr_id.txt
           echo "PR_ID set to: ${PR_ID}"
 
   # Step 2: Fetch and activate the service account key
