@@ -12,7 +12,7 @@ from .JSONValidation.validators import new_chat_validator, ValidationError
 
 # Load the API key from .env file
 load_dotenv()
-LLM_API_KEY = os.getenv("C3T1_LLM_API_KEY")
+LLM_API_KEY = os.getenv("superhero-03-01-secret")
 CORS_URL = "https://storage.googleapis.com/hero-alliance-avengers/"
 
 

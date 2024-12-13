@@ -54,9 +54,9 @@ async def send_message(message: Message):
         raise HTTPException(status_code=400, detail=f"Bad request: {e.message}")
     
     try:
-        LLM_API_KEY = os.getenv("C3T1_LLM_API_KEY")
+        LLM_API_KEY = os.getenv("superhero-03-01-secret")
         if not LLM_API_KEY:
-            raise ValueError("C3T1_LLM_API_KEY not found in environment variables")
+            raise ValueError("superhero-03-01-secret not found in environment variables")
 
         success, chat = db_helper.getChat(message.currentConversation)
 
