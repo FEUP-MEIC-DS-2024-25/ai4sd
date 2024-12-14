@@ -12,27 +12,27 @@ substitutions:
 
 steps:
   
-# Step 0: Install GitHub CLI (gh)
-- id: "Install GitHub CLI"
-name: "gcr.io/cloud-builders/curl"
-entrypoint: "bash"
-args:
-  - "-c"
-  - |
-      echo "Installing GitHub CLI..."
-      
-      # Ensure prerequisites are installed
-      apt-get update && apt-get install -y software-properties-common apt-transport-https curl
+  # Step 0: Install GitHub CLI (gh)
+  - id: "Install GitHub CLI"
+    name: "gcr.io/cloud-builders/curl"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Installing GitHub CLI..."
+          
+          # Ensure prerequisites are installed
+          apt-get update && apt-get install -y software-properties-common apt-transport-https curl
 
-      # Add the GitHub CLI repository
-      curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
-      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          # Add the GitHub CLI repository
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
 
-      # Update package list and install gh
-      apt-get update && apt-get install -y gh
+          # Update package list and install gh
+          apt-get update && apt-get install -y gh
 
-      # Verify installation
-      gh --version && echo "GitHub CLI installed successfully."
+          # Verify installation
+          gh --version && echo "GitHub CLI installed successfully."
 
   # Step 1: Fetch the latest updated merged PR number and set it as an environment variable
   - id: "Fetch Last Updated Merged PR"
