@@ -55,5 +55,17 @@ export async function uploadAllReposInOrg(octokit, org) {
 }
 
 
-const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
+//const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
+//await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
+
+import fs from "fs";
+const path = '/tmp/secret.txt';
+
+try {
+  // Read the file synchronously
+  const secret = fs.readFileSync(path, 'utf8');
+  console.log('Secret content:', secret);
+} catch (err) {
+  console.error(`Error reading secret file at ${path}:`, err.message);
+}
+
