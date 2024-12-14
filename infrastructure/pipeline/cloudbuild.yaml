@@ -9,10 +9,10 @@ substitutions:
   _REGION: "europe-west1"
   _JARVIS_APP_ID: "1063506"
   _GITHUB_ORG: "FEUP-MEIC-DS-2024-25"
-  _PR_ID: ""
+  _PR_ID: "0"  # Default value, will be overwritten dynamically in the first step
 
 steps:
-  # Step 1: Fetch the latest updated merged PR number
+  # Step 1: Fetch the latest updated merged PR number and set it as an environment variable
   - id: "Fetch Last Updated Merged PR"
     name: "gcr.io/cloud-builders/curl"
     entrypoint: "bash"
@@ -22,10 +22,14 @@ steps:
           echo "Installing jq..."
           apt-get update && apt-get install -y jq
           echo "Fetching the last updated merged PR ID..."
-          _PR_ID=$(curl -s \
-                  "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
+          PR_ID=$(curl -s \
+                  "https://api.github.com/repos/${_GITHUB_ORG}/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
                   jq -r '[.[] | select(.merged_at != null)] | first | .number')
-          echo "PR_ID=${_PR_ID}"
+          echo "PR_ID=${PR_ID}"
+          echo "Setting environment variable PR_ID=${PR_ID}"
+          echo "BASH_ENV=$BASH_ENV"
+          echo "export PR_ID=${PR_ID}" >> $BASH_ENV
+
   # Step 2: Fetch and activate the service account key
   - id: "Fetch and Activate Service Account Key"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
@@ -104,9 +108,9 @@ steps:
       - "-c"
       - |
         echo "Fetching changed superhero directories from the pull request..."
-        changed_dirs=$(gh pr view ${_PR_ID} --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+        changed_dirs=$(gh pr view ${PR_ID} --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
         
-        echo "_PR_ID: ${_PR_ID}"
+        echo "PR_ID: ${PR_ID}"
         echo "Changed superhero directories: $changed_dirs"
 
         for dir in $changed_dirs; do
@@ -252,33 +256,3 @@ steps:
       - |
           echo "Verifying deployed services..."
           gcloud run services list --platform=managed --region="${_REGION}" --project="${_PROJECT_ID}"
-
-  # # Step 13: Remove Old Secret Versions
-  # - id: "Remove Old Secret Versions"
-  #   name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-  #   entrypoint: "bash"
-  #   args:
-  #     - "-c"
-  #     - |
-  #         echo "Removing old secret versions..."
-          
-  #         # Remove old superhero secrets
-  #         for group in $(seq -w 1 8); do
-  #           for hero in $(seq -w 1 5); do
-  #             hero_name="superhero-0${group}-0${hero}"
-  #             echo "Cleaning up old versions for secret: ${hero_name}-secret"
-              
-  #             gcloud secrets versions list "${hero_name}-secret" \
-  #               --project="${_PROJECT_ID}" \
-  #               --filter="state=ENABLED" \
-  #               --format="value(name)" | tail -n +2 | \
-  #               xargs -I {} gcloud secrets versions destroy {} --secret="${hero_name}-secret"
-  #           done
-  #         done
-          
-  #         echo "Cleaning up old versions for secret: jarvis-secret"
-  #         gcloud secrets versions list "jarvis-secret" \
-  #           --project="${_PROJECT_ID}" \
-  #           --filter="state=ENABLED" \
-  #           --format="value(name)" | tail -n +2 | \
-  #           xargs -I {} gcloud secrets versions destroy {} --secret="jarvis-secret"
