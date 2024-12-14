@@ -9,7 +9,6 @@ substitutions:
   _REGION: "europe-west1"
   _JARVIS_APP_ID: "1063506"
   _GITHUB_ORG: "FEUP-MEIC-DS-2024-25"
-  _PR_ID: "0"  # Default value, will be overwritten dynamically in the first step
 
 steps:
   # Step 1: Fetch the latest updated merged PR number and set it as an environment variable
@@ -19,14 +18,15 @@ steps:
     args:
       - "-c"
       - |
+      - |
           echo "Installing jq..."
           apt-get update && apt-get install -y jq
           echo "Fetching the last updated merged PR ID..."
-          PR_ID=$(curl -s \
-                  "https://api.github.com/repos/${_GITHUB_ORG}/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
-                  jq -r '[.[] | select(.merged_at != null)] | first | .number')
-          echo "PR_ID=${PR_ID}"
-          echo ${PR_ID} > /workspace/pr_id.txt  # Save PR_ID to a file
+          curl -s \
+            "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
+            jq -r '[.[] | select(.merged_at != null)] | first | .number' > /workspace/pr_id.txt
+          echo "PR_ID=$(cat /workspace/pr_id.txt)"
+
 
 
   # Step 2: Fetch and activate the service account key
@@ -107,12 +107,11 @@ steps:
       - "-c"
       - |
           echo "Fetching PR_ID from file..."
-          PR_ID=$(cat /workspace/pr_id.txt)  # Read PR_ID from file
 
-          echo "PR_ID: ${PR_ID}"
+          echo "PR_ID: $(cat /workspace/pr_id.txt)"
 
           echo "Fetching changed superhero directories from the pull request..."
-          changed_dirs=$(gh pr view ${PR_ID} --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+          changed_dirs=$(gh pr view $(cat /workspace/pr_id.txt) --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
           
           echo "Changed superhero directories: $changed_dirs"
 
