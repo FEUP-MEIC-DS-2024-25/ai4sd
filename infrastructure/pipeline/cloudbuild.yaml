@@ -26,7 +26,7 @@ steps:
                   "https://api.github.com/repos/${_GITHUB_ORG}/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
                   jq -r '[.[] | select(.merged_at != null)] | first | .number')
           echo "PR_ID=${PR_ID}"
-          echo ${PR_ID} > /tmp/pr_id.txt  # Save PR_ID to a file
+          echo ${PR_ID} > /workspace/pr_id.txt  # Save PR_ID to a file
 
 
   # Step 2: Fetch and activate the service account key
@@ -107,7 +107,7 @@ steps:
       - "-c"
       - |
           echo "Fetching PR_ID from file..."
-          PR_ID=$(cat /tmp/pr_id.txt)  # Read PR_ID from file
+          PR_ID=$(cat /workspace/pr_id.txt)  # Read PR_ID from file
 
           echo "PR_ID: ${PR_ID}"
 
