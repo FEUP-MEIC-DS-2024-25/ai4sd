@@ -20,8 +20,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+class filesInstance(BaseModel):
+    name: str
+    content: str
+
 class file(BaseModel):
-    files: List[Any]
+    files: List[filesInstance]
 
 class responseModel(BaseModel):
     message: str

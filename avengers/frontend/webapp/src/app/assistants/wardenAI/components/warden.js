@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Markdown from 'react-markdown';
 
-const UploadFilePage = () => {
+const Warden = () => {
   const [files, setFiles] = useState([]);
   const [responseData, setResponseData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -219,4 +219,4 @@ const UploadFilePage = () => {
   
 };  
 
-export default UploadFilePage;
+export default Warden;
