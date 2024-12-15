@@ -81,7 +81,7 @@ export default function SpeechToText({ setMessage, isBraveBrowser, dialogOpen, s
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>
-                <DialogTitle>Speech-to-Text</DialogTitle>
+                <DialogTitle>Speech to Text</DialogTitle>
                 <DialogDescription>
                     {isRecording ? (
                         <Button
@@ -107,11 +107,11 @@ export default function SpeechToText({ setMessage, isBraveBrowser, dialogOpen, s
                     )}
                 </DialogDescription>
             </DialogHeader>
-            <div className="mt-4">
+            <div className="mt-2">
                 <label htmlFor="language-select" className="block text-sm font-medium text-gray-700">Select Language</label>
                 <select
                     id="language-select"
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                    className="mt-1 block w-full rounded-md text-white bg-neutral-800 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 p-2"
                     onChange={(e) => setLanguage(e.target.value)}
                 >
                     <option value="en-US">English</option>
