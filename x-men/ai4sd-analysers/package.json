@@ -1,0 +1,49 @@
+{
+  "name": "ai4sd-analysers",
+  "displayName": "AI4SD Analysers",
+  "description": "Compilation of AI4SD assistants responsible for repository analysis",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.95.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "ai4sd-analysers.call",
+        "title": "AI4SD Analysers: Analyse repository"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/archiver": "^6.0.3",
+    "@types/dotenv": "^6.1.1",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^20.17.9",
+    "@types/showdown": "^2.0.6",
+    "@types/vscode": "^1.95.0",
+    "@typescript-eslint/eslint-plugin": "^8.10.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.13.0",
+    "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "archiver": "^7.0.1",
+    "dotenv": "^16.4.7",
+    "showdown": "^2.1.0"
+  }
+}
