@@ -1,0 +1,1 @@
+{"version":3,"file":"out-of-memory-error.d.ts","sourceRoot":"","sources":["../../../src/child-proxy/out-of-memory-error.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,wBAAwB,EAAE,MAAM,kCAAkC,CAAC;AAE5E,qBAAa,gBAAiB,SAAQ,wBAAwB;gBAChD,GAAG,EAAE,MAAM,GAAG,SAAS,EAAE,QAAQ,EAAE,MAAM;CAOtD"}

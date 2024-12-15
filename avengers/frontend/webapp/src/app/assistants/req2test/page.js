@@ -37,8 +37,12 @@ export default function Interactor() {
         getChats().then((data) => {
             setAssistHistory(prepareHistory(data));
 
-            const chat = data.find((chat) => chat.id === id);
-            setChat(chat);
+            const chatObj = data.find((chat) => chat.id === id);
+            setChat(chatObj);
+
+            if (!chat) // If the chat is not found, set the chat to the first chat
+                setChat(data[0]);
+
             setChatLoaded(true);
         });
     }, [id]);

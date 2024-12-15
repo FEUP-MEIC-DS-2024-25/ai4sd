@@ -9,16 +9,20 @@ import Assistant from "./components/assistant";
 
 export default function Interactor() {
     //preparing mock data
-    const assistName = "YOUR ASSISTANT";
+    const assistName = "DiagramIt";
     const assistType = "req"; // change according to the assistant type (req, arch, refact, verif)
     const assistHistory = prepareMockHistory();
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
             <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
-            <Assistant />
+            {/* Assistant Section */}
+            <div className="flex-grow">
+                <Assistant />
+            </div>
         </div>
     )
+
 }
 function prepareMockHistory() {
     const history = [];
