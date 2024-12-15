@@ -138,33 +138,37 @@ steps:
           
           echo "Changed superhero directories: $changed_dirs"
 
-          for dir in $changed_dirs; do
-            hero_name=$(basename $dir)
-            dockerfile="${dir}/Dockerfile"
-            image="gcr.io/${_PROJECT_ID}/${hero_name}"
-            image_with_build_id="${image}-${BUILD_ID}"
+          echo "Building and pushing Docker images for superhero services..."
+          for group in $(seq -w 1 8); do
+            for hero in $(seq -w 1 5); do
+              hero_name="superhero-0${group}-0${hero}"
+              dir="superheroes/${hero_name}"
+              dockerfile="${dir}/Dockerfile"
+              image="gcr.io/${_PROJECT_ID}/${hero_name}"
+              image_with_build_id="${image}-${BUILD_ID}"
 
-            if [ -f "${dockerfile}" ]; then
-              echo "Fetching secret for ${hero_name}..."
-              secret_file="/tmp/${hero_name}_secret"
+              if [ -f "${dockerfile}" ]; then
+                echo "Fetching secret for ${hero_name}..."
+                secret_file="/tmp/${hero_name}_secret"
 
-              gcloud secrets versions access latest \
-                --secret="${hero_name}-secret" \
-                --project="${_PROJECT_ID}" > "${secret_file}"
+                gcloud secrets versions access latest \
+                  --secret="${hero_name}-secret" \
+                  --project="${_PROJECT_ID}" > "${secret_file}"
 
-              echo "Building image for ${hero_name}..."
-              if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
-                echo "Pushing image for ${hero_name}..."
-                docker push "${image_with_build_id}" || echo "Failed to push image for ${hero_name}. Skipping."
+                echo "Building image for ${hero_name}..."
+                if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
+                  echo "Pushing image for ${hero_name}..."
+                  docker push "${image_with_build_id}" || echo "Failed to push image for ${hero_name}. Skipping."
+                else
+                  echo "Failed to build image for ${hero_name}. Skipping."
+                fi
+                
+                rm -rf "${secret_file}"
               else
-                echo "Failed to build image for ${hero_name}. Skipping."
+                echo "No Dockerfile found for ${hero_name}, skipping build."
+                sleep 10  # Wait for GCR image propagation
               fi
-              
-              rm -rf "${secret_file}"
-            else
-              echo "No Dockerfile found for ${hero_name}, skipping build."
-              sleep 10  # Wait for GCR image propagation
-            fi
+            done
           done
 
   # Step 10: Build and Push Docker Images for Jarvis and Strange
