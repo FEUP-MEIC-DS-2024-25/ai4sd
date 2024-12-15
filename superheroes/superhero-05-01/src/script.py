@@ -45,9 +45,13 @@ def run_online(files):
   filesStr = ""
 
   for file in files:
-    filesStr += file['name'] + ":\n"
-    filesStr += file['content']
-    filesStr += "\n\n"
+    print(file)
+    try:
+      filesStr += file.name + ":\n"
+      filesStr += file.content
+      filesStr += "\n\n"
+    except TypeError:
+      return "Request is not in the correct format"
 
   genai.configure(api_key=gemini_token)
 
