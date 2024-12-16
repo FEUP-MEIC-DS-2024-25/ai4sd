@@ -30,9 +30,8 @@ export function getApiKey() {
             return;
         }
         console.log(data);
-        API_KEY = data;
+        return data;
     });
-    return API_KEY;
 }
 
 //accessSecretVersion();
