@@ -19,6 +19,7 @@ export default function Application() {
     const [feedbackInfo, setFeedbackInfo] = useState("");
     const [outputType, setOutputType] = useState("pdf");
     const [outputLanguage, setOutputLanguage] = useState("english");
+    const [promptType, setOutputPromptType] = useState("N");
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
@@ -47,6 +48,7 @@ export default function Application() {
         formData.append("additionalInfo", additionalInfo);
         formData.append("outputType", outputType);
         formData.append("outputLanguage", outputLanguage);
+        formData.append("promptType", promptType)
 
         setLoading(true);
         try {
@@ -116,7 +118,9 @@ export default function Application() {
                     </Button>
                 </div>
                 <form onSubmit={handleFormSubmit}>
-                    <Filters onOutputTypeChange={setOutputType} onOutputLanguageChange={setOutputLanguage} />
+                    <Filters onOutputTypeChange={setOutputType}
+                     onOutputLanguageChange={setOutputLanguage}
+                     onOutputPromptTypeChange={setOutputPromptType} />
                     <InputSubmission
                         selectedFiles={selectedFiles}
                         handleFileChange={handleFileChange}
