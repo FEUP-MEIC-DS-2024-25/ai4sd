@@ -25,7 +25,8 @@ function getAssistantList() {
     let ai10 = { name: "ReqToStory", type: "req", link: "/assistants/reqtostory" };
     let ai11 = { name: "Diagram Detective", type: "req", link: "/assistants/diagramDetective" };
     let ai12 = { name: "Warden AI", type: "refact", link: "/assistants/wardenAI" };
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12]
+    let ai13 = { name: "DiagramIt", type: "req", link: "/assistants/diagramit" };
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13]
 }
 
 function AssistantPickerItems() {
