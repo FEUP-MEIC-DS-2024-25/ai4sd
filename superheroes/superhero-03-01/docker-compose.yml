@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   featurecraft:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dev.Dockerfile
     image: t03_g01_featurecraft:latest
     ports:
       - "8080:8080" # Backend

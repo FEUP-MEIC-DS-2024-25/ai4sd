@@ -1,0 +1,1 @@
+{"version":3,"file":"circle-provider.d.ts","sourceRoot":"","sources":["../../../../src/reporters/ci/circle-provider.ts"],"names":[],"mappings":"AAEA,OAAO,EAAE,UAAU,EAAE,MAAM,eAAe,CAAC;AAE3C;;GAEG;AACH,qBAAa,cAAe,YAAW,UAAU;IACxC,gBAAgB,IAAI,MAAM;IAG1B,gBAAgB,IAAI,MAAM,GAAG,SAAS;IAQ7C,OAAO,CAAC,mBAAmB;IAM3B,OAAO,CAAC,iBAAiB;CAY1B"}
