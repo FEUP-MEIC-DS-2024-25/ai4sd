@@ -6,6 +6,7 @@ from flask_cors import CORS
 import whisper
 from docx import Document
 import google.generativeai as genai
+from google.cloud import secretmanager
 
 import markdown2
 from docx.shared import Pt
@@ -29,6 +30,13 @@ def load_history():
             return json.load(file)
     return []
 
+# Get secret
+def get_secret(secret_name):
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/150699885662/secrets/superhero-04-03-secret"
+    response = client.access_secret_version(name=name)
+    return response.payload.data.decode("UTF-8")
+
 # Save history to the file
 def save_history(history):
     with open(HISTORY_FILE, "w") as file:
@@ -42,7 +50,7 @@ def transcribe_audio(mp3_file_path):
 # Function to summarize the transcription
 def summarize_transcription(transcription):
     # will not work
-    google_api_key = os.getenv('GOOGLE_API_KEY')
+    google_api_key = get_secret("gemini_api_key")
     genai.configure(api_key=google_api_key)
 
     model = genai.GenerativeModel("gemini-1.5-flash")
