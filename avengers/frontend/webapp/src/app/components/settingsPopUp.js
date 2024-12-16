@@ -82,7 +82,6 @@ function SettingsPopUp({ onClose, assistName }) {
     };
 
     const handleRegister = () => {
-        console.log('Filters:', filters); // For debugging
         setAssistantFilters(assistName, filters);
         onClose();
     };
