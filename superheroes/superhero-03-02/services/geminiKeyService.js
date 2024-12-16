@@ -1,5 +1,6 @@
-const name = 'projects/150699885662/secrets/superhero-03-02-secre/versions/latest';
-// const name = 'projects/my-project/secrets/my-secret/versions/latest';
+import fs from 'fs';
+
+const name = 'projects/150699885662/secrets/superhero-03-02-secret/versions/latest';
 
 // Imports the Secret Manager library
 import { SecretManagerServiceClient } from '@google-cloud/secret-manager';
@@ -20,3 +21,18 @@ export async function accessSecretVersion() {
     // console.info(`Payload: ${payload}`);
     return payload;
 }
+
+export function getApiKey() {
+    let API_KEY = "";
+    fs.readFile('/etc/gemini_token', 'utf8', (err, data) => {
+        if (err) {
+            console.error(err);
+            return;
+        }
+        console.log(data);
+        API_KEY = data;
+    });
+    return API_KEY;
+}
+
+//accessSecretVersion();
