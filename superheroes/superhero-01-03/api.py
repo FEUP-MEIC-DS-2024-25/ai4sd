@@ -10,7 +10,7 @@ import gemini
 
 def initialize_firebase():
     """Initializes Firebase using Application Default Credentials (ADC)."""
-    try:
+    try: 
         # Use ADC by not passing explicit credentials.
         cred = credentials.ApplicationDefault()
         firebase_admin.initialize_app(cred)

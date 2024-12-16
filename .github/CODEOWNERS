@@ -3,7 +3,7 @@
 
 # Define code owners for the infrastructure folder.
 # Only the specified users or teams can approve changes to this folder.
-/infrastructure/ @aaguiar @cosmicblackcat @danrpinho @lessthelonely
+/infrastructure/ @aaguiar @ceduarte98 @danrpinho @lessthelonely
 
 # Protect the CODEOWNERS file itself
-/.github/CODEOWNERS @aaguiar @cosmicblackcat @danrpinho @lessthelonely
+/.github/CODEOWNERS @aaguiar @ceduarte98 @danrpinho @lessthelonely

@@ -11,7 +11,48 @@ substitutions:
   _GITHUB_ORG: "FEUP-MEIC-DS-2024-25"
 
 steps:
-  # Step 1: Fetch and activate the service account key
+  
+  # Step 0: Install GitHub CLI (gh)
+  - id: "Install GitHub CLI"
+    name: "gcr.io/cloud-builders/curl"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+          echo "Installing GitHub CLI..."
+          
+          # Ensure prerequisites are installed
+          apt-get update && apt-get install -y software-properties-common apt-transport-https curl
+
+          # Add the GitHub CLI repository
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+
+          # Update package list and install gh
+          apt-get update && apt-get install -y gh
+
+          # Verify installation
+          gh --version && echo "GitHub CLI installed successfully."
+
+  # Step 1: Fetch the latest updated merged PR number and set it as an environment variable
+  - id: "Fetch Last Updated Merged PR"
+    name: "gcr.io/cloud-builders/curl"
+    entrypoint: "bash"
+    args:
+      - "-c"
+      - |
+      - |
+          echo "Installing jq..."
+          apt-get update && apt-get install -y jq
+          echo "Fetching the last updated merged PR ID..."
+          curl -s \
+            "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls?state=closed&base=main&sort=updated&direction=desc" | \
+            jq -r '[.[] | select(.merged_at != null)] | first | .number' > /workspace/pr_id.txt
+          echo "PR_ID=$(cat /workspace/pr_id.txt)"
+
+
+
+  # Step 2: Fetch and activate the service account key
   - id: "Fetch and Activate Service Account Key"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
@@ -23,12 +64,12 @@ steps:
           base64 --decode /tmp/cloudbuild-sa-key.b64 > /tmp/cloudbuild-sa-key.json
           gcloud auth activate-service-account --key-file=/tmp/cloudbuild-sa-key.json
 
-  # Step 2: Authenticate Docker with Google Cloud
+  # Step 3: Authenticate Docker with Google Cloud
   - id: "Authenticate Docker"
     name: "gcr.io/cloud-builders/gcloud"
     args: ["auth", "configure-docker"]
 
-  # Step 3: Sync Avengers folder to Cloud Storage bucket
+  # Step 4: Sync Avengers folder to Cloud Storage bucket
   - id: "Sync Avengers Folder to Bucket"
     name: "gcr.io/cloud-builders/gsutil"
     args:
@@ -37,7 +78,7 @@ steps:
       - "./avengers/"
       - "gs://hero-alliance-avengers"
 
-  # Step 4: Reinitialize Terraform
+  # Step 5: Reinitialize Terraform
   - id: "Initialize Terraform"
     name: "hashicorp/terraform"
     entrypoint: "sh"
@@ -48,7 +89,7 @@ steps:
           cd infrastructure/terraform
           terraform init -backend-config="bucket=${_BUCKET_NAME}" -backend-config="prefix=terraform/state"
 
-  # Step 5: Terraform Refresh
+  # Step 6: Terraform Refresh
   - id: "Terraform Refresh"
     name: "hashicorp/terraform"
     entrypoint: "sh"
@@ -59,7 +100,7 @@ steps:
           cd infrastructure/terraform
           terraform refresh -var "build_id=${BUILD_ID}"
 
-  # Step 6: Terraform Plan
+  # Step 7: Terraform Plan
   - id: "Terraform Plan"
     name: "hashicorp/terraform"
     entrypoint: "sh"
@@ -70,7 +111,7 @@ steps:
           cd infrastructure/terraform
           terraform plan -out=tfplan -var "build_id=${BUILD_ID}" -refresh-only
 
-  # Step 7: Terraform Apply
+  # Step 8: Terraform Apply
   - id: "Terraform Apply"
     name: "hashicorp/terraform"
     entrypoint: "sh"
@@ -81,13 +122,22 @@ steps:
           cd infrastructure/terraform
           terraform apply -auto-approve tfplan
 
-  # Step 8: Build and Push Docker Images for Superheroes
+  # Step 9: Build and Push Docker Images for Superheroes
   - id: "Build and Push Docker Images"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
     args:
       - "-c"
       - |
+          echo "Fetching PR_ID from file..."
+
+          echo "PR_ID: $(cat /workspace/pr_id.txt)"
+
+          echo "Fetching changed superhero directories from the pull request..."
+          changed_dirs=$(gh pr view $(cat /workspace/pr_id.txt) --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+          
+          echo "Changed superhero directories: $changed_dirs"
+
           echo "Building and pushing Docker images for superhero services..."
           for group in $(seq -w 1 8); do
             for hero in $(seq -w 1 5); do
@@ -121,7 +171,7 @@ steps:
             done
           done
 
-  # Step 9: Build and Push Docker Images for Jarvis and Strange
+  # Step 10: Build and Push Docker Images for Jarvis and Strange
   - id: "Build and Push Jarvis and Strange"
     name: "gcr.io/cloud-builders/docker"
     entrypoint: "bash"
@@ -158,7 +208,7 @@ steps:
             fi
           done
 
-  # Step 10: Deploy Services to Cloud Run
+  # Step 11: Deploy Services to Cloud Run
   - id: "Deploy to Cloud Run"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
@@ -226,7 +276,7 @@ steps:
             done
           done
 
-  # Step 11: Verify Deployment
+  # Step 12: Verify Deployment
   - id: "Verify Deployment"
     name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
     entrypoint: "bash"
@@ -235,33 +285,3 @@ steps:
       - |
           echo "Verifying deployed services..."
           gcloud run services list --platform=managed --region="${_REGION}" --project="${_PROJECT_ID}"
-
-  # # Step 12: Remove Old Secret Versions
-  # - id: "Remove Old Secret Versions"
-  #   name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
-  #   entrypoint: "bash"
-  #   args:
-  #     - "-c"
-  #     - |
-  #         echo "Removing old secret versions..."
-          
-  #         # Remove old superhero secrets
-  #         for group in $(seq -w 1 8); do
-  #           for hero in $(seq -w 1 5); do
-  #             hero_name="superhero-0${group}-0${hero}"
-  #             echo "Cleaning up old versions for secret: ${hero_name}-secret"
-              
-  #             gcloud secrets versions list "${hero_name}-secret" \
-  #               --project="${_PROJECT_ID}" \
-  #               --filter="state=ENABLED" \
-  #               --format="value(name)" | tail -n +2 | \
-  #               xargs -I {} gcloud secrets versions destroy {} --secret="${hero_name}-secret"
-  #           done
-  #         done
-          
-  #         echo "Cleaning up old versions for secret: jarvis-secret"
-  #         gcloud secrets versions list "jarvis-secret" \
-  #           --project="${_PROJECT_ID}" \
-  #           --filter="state=ENABLED" \
-  #           --format="value(name)" | tail -n +2 | \
-  #           xargs -I {} gcloud secrets versions destroy {} --secret="jarvis-secret"
