@@ -16,15 +16,19 @@ function getAssistantList() {
     let ai1 = { name: "CAVE", type: "arch", link: "/assistants/cave" };
     let ai2 = { name: "2Test", type: "req", link: "/assistants/req2test" };
     let ai3 = { name: "TOOPAI", type: "verif", link: "/assistants/toopai" };
-    let ai4 = { name: "ai4", type: "req", link: "#" };
+    let ai4 = { name: "UTA", type: "verif", link: "/assistants/uta" };
     let ai5 = { name: "ai5", type: "arch", link: "#" };
     let ai6 = { name: "FeatureCraft", type: "req", link: "/assistants/featurecraft" };
-    let ai7 = { name: "RRBuddy", type: "req", link: "/assistants/rrbuddy" };
-    let ai8 = { name: "APLens", type: "req", link: "/assistants/aplens"}
-    let ai9 = { name: "Req2Speech", type: "req", link: "/assistants/req2speech" };
-    let ai10 = { name: "OptiReq", type: "req", link: "/assistants/optireq" };
 
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10]
+    let ai7 = { name: "RRBuddy", type: "req", link: "/assistants/rrbuddy" };
+    let ai8 = { name: "APLens", type: "req", link: "/assistants/aplens"};
+    let ai9 = { name: "Req2Speech", type: "req", link: "/assistants/req2speech" };
+    let ai10 = { name: "ReqToStory", type: "req", link: "/assistants/reqtostory" };
+    let ai11 = { name: "Diagram Detective", type: "req", link: "/assistants/diagramDetective" };
+    let ai12 = { name: "Warden AI", type: "refact", link: "/assistants/wardenAI" };
+    let ai13 = { name: "OptiReq", type: "req", link: "/assistants/optireq" };
+    
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13]
 }
 
 function AssistantPickerItems() {

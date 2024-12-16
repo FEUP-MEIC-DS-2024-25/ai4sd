@@ -18,6 +18,7 @@ genai.configure(api_key=os.environ["API_KEY"])
 
 # Création de l'application FastAPI
 app = FastAPI()
+ 
 
 # Autoriser les requêtes CORS
 app.add_middleware(

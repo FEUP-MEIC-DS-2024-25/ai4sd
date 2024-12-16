@@ -13,36 +13,37 @@ const app = express();
 const port = 8080;
 
 app.use(bodyParser.json());
+// Read the JSON file
+const jsonPath = path.join(__dirname, 'strings.json');
+const json = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 
-const genAI = new GoogleGenerativeAI("AIzaSyD8kleEGvzyFxtx8WOfhsIZSp7VuC1ypRM");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
-const clientChats = new Map<string,[number,any]>();
+const genAI = new GoogleGenerativeAI(json.apiKey);
+const model = genAI.getGenerativeModel({ model: json.model });
+const clientChats = new Map<string, [number, any]>();
 
 app.post('/generate', async (req: any, res: any) => {
-    const { code, diagramType,clientID} = req.body;
+    const { code, diagramType, clientID } = req.body;
     if (!code || !diagramType || !clientID) {
-        return res.status(400).json({ error: "All the 'code' and 'diagramType' and 'clientID' are required." });
+        return res.status(400).json({ error: json.errorMessages.missingCodeOrDiagramType });
     }
     let clientEntry = clientChats.get(clientID);
-    let chat = clientEntry?clientEntry[1]:null;
+    let chat = clientEntry ? clientEntry[1] : null;
     let timeElapsed = Date.now();
-    if(!chat){
+    if (!chat) {
         chat = model.startChat();
     }
-    clientChats.set(clientID,[timeElapsed,chat]);
-    // Read the JSON file
-    const promptsPath = path.join(__dirname, 'strings.json');
-    const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
+    clientChats.set(clientID, [timeElapsed, chat]);
+    console.log(clientChats);
     let prompt = "";
     switch (diagramType) {
         case DiagramTypes.ACTIVITY:
-            prompt += prompts.activityDiagramPromptGenerator;
+            prompt += json.activityDiagramPromptGenerator;
             break;
         case DiagramTypes.SEQUENCE:
-            prompt += prompts.sequenceDiagramPromptGenerator;
+            prompt += json.sequenceDiagramPromptGenerator;
             break;
         default:
-            return res.status(400).json({ error: "Invalid 'diagramType' provided." });
+            return res.status(400).json({ error: json.errorMessages.invalidDiagramType });
     }
 
     prompt += code;
@@ -55,27 +56,25 @@ app.post('/generate', async (req: any, res: any) => {
     }
 });
 app.post('/chat', async (req: any, res: any) => {
-    const { action,clientID } = req.body;
+    const { action, clientID } = req.body;
     let clientEntry = clientChats.get(clientID);
-    let chat = clientEntry?clientEntry[1]:null;
+    let chat = clientEntry ? clientEntry[1] : null;
     let timeElapsed = Date.now();
 
     if (!action || !clientID) {
-        return res.status(400).json({ error: "'action' and 'clientID' are required!" });
+        return res.status(400).json({ error: json.errorMessages.missingActionOrClientID });
     }
-    if(!chat){
-        return res.status(400).json({ error: "No chat found for the clientID. Maybe it wasn't initialized when generating the diagram for the first time." });
+    if (!chat) {
+        return res.status(400).json({ error: json.errorMessages.missingChatObject });
     }
-    
-    clientChats.set(clientID,[timeElapsed,chat]);
 
+    clientChats.set(clientID, [timeElapsed, chat]);
 
-    // Read the JSON file
-    const promptsPath = path.join(__dirname, 'strings.json');
-    const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
+    console.log(clientChats);
+
     let prompt = "";
-   
-    prompt += prompts.ChatDiagramPrompt;
+
+    prompt += json.ChatDiagramPrompt;
 
     prompt += "\n but ";
     prompt += action;
@@ -94,11 +93,12 @@ app.listen(port, () => {
 // Periodic cleaning of the clientChats map
 const minuteRange = 30; // If time elapsed since last request for each client is more than this value, the chat object is deleted
 const checkInterval = 30; // interval in minutes for checking
-function periodicCleaning(){
-    clientChats.forEach((value,key)=>{
-        if(Date.now()-value[0] > minuteRange*60*1000){
+function periodicCleaning() {
+    clientChats.forEach((value, key) => {
+        if (Date.now() - value[0] > minuteRange * 60 * 1000) {
             clientChats.delete(key);
         }
     });
+    console.log(clientChats);
 }
-setInterval(periodicCleaning,checkInterval*60*1000);
+setInterval(periodicCleaning, checkInterval * 60 * 1000);
