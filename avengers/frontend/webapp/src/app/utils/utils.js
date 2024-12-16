@@ -40,11 +40,7 @@ export function getShadowColor(area) {
             Maintainability: false,
             Availability: false,
             Security: false,
-            Usability: false,
-            Nested: {
-              fkwlçajkjdwça: false,
-              dwaklsd: true
-            }
+            Usability: false
         },
     },
     AssistantName: {
