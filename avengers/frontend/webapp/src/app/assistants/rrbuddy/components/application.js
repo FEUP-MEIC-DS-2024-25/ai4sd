@@ -109,11 +109,11 @@ export default function Application() {
     return (
         <>
             <div className="p-2 flex flex-col mx-auto bg-gray-300 shadow-md rounded-md w-5/6">
-                <div className="p-2 flex flex-col mx-auto bg-gray-300 shadow-md rounded-md w-5/6">
-                    <Button className="m-2" onClick={() => setSelectedFiles([])}>
+                <div className="p-2 mb-3 flex flex-col mx-auto bg-gray-100 shadow-md rounded-md w-5/6">
+                    <Button className="m-2 bg-purple-600 shadow-md rounded-md text-white" onClick={() => setSelectedFiles([])}>
                         Clear
                     </Button>
-                    <Button className="m-2" onClick={resetHistory}>
+                    <Button className="m-2 bg-purple-600 shadow-md rounded-md text-white" onClick={resetHistory}>
                         Reset history
                     </Button>
                 </div>

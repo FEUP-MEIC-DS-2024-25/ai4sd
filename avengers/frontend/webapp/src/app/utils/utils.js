@@ -55,7 +55,7 @@ export function getShadowColor(area) {
           }
         }
     },
-};
+  };
 
 export function setAssistantFilters(assistName, updatedFilters) {
   assistantFilters[assistName] = updatedFilters;
