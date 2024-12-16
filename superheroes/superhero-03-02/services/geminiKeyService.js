@@ -23,15 +23,9 @@ export async function accessSecretVersion() {
 }
 
 export function getApiKey() {
-    let API_KEY = "";
-    fs.readFile('/etc/gemini_token', 'utf8', (err, data) => {
-        if (err) {
-            console.error(err);
-            return;
-        }
-        console.log(data);
-        return data;
-    });
+    let API_KEY;
+    API_KEY = fs.readFileSync('/etc/gemini_token', 'utf8');
+    return API_KEY;
 }
 
 //accessSecretVersion();
