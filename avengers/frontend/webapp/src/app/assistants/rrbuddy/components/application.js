@@ -8,6 +8,7 @@ import DownloadOutput from "./downloadOutput";
 import "tailwindcss/tailwind.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { Button } from "@/app/components/ui/button";
+import { getAssistantSelectedFilters } from "@/app/utils/utils";
 
 export default function Application() {
     const [selectedFiles, setSelectedFiles] = useState([]);
@@ -37,6 +38,9 @@ export default function Application() {
     const handleFormSubmit = async (event) => {
         event.preventDefault();
 
+        const filters = getAssistantSelectedFilters("RRBuddy");
+        console.log("Filters RRBUDDY: ", filters);
+
         if (!selectedFiles.length) return;
         const formData = new FormData();
         selectedFiles.forEach((file) => formData.append("files", file));
@@ -46,8 +50,8 @@ export default function Application() {
 
         setLoading(true);
         try {
-            // const response = await fetch("http://172.23.0.3:5001/api/process", {
-            const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/process", {
+            const response = await fetch("http://172.20.0.3:5001/api/process", {
+            //const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/process", {
                 method: "POST",
                 body: formData,
             });
