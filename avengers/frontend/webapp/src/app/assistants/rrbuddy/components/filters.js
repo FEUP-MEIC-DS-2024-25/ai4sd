@@ -18,7 +18,7 @@ export default function Filters({
           <option value="txt">.txt</option>
         </select>
       </div>
-      <div>
+      <div className="mr-20">
         <lable className="block text-center font-bold mb-2">
             Prompting pattern used
         </lable>
