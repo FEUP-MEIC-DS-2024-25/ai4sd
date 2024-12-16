@@ -1,6 +1,8 @@
 # Settings Pop-Up Implementation 
 
-This document explains the purpose of the [SettingsPopUp](../../components/settingsPopUp.js) component and provides guidance on how you can implement it for your assistant.
+This document explains the purpose of the [SettingsPopUp](../../components/settingsPopUp.js) component and provides guidance on how you can implement it for your assistant. Here's an image with numerical identifiers to help you better understand this feature as you read the guide:
+
+![SettingsPopUpImage](img/guideSettings.png)
 
 ## Implementation
 
