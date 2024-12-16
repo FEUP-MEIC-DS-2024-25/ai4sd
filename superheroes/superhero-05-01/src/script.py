@@ -8,7 +8,7 @@ import google.generativeai as genai
 import sys
 
 def clear():
-    print("\033[H\033[J")
+  print("\033[H\033[J")
 
 clear()
 
@@ -29,11 +29,8 @@ DO NOT WRAP OR FORMAT THE JSON IN A CODE BLOCK.
 Please try to be synthetic in your answers.
 """
 
-# with open('etc/gemini_token', 'r') as file:
-#   gemini_token = file.read().strip()
-
-gemini_token = "AIzaSyAtSSHni87FP3Hy3GIsE3bQkwnJV5dz4-E"
-
+with open('/etc/gemini_token', 'r') as file:
+  gemini_token = file.read().strip()
 
 def run_online(files):
   # credentials = service_account.Credentials.from_service_account_file('wardenai-bbe86d6d2916.json')
@@ -45,16 +42,17 @@ def run_online(files):
   filesStr = ""
 
   for file in files:
-    filesStr += file['name'] + ":\n"
-    filesStr += file['content']
-    filesStr += "\n\n"
+    try:
+      filesStr += file.name + ":\n"
+      filesStr += file.content
+      filesStr += "\n\n"
+    except TypeError:
+      return "Request is not in the correct format"
 
   genai.configure(api_key=gemini_token)
 
   model = genai.GenerativeModel("gemini-1.5-flash-002")
   response = model.generate_content(prompt1 + filesStr + prompt2).text
-
-  print(response)
 
   return response
 
