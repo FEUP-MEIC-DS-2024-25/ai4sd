@@ -15,6 +15,8 @@ import {
 import { useEffect, useRef, useState } from "react";
 import {ChatMessage} from './ChatMessage';
 import axios from 'axios';
+import TextareaAutosize from 'react-textarea-autosize';
+
 
 export const Chatbot = () => {
   const [messages, setMessages] = useState([
@@ -226,7 +228,15 @@ export const Chatbot = () => {
   return (
     <div className="h-full w-full">
       <div className="relative flex h-full flex-col">
-        <ChatMessageList ref={messagesContainerRef}>
+        <ChatMessageList ref={messagesContainerRef}
+        className="
+        overflow-y-auto 
+        scrollbar 
+        scrollbar-thin 
+        scrollbar-track-transparent 
+        scrollbar-thumb-gray-200 
+        hover:scrollbar-thumb-gray-300
+      ">
           <AnimatePresence>
             {messages.map((message, index) => {
               const variant = getMessageVariant(message.role);
@@ -247,13 +257,27 @@ export const Chatbot = () => {
           onSubmit={handleSendMessage}
           className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
         >
-          <ChatInput
+          <TextareaAutosize
             ref={inputRef}
             value={input}
             onKeyDown={handleKeyDown}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Type your message here..."
-            className="min-h-12 resize-none rounded-lg bg-background border-0 p-3 shadow-none focus-visible:ring-0"
+            placeholder="Type your code here..."
+            minRows={1}
+            maxRows={5}
+            className="
+              w-full 
+              bg-background 
+              border-0 
+              p-3 
+              shadow-none 
+              resize-none 
+              rounded-lg 
+              focus:outline-none 
+              focus:ring-2 
+              focus:ring-blue-500
+              text-sm
+            "
           />
           <div className="flex items-center p-3 pt-0">
             <Button variant="ghost" size="icon" onClick={triggerFileInput}>

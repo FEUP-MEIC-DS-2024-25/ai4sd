@@ -59,7 +59,8 @@ export const BotMessage = ({ message, isLoading = false,index}) => {
 
   return (
     <ChatBubble key={index} 
-      variant="received">
+      variant="received"
+      className='max-w-[80%]'>
       <Avatar>
         <AvatarImage
           src=""
@@ -71,7 +72,7 @@ export const BotMessage = ({ message, isLoading = false,index}) => {
         </AvatarFallback>
       </Avatar>
       <ChatBubbleMessage isLoading={isLoading}
-      className="bg-blue-100">
+      className="bg-blue-100 p-3">
         {renderMessageContent()}
       </ChatBubbleMessage>
     </ChatBubble>
