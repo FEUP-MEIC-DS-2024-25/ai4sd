@@ -1,0 +1,1 @@
+{"version":3,"file":"theme-switch.component.d.ts","sourceRoot":"","sources":["../../../../src/components/theme-switch/theme-switch.component.ts"],"names":[],"mappings":"AAAA,OAAO,EAAQ,UAAU,EAAa,MAAM,KAAK,CAAC;AAMlD,qBACa,sCAAuC,SAAQ,UAAU;IAErD,KAAK,EAAE,MAAM,GAAG,SAAS,CAAC;IAEzC,OAAO,CAAC,QAAQ,CAAC,yBAAyB,CAGxC;IAEF,OAAc,MAAM,4BAAgC;IAE7C,MAAM;CAQd"}

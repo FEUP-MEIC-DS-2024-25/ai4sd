@@ -13,7 +13,7 @@ from .JSONValidation.validators import new_chat_validator, ValidationError
 # Load the API key from .env file
 load_dotenv()
 LLM_API_KEY = os.getenv("C3T1_LLM_API_KEY")
-CORS_URL = os.getenv("C3T1_CORS_URL")
+CORS_URL = "https://storage.googleapis.com/hero-alliance-avengers/"
 
 
 # collection_name its the name of the collection like if was a table in a database. Data is a dictionary with the data
