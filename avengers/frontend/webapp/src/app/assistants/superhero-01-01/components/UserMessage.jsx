@@ -1,13 +1,44 @@
 import React from 'react';
 import { cn } from "@/app/lib/utils";
 
-export const UserMessage = ({ message, isLoading = false }) => {
+import {
+  ChatBubble,
+  ChatBubbleAction,
+  ChatBubbleAvatar,
+  ChatBubbleMessage,
+} from "@/app/components/ui/shad/chat/chat-bubble";
+import { Avatar, AvatarFallback, AvatarImage } from "@/app/components/ui/shad/avatar";
+import {
+  CopyIcon,
+  CornerDownLeft,
+  Mic,
+  Paperclip,
+  RefreshCcw,
+  Volume2,
+} from "lucide-react";
+
+const ChatAiIcons = [
+  {
+    icon: CopyIcon,
+    label: "Copy",
+  },
+  {
+    icon: RefreshCcw,
+    label: "Refresh",
+  },
+  {
+    icon: Volume2,
+    label: "Volume",
+  },
+];
+
+export const UserMessage = ({ message, isLoading = false, index }) => {
   if (isLoading) return null;
 
   const renderMessageContent = () => {
     switch (message.type) {
       case 'text':
-        return <p className="text-sm">{message.value}</p>;
+        return message.value;
       case 'file':
         return <p className="text-sm">Uploaded file: {message.value.name}</p>;
       default:
@@ -16,13 +47,20 @@ export const UserMessage = ({ message, isLoading = false }) => {
   };
 
   return (
-    <div 
-      className={cn(
-        "rounded-lg p-3 max-w-[75%]",
-        "bg-primary text-primary-foreground"
-      )}
-    >
-      {renderMessageContent()}
-    </div>
+      <ChatBubble key={index} variant="sent">
+        <Avatar>
+          <AvatarImage
+            src="https://api.dicebear.com/9.x/pixel-art/svg"
+            alt="Avatar"
+            className=""
+          />
+          <AvatarFallback>
+            "GG"
+          </AvatarFallback>
+        </Avatar>
+        <ChatBubbleMessage isLoading={isLoading}>
+          {renderMessageContent()}
+        </ChatBubbleMessage>
+      </ChatBubble>
   );
 };

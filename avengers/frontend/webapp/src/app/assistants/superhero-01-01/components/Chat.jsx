@@ -25,7 +25,7 @@ export const Chatbot = () => {
       role: "ai",
       message: {
         type: "text",
-        value: "Hello! How can I assist you today?"
+        value: "Hello! Start writing code which I will evaluate for possible mistakes."
       },
       loading: false,
     },
@@ -71,27 +71,11 @@ export const Chatbot = () => {
   const sendToBackend = async (payload, messageId) => {
     let response;
     try {
-      console.log(payload)
-
       if (payload.type === 'file'){
-
-      const formDataToSend = new FormData();
-      formDataToSend.append('file', payload.value);
-      console.log("PAYPLOAD")
-      console.log(payload)
-
-      console.log("WHATTTTTT\n\n\n\n\n")
-      response = await axios.post('http://localhost:8000/api/prompt', formDataToSend, {
-
-
-      });
-      console.log('Data submitted successfully:', response.data);
-
-
+        const formDataToSend = new FormData();
+        formDataToSend.append('file', payload.value);
+        response = await axios.post('http://localhost:8000/api/prompt', formDataToSend, {});
       } else if (payload.type === 'code'){
-
-        
-        
         response = await axios.post('http://localhost:8000/api/prompt', {
           code:payload.value
         },{
@@ -99,8 +83,10 @@ export const Chatbot = () => {
             'Content-Type':'multipart/form-data'
           },
         })
-      
-        console.log('Data submitted successfully:', response.data)
+      }
+
+      if (response.status !== 200) {
+        throw new Error(response.data.error || "An error occurred. Please try again later.");
       }
       
       setMessages((prev) => {
@@ -108,28 +94,35 @@ export const Chatbot = () => {
         if (newMessages.length > messageId) {
 
           newMessages[messageId].message = {
-            type: "text",
-            value: JSON.stringify(response.data)
+            type: "json",
+            value: response.data
           }
           newMessages[messageId].loading = false;
-          return newMessages;
         }
+        return newMessages;
       });
     } catch (error) {
+      console.log(error);
       const newMessage ={
         type: "text",
-        value: error.response.data.error || "An error occurred. Please try again later."
+        value: error.response? error.response.data.error : error.message
       }
       setMessages((prev) => {
         const newMessages = [...prev];
         if (newMessages.length > messageId) {
           newMessages[messageId].message = newMessage;
           newMessages[messageId].loading = false;
-          return newMessages;
         }
+        return newMessages;
       });
     } finally {
-      setIsLoading(false);
+      setMessages((prev) => {
+        const newMessages = [...prev];
+        if (newMessages.length > messageId) {
+          newMessages[messageId].loading = false;
+        }
+        return newMessages;
+      });
     }
   };
 
