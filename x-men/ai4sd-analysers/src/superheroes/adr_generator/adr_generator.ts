@@ -1,4 +1,6 @@
 import * as vscode from "vscode";
+import * as fs from "fs";
+import * as path from "path";
 
 export async function execute(context: vscode.ExtensionContext) {
     const panel = vscode.window.createWebviewPanel(
@@ -28,10 +30,13 @@ export async function execute(context: vscode.ExtensionContext) {
                     -webkit-text-fill-color: transparent;
                     text-align: center;
                 }
-                input {
+                input, label {
+                    display: block;
+                    margin: 8px 0;
+                }
+                input[type="text"] {
                     width: 100%;
                     padding: 8px;
-                    margin: 8px 0;
                     box-sizing: border-box;
                 }
                 button {
@@ -45,6 +50,13 @@ export async function execute(context: vscode.ExtensionContext) {
                 button:hover {
                     background-color: #005a9e;
                 }
+                .checkbox-container {
+                    display: flex;
+                    align-items: center;
+                }
+                .checkbox-container label {
+                    margin-left: 8px;
+                }
             </style>
         </head>
         <body>
@@ -55,6 +67,14 @@ export async function execute(context: vscode.ExtensionContext) {
             <label for="architectural-patterns">Architectural Patterns:</label>
             <input id="architectural-patterns" type="text" placeholder="Enter architectural patterns" />
 
+            <label for="save-path">Path to Save ADR:</label>
+            <input id="save-path" type="text" placeholder="Enter local path to save ADR" />
+
+            <div class="checkbox-container">
+                <input id="save-checkbox" type="checkbox" />
+                <label for="save-checkbox">Save ADR to the specified path</label>
+            </div>
+
             <button id="generate-button">Generate</button>
 
             <script>
@@ -63,10 +83,12 @@ export async function execute(context: vscode.ExtensionContext) {
                 document.getElementById('generate-button').addEventListener('click', () => {
                     const repoUrl = document.getElementById('repo-url').value;
                     const patterns = document.getElementById('architectural-patterns').value;
+                    const savePath = document.getElementById('save-path').value;
+                    const saveToFile = document.getElementById('save-checkbox').checked;
 
                     vscode.postMessage({
                         command: 'generate',
-                        data: { repoUrl, patterns }
+                        data: { repoUrl, patterns, savePath, saveToFile }
                     });
                 });
             </script>
@@ -77,27 +99,45 @@ export async function execute(context: vscode.ExtensionContext) {
     // Interacting with the backend on button press
     panel.webview.onDidReceiveMessage(async (message) => {
         if (message.command === "generate") {
-            const { repoUrl, patterns } = message.data;
+            const { repoUrl, patterns, savePath, saveToFile } = message.data;
 
             if (!repoUrl || !patterns) {
-                vscode.window.showErrorMessage("Both fields are required!");
+                vscode.window.showErrorMessage("Repository URL and Architectural Patterns are required!");
                 return;
             }
 
             try {
+                vscode.window.showInformationMessage(`Generating ADR File ...`);
                 const adrContent = await callBackendApi(repoUrl, patterns);
+
+                // Save ADR file only if the checkbox is checked
+                if (saveToFile) {
+                    if (!savePath) {
+                        vscode.window.showErrorMessage("Path to save ADR is required when 'Save' is selected!");
+                        return;
+                    }
+
+                    if (!fs.existsSync(savePath) || !fs.lstatSync(savePath).isDirectory()) {
+                        vscode.window.showErrorMessage("Invalid path. Please provide a valid directory.");
+                        return;
+                    }
+
+                    const fileName = `ADR_${Date.now()}.md`;
+                    const fullPath = path.join(savePath, fileName);
+
+                    fs.writeFileSync(fullPath, adrContent, { encoding: "utf8" });
+
+                    vscode.window.showInformationMessage(`ADR successfully saved to ${fullPath}`);
+                }
+
+                // Open ADR content in a new editor tab
                 const document = await vscode.workspace.openTextDocument({
                     language: "markdown",
                     content: adrContent
                 });
                 vscode.window.showTextDocument(document);
             } catch (error) {
-                const fallbackMarkdown = `# ADR Generation Failed\n\nUnfortunately, we could not generate an ADR for the provided input.\n\n**Repository URL**: ${repoUrl}\n**Patterns**: ${patterns}`;
-                const document = await vscode.workspace.openTextDocument({
-                    language: "markdown",
-                    content: fallbackMarkdown
-                });
-                vscode.window.showTextDocument(document);
+                vscode.window.showErrorMessage("Error generating ADR");
             }
         }
     });
