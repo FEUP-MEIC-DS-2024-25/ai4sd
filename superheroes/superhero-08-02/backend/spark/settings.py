@@ -27,19 +27,24 @@ load_dotenv()
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-if not DEBUG: # Running in production
+if DEBUG: # Running in development
+    SECURE_SSL_REDIRECT = False
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    ALLOWED_HOSTS = ['*']
+
+else: # Running in production
     SECURE_SSL_REDIRECT = True
     CSRF_COOKIE_SECURE = True
     SESSION_COOKIE_SECURE = True
 
-
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-    'https://superhero-08-02-150699885662.europe-west1.run.app/',
-]
+    ALLOWED_HOSTS = [
+        'localhost',
+        '127.0.0.1',
+        'https://superhero-08-02-150699885662.europe-west1.run.app/',
+    ]
 
 
 # Application definition
@@ -155,5 +160,6 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = 'home'
