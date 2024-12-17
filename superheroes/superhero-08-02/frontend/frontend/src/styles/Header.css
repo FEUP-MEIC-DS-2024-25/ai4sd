@@ -1,0 +1,86 @@
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: var(--blue);
+    padding: 0.3em 1em;
+    border-bottom: var(--cyan) 0.1em solid;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+.nav #spark-title {
+    color: white;
+    font-size: 2em;
+    font-family: "Metrophobic", sans-serif;
+    font-weight: 400;
+    margin: 0;
+}
+
+.together {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+}
+
+.expand {
+    position: relative;
+}
+
+.expandIcon {
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 0.5em 1em;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 0.2em;
+}
+
+.toggleMenu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    background-color: var(--grey);
+    padding: 1em;
+    border-radius: 0.3em;
+    box-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.2);
+    min-width: 10em;
+    text-align: left;
+}
+
+.toggleMenu a {
+    display: block;
+    color: var(--dark-blue);
+    text-decoration: none;
+    padding: 0.5em 0;
+    transition: color 0.3s;
+}
+
+.toggleMenu a:hover {
+    color: var(--cyan);
+}
+
+.expand-icon {
+    cursor: pointer;
+    color: var(--white); 
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease; 
+}
+
+.expandIcon:hover {
+    color: var(--grey); 
+}
+
+.expandIcon svg path {
+    stroke: currentColor; 
+}
+
+.sparkTitle {
+    color: var(--white);
+}
