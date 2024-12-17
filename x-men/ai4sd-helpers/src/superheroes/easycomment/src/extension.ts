@@ -22,7 +22,7 @@ async function updateCofiguration(configuration:string,searchQuery:string){
 
 async function getCommentsFromServer(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
     try {
-    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app", {
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-comments", {
         languageId,
         text,
         apiKey,
@@ -121,6 +121,7 @@ async function selfhostTest(data: [number, string][], languageId: string) {
     }
     return comments;
 }
+
 async function askForApiKey(){
 	do {
 		var searchQuery = await vscode.window.showInputBox({
@@ -139,6 +140,12 @@ async function askForApiKey(){
 
 	} while (searchQuery === '');
 	return searchQuery;
+}
+
+async function test(){
+    const response = await axios.get("https://superhero-07-04-150699885662.europe-west1.run.app");
+    console.log(response.data);
+    return response.data;
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -185,6 +192,9 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
         const language = await getLanguage();
+
+        const testResult = await test();
+        console.log(testResult);
         let mode = 1;//TODO Leagacy is going to be a bit changed
         if(mode===1){
             const response = await getCommentsFromServer(textEditor.document.languageId, textEditor.document.getText(), apiKey, language);
