@@ -15,7 +15,8 @@ export default function useAssistPinSend() {
     const updatePinnedMessages = async (pinnedMessages, setPinnedMessages, responseData) => {
         // Extract all messages from responseData
         const newMessages = responseData.map(item => ({
-            message: item.message
+            message: item.message,
+            id: item.id
         }));
 
         if (pinnedMessages === undefined) {
