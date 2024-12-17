@@ -4,6 +4,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import cors from 'cors';
 import { parseCppCode } from './parsers/parser';
 import { fullFileComments ,CodeComment} from './parsers/parser_legacy';
+import {extractFunctionsFlutter} from './parsers/parser_flutter';
 const app = express();
 const port = 8080; // Replace with the port you want to use
 
@@ -47,7 +48,12 @@ app.post('/generate-comments', async (req, res) => {
 app.post('/generate-comments-splited', async (req, res) => {
     const { languageId, text, apiKey, language } = req.body;
     console.log('Generating comments for split functions');
-    const functions = parseCppCode(text);
+    let functions;
+    if(languageId === 'cpp'){
+        functions = parseCppCode(text);
+    }else if(languageId === 'flutter'){
+        functions = extractFunctionsFlutter(text);
+    }
     console.log('Parsed functions:', functions);
     const comments: CodeComment[] = [];
 
