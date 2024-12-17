@@ -6,7 +6,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../..', '.env') });
 
 const app = express();
-const PORT = 8000;
+const PORT = 8080;
 
 // Middleware
 app.use(express.json());
