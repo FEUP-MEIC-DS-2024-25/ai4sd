@@ -41,6 +41,7 @@
         - The service account name of jarvis follows the format `hero-alliance-jarvis@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com`
     - **echo-jarvis** pub/sub: a communication channel that allows **jarvis** to let superheroes know there are updates in repositories held in **nexus** *(already deployed by us)*
     - **echo-superheroes** pub/sub: same as above, but for **superheroes** to communicate with each other *(already deployed by us)*
+- **Virtual Machine (optional - for Avengers)**: if you are having problems with deployment, you may use the new virtual machine for the avengers. This should allow you to deploy the web application if you are struggling with using the storage bucket. To do so, you need to login using the monitoring account with `gcloud auth login` (check Discord for the credentials: ![here](https://discordapp.com/channels/1305936467113021513/1305936467113021517/1318285302367912017)) and the private key (also on Discord, ![here](https://discordapp.com/channels/1305936467113021513/1305936467113021517/1318308647855456307)). Use this command to access the virtual machine after authenticating: `gcloud compute ssh --zone "europe-west1-d" "avengers-vm" --project "hero-alliance-feup-ds-24-25" --ssh-key-file=[private key]`
 
 ## Public superhero links
 - **avengers**: https://storage.googleapis.com/hero-alliance-avengers/index.html
