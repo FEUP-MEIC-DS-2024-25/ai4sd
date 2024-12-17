@@ -1,0 +1,14 @@
+.env
+out/
+src/output/
+*.log
+node_modules/
+backend/uploads
+backend/temp
+superhero-02-04.json
+google-cloud-sdk/
+google-cloud-cli-linux-x86_64.tar.gz
+save_cloud_key.js
+save_gemini.js
+delete.js
+gemini_key.json
