@@ -68,7 +68,7 @@ export default function ExistingFeaturecraftAssistant({ conversationId, setConve
                         <PinnedMessagesBlock pinnedMessages={pinnedMessages} />
                     </div>
                 </div>
-                <NewMessageBlock onSendMessage={handleSendMessage} onReceiveMessage={handleReceiveMessage} conversationId={conversationId} />
+                <NewMessageBlock onSendMessage={handleSendMessage} onReceiveMessage={handleReceiveMessage} conversationId={conversationId} pinnedMessages={pinnedMessages} setPinnedMessages={setPinnedMessages}/>
             </div>
             <ErrorNotification error={error} setError={setError} />
         </div>

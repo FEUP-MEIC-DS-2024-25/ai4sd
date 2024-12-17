@@ -142,8 +142,6 @@ class FirestoreHelper:
 
             # Retrieve the updated document
             updated_doc = chat.get()
-            print({"id": updated_doc.id, **updated_doc.to_dict()})
-
 
             # Return the document data, including the ID
             if updated_doc.exists:
@@ -174,7 +172,6 @@ class FirestoreHelper:
                     "id": docs.id,
                     "pinnedMessage": docs.to_dict().get("pinnedMessages"),
                 }
-            print(result,"HERE2")
             return True, result
         
         except Exception as e:
