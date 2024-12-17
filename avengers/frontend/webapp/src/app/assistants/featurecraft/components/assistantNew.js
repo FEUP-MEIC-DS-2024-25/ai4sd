@@ -47,7 +47,7 @@ export default function NewFeaturecraftAssistant({ conversationId, setConversati
                         <MessageBlock messages={messages} totalMessages={totalMessages} description={description} conversationId={conversationId} pinnedMessages={pinnedMessages} setPinnedMessages={setPinnedMessages} />
                     </div>
                     <div className="h-full">
-                        <PinnedMessagesBlock pinnedMessages={pinnedMessages} />
+                        <PinnedMessagesBlock pinnedMessages={pinnedMessages} conversationId={conversationId} setPinnedMessages={setPinnedMessages} setError={setError} />
                     </div>
                 </div>
                 <NewMessageBlock onSendMessage={handleSendMessage} onReceiveMessage={handleReceiveMessage} conversationId={conversationId} />

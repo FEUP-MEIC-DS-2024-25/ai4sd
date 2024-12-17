@@ -1,6 +1,8 @@
 import { useState } from "react";
+import DeleteButton from "@/app/assistants/featurecraft/components/ui/deleteButton";
+import deletePinnedMessage from "@/app/assistants/featurecraft/hooks/useAssistPinDelete";
 
-export default function PinnedMessagesBlock({ pinnedMessages }) {
+export default function PinnedMessagesBlock({ pinnedMessages, conversationId, setPinnedMessages, setError }) {
     const [isHidden, setIsHidden] = useState(true);
 
     const toggleView = () => {
@@ -60,7 +62,10 @@ export default function PinnedMessagesBlock({ pinnedMessages }) {
                     <ul className="space-y-2">
                         {pinnedMessages.map((pinnedMessage, index) => (
                             <li key={index} className="p-2 bg-white rounded-md shadow-sm max-w-96">
-                                <p className="font-semibold">{pinnedMessage.message}</p>
+                                <div className="flex justify-between items-center">
+                                    <p className="font-semibold">{pinnedMessage.message}</p>
+                                    <DeleteButton onClick={() => deletePinnedMessage(conversationId, pinnedMessage.id, setPinnedMessages, setError)} />
+                                </div>
                             </li>
                         ))}
                     </ul>
