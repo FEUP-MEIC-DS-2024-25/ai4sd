@@ -23,6 +23,7 @@ function HomePage() {
 
   return (
     <div>
+
       <main>
         {isAuthenticated ? (
           <div>
@@ -52,7 +53,6 @@ function HomePage() {
           </div>
         )}
       </main>
-
     </div>
   );
 }
