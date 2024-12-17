@@ -8,12 +8,13 @@ from .firestoreHelper import db_helper
 from .routers.chat import router as chat_router
 from .routers.history import router as history_router
 
-from .JSONValidation.validators import new_chat_validator, ValidationError
+#from .JSONValidation.validators import new_chat_validator, ValidationErro
+
 
 # Load the API key from .env file
-load_dotenv()
-LLM_API_KEY = os.getenv("superhero-03-01-secret")
 CORS_URL = "https://storage.googleapis.com/hero-alliance-avengers/"
+
+
 
 
 # collection_name its the name of the collection like if was a table in a database. Data is a dictionary with the data
@@ -26,9 +27,6 @@ CORS_URL = "https://storage.googleapis.com/hero-alliance-avengers/"
 #db_helper.delete("chat_history", {"user_message": "Hello"})
 #print(db_helper.read("chat_history"))
 
-# Check if API key is set
-if not LLM_API_KEY:
-    raise ValueError("LLM_API_KEY not found in environment variables")
 
 app = FastAPI()
 

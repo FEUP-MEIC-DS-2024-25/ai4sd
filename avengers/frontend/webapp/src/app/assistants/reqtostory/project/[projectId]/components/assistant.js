@@ -14,6 +14,7 @@ const Assistant = () => {
     const [versions, setVersions] = useState([]);
     const [requirements, setRequirements] = useState({});
     const [userStories, setUserStories] = useState([]);
+    const [feedbackQueries, setFeedbackQueries] = useState([]);
 
     const [currentIndex, setCurrentIndex] = useState(0);
     const [userStoryIndex, setUserStoryIndex] = useState(0);
@@ -84,6 +85,48 @@ const Assistant = () => {
         }
     };
 
+    const handleFeedback = (feedbackType, storyIndex) => {
+        const story = userStories[storyIndex];
+        
+        let newQuery = null;
+        if (feedbackType === "like") {
+            newQuery = {
+                storyIndex,
+                query: `"${story.user_story}" was liked - generate more stories with similar structure and content`
+            };
+        } else if (feedbackType === "dislike") {
+            newQuery = {
+                storyIndex,
+                query: `"${story.user_story}" was disliked - avoid generating similar stories and try different approaches`
+            };
+        }
+    
+        setFeedbackQueries(prevQueries => {
+            const filteredQueries = prevQueries.filter(q => q.storyIndex !== storyIndex);
+            
+            const updatedQueries = newQuery ? [...filteredQueries, newQuery] : filteredQueries;
+    
+            if (feedbackType === "like" || feedbackType === "dislike") {
+                submitWithQueries(updatedQueries);
+            }
+    
+            return updatedQueries;
+        });
+    };
+
+    const submitWithQueries = (queries) => {
+        try {
+            let content = requirements.content;
+            const feedbackContext = queries.length > 0 ? queries.map(fq => fq.query).join(". ") : "";
+    
+            const enhancedContent = feedbackContext ? `${content}\n\nFeedback context:\n${feedbackContext}` : content;
+    
+            handleSubmit(projectId, requirements.version, false, enhancedContent);
+        } catch (error) {
+            console.error("Error in submitWithQueries:", error);
+        }
+    };
+
     const goBack = () => {
         if (currentIndex > 0) {
             setCurrentIndex(currentIndex - 1);
@@ -110,19 +153,20 @@ const Assistant = () => {
         }
     };
 
-    const handleSubmit = async (projId, reqVersion, newContent) => {
+    const handleSubmit = async (projId, reqVersion, newContent, submittedContent = null) => {
         try {
             setIsLoading(true);
-            let content = editContent;
+            let content = submittedContent || editContent;
 
             if (!newContent) {
-                content = requirements.content;
+                content = submittedContent || requirements.content;
             }
 
             if (!content.trim()) {
                 throw new Error("Content cannot be null or an empty string.");
             }
 
+            console.log(content);
             const response = await fetch("http://localhost:8080/regenerate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -144,6 +188,19 @@ const Assistant = () => {
                 .replace("```", "");
 
             updateVersion(content, userStories, newContent);
+
+            setTimeout(() => {
+                const buttons = document.querySelectorAll('.filled');
+                buttons.forEach(button => {
+                    const icon = button.children[0];
+                    button.classList.remove('filled');
+                    button.classList.add('not-filled');
+                    
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                });
+            }, 100);
+            
         } catch (error) {
             setError(`Failed to generate user stories:  ${error}.`);
             console.error(error);
@@ -154,7 +211,7 @@ const Assistant = () => {
 
     const updateVersion = (req, user_stories, newContent) => {
         const updatedVersions = [...versions];
-
+    
         if (newContent) {
             const lastVersion = Math.max(
                 ...updatedVersions.map((v) => v.version),
@@ -166,6 +223,7 @@ const Assistant = () => {
                 user_stories: [{ version: 1, user_stories }],
             };
             updatedVersions.push(newReqVersion);
+            setCurrentIndex(updatedVersions.length - 1);
         } else {
             const currentVersion = updatedVersions.find(
                 (v) => v.version === requirements.version
@@ -179,6 +237,7 @@ const Assistant = () => {
                     version: lastUSVersion + 1,
                     user_stories,
                 });
+                setUserStoryIndex(currentVersion.user_stories.length - 1);
             }
         }
 
@@ -305,6 +364,7 @@ const Assistant = () => {
                             setEditingStory={setEditingStory}
                             tempContent={tempContent}
                             setTempContent={setTempContent}
+                            queryAdders={handleFeedback}
                         />
                     </div>
                     <div className="versionSelect">

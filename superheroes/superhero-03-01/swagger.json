@@ -154,6 +154,9 @@
       "post": {
         "summary": "Pin Message by ID",
         "description": "Pins a message to a chat by the provided chat ID.",
+        "tags": [
+          "pin"
+        ],
         "operationId": "pinMessageById",
         "parameters": [
           {
@@ -171,21 +174,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "description": "The message to pin."
-                  }
-                },
-                "required": ["message"]
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Messages to pin."
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Message pinned successfully.",
+            "description": "Messages pinned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -241,6 +241,9 @@
         "summary": "Get the pinned messages of a conversation",
         "description": "The conversation identifier should be used to obtain a full conversation.",
         "operationId": "getPinnedMessagesById",
+        "tags": [
+          "pin"
+        ],
         "parameters": [
           {
             "name": "id",
