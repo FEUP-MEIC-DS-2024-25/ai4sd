@@ -51,8 +51,11 @@ app.post('/generate-comments-splited', async (req, res) => {
     let functions;
     if(languageId === 'cpp'){
         functions = parseCppCode(text);
-    }else if(languageId === 'flutter'){
+    }else if(languageId === 'dart'){
         functions = extractFunctionsFlutter(text);
+    }
+    if (!functions) {
+        return res.status(500).json({ error: `Language not supported ${languageId}` });
     }
     console.log('Parsed functions:', functions);
     const comments: CodeComment[] = [];

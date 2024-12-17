@@ -73,7 +73,7 @@ async function getCommentsFromServerSplitFunctions(languageId: string, text: str
 }
 
 async function getParsedFunctions(languageId: string, text: string, apiKey: string, language: string): Promise<[number,string][]> {
-    if (languageId !== "cpp") {
+    if (languageId !== "cpp" && languageId !== "dart") {
         throw new Error(`Only C++ is supported for split functions mode language ${languageId}`);
     }
     console.log("Getting comments from server split functions");
@@ -195,14 +195,15 @@ export function activate(context: vscode.ExtensionContext) {
 
         const testResult = await test();
         console.log(testResult);
-        let mode = 1;//TODO Leagacy is going to be a bit changed
-        if(mode===1){
+        console.log('Language:', textEditor.document.languageId);
+        let mode = 2;//TODO Leagacy is going to be a bit changed
+        if(language === "python"){
             const response = await getCommentsFromServer(textEditor.document.languageId, textEditor.document.getText(), apiKey, language);
             //console.log(response);
             const comments: CodeComment[] = JSON.parse(response);
             console.log(comments);
             updateComments(textEditor,comments);
-        }else if(mode===2){
+        }else if(mode===1){
             console.log("Split functions");
             const functions = await getParsedFunctions(textEditor.document.languageId, textEditor.document.getText(), apiKey, language);
             console.log('Parsed functions:', functions);

@@ -1,17 +1,12 @@
 import * as ts from 'typescript';
 
-interface FunctionInfo {
-  line: number;
-  declaration: string;
-  content: string;
-}
 
-export function extractFunctionsFlutter(sourceCode: string): FunctionInfo[] {
+export function extractFunctionsFlutter(sourceCode: string): Map<number, Object> {
   // Create a source file from the input code
   const sourceFile = ts.createSourceFile('temp.ts', sourceCode, ts.ScriptTarget.Latest, true);
 
   // Array to store function information
-  const functions: FunctionInfo[] = [];
+  const functions = new Map();
 
   // Recursive function to traverse the AST
   function visit(node: ts.Node) {
@@ -40,10 +35,8 @@ export function extractFunctionsFlutter(sourceCode: string): FunctionInfo[] {
         declaration = 'function expression';
       }
 
-      functions.push({
-        line: lineNumber,
-        declaration,
-        content: nodeText
+      functions.set(lineNumber,{
+        body: declaration+"\n"+nodeText
       });
     }
 
