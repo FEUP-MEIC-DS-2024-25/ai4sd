@@ -33,33 +33,3 @@ exports.createWireframe = async (requirementsText) => {
     throw error;
   }
 };
-// Generate multiple PlantUML codes using Vertex AI
-/*exports.createMultipleWireframes = async (requirementsText) => {
-  const model = vertexAI.preview.getGenerativeModel({ model: "gemini-pro" });
-
-  const request = {
-    contents: [
-      {
-        role: "user",
-        parts: [
-          {
-            text: `Analyze the requirements: ${requirementsText}. Generate separate PlantUML codes for individual components (e.g., headers, footers, forms, navigation bars). Provide each code as plain text without formatting.`
-          },
-        ],
-      },
-    ],
-  };
-
-  try {
-    const result = await model.generateContent(request);
-    const response = await result.response;
-
-    // Extract multiple UML codes from the response
-    const umlCodes = response.candidates.map(candidate => candidate.content.parts[0].text.trim());
-
-    return umlCodes;
-  } catch (error) {
-    console.error("Error generating multiple wireframes from Gemini:", error);
-    throw error;
-  }
-};*/
