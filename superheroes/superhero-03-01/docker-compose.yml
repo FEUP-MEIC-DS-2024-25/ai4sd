@@ -11,7 +11,7 @@ services:
     environment:
       - NAME=FeatureCraft
       - PYTHONUNBUFFERED=1
-      - superhero-03-01-secret=${superhero-03-01-secret}
+      - superhero-03-01-secret=${superhero_03_01_secret}
       - C3T1_CORS_URL=${C3T1_CORS_URL}
       - C3T1_DB_COLLECTION=${C3T1_DB_COLLECTION}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/firebase.json
