@@ -12,11 +12,11 @@ const RequirementsAssistant = () => {
   const [summary, setSummary] = useState("");
 
   return (
-    <div className="p-4 bg-light rounded shadow">
+    <div className="p-4 bg-light rounded shadow hv-100 d-flex flex-column">
       <h1 className="text-center text-primary mb-4">
         Speech2Req
       </h1>
-      <div className="d-flex flex-column gap-3">
+      <div className="d-flex flex-column gap-3 hv-100">
         <UploadAudio setTranscription={setTranscription} setSummary={setSummary} />
         <RecordLiveAudio setTranscription={setTranscription} setSummary={setSummary} />
         <DisplayTranscription transcription={transcription} />
