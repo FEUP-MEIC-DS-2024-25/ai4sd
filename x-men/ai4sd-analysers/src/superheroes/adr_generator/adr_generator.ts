@@ -68,7 +68,7 @@ export async function execute(context: vscode.ExtensionContext) {
             <input id="architectural-patterns" type="text" placeholder="Enter architectural patterns" />
 
             <label for="save-path">Path to Save ADR:</label>
-            <input id="save-path" type="text" placeholder="Enter local path to save ADR" />
+            <input id="save-path" type="text" placeholder="Enter local absolute path to save ADR" />
 
             <div class="checkbox-container">
                 <input id="save-checkbox" type="checkbox" />
