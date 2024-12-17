@@ -1,0 +1,38 @@
+[
+    {
+      "_id": "user1",
+      "nome": "Alice Smith",
+      "email": "alice.smith@example.com",
+      "password": "Al1ceS!2024",
+      "historico": ["historico_1", "historico_2", "historico_3"]
+    },
+    {
+      "_id": "user2",
+      "nome": "Bob Johnson",
+      "email": "bob.johnson@example.com",
+      "password": "B0bJ@hn2024",
+      "historico": ["historico_4", "historico_5", "historico_6"]
+    },
+    {
+      "_id": "user3",
+      "nome": "Carol Williams",
+      "email": "carol.williams@example.com",
+      "password": "Car0lW!24",
+      "historico": ["historico_7", "historico_8", "historico_9"]
+    },
+    {
+      "_id": "user4",
+      "nome": "David Brown",
+      "email": "david.brown@example.com",
+      "password": "Dav!dB2024",
+      "historico": ["historico_10", "historico_11", "historico_12"]
+    },
+    {
+      "_id": "user5",
+      "nome": "Eve Davis",
+      "email": "eve.davis@example.com",
+      "password": "Ev3D@vis24",
+      "historico": ["historico_13", "historico_14", "historico_15"]
+    }
+  ]
+  

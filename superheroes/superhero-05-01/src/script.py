@@ -8,43 +8,51 @@ import google.generativeai as genai
 import sys
 
 def clear():
-    print("\033[H\033[J")
+  print("\033[H\033[J")
 
 clear()
 
 prompt1 =  """
-Make a thorough analysis of the following code and identify ALL possible vulnerabilities:
-Code:"""
+Make a thorough analysis of the following files and their code, and identify ALL possible vulnerabilities:\n
+"""
 
-prompt2 = """
+prompt2 = """\n
 Please give answer in a JSON format with the following fields, for each vulnerability in the code:
 title: <Title of the vulnerability>
 description: <Small description of the vulnerability>
-lines: <Lines of code that are vulnerable>
+file: <File where the vulnerability is located>
+lines: <Line numbers of the code that is vulnerable>
 fix: <How to fix the vulnerability>
 
 Only provide the JSON array of vulnerabilities.
-
+DO NOT WRAP OR FORMAT THE JSON IN A CODE BLOCK.
 Please try to be synthetic in your answers.
 """
 
-# with open('etc/gemini_token', 'r') as file:
-#   gemini_token = file.read().strip()
+with open('/etc/gemini_token', 'r') as file:
+  gemini_token = file.read().strip()
 
-gemini_token = "AIzaSyAtSSHni87FP3Hy3GIsE3bQkwnJV5dz4-E"
-
-
-def run_online(file):
+def run_online(files):
   # credentials = service_account.Credentials.from_service_account_file('wardenai-bbe86d6d2916.json')
   # vertexai.init(
   #     project="wardenai",
   #     credentials=credentials,
   # )
 
+  filesStr = ""
+
+  for file in files:
+    try:
+      filesStr += file.name + ":\n"
+      filesStr += file.content
+      filesStr += "\n\n"
+    except TypeError:
+      return "Request is not in the correct format"
+
   genai.configure(api_key=gemini_token)
 
   model = genai.GenerativeModel("gemini-1.5-flash-002")
-  response = model.generate_content(prompt1 + file + prompt2).text
+  response = model.generate_content(prompt1 + filesStr + prompt2).text
 
   return response
 

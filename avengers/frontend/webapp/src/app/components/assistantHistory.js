@@ -11,7 +11,7 @@ export default function AssistantHistory({ name, type, interactions }) {
         <div className={styles.assistantHistory}>
             <HistoryHeader name={name} type={type} />
             <HistoryList interactions={interactions} />
-            <AssistantMenu buttons={icons} />
+            <AssistantMenu buttons={icons} assistantName={name} />
         </div>
 
     )
