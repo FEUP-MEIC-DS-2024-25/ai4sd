@@ -104,7 +104,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				language: json.codeLanguage
 			}).then(doc => {
 				dContext = new DiagramContext(doc, output, clientId);
-				console.log(output)
+				console.log(output);
 				vscode.window.showInformationMessage(doc.uri.toString());
 				vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside).then(editor => {
 					vscode.commands.executeCommand(json.vscodeCommand);
