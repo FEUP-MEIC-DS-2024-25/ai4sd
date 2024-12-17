@@ -11,7 +11,7 @@ EXPOSE 8080
 #COPY package.json package-lock.json ./
 RUN npm install
 
-RUN --mount=type=secret,id=secret
+RUN --mount=type=secret,id=superhero-06-04-secret
 
 # Copy the remaining backend code
 COPY . .
