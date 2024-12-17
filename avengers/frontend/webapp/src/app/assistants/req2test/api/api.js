@@ -1,11 +1,25 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'http://localhost:8080';
 
 export const getChats = async () => {
     const response = await axios.get(`${BASE_URL}/get_chats`);
 
     console.log(response.data);
+    if (response.data.error !== undefined) {
+        console.warn("No chats found; returning default chat");
+        // Return default chat
+        return [{
+            id: 1,
+            name: "Default Chat",
+            messages: [
+                {
+                    content: "Hello! I am Req2Test. How can I help you?",
+                    sender: "bot"
+                }
+            ]
+        }];
+    }
 
     const chats = []
 
