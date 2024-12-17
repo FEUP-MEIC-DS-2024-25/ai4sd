@@ -11,6 +11,20 @@ from ..JSONValidation.validators import new_chat_validator, ValidationError
 import datetime
 from fastapi.responses import JSONResponse
 
+from google.cloud import secretmanager
+
+client = secretmanager.SecretManagerServiceClient()
+project_id = "hero-alliance-feup-ds-24-25"
+secret_name ="superhero-03-01-secret"
+name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+response = client.access_secret_version(request={"name": name})
+LLM_API_KEY = response.payload.data.decode("UTF-8")
+
+
+# Check if API key is set
+if not LLM_API_KEY:
+    raise ValueError("superhero-03-01-secret not found in environment variables")
+
 
 router = APIRouter()
 
@@ -55,7 +69,6 @@ async def send_message(message: Message):
         raise HTTPException(status_code=400, detail=f"Bad request: {e.message}")
     
     try:
-        LLM_API_KEY = os.getenv("superhero-03-01-secret")
         if not LLM_API_KEY:
             raise ValueError("superhero-03-01-secret not found in environment variables")
 
