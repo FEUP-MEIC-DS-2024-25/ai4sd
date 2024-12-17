@@ -31,6 +31,7 @@ DEBUG = True
 
 if DEBUG: # Running in development
     SECURE_SSL_REDIRECT = False
+    CORS_ALLOW_ALL_ORIGINS = True
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
     ALLOWED_HOSTS = ['*']
@@ -62,9 +63,11 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'django.contrib.sessions',
     'spark',
+    'corsheaders',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -73,6 +76,10 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
 ]
 
 INTERNAL_IPS = [
