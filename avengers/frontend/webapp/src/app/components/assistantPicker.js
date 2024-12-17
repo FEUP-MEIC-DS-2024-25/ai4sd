@@ -24,9 +24,12 @@ function getAssistantList() {
     let ai9 = { name: "Req2Speech", type: "req", link: "/assistants/req2speech" };
     let ai10 = { name: "ReqToStory", type: "req", link: "/assistants/reqtostory" };
     let ai11 = { name: "Diagram Detective", type: "req", link: "/assistants/diagramDetective" };
-
+    let ai12 = { name: "Warden AI", type: "refact", link: "/assistants/wardenAI" };
+    let ai13 = { name: "TeXes", type:"verif", link: "/assistants/texes"};
+    let ai14 = { name: "DiagramIt", type: "req", link: "/assistants/diagramit" };
     let ai_c06_t04 = { name: "PatternPartner", type: "arch", link: "/assistants/patternpartner" };
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai_c06_t04]
+  
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, ai_c06_t04]
 }
 
 function AssistantPickerItems() {

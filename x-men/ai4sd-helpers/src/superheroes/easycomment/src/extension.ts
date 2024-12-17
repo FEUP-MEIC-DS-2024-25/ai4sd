@@ -22,7 +22,7 @@ async function updateCofiguration(configuration:string,searchQuery:string){
 
 async function getCommentsFromServer(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
     try {
-    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-comments", {
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app", {
         languageId,
         text,
         apiKey,
