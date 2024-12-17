@@ -11,7 +11,7 @@ services:
     environment:
       - NAME=FeatureCraft
       - PYTHONUNBUFFERED=1
-      - C3T1_LLM_API_KEY=${C3T1_LLM_API_KEY}
+      - superhero-03-01-secret=${superhero-03-01-secret}
       - GOOGLE_APPLICATION_CREDENTIALS=/app/firebase.json
   swagger:
     image: swaggerapi/swagger-ui
