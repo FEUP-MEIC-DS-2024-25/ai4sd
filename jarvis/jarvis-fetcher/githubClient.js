@@ -15,3 +15,23 @@ export async function fetchRepoContents(octokit, org, repo, path = "") {
     });
     return data;
 }
+
+export async function addWebhook(octokit, org, repo) {
+    const data = await octokit.request('POST /repos/{owner}/{repo}/hooks', {
+        owner: org,
+        repo: repo,
+        name: 'web',
+        active: true,
+        events: [
+            'push',
+        ],
+        config: {
+            url: 'https://example.com/webhook',
+            content_type: 'json',
+            insecure_ssl: '0'
+        },
+        headers: {
+            'X-GitHub-Api-Version': '2022-11-28'
+        }
+    })
+}
