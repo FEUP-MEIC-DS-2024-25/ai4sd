@@ -19,7 +19,6 @@ steps:
     args:
       - "-c"
       - |
-      - |
           echo "Installing jq..."
           apt-get update && apt-get install -y jq
           echo "Fetching the last updated merged PR ID..."
