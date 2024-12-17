@@ -11,7 +11,7 @@ function HomePage() {
   // Fetch user and project data from Django backend
   useEffect(() => {
     axios
-      .get("http://localhost:8000/") // Replace with your actual API endpoint
+      .get("http://localhost:8000/api/home/") // Replace with your actual API endpoint
       .then((response) => {
         const { user, projects } = response.data;
         setIsAuthenticated(user.is_authenticated);
@@ -23,6 +23,7 @@ function HomePage() {
 
   return (
     <div>
+
       <main>
         {isAuthenticated ? (
           <div>
@@ -52,7 +53,6 @@ function HomePage() {
           </div>
         )}
       </main>
-
     </div>
   );
 }
