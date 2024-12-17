@@ -1,3 +1,6 @@
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib import messages
@@ -12,23 +15,23 @@ from .forms import MyUserCreationForm, MyAuthenticationForm, SparkProjectForm
 from .models import SparkProject
 import requests
 
-def home_view(request):
-    projects = []
-    spark_projects = []
+class HomeAPIView(APIView):
+    def get(self, request):
 
-    if (request.user.is_authenticated):
+        if not request.user.is_authenticated:
+            return Response({'error': 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+ 
+
         profile = request.user.profile
-
         spark_projects = profile.owned_projects.all()
 
         api = GitHubGraphQLAPI(profile.github_token)
         # projects = api.get_organization_projects('FEUP-MEIC-DS-2024-25')
         # projects += api.get_user_projects(profile.github_username)
         projects = api.get_project('PVT_kwDOCtw04M4Ap0aW')
-        print(projects)
 
-    return render(request, 'home.html', {'projects': projects, 'spark_projects': spark_projects})
-
+        return Response({'projects': projects, 'spark_projects': spark_projects}, status=status.HTTP_200_OK)
+    
 @login_required
 def profile_redirect(request):
     return redirect('profile', request.user.username)
