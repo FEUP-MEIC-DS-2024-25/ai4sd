@@ -10,16 +10,25 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
 
     const handleSend = async () => {
         if (message.trim()) {
-            // Create the correct message object
-            const newMessage = { 
-                "currentConversation": conversationId,
-                "newMessage":{
-                    "authorName": "You",
-                    "body": message,
-                    "timestamp": new Date().toISOString(),
-                    "isDeleted": false
-                }
+
+            let newMessageBody = message;
+            let pinned = [];
+
+            if (pinnedMessages) {
+                pinned = pinnedMessages.map(item => item.message);
             }
+
+            const newMessage = {
+                "currentConversation": conversationId,
+                "newMessage": {
+                    "authorName": "You",
+                    "body": newMessageBody,
+                    "timestamp": new Date().toISOString(),
+                    "isDeleted": false,
+                    "pinnedMessages": pinned
+                }
+            };
+
             // Send the message to the server
             try {
                 onSendMessage(newMessage);
@@ -29,6 +38,7 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
                 if (textarea) {
                     textarea.style.height = 'auto';
                 }
+                console.log(newMessage);
                 const response = await axios.post("http://localhost:8080/chat", newMessage);
                 onReceiveMessage(response);
                 
