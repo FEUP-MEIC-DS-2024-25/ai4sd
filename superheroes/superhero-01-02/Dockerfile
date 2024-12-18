@@ -6,7 +6,7 @@ COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN echo '$(superhero-01-02-secret)' > /app/.env
+RUN --mount=type=secret,id=secret cat /run/secrets/secret > /app/.env
 
 EXPOSE 8080
 
