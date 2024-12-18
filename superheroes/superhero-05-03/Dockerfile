@@ -9,6 +9,8 @@ COPY package*.json ./
 # Install all dependencies
 RUN npm install
 
+RUN echo 'GEMINI_API_KEY=$(superhero-05-03-secret)' > .env
+
 # Copy all the files to the container
 COPY . .
 

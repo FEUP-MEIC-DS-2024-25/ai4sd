@@ -12,10 +12,45 @@
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "title": "EasyComment",
+      "properties": {
+        "EasyComment.apikey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Gemini API Key String"
+        },
+        "EasyComment.language": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Language of the comments"
+        },
+        "EasyComment.url_host_llm": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "url of openai api host of the llm"
+        },
+        "EasyComment.apikey_host_llm": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "api_key of openai api host of the llm"
+        },
+        "EasyComment.model_used": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "model used from the openai api"
+        }
+      }
+    },
     "commands": [
       {
         "command": "ai4sd-helpers.call",
         "title": "AI4SD Helpers: Ask for help"
+      },
+      {
+        "command": "EasyComment.annotate",
+        "title": "Toggle Tutor Annotations",
+        "icon": "$(comment)"
       }
     ],
     "viewsContainers": {
@@ -35,6 +70,14 @@
           "name": "Refactor Options"
         }
       ]
+    },
+    "menus": {
+      "editor/title": [
+        {
+          "command": "EasyComment.annotate",
+          "group": "navigation"
+        }
+      ]
     }
   },
   "scripts": {
@@ -46,14 +89,16 @@
     "test": "vscode-test"
   },
   "devDependencies": {
-    "@types/vscode": "^1.95.0",
     "@types/mocha": "^10.0.9",
     "@types/node": "20.x",
+    "@types/vscode": "^1.95.0",
     "@typescript-eslint/eslint-plugin": "^8.10.0",
     "@typescript-eslint/parser": "^8.7.0",
-    "eslint": "^9.13.0",
-    "typescript": "^5.6.3",
     "@vscode/test-cli": "^0.0.10",
-    "@vscode/test-electron": "^2.4.1"
+    "@vscode/test-electron": "^2.4.1",
+    "axios": "^1.7.9",
+    "eslint": "^9.13.0",
+    "openai": "^4.76.1",
+    "typescript": "^5.6.3"
   }
 }

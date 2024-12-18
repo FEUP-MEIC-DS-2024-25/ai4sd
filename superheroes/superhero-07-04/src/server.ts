@@ -1,10 +1,17 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import cors from 'cors';
 import { parseCppCode } from './parsers/parser';
 import { fullFileComments ,CodeComment} from './parsers/parser_legacy';
 const app = express();
 const port = 8080; // Replace with the port you want to use
+
+app.use(cors({
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+}));
 
 app.use(bodyParser.json());
 
@@ -99,6 +106,9 @@ app.post('/generate-split-code', async (req, res) => {
     }
 });
 
+app.get('/', (req, res) => {
+    res.json({ status: 'API is running' });
+});
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
