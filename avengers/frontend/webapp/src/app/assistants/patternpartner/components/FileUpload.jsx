@@ -5,7 +5,7 @@ import { uploadLogFile } from "./services/apiService";
 
 const FileUpload = () => {
   //const [file, setFile] = useState(null);
-  const [file, setFile] = useState([]);
+  const [files, setFile] = useState([]);
   const [uploadStatus, setUploadStatus] = useState(''); // To store the upload response
   const [message, setMessage] = useState("");
   const [spinner, setSpinnerVisibility] = useState(false); //To store spinner's visibilty
