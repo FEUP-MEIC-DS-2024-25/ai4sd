@@ -6,12 +6,12 @@ import { GITHUB_APP_PRIVATE_KEY_PATH, PASSPHRASE, SERVICE_ACCOUNT_KEY_PATH } fro
 import fs from "fs/promises";
 
 
-initializeApp({
-  credential: cert(SERVICE_ACCOUNT_KEY_PATH),
-  databaseURL: "https://hero-alliance-feup-ds-24-25.firebaseio.com"
-});
-
-const db = getFirestore();
+//initializeApp({
+//  credential: cert(SERVICE_ACCOUNT_KEY_PATH),
+//  databaseURL: "https://hero-alliance-feup-ds-24-25.firebaseio.com"
+//});
+//
+//const db = getFirestore();
 
 export async function createEncryptedDocument(passphrase) {
   try {
