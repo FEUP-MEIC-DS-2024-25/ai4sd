@@ -13,6 +13,8 @@ django-debug-toolbar = "*"
 dj-rest-auth = "*"
 django-oauth2-provider = "*"
 oauth2-provider = "*"
+djangorestframework = "*"
+django-cors-headers = "*"
 
 [dev-packages]
 
