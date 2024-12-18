@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import "./Create.css"; // Import the Create CSS
 
 function Create() {
   const [formData, setFormData] = useState({
@@ -43,12 +44,12 @@ function Create() {
   };
 
   return (
-    <div className="container mt-4">
-      <h2>Create Spark Project</h2>
+    <div className="create-container">
+      <h2 className="create-title">Create Spark Project</h2>
 
       {successMessage && <p className="success-message">{successMessage}</p>}
 
-      <form className="mt-3" onSubmit={handleSubmit}>
+      <form className="create-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label htmlFor="projectName">Project Name</label>
           <input
@@ -57,26 +58,30 @@ function Create() {
             name="projectName"
             value={formData.projectName}
             onChange={handleChange}
-            className={`form-control ${errors.projectName ? "is-invalid" : ""}`}
+            className={`form-input ${errors.projectName ? "is-invalid" : ""}`}
             required
           />
-          {errors.projectName && <div className="invalid-feedback">{errors.projectName}</div>}
+          {errors.projectName && (
+            <div className="invalid-feedback">{errors.projectName}</div>
+          )}
         </div>
 
-        <div className="form-group mt-3">
+        <div className="form-group">
           <label htmlFor="description">Description</label>
           <textarea
             id="description"
             name="description"
             value={formData.description}
             onChange={handleChange}
-            className={`form-control ${errors.description ? "is-invalid" : ""}`}
+            className={`form-input ${errors.description ? "is-invalid" : ""}`}
             required
           />
-          {errors.description && <div className="invalid-feedback">{errors.description}</div>}
+          {errors.description && (
+            <div className="invalid-feedback">{errors.description}</div>
+          )}
         </div>
 
-        <button type="submit" className="btn btn-primary mt-4">
+        <button type="submit" className="create-button">
           Create Project
         </button>
       </form>

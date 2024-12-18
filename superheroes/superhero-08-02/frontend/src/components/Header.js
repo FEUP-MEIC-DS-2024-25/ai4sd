@@ -1,10 +1,37 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import "./Header.css"; // Import the Header CSS
 
 function Header() {
   const [menuVisible, setMenuVisible] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // Track if user is logged in
+  const navigate = useNavigate();
+
+  // Fetch user authentication status
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/user-status/", { withCredentials: true }) // Replace with your endpoint
+      .then((response) => {
+        if (response.data.is_authenticated) {
+          setIsAuthenticated(true);
+        }
+      })
+      .catch((error) => console.error("Error checking authentication:", error));
+  }, []);
 
   const toggleMenu = () => {
     setMenuVisible((prev) => !prev); // Toggle the menu visibility state
+  };
+
+  const handleLogout = async () => {
+    try {
+      await axios.post("http://localhost:8000/logout/", {}, { withCredentials: true });
+      setIsAuthenticated(false); // Update authentication state
+      navigate("/login");
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
@@ -12,12 +39,14 @@ function Header() {
       <div className="together">
         {/* Logo */}
         <img src="/favicon.ico" alt="logo" height="50" style={{ width: "auto" }} />
-        <h1 id="spark-title">SPARK</h1>
+        <h1 id="spark-title" className="sparkTitle">
+          SPARK
+        </h1>
       </div>
 
       {/* Expandable Menu */}
       <div className="expand">
-        <span className="expand-icon" onClick={toggleMenu}>
+        <span className="expandIcon expand-icon" onClick={toggleMenu}>
           <svg
             width="30"
             height="30"
@@ -49,14 +78,25 @@ function Header() {
           </svg>
         </span>
 
-        {/* Menu Links */}
-        {menuVisible && (
-          <div className="expandable-menu">
-            <a href="/option1">Option 1</a>
-            <a href="/option2">Option 2</a>
-            <a href="/option3">Option 3</a>
-          </div>
-        )}
+        {/* Expandable Menu */}
+        <div className={`toggleMenu ${menuVisible ? "show" : ""}`}>
+        {isAuthenticated ? (
+            <>
+              <Link to="/profile">Profile</Link>
+              <button className="logout-button" onClick={handleLogout}>
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/signup">Signup</Link>
+            </>
+          )}
+
+          <Link to="/option1">Option 1</Link>
+
+        </div>
       </div>
     </div>
   );

@@ -20,6 +20,10 @@
     margin: 0;
 }
 
+.sparkTitle {
+    color: var(--white);
+}
+
 .together {
     display: flex;
     align-items: center;
@@ -38,6 +42,17 @@
     font-size: 1em;
     cursor: pointer;
     border-radius: 0.2em;
+    display: flex;
+    align-items: center;
+    transition: color 0.3s ease;
+}
+
+.expandIcon:hover {
+    color: var(--grey);
+}
+
+.expandIcon svg path {
+    stroke: currentColor;
 }
 
 .toggleMenu {
@@ -51,6 +66,7 @@
     box-shadow: 0 0.1em 0.2em rgba(0, 0, 0, 0.2);
     min-width: 10em;
     text-align: left;
+    z-index: 1001;
 }
 
 .toggleMenu a {
@@ -58,29 +74,34 @@
     color: var(--dark-blue);
     text-decoration: none;
     padding: 0.5em 0;
-    transition: color 0.3s;
+    transition: color 0.3s ease;
 }
 
 .toggleMenu a:hover {
     color: var(--cyan);
 }
 
-.expand-icon {
+.toggleMenu.show {
+    display: block;
+}
+
+.logout-button {
+    background-color: var(--blue);
+    color: var(--white);
+    border: none;
+    border-radius: 0.25em;
+    padding: 0.5em 1em;
+    font-size: 1em;
     cursor: pointer;
-    color: var(--white); 
-    display: flex;
-    align-items: center;
-    transition: color 0.3s ease; 
+    display: block;
+    text-align: center;
+    width: 100%;
+    margin: 0.5em 0;
+    transition: background-color 0.3s ease;
 }
 
-.expandIcon:hover {
-    color: var(--grey); 
-}
-
-.expandIcon svg path {
-    stroke: currentColor; 
-}
-
-.sparkTitle {
+.logout-button:hover {
+    background-color: var(--cyan);
     color: var(--white);
 }
+  
