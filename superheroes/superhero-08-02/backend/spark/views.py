@@ -3,14 +3,14 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login
+from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from api.services.github_rest import githubRestAPI
-from api.services.github_graphql import GitHubGraphQLAPI
 from django.shortcuts import redirect
-from .forms import MyUserCreationForm, MyAuthenticationForm, SparkProjectForm
+from .forms import MyUserCreationForm, SparkProjectForm
 from .models import SparkProject
 import requests
 from django.contrib.auth import authenticate, login
@@ -26,7 +26,9 @@ from rest_framework.response import Response
 
 class UserStatusAPIView(APIView):
     def get(self, request):
-        return Response({"is_authenticated": request.user.is_authenticated})
+        if not request.user.is_authenticated:
+            return Response({"is_authenticated": False})
+        return Response({"is_authenticated": True})
 
 class LogoutAPIView(APIView):
     def post(self, request):
@@ -35,21 +37,16 @@ class LogoutAPIView(APIView):
 
 class HomeAPIView(APIView):
     def get(self, request):
-        projects = []
-        spark_projects = []
 
-        if request.user.is_authenticated:
-            return Response({'error': 'User not authenticated'}, status=status.HTTP_401_UNAUTHORIZED)
+        sparkProjects = []
+
+        if not request.user.is_authenticated:
+            return Response({'username': None, 'isAuthenticated': False, 'sparkProjects': sparkProjects}, status=status.HTTP_200_OK)
  
-            profile = request.user.profile
-            spark_projects = profile.owned_projects.all()
+        profile = request.user.profile
+        sparkProjects = profile.owned_projects.all()
 
-            api = GitHubGraphQLAPI(profile.github_token)
-            # projects = api.get_organization_projects('FEUP-MEIC-DS-2024-25')
-            # projects += api.get_user_projects(profile.github_username)
-            projects = api.get_project('PVT_kwDOCtw04M4Ap0aW')
-
-        return Response({'projects': projects, 'spark_projects': spark_projects}, status=status.HTTP_200_OK)
+        return Response({'username': request.user.username, 'isAuthenticated': True, 'sparkProjects': sparkProjects}, status=status.HTTP_200_OK)
     
 
 class ProfileAPIView(APIView):
@@ -80,9 +77,9 @@ class LoginAPIView(APIView):
 
         if user is not None:
             login(request, user)
-            return Response({'message': 'User logged in successfully.'}, status=status.HTTP_200_OK)
-        else:
-            return Response({'error': 'Invalid username or password.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'username': user.username, 'isAuthenticated': True, 'message': 'User logged in successfully.'}, status=status.HTTP_200_OK)
+        
+        return Response({'isAuthenticated':False, 'error': 'Invalid username or password.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SignupAPIView(APIView):
@@ -91,9 +88,9 @@ class SignupAPIView(APIView):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return Response({'message': 'User registered and logged in.'}, status=status.HTTP_201_CREATED)
+            return Response({'success': True, 'message': 'User registered and logged in.'}, status=status.HTTP_201_CREATED)
         
-        return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'success': False, 'errors': form.errors}, status=status.HTTP_400_BAD_REQUEST)
     
 
 class SparkProjectAPIView(APIView):

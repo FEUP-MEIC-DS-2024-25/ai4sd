@@ -1,25 +1,53 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import Header from "./Header";
-import Footer from "./Footer";
+import apiClient from "../config/axios";
 
 function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(null);
   const [sparkProjects, setSparkProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const handleLogout = async () => {
+    try {
+      await apiClient.post("/logout/");
+      alert("You have been logged out");
+      window.location.reload();
+    } catch (error) {
+      console.error("Error logging out:", error);
+      alert("Logout failed. Please try again.");
+    }
+  };
+
 
   // Fetch user and project data from Django backend
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/home/") // Replace with your actual API endpoint
-      .then((response) => {
-        const { user, projects } = response.data;
-        setIsAuthenticated(user.is_authenticated);
-        setUsername(user.username);
-        setSparkProjects(projects);
-      })
-      .catch((error) => console.error("Error fetching data:", error));
+    const fetchUserData = async () => {
+      try {
+        const response = await apiClient.get("/");
+        const { isAuthenticated, username, sparkProjects } = response.data;
+        setIsAuthenticated(isAuthenticated);
+        setUsername(username);
+        setSparkProjects(sparkProjects);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        setError("Error fetching user data");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+
   }, []);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
 
   return (
     <div>
@@ -33,17 +61,16 @@ function HomePage() {
             <ul>
               {sparkProjects.map((project) => (
                 <li key={project.id}>
-                  <a href={`/spark_project/${project.id}`}>{project.name}</a>
+                  <a href={`/spark-project/${project.id}`}>{project.name}</a>
                 </li>
               ))}
             </ul>
 
-            <a href="/create_spark_project">Create a new SPARK project</a>
+            <a href="/create-spark-project">Create a new SPARK project</a>
 
-            <form method="POST" action="/logout">
-              <button type="submit">Logout</button>
-            </form>
-          </div>
+            <button onClick={handleLogout}>Log out</button>
+
+«          </div>
         ) : (
           <div>
             <p>You are not logged in.</p>

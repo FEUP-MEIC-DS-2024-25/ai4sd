@@ -11,11 +11,10 @@ function Header() {
   // Fetch user authentication status
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/user-status/", { withCredentials: true }) // Replace with your endpoint
+      .get("http://localhost:8000/user-status/", { withCredentials: true }) // Replace with your endpoint
       .then((response) => {
-        if (response.data.is_authenticated) {
-          setIsAuthenticated(true);
-        }
+        const { isAuthenticated } = response.data;
+        setIsAuthenticated(isAuthenticated);
       })
       .catch((error) => console.error("Error checking authentication:", error));
   }, []);

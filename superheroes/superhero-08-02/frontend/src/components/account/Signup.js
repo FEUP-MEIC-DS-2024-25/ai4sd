@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import axios from "axios";
+import apiClient from "../../config/axios";
 import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css"; // Import the Auth CSS
 
@@ -9,7 +9,6 @@ function Signup() {
   // State for form data and errors
   const [formData, setFormData] = useState({
     username: "",
-    email: "",
     password1: "",
     password2: "",
   });
@@ -30,19 +29,15 @@ function Signup() {
     e.preventDefault();
 
     try {
-      const response = await axios.post("http://localhost:8000/api/signup/", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await apiClient.post("/signup/", formData);
 
       if (response.data.success) {
         alert("Account created successfully!");
-        navigate("/login");
+        navigate("/");
       }
     } catch (error) {
-      if (error.response && error.response.data) {
-        setErrors(error.response.data);
+      if (error.response && error.response.data.errors) {
+        setErrors(error.response.data.errors);
       } else {
         console.error("Error during signup:", error);
       }
@@ -70,25 +65,6 @@ function Signup() {
           />
           {errors.username && (
             <div className="form-feedback">{errors.username}</div>
-          )}
-        </div>
-
-        {/* Email Field */}
-        <div className="form-group">
-          <label htmlFor="email" className="form-label">
-            Email
-          </label>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            className={`form-input ${errors.email ? "is-invalid" : ""}`}
-            required
-          />
-          {errors.email && (
-            <div className="form-feedback">{errors.email}</div>
           )}
         </div>
 
