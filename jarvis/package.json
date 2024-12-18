@@ -28,5 +28,8 @@
     "dotenv": "^16.4.5",
     "firebase-admin": "^13.0.1",
     "octokit": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/google-cloud__pubsub": "^0.18.1"
   }
 }
