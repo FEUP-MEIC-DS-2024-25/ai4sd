@@ -15,7 +15,8 @@ RUN pip install --no-cache-dir \
     google-generativeai \
     python-docx \
     markdown2 \
-    beautifulsoup4
+    beautifulsoup4 \
+    google-cloud-secret-manager
 
 COPY . .
 
