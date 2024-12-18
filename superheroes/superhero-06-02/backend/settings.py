@@ -62,10 +62,6 @@ REST_FRAMEWORK = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-]
-
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
@@ -131,7 +127,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-if not GEMINI_API_KEY:
-    raise ValueError('The GEMINI_API_KEY environment variable is not set.')
