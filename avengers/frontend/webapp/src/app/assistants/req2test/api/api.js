@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8080';
+const BASE_URL = 'https://superhero-01-03-150699885662.europe-west1.run.app';
 
 export const getChats = async () => {
     const response = await axios.get(`${BASE_URL}/get_chats`);
