@@ -1,5 +1,4 @@
 import os
-from cgitb import reset
 from uuid import uuid4
 import datetime
 import firebase_admin
@@ -8,10 +7,10 @@ from firebase_admin import firestore
 import uuid
 
 
-db_collection = os.getenv("C3T1_DB_COLLECTION")
+db_collection = "superhero-03-01"
 
 class FirestoreHelper:
-    def __init__(self, collectionName="featurecraft"):
+    def __init__(self, collectionName="superhero-03-01"):
         self.database_name = collectionName
         self.app = firebase_admin.initialize_app()
         self.db = firestore.client(app=self.app)
@@ -142,8 +141,6 @@ class FirestoreHelper:
 
             # Retrieve the updated document
             updated_doc = chat.get()
-            print({"id": updated_doc.id, **updated_doc.to_dict()})
-
 
             # Return the document data, including the ID
             if updated_doc.exists:
@@ -174,7 +171,6 @@ class FirestoreHelper:
                     "id": docs.id,
                     "pinnedMessage": docs.to_dict().get("pinnedMessages"),
                 }
-            print(result,"HERE2")
             return True, result
         
         except Exception as e:
@@ -198,6 +194,28 @@ class FirestoreHelper:
         except Exception as e:
             print(f"Failed to create new conversation: {e}")
             return None
+
+    def deletePinnedMessage(self, chat_id, pinned_message_id):
+        try:
+            chat_ref = self.collection.document("chat").collection("history").document(chat_id)
+            chat = chat_ref.get()
+
+            if not chat.exists:
+                return False
+
+            chat_dict = chat.to_dict()
+            pinned_messages = chat_dict.get("pinnedMessages", [])
+            updated_pinned_messages = [msg for msg in pinned_messages if msg["id"] != pinned_message_id]
+
+            if len(pinned_messages) == len(updated_pinned_messages):
+                # No pinned message was removed
+                return False
+
+            chat_ref.update({"pinnedMessages": updated_pinned_messages})
+            return True
+        except Exception as e:
+            print(f"Failed to delete pinned message: {e}")
+            return False
 
 # Initialize Firestore helper
 db_helper = FirestoreHelper(collectionName=db_collection)

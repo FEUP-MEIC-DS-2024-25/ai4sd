@@ -1,0 +1,8 @@
+services:
+  geminiapi:
+    build:
+      context: ./
+    ports:
+      - "3200:3200"
+    volumes:
+      - ./src:/app/src

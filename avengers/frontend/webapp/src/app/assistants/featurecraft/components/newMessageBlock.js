@@ -1,9 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 import styles from "@/app/page.module.css";
+import UploadRequirementsPopup from "./UploadRequirementsPopup";
 
-export default function NewMessageBlock({onSendMessage, onReceiveMessage, conversationId}) {
+export default function NewMessageBlock({onSendMessage, onReceiveMessage, conversationId, pinnedMessages, setPinnedMessages}) {
     const [message, setMessage] = useState("");
+    const [isPopupVisible, setIsPopupVisible] = useState(false);
+
 
     const handleSend = async () => {
         if (message.trim()) {
@@ -21,14 +24,12 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
             try {
                 onSendMessage(newMessage);
                 setMessage("");
-                
                 // Reset the height of the textarea
                 const textarea = document.querySelector('textarea');
                 if (textarea) {
                     textarea.style.height = 'auto';
                 }
-                
-                const response = await axios.post("http://localhost:8000/chat", newMessage);
+                const response = await axios.post("https://superhero-03-01-150699885662.europe-west1.run.app/chat", newMessage);
                 onReceiveMessage(response);
                 
             } catch (error) {
@@ -41,6 +42,29 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
         <div className="flex flex-col justify-end items-center">
             <div className="min-h-20 w-full flex justify-center p-3 relative">
                 <div className="w-full flex">
+                    <button
+                        className="w-16 flex justify-center items-center border bg-[#6C757D] rounded"
+                        onClick={() => setIsPopupVisible(true)}
+                    >
+                        <svg
+                            className="w-6 h-6 text-white"
+                            aria-hidden="true"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke="currentColor"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M8 17V7a4 4 0 1 1 8 0v10a6 6 0 1 1-12 0V7"
+                            />
+                        </svg>
+                    </button>
+                    {isPopupVisible && (
+                        <UploadRequirementsPopup onClose={() => setIsPopupVisible(false)} conversationId={conversationId} pinnedMessages={pinnedMessages} setPinnedMessages={setPinnedMessages} />
+                    )}
                     <textarea
                         className="flex-grow p-2 border border-gray-300 rounded resize-none overflow-hidden min-h-24 max-h-24 pr-10 mr-2 bg-white text-black"
                         placeholder="Type your message here..."
@@ -52,13 +76,16 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
-                    <button className="w-16 flex justify-center items-center border bg-[#6C757D] rounded" onClick={handleSend}>
-                        <svg className="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 14">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M5 13V1m0 0L1 5m4-4 4 4" />
+                    <button className="w-16 flex justify-center items-center border bg-[#6C757D] rounded"
+                            onClick={handleSend}>
+                        <svg className="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                             fill="none" viewBox="0 0 10 14">
+                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"
+                                  d="M5 13V1m0 0L1 5m4-4 4 4"/>
                         </svg>
                     </button>
                 </div>
             </div>
         </div>
-    )
+    );
 }
