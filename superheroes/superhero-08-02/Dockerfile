@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.12-slim
 
 WORKDIR /backend
 
@@ -8,7 +8,7 @@ RUN pip install -U pipenv
 RUN pipenv install --system
 
 RUN --mount=type=secret,id=superhero-08-02-secret \
-    echo "SECRET_KEY=$(cat /run/secrets/superhero-08-02-secret)" > ./.env
+    echo "SECRET_KEY=$(cat /run/secrets/superhero-08-02-secret)" > .env
 
 COPY backend/ ./
 
