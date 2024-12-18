@@ -1,0 +1,555 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Feature Craft API",
+    "description": "This is the API specific to 1MEIC03 class for team 1. <br/>\nFeatureCraft aims to improve the software development process by using AI to suggest original feature based on existing project requirements.",
+    "contact": {
+      "email": "featurecraft6@gmail.com"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080"
+    }
+  ],
+  "tags": [
+    {
+      "name": "history",
+      "description": "Converstion history related"
+    },
+    {
+      "name": "chat",
+      "description": "Chat and conversation related"
+    }
+  ],
+  "paths": {
+    "/history": {
+      "get": {
+        "tags": [
+          "history"
+        ],
+        "summary": "Gets chat history",
+        "description": "It gets the chat history from the database.\n",
+        "operationId": "getHistory",
+        "responses": {
+          "200": {
+            "description": "OK - Returns a history and the first conversation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/historyItem"
+                  }
+                }
+              }
+            }
+          },
+          "204": {
+            "description": "OK - Nothing exists yet"
+          },
+          "500": {
+            "description": "Internal server error: something went wrong"
+          }
+        }
+      }
+    },
+    "/chat/{id}": {
+      "get": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Get the conversation",
+        "description": "The conversation identifier should be used to obtain a full conversation.",
+        "operationId": "geChatById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns conversation information",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      }
+    },
+    "/chat": {
+      "post": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Send message to conversation",
+        "operationId": "sendMessage",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/chat_body"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Converstion already existed. Message sent and response received.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "201": {
+            "description": "New converstion started. Message sent and full new conversation received.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_201"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request. Something went wrong."
+          },
+          "503": {
+            "description": "Service Unavailable. Currently unable to generate response for a gemini related reason",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_503"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/pin/{id}": {
+      "post": {
+        "summary": "Pin Message by ID",
+        "description": "Pins a message to a chat by the provided chat ID.",
+        "tags": [
+          "pin"
+        ],
+        "operationId": "pinMessageById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the chat where the message should be pinned.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Messages to pin."
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Messages pinned successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "message": {
+                        "type": "string"
+                      },
+                      "id": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "summary": "Get the pinned messages of a conversation",
+        "description": "The conversation identifier should be used to obtain a full conversation.",
+        "operationId": "getPinnedMessagesById",
+        "tags": [
+          "pin"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved pinned messages.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string",
+                        "example":"chatId"
+                      },
+                      "pinneMessages": {
+                        "type": "array",
+                        "items":{
+                          "type": "object",
+                          "properties": {
+                            "message": {
+                              "type": "string",
+                              "example": "This is a pinned message"
+                            },
+                            "id": {
+                              "type": "string",
+                              "example": "pinMessageId"
+                            }
+                          }
+                        }
+                      }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Chat document does not exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/pin/delete": {
+      "delete": {
+        "summary": "Delete a pinned message by ID",
+        "description": "Deletes a pinned message from a chat by the provided chat ID and pinned message ID.",
+        "operationId": "deletePinnedMessageById",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "The ID of the chat."
+                  },
+                  "pinnedMessageId": {
+                    "type": "string",
+                    "description": "The ID of the pinned message to delete."
+                  }
+                },
+                "required": ["chatId", "pinnedMessageId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pinned message deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Pinned message deleted successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pinned message not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Pinned message does not exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "historyItem": {
+        "required": [
+          "description",
+          "id",
+          "lastMessageDate",
+          "startDate",
+          "userId"
+        ],
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "d290f1ee-6c54-4b01-90e6-d701748f0851"
+          },
+          "userId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "description": {
+            "type": "string",
+            "example": "This is a description about something."
+          },
+          "startDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2016-08-29T09:12:33.001Z"
+          },
+          "lastMessageDate": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2016-08-29T09:12:33.001Z"
+          }
+        }
+      },
+      "conversationItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "members": {
+            "type": "array",
+            "example": [
+              "d290f1ee-6c54-4b01-90e6-d701748f0851",
+              "Gemini"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "description": {
+            "type": "string",
+            "example": "This is a short description of the conversation. Can be empty."
+          },
+          "messages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/messageItem"
+            }
+          },
+          "pinnedMessages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/pinnedItem"
+            }
+          },
+          "totalMessages": {
+            "type": "integer",
+            "example": 0,
+            "default": 0
+          }
+        }
+      },
+      "messageItem": {
+        "type": "object",
+        "properties": {
+          "authorName": {
+            "type": "string",
+            "example": "You"
+          },
+          "body": {
+            "type": "string",
+            "example": "Can you help me?"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "isDeleted": {
+            "type": "boolean",
+            "default": false
+          }
+        }
+      },
+      "pinnedItem": {
+        "type": "object"
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "conversation": {
+            "$ref": "#/components/schemas/conversationItem"
+          }
+        }
+      },
+      "chat_body": {
+        "type": "object",
+        "properties": {
+          "currentConversation": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "newMessage": {
+            "$ref": "#/components/schemas/messageItem"
+          }
+        }
+      },
+      "inline_response_200_1": {
+        "type": "object",
+        "properties": {
+          "answer": {
+            "$ref": "#/components/schemas/messageItem"
+          }
+        }
+      },
+      "inline_response_201": {
+        "type": "object",
+        "properties": {
+          "newConversation": {
+            "$ref": "#/components/schemas/conversationItem"
+          }
+        }
+      },
+      "inline_response_503": {
+        "type": "object",
+        "properties": {
+          "geminiResponse": {
+            "type": "object",
+            "x-stoplight": {
+              "id": "kijr61ahqpdit"
+            }
+          }
+        }
+      }
+    }
+  }
+}
