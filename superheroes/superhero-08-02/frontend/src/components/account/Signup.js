@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
+import "./Auth.css"; // Import the Auth CSS
 
 function Signup() {
   const navigate = useNavigate();
@@ -49,12 +50,12 @@ function Signup() {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="mb-4">Sign Up</h1>
+    <div className="auth-container">
+      <h1 className="auth-title">Sign Up</h1>
 
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="auth-form">
         {/* Username Field */}
-        <div className="form-group mb-3">
+        <div className="form-group">
           <label htmlFor="username" className="form-label">
             Username
           </label>
@@ -64,16 +65,16 @@ function Signup() {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className={`form-control ${errors.username ? "is-invalid" : ""}`}
+            className={`form-input ${errors.username ? "is-invalid" : ""}`}
             required
           />
           {errors.username && (
-            <div className="invalid-feedback">{errors.username}</div>
+            <div className="form-feedback">{errors.username}</div>
           )}
         </div>
 
         {/* Email Field */}
-        <div className="form-group mb-3">
+        <div className="form-group">
           <label htmlFor="email" className="form-label">
             Email
           </label>
@@ -83,16 +84,16 @@ function Signup() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`form-control ${errors.email ? "is-invalid" : ""}`}
+            className={`form-input ${errors.email ? "is-invalid" : ""}`}
             required
           />
           {errors.email && (
-            <div className="invalid-feedback">{errors.email}</div>
+            <div className="form-feedback">{errors.email}</div>
           )}
         </div>
 
         {/* Password Field 1 */}
-        <div className="form-group mb-3">
+        <div className="form-group">
           <label htmlFor="password1" className="form-label">
             Password
           </label>
@@ -102,16 +103,16 @@ function Signup() {
             name="password1"
             value={formData.password1}
             onChange={handleChange}
-            className={`form-control ${errors.password1 ? "is-invalid" : ""}`}
+            className={`form-input ${errors.password1 ? "is-invalid" : ""}`}
             required
           />
           {errors.password1 && (
-            <div className="invalid-feedback">{errors.password1}</div>
+            <div className="form-feedback">{errors.password1}</div>
           )}
         </div>
 
         {/* Password Field 2 */}
-        <div className="form-group mb-3">
+        <div className="form-group">
           <label htmlFor="password2" className="form-label">
             Confirm Password
           </label>
@@ -121,24 +122,26 @@ function Signup() {
             name="password2"
             value={formData.password2}
             onChange={handleChange}
-            className={`form-control ${errors.password2 ? "is-invalid" : ""}`}
+            className={`form-input ${errors.password2 ? "is-invalid" : ""}`}
             required
           />
           {errors.password2 && (
-            <div className="invalid-feedback">{errors.password2}</div>
+            <div className="form-feedback">{errors.password2}</div>
           )}
         </div>
 
         {/* Submit Button */}
-        <button type="submit" className="btn btn-primary">
+        <button type="submit" className="auth-button">
           Sign Up
         </button>
       </form>
 
       {/* Link to Login Page */}
-      <p className="mt-3">
-        Already have an account? <Link to="/login">Login here</Link>.
-      </p>
+      <div className="auth-footer">
+        <p>
+          Already have an account? <Link to="/login">Login here</Link>
+        </p>
+      </div>
     </div>
   );
 }

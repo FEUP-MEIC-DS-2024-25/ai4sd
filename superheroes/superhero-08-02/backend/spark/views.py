@@ -13,6 +13,25 @@ from django.shortcuts import redirect
 from .forms import MyUserCreationForm, MyAuthenticationForm, SparkProjectForm
 from .models import SparkProject
 import requests
+from django.contrib.auth import authenticate, login
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.contrib.auth import logout
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class UserStatusAPIView(APIView):
+    def get(self, request):
+        return Response({"is_authenticated": request.user.is_authenticated})
+
+class LogoutAPIView(APIView):
+    def post(self, request):
+        logout(request)
+        return Response({"message": "User logged out successfully."}, status=status.HTTP_200_OK)
 
 class HomeAPIView(APIView):
     def get(self, request):
@@ -51,14 +70,19 @@ class ProfileAPIView(APIView):
     
 class LoginAPIView(APIView):
     def post(self, request):
-        
-        form = MyAuthenticationForm(data = request.data)
-        if form.is_valid():
-            user = form.get_user()
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        if not username or not password:
+            return Response({'error': 'Username and password are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
             login(request, user)
-            return Response({'message': 'User logged in.'}, status=status.HTTP_200_OK)
-        
-        return Response({'error': 'Invalid credentials.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'User logged in successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid username or password.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SignupAPIView(APIView):
