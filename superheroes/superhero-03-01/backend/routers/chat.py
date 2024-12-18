@@ -46,10 +46,11 @@ def createGeminiContext(chat, new_message):
         "If you are suggesting new features, your answer should write them in bold so that it is clear what they are. Any explanation given for that \n"
         "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
     )
-    if chat.get('pinnedMessages'):
+    
+    if new_message.get('pinnedMessages') and len(new_message['pinnedMessages']) > 0:
         context += "Current existing requirements:\n"
-        for pin in chat['pinnedMessages']:
-            context += f"- {pin['message']}\n"
+        for pin in new_message['pinnedMessages']:
+            context += f"- {pin}\n"
         context += "\n"
 
     context += "Conversation summary:\n"
@@ -106,40 +107,6 @@ def createDescription(chat):
     except Exception as e:
         print(f"Error generating description: {e}")
         return "New conversation"
-
-def createGeminiContextWithPinnedMessages(new_message):
-    # Initialize context with general instructions
-    context = (
-        "I am working on requirements engineering. I would like original feature suggestions based on existing project requirements.\n"
-        "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
-        "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
-        "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
-    )
-
-    # Handle pinned messages
-    if new_message.pinnedMessages and len(new_message.pinnedMessages) > 0:
-        pinned_context = "Pinned Requirements:\n" + "\n".join(
-            f"- {requirement}" for requirement in new_message.pinnedMessages
-        )
-        context += f"\n\n{pinned_context}"
-
-    # Combine chat messages and the new message
-    complete_messages = [
-        {
-            "authorName": new_message.authorName,
-            "body": new_message.body,
-            "timestamp": new_message.timestamp,
-            "isDeleted": new_message.isDeleted,
-        }
-    ]
-
-    # Add conversation messages to the context
-    for message in complete_messages:
-        context += f"\n{message['authorName']}: {message['body']}"
-
-    return context
-
-
 
 
 @router.post("/")
