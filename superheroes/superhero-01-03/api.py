@@ -139,23 +139,26 @@ async def create_chat(chat: Chat):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while creating the chat: {str(e)}")
 
+class CreatePromptRequest(BaseModel):
+    chat_id: str
+    user_input: str
 
 @app.post("/create_prompt")
-async def create_prompt(chat_id: str, user_input: str):
+async def create_prompt(request: CreatePromptRequest):
     """
     Endpoint to create a new prompt in Firestore.
     """
     prompt = Prompt(
-        id=chat_id,
+        id=request.chat_id,
         created_at=datetime.now(),
         response=None,
-        user_input=user_input
+        user_input=request.user_input
     )
 
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("prompts")
 
-        prompt_data = prompt.dict(exclude={"id"})  
+        prompt_data = prompt.model_dump()  
         prompt_data["created_at"] = datetime.now()  
 
         if prompt.response:
@@ -174,16 +177,27 @@ async def create_prompt(chat_id: str, user_input: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while creating the prompt: {str(e)}")
-    
+
+
+class CreateResponseRequest(BaseModel):
+    prompt_id: str
+    ai_response: str
+
 @app.post("/create_response")
-async def create_response(response: Response):
+async def create_response(request: CreateResponseRequest):
     """
     Endpoint to create a new response in Firestore.
     """
+    response = Response(
+        id=request.prompt_id,
+        ai_response=request.ai_response,
+        created_at=datetime.now()
+    )
+
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("ai_responses")
 
-        response_data = response.dict(exclude={"id"})  
+        response_data = response.model_dump()  
         response_data["created_at"] = datetime.now()  
 
         new_doc_ref = collection_ref.add(response_data)  

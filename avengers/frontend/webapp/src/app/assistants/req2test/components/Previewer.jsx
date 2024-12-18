@@ -54,7 +54,11 @@ export default function Previewer(msg) {
     };
       
     return(
-        <Markdown value={msg.content} renderer={customRenderer} />
+      <Markdown 
+        key={Math.random()} 
+        value={msg.content} 
+        renderer={customRenderer} 
+      />
     )
 }
 

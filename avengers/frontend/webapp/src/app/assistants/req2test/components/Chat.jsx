@@ -70,14 +70,14 @@ export const Chatbot = ({ chat, setChat }) => {
       setChat(updatedChat)
 
       // Call createPrompt API
-      //const prompt = await createPrompt(chat.id, input);
-      //const promptId = prompt.id;
+      const prompt = await createPrompt(chat.id, input);
+      const promptId = prompt.id;
 
       // API call to get AI response
       const aiResponseText = await convertRequirementToText(input);
 
       // Call createResponse API
-      //const response = await createResponse(promptId, aiResponseText);
+      const response = await createResponse(promptId, aiResponseText);
 
       const botResponse = { content: aiResponseText, sender: "bot" }
       const chatWithBotResponse = {
