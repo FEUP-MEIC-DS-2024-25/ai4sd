@@ -10,11 +10,16 @@ COPY package*.json ./
 # Instalar as dependências
 RUN npm install
 
+# Put the secret into the file /etc/secrets/.env in our container.
+RUN --mount=type=secret,id=superhero-03-02-secret \
+ cat /run/secrets/superhero-03-02-secret > /etc/gemini_token
+
 # Copiar todos os ficheiros do projeto para o container
 COPY . .
 
 # Especificar o ambiente como produção
 ENV NODE_ENV=production
+
 
 # Expor a porta usada pela aplicação
 EXPOSE 8080

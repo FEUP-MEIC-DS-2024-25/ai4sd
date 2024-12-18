@@ -32,11 +32,9 @@ RUN python3 -m pip install "fastapi[standard]"
 
 COPY ./src .
 
-RUN --mount=type=secret,id=secret \
-    cat /run/secrets/secret > /etc/gemini_token
+# RUN --mount=type=secret,id=superhero-05-01-secret \
+#     cat /run/secrets/superhero-05-01-secret > /etc/gemini_token
 
-## COPY wardenai-bbe86d6d2916.json .
-
-# CMD ["bash", "-c", "fastapi run api.py"]
+RUN echo "AIzaSyAtSSHni87FP3Hy3GIsE3bQkwnJV5dz4-E" > /etc/gemini_token
 
 CMD ["uvicorn" ,"api:app", "--host", "0.0.0.0", "--port", "8080"]

@@ -1,14 +1,41 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
 import firebase_admin
 from firebase_admin import credentials, firestore
+import os
+import gemini
 
-cred = credentials.Certificate("serviceAccountKey.json")
-firebase_admin.initialize_app(cred)
-db = firestore.client()
+def initialize_firebase():
+    """Initializes Firebase using Application Default Credentials (ADC)."""
+    try: 
+        # Use ADC by not passing explicit credentials.
+        cred = credentials.ApplicationDefault()
+        firebase_admin.initialize_app(cred)
+        print("Firebase initialized using Application Default Credentials")
+        return firestore.client()
+    except Exception as e:
+        print(f"Error initializing Firebase using ADC: {e}")
+        # Fallback for local development, trying to read credentials from GOOGLE_APPLICATION_CREDENTIALS
+        if "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
+            try:
+                 cred_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+                 if os.path.exists(cred_path):
+                    cred = credentials.Certificate(cred_path)
+                    firebase_admin.initialize_app(cred)
+                    print("Firebase initialized using Service Account from GOOGLE_APPLICATION_CREDENTIALS.")
+                    return firestore.client()
+                 else:
+                     print("Error: the file specified in GOOGLE_APPLICATION_CREDENTIALS doesn't exist")
+            except Exception as e:
+                    print(f"Error initializing Firebase from GOOGLE_APPLICATION_CREDENTIALS: {e}")
+        return None
+
+
+# No need to provide project_id or secret_id if using ADC
+db = initialize_firebase()
 
 class Response(BaseModel):
     id: str
@@ -61,6 +88,9 @@ class Chat(BaseModel):
         data["prompts"] = [FirestoreRef.from_firestore(ref) for ref in data.get("prompts", [])]
         data["created_at"] = data["created_at"].isoformat()  
         return cls(**data)
+    
+class RequirementRequest(BaseModel):
+    requirement: str
 
 app = FastAPI()
 
@@ -84,14 +114,14 @@ async def create_chat(chat: Chat):
     Endpoint to create a new chat in Firestore.
     """
     try:
-        collection_ref = db.collection("req2test").document("development").collection("chats")
+        collection_ref = db.collection("superhero-01-03").document("development").collection("chats")
 
         chat_data = chat.dict(exclude={"id"})  
         chat_data["created_at"] = datetime.now() 
 
         prompts_as_refs = []
         for prompt in chat.prompts:
-            prompt_doc_path = f"req2test/development/prompts/{prompt.id}"  
+            prompt_doc_path = f"superhero-01-03/development/prompts/{prompt.id}"  
             prompt_ref = db.document(prompt_doc_path)
 
             if not prompt_ref.get().exists:
@@ -111,18 +141,25 @@ async def create_chat(chat: Chat):
 
 
 @app.post("/create_prompt")
-async def create_prompt(prompt: Prompt):
+async def create_prompt(chat_id: str, user_input: str):
     """
     Endpoint to create a new prompt in Firestore.
     """
+    prompt = Prompt(
+        id=chat_id,
+        created_at=datetime.now(),
+        response=None,
+        user_input=user_input
+    )
+
     try:
-        collection_ref = db.collection("req2test").document("development").collection("prompts")
+        collection_ref = db.collection("superhero-01-03").document("development").collection("prompts")
 
         prompt_data = prompt.dict(exclude={"id"})  
         prompt_data["created_at"] = datetime.now()  
 
         if prompt.response:
-            response_doc_path = f"req2test/development/ai_responses/{prompt.response.id}"  
+            response_doc_path = f"superhero-01-03/development/ai_responses/{prompt.response.id}"  
             response_ref = db.document(response_doc_path)
 
             if not response_ref.get().exists:
@@ -144,7 +181,7 @@ async def create_response(response: Response):
     Endpoint to create a new response in Firestore.
     """
     try:
-        collection_ref = db.collection("req2test").document("development").collection("ai_responses")
+        collection_ref = db.collection("superhero-01-03").document("development").collection("ai_responses")
 
         response_data = response.dict(exclude={"id"})  
         response_data["created_at"] = datetime.now()  
@@ -167,7 +204,7 @@ async def get_chats():
     Endpoint to retrieve all chats inside the chats collection in Firestore.
     """
     try:
-        collection_ref = db.collection("req2test").document("development").collection("chats")
+        collection_ref = db.collection("superhero-01-03").document("development").collection("chats")
         chat_documents = collection_ref.stream()
 
         chats = []
@@ -185,7 +222,7 @@ async def get_chat(chat_id: str):
     Endpoint to retrieve a chats specified by its ID inside the chats collection in Firestore.
     """
     try:
-        chat_ref = db.collection("req2test").document("development").collection("chats").document(chat_id)
+        chat_ref = db.collection("superhero-01-03").document("development").collection("chats").document(chat_id)
         chat_doc = chat_ref.get()
 
         if chat_doc.exists:
@@ -202,7 +239,7 @@ async def get_prompts():
     Endpoint to retrieve all prompts inside the prompts collection in Firestore.
     """
     try:
-        collection_ref = db.collection("req2test").document("development").collection("prompts")
+        collection_ref = db.collection("superhero-01-03").document("development").collection("prompts")
         prompt_documents = collection_ref.stream()
 
         prompts = []
@@ -220,7 +257,7 @@ async def get_prompt(prompt_id: str):
     Endpoint to retrieve a prompt specified by its ID inside the prompts collection in Firestore.
     """
     try:
-        prompt_ref = db.collection("req2test").document("development").collection("prompts").document(prompt_id)
+        prompt_ref = db.collection("superhero-01-03").document("development").collection("prompts").document(prompt_id)
         prompt_doc = prompt_ref.get()
 
         if prompt_doc.exists:
@@ -237,7 +274,7 @@ async def get_response(response_id: str):
     Endpoint to retrieve a response specified by its ID inside the ai_responses collection in Firestore.
     """
     try:
-        response_ref = db.collection("req2test").document("development").collection("ai_responses").document(response_id)
+        response_ref = db.collection("superhero-01-03").document("development").collection("ai_responses").document(response_id)
         response_doc = response_ref.get()
 
         if response_doc.exists:
@@ -260,7 +297,7 @@ async def update_chat(chat_id: str, updated_chat: Chat):
     Endpoint to update a specific chat identified by its ID in Firestore.
     """
     try:
-        chat_ref = db.collection("req2test").document("development").collection("chats").document(chat_id)
+        chat_ref = db.collection("superhero-01-03").document("development").collection("chats").document(chat_id)
         chat_doc = chat_ref.get()
 
         if not chat_doc.exists:
@@ -271,7 +308,7 @@ async def update_chat(chat_id: str, updated_chat: Chat):
 
         prompts_as_refs = []
         for prompt in updated_chat.prompts:
-            prompt_doc_path = f"req2test/development/prompts/{prompt.id}"  
+            prompt_doc_path = f"superhero-01-03/development/prompts/{prompt.id}"  
             prompt_ref = db.document(prompt_doc_path)
 
             if not prompt_ref.get().exists:
@@ -295,7 +332,7 @@ async def update_prompt(prompt_id: str, updated_prompt: Prompt):
     Endpoint to update a specific prompt identified by its ID in Firestore.
     """
     try:
-        prompt_ref = db.collection("req2test").document("development").collection("prompts").document(prompt_id)
+        prompt_ref = db.collection("superhero-01-03").document("development").collection("prompts").document(prompt_id)
         prompt_doc = prompt_ref.get()
 
         if not prompt_doc.exists:
@@ -304,7 +341,7 @@ async def update_prompt(prompt_id: str, updated_prompt: Prompt):
         prompt_data = updated_prompt.dict(exclude={"id"})  
         prompt_data["created_at"] = datetime.now()  
         if updated_prompt.response:
-            response_doc_path = f"req2test/development/ai_responses/{updated_prompt.response.id}" 
+            response_doc_path = f"superhero-01-03/development/ai_responses/{updated_prompt.response.id}" 
             response_ref = db.document(response_doc_path)
 
             if not response_ref.get().exists:
@@ -331,7 +368,7 @@ async def delete_chat(chat_id: str):
     Endpoint to delete an existing chat by its ID.
     """
     try:
-        chat_ref = db.collection("req2test").document("development").collection("chats").document(chat_id)
+        chat_ref = db.collection("superhero-01-03").document("development").collection("chats").document(chat_id)
         if chat_ref.get().exists:
             chat_ref.delete()  
             return {"success": True, "message": f"Chat with ID '{chat_id}' deleted successfully"}
@@ -346,7 +383,7 @@ async def delete_prompt(prompt_id: str):
     Endpoint to delete an existing prompt by its ID.
     """
     try:
-        prompt_ref = db.collection("req2test").document("development").collection("prompts").document(prompt_id)
+        prompt_ref = db.collection("superhero-01-03").document("development").collection("prompts").document(prompt_id)
         if prompt_ref.get().exists:
             prompt_ref.delete()  
             return {"success": True, "message": f"Prompt with ID '{prompt_id}' deleted successfully"}
@@ -361,7 +398,7 @@ async def delete_response(response_id: str):
     Endpoint to delete an existing response by its ID.
     """
     try:
-        response_ref = db.collection("req2test").document("development").collection("ai_responses").document(response_id)
+        response_ref = db.collection("superhero-01-03").document("development").collection("ai_responses").document(response_id)
         if response_ref.get().exists:
             response_ref.delete()
             return {"success": True, "message": f"Response with ID '{response_id}' deleted successfully"}
@@ -369,3 +406,9 @@ async def delete_response(response_id: str):
             raise HTTPException(status_code=404, detail=f"Response with ID '{response_id}' not found")
     except Exception as e:
         return {"error": f"An error occurred while deleting the response: {str(e)}"}
+
+
+@app.post("/convert")
+async def convert_requirement(request: RequirementRequest):
+    gherkin_output = gemini.convert_to_gherkin(request.requirement)
+    return {"gherkin": gherkin_output}
