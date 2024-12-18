@@ -93,8 +93,8 @@ const Warden = () => {
       );
       
       const xhr = new XMLHttpRequest();
-      // xhr.open('POST', 'http://localhost:8080/online', true)
-      xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app/online', true)
+      xhr.open('POST', 'http://localhost:8080/online', true)
+      //xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app/online', true)
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
         console.log(xhr.responseText);
@@ -192,7 +192,7 @@ const Warden = () => {
               Download Vulnerability Report
             </button>
             {responseData.data.map((vulnerability) => (
-              <div key={vulnerability.title} className="card mb-4 p-3 bg-light shadow-sm">
+              <div key={vulnerability.file+vulnerability.title} className="card mb-4 p-3 bg-light shadow-sm">
                 <h2 className="text-success">{vulnerability.title}</h2>
                 <p className="text-muted small mb-2">
                   <strong>File:</strong> {vulnerability.file}
