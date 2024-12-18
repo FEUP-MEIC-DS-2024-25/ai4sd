@@ -33,6 +33,7 @@ class NewMessage(BaseModel):
     body: str
     timestamp: str
     isDeleted: bool
+    pinnedMessages: List[str]
 
 class Message(BaseModel):
     currentConversation: str
@@ -42,20 +43,67 @@ class Message(BaseModel):
 #     return " ".join([message['body'] for message in messages])
 
 def createGeminiContext(chat, new_message):
-    if 'pinnedMessages' in chat and len(chat['pinnedMessages']) > 0:
-        print(f"ERROR: Pinned messages exist but logic to handle is not implemented yet.")
-        return "ERROR: Pinned messages exist but logic to handle is not implemented yet."
-    else:  # No pinned messages - Context is done from messages only.
-        complete_messages = chat['messages'] + [new_message]
-        context = (
-            "I am working on requirements engineering. I would like original features suggestions based on existing project requirements.\n"
-            "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
-            "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
-            "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
+    # Combine chat messages and the new message
+    complete_messages = [
+        {
+            "authorName": new_message.authorName,
+            "body": new_message.body,
+            "timestamp": new_message.timestamp,
+            "isDeleted": new_message.isDeleted,
+        }
+    ]
+
+    complete_messages = chat['messages'] + complete_messages
+    context = (
+        "I am working on requirements engineering. I would like original features suggestions based on existing project requirements.\n"
+        "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
+        "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
+        "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
+    )
+    # Handle pinned messages
+    if new_message.pinnedMessages and len(new_message.pinnedMessages) > 0:
+        pinned_context = "Pinned Requirements:\n" + "\n".join(
+            f"- {requirement}" for requirement in new_message.pinnedMessages
         )
-        for message in complete_messages:
-            context += f"\n{message['authorName']}: {message['body']}"
-        return context
+        context += f"\n\n{pinned_context}"
+    for message in complete_messages:
+        context += f"\n{message['authorName']}: {message['body']}"
+    return context
+
+
+def createGeminiContextWithPinnedMessages(new_message):
+    # Initialize context with general instructions
+    context = (
+        "I am working on requirements engineering. I would like original feature suggestions based on existing project requirements.\n"
+        "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
+        "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
+        "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
+    )
+
+    # Handle pinned messages
+    if new_message.pinnedMessages and len(new_message.pinnedMessages) > 0:
+        pinned_context = "Pinned Requirements:\n" + "\n".join(
+            f"- {requirement}" for requirement in new_message.pinnedMessages
+        )
+        context += f"\n\n{pinned_context}"
+
+    # Combine chat messages and the new message
+    complete_messages = [
+        {
+            "authorName": new_message.authorName,
+            "body": new_message.body,
+            "timestamp": new_message.timestamp,
+            "isDeleted": new_message.isDeleted,
+        }
+    ]
+
+    # Add conversation messages to the context
+    for message in complete_messages:
+        context += f"\n{message['authorName']}: {message['body']}"
+
+    return context
+
+
 
 
 @router.post("/")
@@ -74,12 +122,12 @@ async def send_message(message: Message):
 
         success, chat = db_helper.getChat(message.currentConversation)
 
-        
         if success:
             # complete_messages = chat[0]['messages'] + [message.newMessage.model_dump()]
-            context = createGeminiContext(chat, message.newMessage.model_dump())
+            context = createGeminiContext(chat, message.newMessage)
         else:
-            context = message.newMessage.body
+            context = createGeminiContextWithPinnedMessages(message.newMessage)
+
 
         # Send the context to the gemini
         headers = {
@@ -106,6 +154,7 @@ async def send_message(message: Message):
 
         response_message = gemini_response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "No response from LLM")
 
+
         # Construct the message object
         new_message = {
             "authorName": "Gemini",
@@ -113,8 +162,11 @@ async def send_message(message: Message):
             "timestamp": datetime.datetime.now().isoformat(),
             "isDeleted": False
         }
-        
-        # If everything is successful, update the database
+
+        pinned_messages = message.newMessage.pinnedMessages
+        message.newMessage.pinnedMessages = None
+
+# If everything is successful, update the database
         if success: # If the chat already exists
             new_messages = [message.newMessage.model_dump() , new_message]
             db_helper.addMessagesToChat(message.currentConversation, new_messages)
@@ -125,6 +177,10 @@ async def send_message(message: Message):
             conversation = db_helper.createChat(message.newMessage.model_dump())
             conversationId = conversation['id']
             res= db_helper.addMessagesToChat(conversationId, [new_message])
+            if pinned_messages:
+                for pinned_message in pinned_messages:
+                    db_helper.addPinnedToChat(conversationId, pinned_message)
+
             return JSONResponse(content=res, status_code=201)
     except Exception as e:
         # Clean up the database if something goes wrong
