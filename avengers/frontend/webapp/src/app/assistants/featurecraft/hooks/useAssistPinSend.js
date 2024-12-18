@@ -4,7 +4,7 @@ export default function useAssistPinSend() {
 
     const handleSendPin = async (pinnedMessage, conversationId) => {
         try {
-            const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, pinnedMessage);
+            const response = await axios.post(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/${conversationId}`, pinnedMessage);
             return response;
         } catch (error) {
             //Return the error
@@ -15,7 +15,8 @@ export default function useAssistPinSend() {
     const updatePinnedMessages = async (pinnedMessages, setPinnedMessages, responseData) => {
         // Extract all messages from responseData
         const newMessages = responseData.map(item => ({
-            message: item.message
+            message: item.message,
+            id: item.id
         }));
 
         if (pinnedMessages === undefined) {

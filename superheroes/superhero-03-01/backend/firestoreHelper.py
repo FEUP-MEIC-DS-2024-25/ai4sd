@@ -1,5 +1,4 @@
 import os
-from cgitb import reset
 from uuid import uuid4
 import datetime
 import firebase_admin
@@ -195,6 +194,28 @@ class FirestoreHelper:
         except Exception as e:
             print(f"Failed to create new conversation: {e}")
             return None
+
+    def deletePinnedMessage(self, chat_id, pinned_message_id):
+        try:
+            chat_ref = self.collection.document("chat").collection("history").document(chat_id)
+            chat = chat_ref.get()
+
+            if not chat.exists:
+                return False
+
+            chat_dict = chat.to_dict()
+            pinned_messages = chat_dict.get("pinnedMessages", [])
+            updated_pinned_messages = [msg for msg in pinned_messages if msg["id"] != pinned_message_id]
+
+            if len(pinned_messages) == len(updated_pinned_messages):
+                # No pinned message was removed
+                return False
+
+            chat_ref.update({"pinnedMessages": updated_pinned_messages})
+            return True
+        except Exception as e:
+            print(f"Failed to delete pinned message: {e}")
+            return False
 
 # Initialize Firestore helper
 db_helper = FirestoreHelper(collectionName=db_collection)

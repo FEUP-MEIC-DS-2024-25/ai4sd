@@ -8,8 +8,6 @@ import uuid
 
 from backend.github_retrieval import get_github_artifacts
 
-import os
-from dotenv import load_dotenv
 from datetime import datetime
 
 class ReviewView(APIView):
@@ -23,8 +21,7 @@ class ReviewView(APIView):
         _, _, _, repoOwner, repoName = repo_url.rstrip('/').split('/')
 
         # Configure the API key
-        load_dotenv()
-        gemini_key = os.getenv('GEMINI_API_KEY')
+        gemini_key = "AIzaSyBylXr0VxhozhM34rx_nHJgHeIi4PG5COc"
 
         genai.configure(api_key=gemini_key)
         model = genai.GenerativeModel("gemini-1.5-flash")
