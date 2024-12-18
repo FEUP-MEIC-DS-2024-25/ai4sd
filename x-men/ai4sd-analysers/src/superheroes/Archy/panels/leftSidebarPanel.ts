@@ -17,7 +17,6 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
         this._view = webviewView;
         const webview = webviewView.webview;
         
-        console.log("Got here");
         const firestore = getFirestore(this._extensionUri);
 
         webview.options = {
@@ -31,6 +30,8 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
         if (!this._view) {
             return;
         }
+
+        webview.html = this._getLoadingHtml();
 
         fetchRecentRequests(firestore)
         .then((recentRequests) => {
@@ -95,12 +96,12 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
                         clearInterval(interval); // stop updating the notification when result arrives
                         progress.report({ message: "Analysis Complete!" });
 
-                        // const docRef = firestore.collection("superhero-02-04").doc();
-                        // await docRef.set({
-                        //     mode: mode,
-                        //     resultMarkdown: resultMarkdown,
-                        //     timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                        // });
+                        const docRef = firestore.collection("superhero-02-04").doc();
+                        await docRef.set({
+                            mode: mode,
+                            resultMarkdown: resultMarkdown,
+                            timestamp: admin.firestore.FieldValue.serverTimestamp(),
+                        });
 
                         vscode.window.showInformationMessage("Results saved to Firestore!");
 
@@ -125,12 +126,6 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
         const webviewUri = getUri(webview, extensionUri, ["out", "superheroes", "Archy", "webview.js"]);
         const languagesJsonUri = webview.asWebviewUri(vscode.Uri.file(path.join(extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'assets', 'languages.json')));
         const nonce = getNonce();
-        console.log("Rendering webview HTML...");
-
-        console.log(path.join(this._extensionUri.fsPath, 'out', 'superheroes', 'Archy'));
-        console.log(path.join(this._extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'assets'));
-
-        console.log("Got here2");
 
         const recentRequestsHtml = recentRequests.map(request => `
             <div class="sidebar-item" data-id="${request.id}">
@@ -369,6 +364,18 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
             </html>
         `;
     }
+
+    private _getLoadingHtml() {
+     return /*html*/`
+         <html>
+             <body>
+                 <div style="text-align: center; padding: 20px;">
+                     <p>Loading history of requests...</p>
+                 </div>
+             </body>
+         </html>
+     `;
+}
 }
 
 

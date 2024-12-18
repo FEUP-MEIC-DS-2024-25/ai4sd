@@ -16,7 +16,6 @@ export class ArchitectureResultsPanel {
         this.originalMarkdownText = patternResult; // Save markdown results obtained from LLM 
         this._panel = panel;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables); // Call dispose method when window closed
-        console.log("ArchitectureResultsPanel", this._getWebviewContent(this._panel.webview, extensionUri))
         this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri); // Set the HTML content for the webview panel
         this._setWebviewMessageListener(this._panel.webview); // Setup listener for webview
     }
@@ -29,7 +28,7 @@ export class ArchitectureResultsPanel {
             {
                 enableScripts: true,
                 localResourceRoots: [
-                    vscode.Uri.file(extensionUri.fsPath + "/out"),
+                    vscode.Uri.file(path.join(extensionUri.fsPath, 'out', 'superheroes', 'Archy')),
                     vscode.Uri.file(path.join(extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'panels'))
                 ],
             }
@@ -76,7 +75,7 @@ export class ArchitectureResultsPanel {
     }
 
     private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
-        const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
+        const webviewUri = getUri(webview, extensionUri, ["out", "superheroes", "Archy","webview.js"]);
         const stylesUri = getUri(webview, extensionUri, ["src", "superheroes", "Archy", "panels", "ArchitectureResultsPanel.css"]);
         const nonce = getNonce();
 

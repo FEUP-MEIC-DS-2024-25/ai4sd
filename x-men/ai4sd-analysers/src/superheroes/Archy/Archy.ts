@@ -16,6 +16,9 @@ export async function execute(context: vscode.ExtensionContext) {
 		vscode.window.registerWebviewViewProvider('archy.leftSidebarPanel', leftSidebarWebviewProvider)
 	 );
 
+	// show sidebar when command called
+	await vscode.commands.executeCommand('workbench.view.extension.archy');
+
 }
 
 // This method is called when your extension is deactivated
