@@ -68,7 +68,8 @@ const buildPrompt = (requirementsText) => {
     4. For lists, use \`list\` blocks. For tables, use \`table\` blocks. For navigation bars, use \`menu bar\` blocks.
     5. If the output contains any syntax errors or does not render, revise and provide a valid alternative.
     6. Do not include any text outside the PlantUML Salt code (e.g., comments or explanations).
-    7. Always start with \`\`\`\nsalt and end with \`\`\`.
+    7. In the text box parameters, write dummy words to fill blank spaces.
+    8. Always start with \`\`\`\nsalt and end with \`\`\`.
 
     Example Input: 
     "Create a form with a name field, email field, a dropdown to select a role, and a submit button."
