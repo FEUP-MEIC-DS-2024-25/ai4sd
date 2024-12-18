@@ -31,7 +31,10 @@ if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "hero-alliance-feup-ds-24-25-146d9ba8a2d0.json"
 os.environ["ASSISTANT_ID"] = "superhero-04-01"
 db = firestore.Client()
-os.environ["API_KEY"] = db.collection(os.environ["ASSISTANT_ID"]).document("secrets").get().to_dict()["api_key"]
+secretmanager_client = secretmanager.SecretManagerServiceClient()
+secret_name = f"projects/hero-alliance-feup-ds-24-25/secrets/superhero-04-01-secret/versions/latest"
+response = secretmanager_client.access_secret_version(request={"name": secret_name})
+os.environ["API_KEY"] = response.payload.data.decode("UTF-8")
 
 genai.configure(api_key=os.environ["API_KEY"])
 model = genai.GenerativeModel("gemini-1.5-flash")
