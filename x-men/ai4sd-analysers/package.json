@@ -9,15 +9,16 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [
-    "onView:archy.leftSidebarPanel"
-  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "ai4sd-analysers.call",
         "title": "AI4SD Analysers: Analyse repository"
+      },
+      {
+        "command": "archy.startExecution",
+        "title": "Archy: Start Execution"
       }
     ],
     "viewsContainers": {
@@ -33,7 +34,7 @@
       "archy": [
         {
           "type": "webview",
-          "id": "leftSidebarPanel",
+          "id": "archy.leftSidebarPanel",
           "name": "Archy",
           "icon": "public/images/extension_icon.svg"
         }
@@ -46,7 +47,9 @@
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
     "lint": "eslint src",
-    "test": "vscode-test"
+    "test": "vscode-test",
+    "build:archy-webview": "node src/superheroes/Archy/esbuild.js",
+    "watch:archy-webview": "node src/superheroes/Archy/esbuild.js --watch"
   },
   "devDependencies": {
     "@types/archiver": "^6.0.3",
@@ -62,6 +65,7 @@
     "@typescript-eslint/parser": "^8.7.0",
     "@vscode/test-cli": "^0.0.10",
     "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.24.0",
     "eslint": "^9.13.0",
     "typescript": "^5.7.2",
     "vscode": "^1.1.37",
@@ -69,11 +73,11 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "@types/vscode-webview": "^1.57.5",
     "@vscode/webview-ui-toolkit": "^1.4.0",
     "archiver": "^7.0.1",
     "axios": "^1.7.7",
     "dotenv": "^16.4.7",
-    "esbuild": "^0.24.0",
     "firebase-admin": "^13.0.1",
     "form-data": "^4.0.1",
     "fs-extra": "^11.2.0",

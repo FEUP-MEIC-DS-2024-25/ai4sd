@@ -16,6 +16,7 @@ export class ArchitectureResultsPanel {
         this.originalMarkdownText = patternResult; // Save markdown results obtained from LLM 
         this._panel = panel;
         this._panel.onDidDispose(() => this.dispose(), null, this._disposables); // Call dispose method when window closed
+        console.log("ArchitectureResultsPanel", this._getWebviewContent(this._panel.webview, extensionUri))
         this._panel.webview.html = this._getWebviewContent(this._panel.webview, extensionUri); // Set the HTML content for the webview panel
         this._setWebviewMessageListener(this._panel.webview); // Setup listener for webview
     }

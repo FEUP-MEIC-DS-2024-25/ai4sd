@@ -2,7 +2,7 @@ import { provideVSCodeDesignSystem, vsCodeButton, vsCodeCheckbox, Button  } from
 
 provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeCheckbox());
 
-// const vscode = acquireVsCodeApi();
+const vscode = acquireVsCodeApi();
 
 window.addEventListener("load", main);
 

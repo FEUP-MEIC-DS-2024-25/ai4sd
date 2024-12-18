@@ -4,6 +4,10 @@ import * as vscode from 'vscode';
 import { LeftSidebarPanel } from "./panels/leftSidebarPanel";
 
 export async function execute(context: vscode.ExtensionContext) {
+	
+	// Perform Archy's superhero logic here
+    console.log("Executing Archy superhero...");
+
 
 	// register sidebar view provider
 	const leftSidebarWebviewProvider = new LeftSidebarPanel(context?.extensionUri);
