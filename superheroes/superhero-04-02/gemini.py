@@ -20,7 +20,7 @@ load_dotenv()
 def access_secret():
     try:
         client = secretmanager.SecretManagerServiceClient()
-        name = "projects/150699885662/secrets/superhero-04-02-secret/latest"
+        name = "projects/150699885662/secrets/superhero-04-02-secret/versions/latest"
         response = client.access_secret_version(name=name)
         return response.payload.data.decode("UTF-8")
     except Exception as e:
