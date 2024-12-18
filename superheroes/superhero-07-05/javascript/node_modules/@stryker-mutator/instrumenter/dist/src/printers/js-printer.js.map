@@ -1,0 +1,1 @@
+{"version":3,"file":"js-printer.js","sourceRoot":"","sources":["../../../src/printers/js-printer.ts"],"names":[],"mappings":"AAAA,OAAO,SAAS,MAAM,kBAAkB,CAAC;AAMzC,MAAM,QAAQ,GAAG,SAAS,CAAC,OAAO,CAAC;AAEnC,MAAM,CAAC,MAAM,KAAK,GAAmB,CAAC,IAAI,EAAE,EAAE;IAC5C,OAAO,QAAQ,CAAC,IAAI,CAAC,IAAI,EAAE,EAAE,UAAU,EAAE,KAAK,EAAE,CAAC,CAAC,IAAI,CAAC;AACzD,CAAC,CAAC"}
