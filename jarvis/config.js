@@ -14,6 +14,9 @@ export const config = {
     downloadDir: DOWNLOAD_DIR
 };
 
+console.log("SERVICE_ACCOUNT_PATH:", config.serviceAccountKeyPath);
+
+
 if (!config.appId || !config.org) {
     const missingVars = [];
     if (!config.appId) missingVars.push("APP_ID");
