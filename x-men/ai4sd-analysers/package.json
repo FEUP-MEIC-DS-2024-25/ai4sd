@@ -9,8 +9,19 @@
   "categories": [
     "Other"
   ],
+
   "main": "./out/extension.js",
   "contributes": {
+    "configuration": {
+      "properties": {
+        "ai4sd-analysers.showActivityBarIcon": {
+          "type": "boolean",
+          "default": false,
+          "scope": "user",
+          "description": "Show the Activity Bar icon for AI4SD analysers."
+        }
+      }
+    },
     "commands": [
       {
         "command": "ai4sd-analysers.call",
@@ -26,7 +37,8 @@
         {
           "id": "archy",
           "title": "Archy",
-          "icon": "public/images/extension_icon.svg"
+          "icon": "public/images/extension_icon.svg",
+          "when": "config.ai4sd-analysers.showActivityBarIcon"
         }
       ]
     },

@@ -14,6 +14,9 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         
+        console.log("Resolve webview");
+
+
         this._view = webviewView;
         const webview = webviewView.webview;
         
@@ -122,7 +125,15 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
         });
     }
 
+    show(): void {
+        if (this._view) {
+            this._view.show?.(true); // Reveal the view if it exists
+        }
+    }
+
     _getHtmlForWebview(webview: vscode.Webview, extensionUri: vscode.Uri, recentRequests: { id: string, mode: string }[]) {
+        console.log("Resolve html");
+        
         const webviewUri = getUri(webview, extensionUri, ["out", "superheroes", "Archy", "webview.js"]);
         const languagesJsonUri = webview.asWebviewUri(vscode.Uri.file(path.join(extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'assets', 'languages.json')));
         const nonce = getNonce();
