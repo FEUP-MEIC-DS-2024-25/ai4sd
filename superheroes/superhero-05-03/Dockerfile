@@ -9,7 +9,10 @@ COPY package*.json ./
 # Install all dependencies
 RUN npm install
 
-RUN echo 'GEMINI_API_KEY=$(superhero-05-03-secret)' > .env
+
+RUN --mount=type=secret,id=superhero-05-03-secret echo "GEMINI_API_KEY=$(cat /run/secrets/secret)" > .env
+
+
 
 # Copy all the files to the container
 COPY . .
