@@ -34,6 +34,7 @@ if DEBUG: # Running in development
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
     ALLOWED_HOSTS = ['*']
+    CORS_ALLOW_ALL_ORIGINS = True
 
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:3000",
@@ -90,6 +91,10 @@ MIDDLEWARE = [
 
 INTERNAL_IPS = [
     '127.0.0.1',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  
 ]
 
 ROOT_URLCONF = 'spark.urls'

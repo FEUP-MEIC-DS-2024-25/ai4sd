@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "./Auth.css"; // Import the Auth CSS
-import apiClient from "../../config/axios";
 
 function Login() {
   const navigate = useNavigate();
@@ -29,7 +28,7 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await apiClient.post("http://localhost:8000/login/", {
+      const response = await axios.post("http://localhost:8000/login/", {
         username: formData.username,
         password: formData.password,
       });

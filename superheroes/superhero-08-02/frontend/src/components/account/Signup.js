@@ -68,6 +68,25 @@ function Signup() {
           )}
         </div>
 
+        {/* Email Field */}
+        <div className="form-group">
+          <label htmlFor="email" className="form-label">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            className={`form-input ${errors.email ? "is-invalid" : ""}`}
+            required
+          />
+          {errors.email && (
+            <div className="form-feedback">{errors.email}</div>
+          )}
+        </div>
+
         {/* Password Field 1 */}
         <div className="form-group">
           <label htmlFor="password1" className="form-label">

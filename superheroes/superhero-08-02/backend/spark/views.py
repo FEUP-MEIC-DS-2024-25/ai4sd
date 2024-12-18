@@ -23,9 +23,7 @@ from rest_framework.response import Response
 
 class UserStatusAPIView(APIView):
     def get(self, request):
-        if not request.user.is_authenticated:
-            return Response({"is_authenticated": False})
-        return Response({"is_authenticated": True})
+        return Response({"is_authenticated": request.user.is_authenticated})
 
 class LogoutAPIView(APIView):
     def post(self, request):
@@ -74,9 +72,9 @@ class LoginAPIView(APIView):
 
         if user is not None:
             login(request, user)
-            return Response({'username': user.username, 'isAuthenticated': True, 'message': 'User logged in successfully.'}, status=status.HTTP_200_OK)
-        
-        return Response({'isAuthenticated':False, 'error': 'Invalid username or password.'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'User logged in successfully.'}, status=status.HTTP_200_OK)
+        else:
+            return Response({'error': 'Invalid username or password.'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SignupAPIView(APIView):
