@@ -7,5 +7,3 @@ services:
       - .:/backend
     ports:
       - 8080:8080
-    environment:
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
