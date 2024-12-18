@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
+import * as path from 'path';
 
 const fs = require('fs')
 const MarkdownIt = require('markdown-it');
@@ -28,7 +29,7 @@ export class ArchitectureResultsPanel {
                 enableScripts: true,
                 localResourceRoots: [
                     vscode.Uri.file(extensionUri.fsPath + "/out"),
-                    vscode.Uri.file(extensionUri.fsPath + "/src"), // Add CSS file
+                    vscode.Uri.file(path.join(extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'panels'))
                 ],
             }
         );
@@ -75,7 +76,7 @@ export class ArchitectureResultsPanel {
 
     private _getWebviewContent(webview: vscode.Webview, extensionUri: vscode.Uri) {
         const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
-        const stylesUri = getUri(webview, extensionUri, ["src", "panels", "ArchitectureResultsPanel.css"]); // CSS file
+        const stylesUri = getUri(webview, extensionUri, ["src", "superheroes", "Archy", "panels", "ArchitectureResultsPanel.css"]);
         const nonce = getNonce();
 
         const htmlResult = md.render(this.originalMarkdownText);

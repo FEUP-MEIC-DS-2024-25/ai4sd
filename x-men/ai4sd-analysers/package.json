@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onView:archy.leftSidebarPanel"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
@@ -17,7 +19,26 @@
         "command": "ai4sd-analysers.call",
         "title": "AI4SD Analysers: Analyse repository"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "archy",
+          "title": "Archy",
+          "icon": "public/images/extension_icon.svg"
+        }
+      ]
+    },
+    "views": {
+      "archy": [
+        {
+          "type": "webview",
+          "id": "leftSidebarPanel",
+          "name": "Archy",
+          "icon": "public/images/extension_icon.svg"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

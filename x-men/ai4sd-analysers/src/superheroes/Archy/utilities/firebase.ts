@@ -6,7 +6,7 @@ let firestore: admin.firestore.Firestore | null = null;
 // Initialize Firebase Admin SDK
 export function getFirestore(extensionUri: vscode.Uri): admin.firestore.Firestore {
     if (!firestore) {
-        const serviceAccountPath = vscode.Uri.file(extensionUri.fsPath + "/superhero-02-04.json").fsPath;
+        const serviceAccountPath = vscode.Uri.file(extensionUri.fsPath + "/src/superheroes/Archy/superhero-02-04.json").fsPath;
         admin.initializeApp({
             credential: admin.credential.cert(require(serviceAccountPath)),
         });

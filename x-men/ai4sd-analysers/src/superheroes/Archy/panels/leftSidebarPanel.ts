@@ -5,6 +5,7 @@ import { processArchitecture } from "../scripts/processArchitecture";
 import { ArchitectureResultsPanel } from "./ArchitectureResultsPanel.js";
 import { getFirestore, fetchRecentRequests } from "../utilities/firebase";
 import * as admin from "firebase-admin";
+import * as path from 'path';
 
 export class LeftSidebarPanel implements vscode.WebviewViewProvider {
     private _view?: vscode.WebviewView;
@@ -12,18 +13,27 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
     constructor(private readonly _extensionUri: vscode.Uri) {}
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
+        
         this._view = webviewView;
         const webview = webviewView.webview;
-
+        
+        console.log("Got here");
         const firestore = getFirestore(this._extensionUri);
 
         webview.options = {
             enableScripts: true,
-            localResourceRoots: [this._extensionUri]
+            localResourceRoots: [
+                vscode.Uri.file(path.join(this._extensionUri.fsPath, 'out')),
+                vscode.Uri.file(path.join(this._extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'assets'))
+            ]
         };
 
-        fetchRecentRequests(firestore).then((recentRequests) => {
+        fetchRecentRequests(firestore)
+        .then((recentRequests) => {
             webview.html = this._getHtmlForWebview(webview, this._extensionUri, recentRequests);
+        })
+        .catch((error) => {
+            vscode.window.showErrorMessage(`Failed to load recent requests: ${error.message}`);
         });
 
         // Handle messages from the sidebar webview
@@ -109,7 +119,7 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
 
     _getHtmlForWebview(webview: vscode.Webview, extensionUri: vscode.Uri, recentRequests: { id: string, mode: string }[]) {
         const webviewUri = getUri(webview, extensionUri, ["out", "webview.js"]);
-        const languagesJsonUri = webview.asWebviewUri((vscode.Uri as any).joinPath(extensionUri, "src", "superheroes", "Archy", "assets", "languages.json"));
+        const languagesJsonUri = webview.asWebviewUri(vscode.Uri.file(path.join(extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'assets', 'languages.json')));
         const nonce = getNonce();
 
         const recentRequestsHtml = recentRequests.map(request => `

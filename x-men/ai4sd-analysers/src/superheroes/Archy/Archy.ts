@@ -9,10 +9,10 @@ export async function execute(context: vscode.ExtensionContext) {
 	const leftSidebarWebviewProvider = new LeftSidebarPanel(context?.extensionUri);
 
 	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider('leftSidebarPanel', leftSidebarWebviewProvider)
+		vscode.window.registerWebviewViewProvider('archy.leftSidebarPanel', leftSidebarWebviewProvider)
 	 );
 
-  }
+}
 
 // This method is called when your extension is deactivated
 export function deactivate() {}
