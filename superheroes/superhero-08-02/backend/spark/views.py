@@ -3,13 +3,10 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login
-from django.middleware.csrf import get_token
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404
 from api.services.github_rest import githubRestAPI
-from django.shortcuts import redirect
 from .forms import MyUserCreationForm, SparkProjectForm
 from .models import SparkProject
 import requests
