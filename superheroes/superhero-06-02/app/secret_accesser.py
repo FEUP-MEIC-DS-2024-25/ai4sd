@@ -1,8 +1,10 @@
 from google.cloud import secretmanager
 from google.oauth2 import service_account
 def access_specific_secret(secret_id):
-    credentials = service_account.Credentials.from_service_account_file("app/dst06g02-sevice_account.json")
+    # credentials = service_account.Credentials.from_service_account_file("app/dst06g02-sevice_account.json")
     
+    # client = secretmanager.SecretManagerServiceClient(credentials=credentials)
+
     client = secretmanager.SecretManagerServiceClient()
 
     secret_path = f"projects/hero-alliance-feup-ds-24-25/secrets/{secret_id}/versions/latest"
