@@ -16,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const options: AI4SDMenuOption[] = [
 		{ label: "ArchiDetect", description: "Executes ArchiDetect superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/ArchiDetect/ArchiDetect.js')).execute(context)},
 		{ label: "Warden AI", description: "Executes Warden AI superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/warden_ai/warden_ai.js')).execute()},
+		{ label: "SARA", description: "Executes SARA superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/SARA/SARA.js')).execute(context)}
 	  ];
 
 	// The command has been defined in the package.json file

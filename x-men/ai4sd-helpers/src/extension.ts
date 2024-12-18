@@ -2,6 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as whattheduck from './superheroes/whattheduck/src/extension.js';
+import * as easycomment from './superheroes/easycomment/src/extension.js';
 
 export interface AI4SDMenuOption extends vscode.QuickPickItem {
 	execute: Function
@@ -15,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ai4sd-helpers" is now active!');
 	const options:AI4SDMenuOption[] = [
+		{ label: "EasyComment", description: "Executes EasyComment superhero", execute: async () => (await import('./superheroes/easycomment/src/extension.js')).execute() }
 	  ];
 
 	// The command has been defined in the package.json file
@@ -22,7 +24,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 	const disposable = vscode.commands.registerCommand('ai4sd-helpers.call', async () => {
 		// The code you place here will be executed every time your command is executed
-		
 	  
 		  // Show dropdown and await user's choice
 		  const selectedOption = await vscode.window.showQuickPick(options, {
@@ -45,6 +46,10 @@ export function activate(context: vscode.ExtensionContext) {
 			options.push(newOption);
 		}
 	};
+
+	whattheduck.activate(context);
+
+	easycomment.activate(context);
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(wakeUp);
