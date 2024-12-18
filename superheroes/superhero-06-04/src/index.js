@@ -144,7 +144,7 @@ const retryGenerateContent = async (prompt, retries = 3, delay = 2000, isFirstCa
     }
 
     //DEBUG
-    console.log('Batch enviada para o Gemini.\n');
+    console.log('Batch sent to Gemini.\n');
 
     // Prepare the body with the entire conversation history
     const body = {
@@ -210,6 +210,15 @@ const retryGenerateContent = async (prompt, retries = 3, delay = 2000, isFirstCa
 const upload = multer({
     dest: 'uploads/', // Directory to temporarily store uploaded files
     limits: { fileSize: 10 * 1024 * 1024 }, // Limit file size to 10MB
+    fileFilter: (req, file, cb) => {
+        const allowedTypes = [".txt", ".log", ".csv", ".json"]; // Add allowed formats here
+        const ext = path.extname(file.originalname).toLowerCase();
+        if (allowedTypes.includes(ext)) {
+            cb(null, true);
+        } else {
+            cb(new Error(`Unsupported file type: ${ext}`), false);
+        }
+    },
 });
 
 // Ensure the uploads directory exists
@@ -284,42 +293,35 @@ const processLogFile = (filePath, processBatch) => {
 };
 
 // File upload route
-app.post('/upload-log', upload.single('logfile'), async (req, res) => {
+app.post("/upload-log", upload.array("logfiles", 10), async (req, res) => {
     try {
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
-        }
-
-        const { path: tempPath, originalname } = req.file;
-        //ensureUploadsDirExists();
-        const targetPath = path.join(__dirname, '..', 'uploads', `${Date.now()}-${originalname}`);
-
+      if (!req.files || req.files.length === 0) {
+        return res.status(400).json({ error: "No files uploaded" });
+      }
+  
+      const uploadResults = [];
+      for (const file of req.files) {
+        const { path: tempPath, originalname } = file;
+        const targetPath = path.join(__dirname, "..", "uploads", `${Date.now()}-${originalname}`);
+  
         // Move the file
-        fs.rename(tempPath, targetPath, async (err) => {
-            if (err) {
-                console.error('Error moving uploaded file:', err);
-                return res.status(500).json({ error: 'Error processing file' });
-            }
-
-            try {
-                // Process the file
-                await processLogFile(targetPath, processBatch);
-
-                // After processing, send back the conversation history
-                res.status(200).json({
-                    message: 'File uploaded and processed successfully',
-                    conversation: conversationHistory,
-                });
-            } catch (err) {
-                console.error('Error processing log file:', err);
-                res.status(500).json({ error: 'Error processing the log file.' });
-            }
-        });
+        await fs.promises.rename(tempPath, targetPath);
+  
+        // Process the file (if needed)
+        await processLogFile(targetPath, processBatch);
+  
+        uploadResults.push({ file: originalname, status: "Processed" });
+      }
+  
+      res.status(200).json({
+        message: `${req.files.length} file(s) uploaded and processed successfully`,
+        details: uploadResults,
+      });
     } catch (error) {
-        console.error('Error handling file upload:', error);
-        res.status(500).json({ error: 'Internal server error' });
+      console.error("Error handling file upload:", error);
+      res.status(500).json({ error: "Internal server error" });
     }
-});
+  });
 
 /* ---------------------------------------------------------------------------------------------- */
 

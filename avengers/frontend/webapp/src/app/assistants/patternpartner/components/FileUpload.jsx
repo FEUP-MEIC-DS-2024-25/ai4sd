@@ -4,23 +4,41 @@ import React, { useState } from "react";
 import { uploadLogFile } from "./services/apiService";
 
 const FileUpload = () => {
-  const [file, setFile] = useState(null);
+  //const [file, setFile] = useState(null);
+  const [file, setFile] = useState([]);
   const [uploadStatus, setUploadStatus] = useState(''); // To store the upload response
   const [message, setMessage] = useState("");
   const [spinner, setSpinnerVisibility] = useState(false); //To store spinner's visibilty
 
   const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+    //setFile(e.target.files[0]);
+    //setFile(e.target.files);
+    const allowedTypes = [".txt", ".log", ".csv", ".json"]; // Add allowed formats
+    const files = Array.from(e.target.files);
+    const invalidFiles = files.filter(
+      (file) => !allowedTypes.includes(file.name.slice(file.name.lastIndexOf(".")).toLowerCase())
+    );
+
+    if (invalidFiles.length > 0) {
+      alert(`Unsupported file types: ${invalidFiles.map((file) => file.name).join(", ")}`);
+    } else {
+      setFiles(files); // Store the valid files
+    }
   };
 
   const handleFileUpload = async () => {
-    if (!file) {
+    if (files.length === 0) {
       setMessage("Please select a file.");
       return;
     }
 
     setSpinnerVisibility(true);
     try {
+      const formData = new FormData();
+      Array.from(files).forEach((file) => {
+        formData.append("logfiles", file); // Append each file to the FormData
+      });
+
       const response = await uploadLogFile(file);
 
       if (!response.ok) {
@@ -44,7 +62,7 @@ const FileUpload = () => {
     <div className="file-upload">
       <h3>Upload Log File</h3>
       <div style={{ marginBottom: '10px' }}>
-        <input type="file" accept=".txt" onChange={handleFileChange} />
+        <input type="file" accept=".txt,.log,.csv,.json" multiple onChange={handleFileChange} />
       </div>
       
       {/* Button and spinner container */}
