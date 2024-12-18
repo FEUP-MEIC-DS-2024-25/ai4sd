@@ -6,8 +6,8 @@ import { GITHUB_APP_PRIVATE_KEY_PATH, PASSPHRASE } from "../consts.js";
 import { fetchAndDecryptDocument } from "../utils/secrets.js";
 
 
-if (!fs.existsSync(GITHUB_APP_PRIVATE_KEY_PATH)) await fetchAndDecryptDocument(PASSPHRASE);
-const PRIVATE_KEY = await readFileContents(GITHUB_APP_PRIVATE_KEY_PATH);
+//if (!fs.existsSync(GITHUB_APP_PRIVATE_KEY_PATH)) await fetchAndDecryptDocument(PASSPHRASE);
+//const PRIVATE_KEY = await readFileContents(GITHUB_APP_PRIVATE_KEY_PATH);
 
 /**
  * GitHub App instance for authenticating API requests.
