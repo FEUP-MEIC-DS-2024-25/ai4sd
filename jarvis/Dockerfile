@@ -14,7 +14,17 @@ COPY . .
 # Expose the port that the app will run on
 EXPOSE 8080
 
-RUN useradd app
-USER app
+# Accept the service account key as a build argument
+ARG SERVICE_ACCOUNT_KEY
 
+# Write the service account key to a file
+RUN echo "$SERVICE_ACCOUNT_KEY" > /usr/src/app/service_account_key.json
+
+# Set the correct ownership and permissions for the service account key
+RUN chmod 600 /usr/src/app/service_account_key.json && chown node:node /usr/src/app/service_account_key.json
+
+# Switch to a non-root user for security
+USER node
+
+# Start the application
 CMD ["npm", "run", "dev"]

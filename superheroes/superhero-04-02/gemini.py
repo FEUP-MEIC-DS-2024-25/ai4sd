@@ -29,6 +29,7 @@ def access_secret():
     
 api_key = access_secret()
 
+
 genai.configure(api_key=api_key)
 
 blueprint = Blueprint("gemini_api", __name__)

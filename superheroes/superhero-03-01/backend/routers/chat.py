@@ -1,3 +1,4 @@
+from typing import List
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
@@ -9,6 +10,20 @@ from backend.back_server import db_helper
 from ..JSONValidation.validators import new_chat_validator, ValidationError
 import datetime
 from fastapi.responses import JSONResponse
+
+from google.cloud import secretmanager
+
+client = secretmanager.SecretManagerServiceClient()
+project_id = "hero-alliance-feup-ds-24-25"
+secret_name ="superhero-03-01-secret"
+name = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+response = client.access_secret_version(request={"name": name})
+LLM_API_KEY = response.payload.data.decode("UTF-8")
+
+
+# Check if API key is set
+if not LLM_API_KEY:
+    raise ValueError("superhero-03-01-secret not found in environment variables")
 
 
 router = APIRouter()
@@ -54,9 +69,8 @@ async def send_message(message: Message):
         raise HTTPException(status_code=400, detail=f"Bad request: {e.message}")
     
     try:
-        LLM_API_KEY = os.getenv("C3T1_LLM_API_KEY")
         if not LLM_API_KEY:
-            raise ValueError("C3T1_LLM_API_KEY not found in environment variables")
+            raise ValueError("superhero-03-01-secret not found in environment variables")
 
         success, chat = db_helper.getChat(message.currentConversation)
 
@@ -122,7 +136,6 @@ async def send_message(message: Message):
 async def get_pin_message_by_id(id: str):
     try:
         exists, chat = db_helper.getPinnedMessages(id)
-        print(chat,"HERE")
         if not exists:
             raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -135,14 +148,31 @@ class PinMessageRequest(BaseModel):
     message: str
 
 @router.post("/pin/{id}")
-async def pin_message_by_id(id: str, body: PinMessageRequest):
+async def pin_messages_by_id(id: str, messages: List[str]):
     try:
-        # Use the message from the request body
-        chat = db_helper.addPinnedToChat(id, body.message)
-        if not chat:
-            raise HTTPException(status_code=404, detail="Chat not found")
-        return JSONResponse(content=chat['pinnedMessages'][-1], status_code=200)
+        pinned_messages = []
+        for message in messages:
+            chat = db_helper.addPinnedToChat(id, message)
+            if not chat:
+                raise HTTPException(status_code=404, detail="Chat not found")
+            pinned_messages.append(chat['pinnedMessages'][-1])
 
+        return JSONResponse(content=pinned_messages, status_code=200)
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+class DeletePinnedMessageRequest(BaseModel):
+    chatId: str
+    pinnedMessageId: str
+
+@router.delete("/pin/delete")
+async def delete_pinned_message_by_id(body: DeletePinnedMessageRequest):
+    try:
+        success = db_helper.deletePinnedMessage(body.chatId, body.pinnedMessageId)
+        if not success:
+            return JSONResponse(content={"detail": "Pinned message not found"}, status_code=404)
+        return JSONResponse(content={"message": "Pinned message deleted successfully."}, status_code=200)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 

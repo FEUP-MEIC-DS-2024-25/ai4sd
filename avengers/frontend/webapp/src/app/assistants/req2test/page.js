@@ -15,11 +15,10 @@ import { getChats } from "./api/api";
 
 
 export default function Interactor() {
-    // Retrieve the id from the local storage
-    const id = localStorage.getItem("req2testId") ? localStorage.getItem("req2testId") : 0;
     const assistName = "Req2Test";
     const assistType = "req";
     const [assistHistory, setAssistHistory] = useState([]);
+    const [chatId, setChatId] = useState(0);
     const [chat, setChat] = useState(null);
     const [chatLoaded, setChatLoaded] = useState(false);
 
@@ -32,16 +31,33 @@ export default function Interactor() {
         return history;
     }
 
+    useEffect(() => {
+        // Retrieve the id from the local storage
+        const id = localStorage.getItem("req2testId");
+        if (id) {
+            setChatId(id);
+        }
+    }, [chatId]);
+
 
     useEffect(() => {
         getChats().then((data) => {
             setAssistHistory(prepareHistory(data));
 
-            const chat = data.find((chat) => chat.id === id);
-            setChat(chat);
+            if (chatId === 0) {
+                setChatId(data[0].id);
+            }
+            const chatObj = data.find((chat) => chat.id === chatId);
+                
+            setChat(chatObj);
+            
+
+            if (!chat) // If the chat is not found, set the chat to the first chat
+                setChat(data[0]);
+
             setChatLoaded(true);
         });
-    }, [id]);
+    }, [chatId]);
 
 
     return (

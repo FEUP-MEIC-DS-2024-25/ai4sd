@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 FIREBASE = "superhero-04-02.json"
 
 
@@ -21,3 +22,4 @@ def get_firebase():
 
 
 db = get_firebase()
+

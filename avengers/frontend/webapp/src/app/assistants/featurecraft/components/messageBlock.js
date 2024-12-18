@@ -42,7 +42,7 @@ export default function MessageBlock({ messages, totalMessages, description, con
     };
 
     const handlePinMessage = async () => {
-        const response = await handleSendPin(selectedText, conversationId);
+        const response = await handleSendPin([selectedText], conversationId);
         if (response.status === 200) {
             updatePinnedMessages(pinnedMessages, setPinnedMessages, response.data);
             setIsPopupVisible(false);

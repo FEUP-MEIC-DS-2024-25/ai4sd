@@ -1,11 +1,25 @@
 import axios from 'axios';
 
-const BASE_URL = 'http://localhost:8000';
+const BASE_URL = 'http://localhost:8080';
 
 export const getChats = async () => {
     const response = await axios.get(`${BASE_URL}/get_chats`);
 
     console.log(response.data);
+    if (response.data.error !== undefined) {
+        console.warn("No chats found; returning default chat");
+        // Return default chat
+        return [{
+            id: 1,
+            name: "Default Chat",
+            messages: [
+                {
+                    content: "Hello! I am Req2Test. How can I help you?",
+                    sender: "bot"
+                }
+            ]
+        }];
+    }
 
     const chats = []
 
@@ -50,4 +64,32 @@ export const getChats = async () => {
     }
 
     return chats;
+};
+
+export const createPrompt = async (chatId, userInput) => {
+    const response = await axios.post(`${BASE_URL}/create_prompt`, {
+        chat_id: chatId,
+        user_input: userInput
+    });
+    return response.data;
+};
+
+export const createResponse = async (promptId, aiResponse) => {
+    const response = await axios.post(`${BASE_URL}/create_response`, {
+        prompt_id: promptId,
+        ai_response: aiResponse
+    });
+    return response.data;
+};
+
+export const convertRequirementToText = async (text) => {
+    try {
+        const response = await axios.post(`${BASE_URL}/convert`, {
+            requirement: text
+        });        
+        return response.data.gherkin;
+    } catch (error) {
+        console.error('Error converting requirement to text:', error);
+        throw error;
+    }
 };
