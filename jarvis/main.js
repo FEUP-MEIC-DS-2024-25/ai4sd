@@ -55,7 +55,7 @@ export async function uploadAllReposInOrg(octokit, org) {
 }
 
 
-const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
+//const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
 //await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
 
 import fs from "fs";
