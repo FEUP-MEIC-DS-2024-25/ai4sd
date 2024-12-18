@@ -54,7 +54,7 @@ else: # Running in production
     ALLOWED_HOSTS = [
         'localhost',
         '127.0.0.1',
-        'https://superhero-08-02-150699885662.europe-west1.run.app/',
+        'superhero-08-02-150699885662.europe-west1.run.app/',
     ]
 
 
