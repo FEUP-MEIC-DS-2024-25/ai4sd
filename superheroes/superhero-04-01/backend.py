@@ -42,18 +42,69 @@ logging.basicConfig(level=logging.INFO)
 
 
 storage_client = storage.Client()
-bucket_name = 'rrbuddy' 
+bucket_name = "hero-alliance-nexus"
 
-# def upload_to_gcs(file_data, filename):
-#     bucket = storage_client.bucket(bucket_name)
-#     blob = bucket.blob(filename)
-#     blob.upload_from_string(file_data)
-#     return blob.public_url
+def upload_file_to_gcs(bucket_name, folder_path, file, filename):
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(f"{folder_path}/{filename}")  
+        blob.upload_from_file(file)
+        print(f"File '{filename}' uploaded to '{folder_path}' in bucket '{bucket_name}'.")
+        return blob.public_url
+    except Exception as e:
+        print(f"Error uploading file: {e}")
+        raise
 
-def add_entry_to_gcs(filename, data):
-    print(f"Adding entry to GCS: {data}")
+def create_folder_in_bucket(bucket_name, folder_path):
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(f"{folder_path}/placeholder.txt")  
+        blob.upload_from_string("This is a placeholder file for the folder.")
+        print(f"Folder '{folder_path}' created successfully in bucket '{bucket_name}'.")
+        return f"Folder '{folder_path}' created successfully."
+    except Exception as e:
+        import traceback
+        print(f"Error creating folder: {e}")
+        print(traceback.format_exc())
+        return str(e)
+
+def add_entry_to_firestore(data):
+    print(f"Adding entry to Firestore: {data}")
     db.collection(os.environ["ASSISTANT_ID"]).document("chat_history").collection("entries").document().set(data, merge=True)
 
+@app.route('/api/create_folder', methods=['GET', 'POST'])
+def create_folder():
+    try:
+        folder_name = 'assets/superhero-04-01'
+        message = create_folder_in_bucket(bucket_name, folder_name)
+        return jsonify({"status": "success", "message": message})
+    except Exception as e:
+        print(f"Error in creating folder: {e}")
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/api/upload', methods=['POST'])
+def upload():
+    try:
+        folder_path = 'assets/superhero-04-01'
+        files_data = request.files.getlist('files')
+        uploaded_files = []
+
+        for file in files_data:
+            file.stream.seek(0)
+            public_url = upload_file_to_gcs(bucket_name, folder_path, file, file.filename)
+            uploaded_files.append({"filename": file.filename, "url": public_url})
+
+            add_entry_to_firestore({
+                'date': datetime.datetime.now(tz=datetime.timezone.utc),
+                'file_name': file.filename,
+                'file_url': public_url
+            })
+
+        return jsonify({"status": "success", "uploaded_files": uploaded_files})
+    except Exception as e:
+        print(f"Error in uploading files: {e}")
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/api/process', methods=['POST'])
 def process():
     try:
@@ -61,14 +112,8 @@ def process():
         output_language = request.form.get('outputLanguage')
         additional_info = request.form.get('additionalInfo')
         files_data = request.files.getlist('files')
-
-        # prompt_urls = []
-        # for file in files_data:
-        #     file_url = upload_to_gcs(file.read(), f"prompt_{file.filename}")
-        #     prompt_urls.append(file_url)
         
         files_text = files.process_files(files_data)
-
         prompt = prompting.generate(files_text, additional_info, output_language)
         response = model.generate_content(prompt)
 
@@ -76,16 +121,15 @@ def process():
             filename = files.create_response_pdf(response.candidates[0].content.parts[0].text)
         else: 
             filename = files.create_response_txt(response.candidates[0].content.parts[0].text)
+        
+        with open(filename, 'rb') as file:
+            public_url = upload_file_to_gcs(bucket_name, 'assets/superhero-04-01', file, filename)
 
-        print(f"Generated file: {filename}")
-        data = {
+        add_entry_to_firestore({
             'date': datetime.datetime.now(tz=datetime.timezone.utc),
             'title': request.form.get('title', 'Untitled'),
-            # 'prompt_file_url': prompt_urls,
-            # 'answer_file_url': answer_urls
-        }
-            
-        add_entry_to_gcs(filename, data)
+            'response_file_url': public_url
+        })
 
         return send_file(filename, as_attachment=True)
 
@@ -113,6 +157,16 @@ def process():
 
 # Uncomment when we want to reset the chat history entries
 
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    try:
+        entries = db.collection(os.environ["ASSISTANT_ID"]).document("chat_history").collection("entries").stream()
+        history = [entry.to_dict() for entry in entries]
+        return jsonify({"status": "success", "history": history})
+    except Exception as e:
+        print(f"Error retrieving chat history: {e}")
+        return jsonify({"error": str(e)}), 500
+    
 def delete_collection(db, collection_path):
     docs = db.collection(collection_path).stream()
     for doc in docs:
@@ -129,3 +183,4 @@ def reset():
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5001)
+
