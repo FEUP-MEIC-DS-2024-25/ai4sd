@@ -1,6 +1,7 @@
 import { getAuthOctokit } from "./jarvis-fetcher/auth.js";
 import { config } from "./config.js";
 import { uploadRepo } from "./jarvis-writer/writer.js";
+import { accessSecret } from "./utils/secret_manager.js";
 
 /**
  * Fetches all repositories in an organization.
@@ -55,18 +56,39 @@ export async function uploadAllReposInOrg(octokit, org) {
 }
 
 
-//const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-//await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
-
 import fs from "fs";
+import path from "path";
 
-const path = './service_account_key.json';
+const secretpath = './service_account_key.txt';
 
 try {
-  // Read the file synchronously
-  const secret = fs.readFileSync(path, 'utf8');
-  console.log('Successfully read secret');
+    // Read the file synchronously
+    const secret = fs.readFileSync(secretpath, 'utf8');
+    const decodedString = atob(secret);
+    const jsonObject = JSON.parse(decodedString);
+
+    const filePath = './service_account_key.json';
+
+    // Ensure the directory exists
+    const dirPath = path.dirname(filePath);
+    if (!fs.existsSync(dirPath)) {
+        fs.mkdirSync(dirPath, { recursive: true }); // Create the directory if it doesn't exist
+    }
+
+    // Convert the JSON object to a string and write it to a file
+    await fs.writeFile(filePath, JSON.stringify(jsonObject, null, 2), (err) => {
+        if (err) {
+            console.error("Error saving JSON to file:", err);
+        } else {
+            console.log(`Secret JSON saved to ${filePath}`);
+        }
+    });
+    console.log(`Successfully read secret ${secretpath}`);
 } catch (err) {
-  console.error(`Error reading secret file at ${path}:`, err.message);
+    console.error(`Error reading secret file at ${secretpath}:`, err.message);
 }
+
+const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
+await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
+
 

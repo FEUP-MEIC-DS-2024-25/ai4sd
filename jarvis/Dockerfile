@@ -3,6 +3,9 @@ FROM node:20
 # Set the working directory inside the container
 WORKDIR /usr/src/app
 
+# Ensure the directory has correct permissions
+RUN chown -R node:node /usr/src/app
+
 # Copy package.json and package-lock.json (if available) to install dependencies
 COPY package*.json ./
 
@@ -18,13 +21,13 @@ EXPOSE 8080
 ARG SERVICE_ACCOUNT_KEY
 
 # Write the service account key to a file
-RUN echo "$SERVICE_ACCOUNT_KEY" > /usr/src/app/service_account_key.json
+RUN echo "$SERVICE_ACCOUNT_KEY" > /usr/src/app/service_account_key.txt
 
 # Set the correct ownership and permissions for the service account key
-RUN chmod 600 /usr/src/app/service_account_key.json && chown node:node /usr/src/app/service_account_key.json
+RUN chmod 600 /usr/src/app/service_account_key.txt && chown node:node /usr/src/app/service_account_key.txt
 
 # Set the environment variable for Firebase credentials
-ENV GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/service_account_key.json
+ENV GOOGLE_APPLICATION_CREDENTIALS=/usr/src/app/service_account_key.txt
 
 # Switch to a non-root user for security
 USER node
