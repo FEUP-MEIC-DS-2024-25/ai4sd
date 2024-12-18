@@ -13,10 +13,10 @@ import { fetchAndDecryptDocument } from "../utils/secrets.js";
  * GitHub App instance for authenticating API requests.
  * @type {App}
  */
-export const app = new App({
-    appId: config.appId,
-    privateKey: PRIVATE_KEY,
-});
+//export const app = new App({
+//    appId: config.appId,
+//    privateKey: PRIVATE_KEY,
+//});
 
 /**
  * Retrieves an authenticated Octokit instance for a specific GitHub organization.
