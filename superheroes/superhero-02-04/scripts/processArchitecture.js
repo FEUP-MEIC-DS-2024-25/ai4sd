@@ -11,9 +11,7 @@ const { GoogleGenerativeAIFetchError } = require('@google/generative-ai');
 // Function to access the secret
 async function accessSecret(projectId, secretId) {
     try {
-        const client = new SecretManagerServiceClient(
-            { keyFilename: "superhero-02-04.json" }
-        );
+        const client = new SecretManagerServiceClient();
         const secretVersionName = `projects/150699885662/secrets/superhero-02-04-secret2/versions/1`;
         const [version] = await client.accessSecretVersion({ name: secretVersionName });
         const secretPayload = version.payload.data.toString('utf8');
