@@ -10,68 +10,76 @@ const enum DiagramTypes {
 }
 
 const app = express();
-const port = 5000;
+const port = 8080;
 
 app.use(bodyParser.json());
+// Read the JSON file
+const jsonPath = path.join(__dirname, 'strings.json');
+const json = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 
-const genAI = new GoogleGenerativeAI("AIzaSyD8kleEGvzyFxtx8WOfhsIZSp7VuC1ypRM");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+const genAI = new GoogleGenerativeAI(json.apiKey);
+const model = genAI.getGenerativeModel({ model: json.model });
+const clientChats = new Map<string, [number, any]>();
 
 app.post('/generate', async (req: any, res: any) => {
-    const { code, diagramType } = req.body;
-    if (!code || !diagramType) {
-        return res.status(400).json({ error: "Both 'code' and 'diagramType' are required." });
+    const { code, diagramType, clientID } = req.body;
+    if (!code || !diagramType || !clientID) {
+        return res.status(400).json({ error: json.errorMessages.missingCodeOrDiagramType });
     }
-
-    // Read the JSON file
-    const promptsPath = path.join(__dirname, 'strings.json');
-    const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
+    let clientEntry = clientChats.get(clientID);
+    let chat = clientEntry ? clientEntry[1] : null;
+    let timeElapsed = Date.now();
+    if (!chat) {
+        chat = model.startChat();
+    }
+    clientChats.set(clientID, [timeElapsed, chat]);
+    console.log(clientChats);
     let prompt = "";
     switch (diagramType) {
         case DiagramTypes.ACTIVITY:
-            prompt += prompts.activityDiagramPromptGenerator;
+            prompt += json.activityDiagramPromptGenerator;
             break;
         case DiagramTypes.SEQUENCE:
-            prompt += prompts.sequenceDiagramPromptGenerator;
+            prompt += json.sequenceDiagramPromptGenerator;
             break;
         default:
-            return res.status(400).json({ error: "Invalid 'diagramType' provided." });
+            return res.status(400).json({ error: json.errorMessages.invalidDiagramType });
     }
 
     prompt += code;
 
     try {
-        const output = await model.generateContent(prompt);
+        const output = await chat.sendMessage(prompt);
         res.json({ text: output.response.text() });
     } catch (error: any) {
         res.status(500).json({ error: error.message });
     }
 });
 app.post('/chat', async (req: any, res: any) => {
-    const { action, diagramType } = req.body;
+    const { action, clientID } = req.body;
+    let clientEntry = clientChats.get(clientID);
+    let chat = clientEntry ? clientEntry[1] : null;
+    let timeElapsed = Date.now();
 
-    if (!action || !diagramType) {
-        return res.status(400).json({ error: "Both 'code' and 'diagramType' are required." });
+    if (!action || !clientID) {
+        return res.status(400).json({ error: json.errorMessages.missingActionOrClientID });
     }
-    // Read the JSON file
-    const promptsPath = path.join(__dirname, 'strings.json');
-    const prompts = JSON.parse(fs.readFileSync(promptsPath, 'utf8'));
+    if (!chat) {
+        return res.status(400).json({ error: json.errorMessages.missingChatObject });
+    }
+
+    clientChats.set(clientID, [timeElapsed, chat]);
+
+    console.log(clientChats);
+
     let prompt = "";
-    switch (diagramType) {
-        case DiagramTypes.ACTIVITY:
-            //prompt += "Here goes some code. Explain what the code does by providing a PlantUML activity diagram. Do not provide any explanation or markup. Output only the PlantUML code. Here's an example of a diagram: @startuml\nstart\nrepeat\  :Test something;\n    if (Something went wrong?) then (no)\n      #palegreen:OK;\n      break\n    endif\n    ->NOK;\n    :Alert \"Error with long text\";\nrepeat while (Something went wrong with long text?) is (yes) not (no)\n->//merged step//;\n:Alert \"Success\";\nstop\n@enduml. The code is as follows:\n";
-            prompt += prompts.activityDiagramPrompt;
-            break;
-        case DiagramTypes.SEQUENCE:
-            prompt += prompts.sequenceDiagramPrompt;
-            break;
-        default:
-            return res.status(400).json({ error: "Invalid 'diagramType' provided." });
-    }
+
+    prompt += json.ChatDiagramPrompt;
+
     prompt += "\n but ";
     prompt += action;
     try {
-        const output = await model.generateContent(prompt);
+        const output = await chat.sendMessage(prompt);
         res.json({ text: output.response.text() });
     } catch (error: any) {
         res.status(500).json({ error: error.message });
@@ -81,3 +89,16 @@ app.post('/chat', async (req: any, res: any) => {
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
 });
+
+// Periodic cleaning of the clientChats map
+const minuteRange = 30; // If time elapsed since last request for each client is more than this value, the chat object is deleted
+const checkInterval = 30; // interval in minutes for checking
+function periodicCleaning() {
+    clientChats.forEach((value, key) => {
+        if (Date.now() - value[0] > minuteRange * 60 * 1000) {
+            clientChats.delete(key);
+        }
+    });
+    console.log(clientChats);
+}
+setInterval(periodicCleaning, checkInterval * 60 * 1000);
