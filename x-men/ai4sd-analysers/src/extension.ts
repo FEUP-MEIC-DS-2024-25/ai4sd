@@ -32,6 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 	  
 		  // Import and execute different superheros based on selection
 		  if (selectedOption) {
+			vscode.commands.executeCommand('setContext', 'archy.visible', false);
 			switch (selectedOption.label) {
 			  case "ArchiDetect":
 				// Import and execute ArchiDetect
@@ -46,6 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 				break;
 			  case "Archy":
 				// Import and execute Archy
+				
 				(await import('./superheroes/Archy/Archy.js')).execute(context);
 				break;
 			  case "Template":

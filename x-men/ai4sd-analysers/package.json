@@ -29,7 +29,8 @@
       },
       {
         "command": "archy.startExecution",
-        "title": "Archy: Start Execution"
+        "title": "Archy: Start Execution",
+        "category": "Archy"
       }
     ],
     "viewsContainers": {
@@ -38,7 +39,7 @@
           "id": "archy",
           "title": "Archy",
           "icon": "public/images/extension_icon.svg",
-          "when": "config.ai4sd-analysers.showActivityBarIcon"
+          "when": "config.ai4sd-analysers.showActivityBarIcon && archy.visible"
         }
       ]
     },
@@ -48,7 +49,8 @@
           "type": "webview",
           "id": "archy.leftSidebarPanel",
           "name": "Archy",
-          "icon": "public/images/extension_icon.svg"
+          "icon": "public/images/extension_icon.svg",
+          "when": "archy.visible"
         }
       ]
     }

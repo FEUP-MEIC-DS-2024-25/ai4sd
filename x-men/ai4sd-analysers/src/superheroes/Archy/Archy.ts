@@ -5,6 +5,7 @@ import { LeftSidebarPanel } from "./panels/leftSidebarPanel";
 
 export async function execute(context: vscode.ExtensionContext) {
 	
+	vscode.commands.executeCommand('setContext', 'archy.visible', true);
 	// Perform Archy's superhero logic here
     console.log("Executing Archy superhero...");
 
