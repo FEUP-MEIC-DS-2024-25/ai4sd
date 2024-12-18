@@ -30,7 +30,7 @@ function getAssistantList() {
     let ai15 = { name: "SPARK", type: "req", link: "/assistants/spark" };
     let ai16 = { name: "BANANAI", type: "req", link: "/assistants/bananai" };
 
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, a15, a16]
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, ai15, ai16]
 }
 
 function AssistantPickerItems() {
