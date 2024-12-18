@@ -40,8 +40,9 @@ function FormsComponent({ setActiveView  }) {
     
     /* Response */
     try {
+      console.log("Trying to fetch a response")
       const response = await fetch(
-        "http://localhost:8000/api/get-review/",
+        "https://superhero-06-03-150699885662.europe-west1.run.app",
         {
           method: "POST",
           headers: {
