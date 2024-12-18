@@ -38,24 +38,26 @@ class Message(BaseModel):
     currentConversation: str
     newMessage: NewMessage
 
-# def createGeminiContext(messages):
-#     return " ".join([message['body'] for message in messages])
-
 def createGeminiContext(chat, new_message):
-    if 'pinnedMessages' in chat and len(chat['pinnedMessages']) > 0:
-        print(f"ERROR: Pinned messages exist but logic to handle is not implemented yet.")
-        return "ERROR: Pinned messages exist but logic to handle is not implemented yet."
-    else:  # No pinned messages - Context is done from messages only.
-        complete_messages = chat['messages'] + [new_message]
-        context = (
-            "I am working on requirements engineering. I would like original features suggestions based on existing project requirements.\n"
-            "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
-            "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
-            "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
-        )
-        for message in complete_messages:
-            context += f"\n{message['authorName']}: {message['body']}"
-        return context
+    context = (
+        "I am working on requirements engineering. I would like original features suggestions based on existing project requirements.\n"
+        "I would like you to answer the latest message while taking into account the previous conversation.\n"
+        "If you are suggesting new features, your answer should write them in bold so that it is clear what they are. Any explanation given for that \n"
+        "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
+    )
+    if chat.get('pinnedMessages'):
+        context += "Current existing requirements:\n"
+        for pin in chat['pinnedMessages']:
+            context += f"- {pin['message']}\n"
+        context += "\n"
+
+    context += "Conversation summary:\n"
+    if chat.get('messages'):
+        for msg in chat['messages']:
+            context += f"- {msg['authorName']}: {msg['body']}\n"
+
+    context += f"- {new_message['authorName']}: {new_message['body']}"
+    return context
 
 def buildDescriptionContext(chat):
     """Builds context for description generation from chat content."""
@@ -71,7 +73,6 @@ def buildDescriptionContext(chat):
         context += "Conversation summary:\n"
         for msg in chat['messages']:
             context += f"- {msg['body']}\n"
-    print(f"Context: {context}")
     return context
 
 def createDescription(chat):
@@ -98,7 +99,7 @@ def createDescription(chat):
         
         # Clean up
         description = description.strip().replace("\n", " ")
-        
+
         return description if description else "New conversation"
         
     except Exception as e:
@@ -120,13 +121,19 @@ async def send_message(message: Message):
             raise ValueError("superhero-03-01-secret not found in environment variables")
 
         success, chat = db_helper.getChat(message.currentConversation)
+        if not success:
+            # Make an empty chat object
+            chat = {
+                "id": str(uuid4()),
+                "members": ["You", "Gemini"],
+                "description": "New conversation",
+                "messages": [],
+                "pinnedMessages": [],
+                "lastChanged": datetime.datetime.now().isoformat(),
+                "totalMessages": 0
+            }
 
-        
-        if success:
-            # complete_messages = chat[0]['messages'] + [message.newMessage.model_dump()]
-            context = createGeminiContext(chat, message.newMessage.model_dump())
-        else:
-            context = message.newMessage.body
+        context = createGeminiContext(chat, message.newMessage.model_dump())
 
         # Send the context to the gemini
         headers = {
@@ -165,7 +172,6 @@ async def send_message(message: Message):
         if success: # If the chat already exists
             new_messages = [message.newMessage.model_dump() , new_message]
             db_helper.addMessagesToChat(message.currentConversation, new_messages)
-            
             return JSONResponse(content=new_message, status_code=200)
         
         else: # If the chat is new

@@ -189,7 +189,6 @@ class FirestoreHelper:
                 "totalMessages": 1
             }
             result = self.create("chat", "history", new_conversation)
-            print(f"Created new conversation with ID: {result['id']}")
             return result
         except Exception as e:
             print(f"Failed to create new conversation: {e}")
