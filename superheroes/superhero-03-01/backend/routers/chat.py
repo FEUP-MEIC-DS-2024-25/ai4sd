@@ -57,6 +57,53 @@ def createGeminiContext(chat, new_message):
             context += f"\n{message['authorName']}: {message['body']}"
         return context
 
+def buildDescriptionContext(chat):
+    """Builds context for description generation from chat content."""
+    context = "Generate a brief one-line description (max 200 characters) for a conversation about software requirements based on the following content.\n\n"
+    
+    if chat.get('pinnedMessages'):
+        context += "Current existing requirements:\n"
+        for pin in chat['pinnedMessages']:
+            context += f"- {pin['message']}\n"
+        context += "\n"
+    
+    if chat.get('messages'):
+        context += "Conversation summary:\n"
+        for msg in chat['messages']:
+            context += f"- {msg['body']}\n"
+    print(f"Context: {context}")
+    return context
+
+def createDescription(chat):
+    """Creates a description for the chat using Gemini."""
+    try:
+        context = buildDescriptionContext(chat)
+        headers = {"Content-Type": "application/json"}
+        gemini_payload = {
+            "contents": [{
+                "parts": [{
+                    "text": context
+                }]
+            }]
+        }
+        
+        gemini_api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key={LLM_API_KEY}"
+        
+        response = requests.post(gemini_api_url, json=gemini_payload, headers=headers)
+        if response.status_code != 200:
+            print(f"Gemini API error: {response.status_code}")
+            return "New conversation"
+            
+        description = response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
+        
+        # Clean up
+        description = description.strip().replace("\n", " ")
+        
+        return description if description else "New conversation"
+        
+    except Exception as e:
+        print(f"Error generating description: {e}")
+        return "New conversation"
 
 @router.post("/")
 async def send_message(message: Message):
@@ -125,7 +172,18 @@ async def send_message(message: Message):
             conversation = db_helper.createChat(message.newMessage.model_dump())
             conversationId = conversation['id']
             res= db_helper.addMessagesToChat(conversationId, [new_message])
-            return JSONResponse(content=res, status_code=201)
+            # Update the description based on the current conversation and pinned messages
+            description = createDescription(res)
+            descriptionSuccess = db_helper.updateChatDescription(conversationId, description)
+            if not descriptionSuccess:
+                raise HTTPException(status_code=500, detail="Internal server error: Failed to update chat description")
+            
+            # Get the updated chat
+            exists, chat = db_helper.getChat(conversationId)
+            if not exists:
+                raise HTTPException(status_code=500, detail="Internal server error: Failed to retrieve chat after creation")
+            
+            return JSONResponse(content=chat, status_code=201)
     except Exception as e:
         # Clean up the database if something goes wrong
         # TODO
