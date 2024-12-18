@@ -171,10 +171,10 @@ function FormsComponent({ setActiveView  }) {
         radius="sm"
         size="md"
         onClick={handleTestClick}
-        className={`px-10 text-lg text-rubik bg-zinc-800 border-zinc-800 border-1.5 text-white transition duration-300 hover:bg-white hover:border-1.5 hover:border-zinc-800 hover:text-black ${
+        className={`px-10 text-lg bg-zinc-800 border-zinc-800 border-1.5 hover:text-zinc-800 transition duration-300 ${
           loading
             ? "bg-zinc-800 cursor-not-allowed"
-            : "bg-zinc-800 hover:bg-white"
+            : "text-white hover:bg-white"
         }`}
         disabled={loading}
       >
