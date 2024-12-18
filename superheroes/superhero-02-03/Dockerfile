@@ -6,7 +6,6 @@ WORKDIR /app
 
 # Copy the current directory contents into the container
 COPY . .
-COPY .env .env
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -16,7 +15,6 @@ RUN apt-get update && apt-get install -y \
 # Install Python dependencies
 RUN pip install --no-cache-dir \
     flask \
-    python-dotenv \
     google-generativeai \
     gunicorn
 
@@ -27,4 +25,4 @@ ENV PYTHONUNBUFFERED=1
 EXPOSE 8080
 
 # Command to run the application using Gunicorn
-CMD ["gunicorn", "-w", "2", "-b", "0.0.0.0:8080", "prompt:app"]
+CMD ["gunicorn", "-w", "1", "--threads", "2", "-b", "0.0.0.0:8080", "prompt:app"]

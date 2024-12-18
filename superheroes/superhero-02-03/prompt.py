@@ -3,17 +3,9 @@ import os
 import google.generativeai as genai
 import re
 import time
-from dotenv import load_dotenv
 
 LAST_REQUEST_TIME = 0
-
 app = Flask(__name__)
-
-# Load environment variables
-load_dotenv()
-api_key = os.getenv("API_KEY")
-output_dir = "./backend"
-genai.configure(api_key=api_key)
 
 # Model configuration
 generation_config = {
@@ -31,14 +23,6 @@ safety_settings = [
     {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": 2},
 ]
 
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-pro",
-    generation_config=generation_config,
-    safety_settings=safety_settings,
-)
-
-chat_session = model.start_chat(history=[])
-
 # Validation functions
 def validate_github_url(url):
     if not url:
@@ -51,26 +35,32 @@ def validate_architectural_patterns(patterns):
         return False
     return bool(patterns.strip())
 
-# API endpoint to generate ADR
-@app.route("/generate-adr", methods=["GET", "POST"])
+@app.route("/generate-adr", methods=["POST"])
 def generate_adr():
     try:
-        if request.method == "POST":
-            # Ensure the Content-Type is application/json
-            if request.content_type != "application/json":
-                return jsonify({"error": "Unsupported Media Type. Please set 'Content-Type: application/json'"}), 415
-            
-            data = request.get_json()
-            if not data:
-                return jsonify({"error": "Invalid or missing JSON data"}), 400
-            
-            github_link = data.get("github_link")
-            architectural_patterns = data.get("architectural_patterns")
-        else:  # GET request
-            github_link = request.args.get("github_link")
-            architectural_patterns = request.args.get("architectural_patterns")
-        
-        # Validate inputs
+        # Ensure the Content-Type is application/json
+        if request.content_type != "application/json":
+            return jsonify({"error": "Unsupported Media Type. Please set 'Content-Type: application/json'"}), 415
+
+        data = request.get_json()
+        if not data:
+            return jsonify({"error": "Invalid or missing JSON data"}), 400
+
+        github_link = data.get("github_link")
+        architectural_patterns = data.get("architectural_patterns")
+        api_key = data.get("api_key")
+
+        if not api_key:
+            return jsonify({"error": "API key is missing"}), 400
+
+        # Configure the API key dynamically
+        genai.configure(api_key=api_key)
+        model = genai.GenerativeModel(
+            model_name="gemini-1.5-pro",
+            generation_config=generation_config,
+            safety_settings=safety_settings,
+        )
+
         if not validate_github_url(github_link):
             return jsonify({"error": "Invalid GitHub URL format"}), 400
 
@@ -97,7 +87,7 @@ Explain what becomes easier or harder due to this decision.
         current_time = time.time()
 
         time_since_last_request = current_time - LAST_REQUEST_TIME
-        min_interval = 60 / RATE_LIMIT  # minimum interval between requests in seconds
+        min_interval = 60 / RATE_LIMIT
 
         if time_since_last_request < min_interval:
             time_to_wait = min_interval - time_since_last_request
@@ -105,14 +95,21 @@ Explain what becomes easier or harder due to this decision.
 
         LAST_REQUEST_TIME = time.time()
 
-
         # Generate ADR
+        chat_session = model.start_chat(history=[])
         response = chat_session.send_message(prompt)
+
         if response and response.text:
-            os.makedirs(output_dir, exist_ok=True)
+            # Save ADR locally
+            output_dir = os.path.join(os.getcwd(), "backend")
+            os.makedirs(output_dir, exist_ok=True)  # Ensure folder exists
             adr_path = os.path.join(output_dir, "ADR.md")
             with open(adr_path, "w") as file:
                 file.write(response.text.strip())
+
+            # Print ADR content for debugging purposes
+            print("Generated ADR Content:\n", response.text.strip())
+
             return jsonify({"message": "ADR generated successfully", "path": adr_path}), 200
         else:
             return jsonify({"error": "No response from the model"}), 500
@@ -120,6 +117,7 @@ Explain what becomes easier or harder due to this decision.
     except Exception as e:
         app.logger.error(f"Error: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 # Health check endpoint
 @app.route("/", methods=["GET"])
