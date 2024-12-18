@@ -37,7 +37,8 @@ app.include_router(history_router , prefix="/history")
 # Add CORS middleware
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:8080", "http://localhost:8082", "http://localhost:3000", CORS_URL],
+    # allow_origins=[CORS_URL],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
