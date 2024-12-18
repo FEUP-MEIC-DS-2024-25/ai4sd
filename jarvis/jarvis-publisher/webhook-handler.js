@@ -19,7 +19,7 @@ export async function handleWebhookEvent(event, payload) {
 }
 
 /**
- * Handles 'push' events, parsing the payload, and notifying superheroes
+ * Handles 'push' events, parsing the payload, and notifying superheroes.
  * @param {object} payload - The payload of the push event.
  */
 async function handlePushEvent(payload) {
@@ -39,4 +39,33 @@ async function handlePushEvent(payload) {
     }
 
     await publishToEchoJarvis(message);
+}
+
+/**
+ * Handles 'pull_request' events, parsing the payload, and notifying superheroes, only if the PR has been closed and merged.
+ * @param {object} payload - The payload of the pull request event.
+ */
+async function handlePullRequestEvent(payload) {
+    const action = payload.action;
+    const repo = payload.repository.full_name;
+    const prNumber = payload.pull_request.number;
+    const prTitle = payload.pull_request.title;
+    const prUrl = payload.pull_request.html_url;
+    const merged = payload.pull_request.merged;
+
+    if (action === 'closed' && merged) {
+        const message = {
+            type: 'pull_request',
+            repository: repo,
+            pr_number: prNumber,
+            pr_title: prTitle,
+            pr_url: prUrl,
+            merged: merged,
+            timestamp: new Date().toISOString(),
+        };
+
+        await publishToEchoJarvis(message);
+    } else {
+        console.log(`Pull request event '${action}' ignored.`);
+    }
 }
