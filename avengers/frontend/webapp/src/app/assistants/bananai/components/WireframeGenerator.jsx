@@ -1,6 +1,11 @@
 "use client"
 import { useState } from "react";
+import 'bootstrap/dist/css/bootstrap.css';
+import styles from "@/app/page.module.css";
 
+import Image from "next/image";
+import logo from '../assets/logo.png';
+import upload from '../assets/upload.png';
 function WireframeGenerator({ addRendering }) {
   const [file, setFile] = useState(null);
   const [umlImageUrl, setUmlImageUrl] = useState("");
@@ -89,41 +94,92 @@ function WireframeGenerator({ addRendering }) {
 
   return (
     <div>
-      <h1>Upload Requirements PDF</h1>
-      <form onSubmit={handleSubmit}>
-        <input type="file" onChange={handleFileChange} accept="application/pdf" />
-        <button type="submit">Generate UML Diagram</button>
-      </form>
+      <div className="flex justify-center">
+        <Image src={logo} alt="BANANAI Logo" width={200} height={200} />
+      </div>
+      <div className="border border-gray-300 shadow-lg rounded-lg w-full max-w-3xl mx-auto bg-white dark:bg-neutral-900 p-6 mt-8">     
+      {/* Upload Form */}
+      <div className="text-center">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-4">
+          <input
+            type="file"
+            id="fileInput"
+            onChange={handleFileChange}
+            accept="application/pdf"
+            style={{ display: "none" }}
+          />
+          <label htmlFor="fileInput" className="cursor-pointer">
+            <Image src={upload} alt="Upload PDF" width={100} height={100} />
+          </label>
+          {/* Display the selected file name or placeholder */}
+          {file && (
+              <p className="mt-2 text-sm text-gray-600">Selected file: {file.name}</p>
+            )}
+          <button
+            type="submit"
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg mt-3 hover:bg-indigo-700"
+          >
+            Generate Wireframes
+          </button>
+        </form>
+      </div>
 
+      {/* Wireframes */}
       {umlImageUrl ? (
-        <div>
-          <h2>Generated UML Diagram</h2>
-          <img src={umlImageUrl} alt="Generated UML Diagram" />
+        <div className="text-center mt-6">
+          <h2 className="text-lg font-semibold mb-4">Generated Wireframes</h2>
+          <img
+            src={umlImageUrl}
+            alt="Generated Wireframes"
+            className="mx-auto my-4 border rounded-md"
+          />
 
-          {/* Dropdown for selecting format and file name input */}
-          <div>
-            <label htmlFor="format">Download Format:</label>
-            <select id="format" value={format} onChange={handleFormatChange}>
-              <option value="png">PNG</option>
-              <option value="svg">SVG</option>
-            </select>
+          {/* Download Options */}
+          <div className="flex flex-col items-center space-y-4">
+            <div className="flex items-center space-x-2">
+              <label htmlFor="format" className="font-medium">
+                Download Format:
+              </label>
+              <select
+                id="format"
+                value={format}
+                onChange={handleFormatChange}
+                className="border rounded-md p-1"
+              >
+                <option value="png">PNG</option>
+                <option value="svg">SVG</option>
+              </select>
+            </div>
 
-            <label htmlFor="fileName">File Name:</label>
-            <input
-              id="fileName"
-              type="text"
-              value={fileName}
-              onChange={handleFileNameChange}
-              placeholder="Enter file name"
-            />
+            <div className="flex items-center space-x-2">
+              <label htmlFor="fileName" className="font-medium">
+                File Name:
+              </label>
+              <input
+                id="fileName"
+                type="text"
+                value={fileName}
+                onChange={handleFileNameChange}
+                placeholder="Enter file name"
+                className="border rounded-md p-1"
+              />
+            </div>
 
-            <button onClick={downloadImage}>Download</button>
+            <button
+              onClick={downloadImage}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg"
+            >
+              Download
+            </button>
           </div>
         </div>
       ) : (
-        <p>No UML diagram generated yet.</p>
+        <p className="text-center text-gray-600 mt-6">
+          No Wireframes diagram generated yet.
+        </p>
       )}
     </div>
+  </div>
   );
 }
 
