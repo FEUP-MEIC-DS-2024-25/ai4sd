@@ -7,7 +7,7 @@ export default function Assistant() {
     <div className="TwisterAI">
       <header>
         <div>
-          <h1>TwisterAI</h1>
+          <h1 className="title">TwisterAI</h1>
         </div>
         <div>
           <nav>
@@ -46,7 +46,7 @@ export default function Assistant() {
 
         <section>
             <label htmlFor="context">Give me some context about your code:</label>
-            <textarea id="context" placeholder="Insert here the context."></textarea>
+            <textarea id="context" placeholder="Insert context here."></textarea>
         </section>
 
         <section>
