@@ -100,22 +100,23 @@ export default function MessageBlock({ messages, totalMessages, description, con
                     )}
                     <div className="">
                         <h2 className="text-xl font-bold">Your Conversation</h2>
+                        <div className="text-sm text-gray-600">
+                            <div className="flex flex-wrap items-center gap-2">
+                                <p className="inline">{displayedDescription}</p>
+                                {description.split(' ').length > 20 && (
+                                    <button
+                                        onClick={() => setShowFullDescription(!showFullDescription)}
+                                        className="inline-flex text-blue-500 hover:text-blue-700 text-sm"
+                                    >
+                                        {showFullDescription ? 'Show Less' : 'Show More'}
+                                    </button>
+                                )}
+                            </div>
+                        </div>
                     </div>
 
                 </div>
-                <div className="text-sm text-gray-600">
-                    <div className="flex flex-wrap items-center gap-2">
-                        <p className="inline">{displayedDescription}</p>
-                        {description.split(' ').length > 20 && (
-                            <button
-                                onClick={() => setShowFullDescription(!showFullDescription)}
-                                className="inline-flex text-blue-500 hover:text-blue-700 text-sm"
-                            >
-                                {showFullDescription ? 'Show Less' : 'Show More'}
-                            </button>
-                        )}
-                    </div>
-                </div>
+                
             </div>
             <div className="overflow-y-auto max-h-[63vh]">
                 <ul className="space-y-2">

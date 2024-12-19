@@ -109,7 +109,7 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
             <div className="w-fit h-full">
                 <div className="p-4 shadow-sm h-full">
                     <div className="flex justify-between items-center mb-2">
-                        <h2 className="text-xl font-bold w-80">Pinned Messages</h2>
+                        <h2 className="text-xl font-bold w-80">Current Requirements</h2>
                         <button onClick={toggleView} className="text-blue-500">
                             <svg className="h-12 w-12 text-gray-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" />
@@ -118,7 +118,7 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                             </svg>
                         </button>
                     </div>
-                    <p className="text-gray-500">No pinned messages available.</p>
+                    <p className="text-gray-500">No requirements available.</p>
                 </div>
             </div>
         );
@@ -128,7 +128,7 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
         <div className="w-fit h-full">
             <div className="p-4 shadow-sm h-full">
                 <div className="flex justify-between items-center mb-2">
-                    <h2 className="text-xl font-bold w-80">Pinned Messages</h2>
+                    <h2 className="text-xl font-bold w-80">Current Requirements</h2>
                     <div className="flex gap-2">
                         {isExporting ? (
                             <Loading />
