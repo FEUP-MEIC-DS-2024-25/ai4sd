@@ -12,6 +12,7 @@ from google.cloud import storage
 import datetime
 import base64
 from google.cloud import secretmanager
+import datetime
 
 # def get_secret(secret_id):
 #     client = secretmanager.SecretManagerServiceClient()
@@ -31,7 +32,10 @@ if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "hero-alliance-feup-ds-24-25-146d9ba8a2d0.json"
 os.environ["ASSISTANT_ID"] = "superhero-04-01"
 db = firestore.Client()
-os.environ["API_KEY"] = db.collection(os.environ["ASSISTANT_ID"]).document("secrets").get().to_dict()["api_key"]
+secretmanager_client = secretmanager.SecretManagerServiceClient()
+secret_name = f"projects/hero-alliance-feup-ds-24-25/secrets/superhero-04-01-secret/versions/latest"
+response = secretmanager_client.access_secret_version(request={"name": secret_name})
+os.environ["API_KEY"] = response.payload.data.decode("UTF-8")
 
 genai.configure(api_key=os.environ["API_KEY"])
 model = genai.GenerativeModel("gemini-1.5-flash")
@@ -42,18 +46,76 @@ logging.basicConfig(level=logging.INFO)
 
 
 storage_client = storage.Client()
-bucket_name = 'rrbuddy' 
+bucket_name = "hero-alliance-nexus"
 
-# def upload_to_gcs(file_data, filename):
-#     bucket = storage_client.bucket(bucket_name)
-#     blob = bucket.blob(filename)
-#     blob.upload_from_string(file_data)
-#     return blob.public_url
+def upload_file_to_gcs(bucket_name, folder_path, file, filename):
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(f"{folder_path}/{filename.split('/')[-1]}")  
+        blob.upload_from_file(file)
+        blob.make_public()
+        print(f"File '{filename.split('/')[-1]}' uploaded to '{folder_path}' in bucket '{bucket_name}'.")
+        return blob.public_url
+    except Exception as e:
+        print(f"Error uploading file: {e}")
+        raise
 
-def add_entry_to_gcs(filename, data):
-    print(f"Adding entry to GCS: {data}")
-    db.collection(os.environ["ASSISTANT_ID"]).document("chat_history").collection("entries").document().set(data, merge=True)
+def create_folder_in_bucket(bucket_name, folder_path):
+    try:
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.blob(f"{folder_path}/placeholder.txt")  
+        blob.upload_from_string("This is a placeholder file for the folder.")
+        print(f"Folder '{folder_path}' created successfully in bucket '{bucket_name}'.")
+        return f"Folder '{folder_path}' created successfully."
+    except Exception as e:
+        import traceback
+        print(f"Error creating folder: {e}")
+        print(traceback.format_exc())
+        return str(e)
 
+def add_entry_to_firestore(data):
+    print("Data to be added:", data) 
+    try:
+        chat_history_ref = db.collection("superhero-04-01").document("chat_history")
+        entries_ref = chat_history_ref.collection("entries")
+        entries_ref.add(data)
+        print("Conversation added successfully!")
+    except Exception as e:
+        print(f"Error: {e}")
+
+@app.route('/api/create_folder', methods=['GET', 'POST'])
+def create_folder():
+    try:
+        folder_name = 'assets/superhero-04-01'
+        message = create_folder_in_bucket(bucket_name, folder_name)
+        return jsonify({"status": "success", "message": message})
+    except Exception as e:
+        print(f"Error in creating folder: {e}")
+        return jsonify({"error": str(e)}), 500
+    
+# @app.route('/api/upload', methods=['POST'])
+# def upload():
+#     try:
+#         folder_path = 'assets/superhero-04-01'
+#         files_data = request.files.getlist('files')
+#         uploaded_files = []
+
+#         for file in files_data:
+#             file.stream.seek(0)
+#             public_url = upload_file_to_gcs(bucket_name, folder_path, file, file.filename)
+#             uploaded_files.append({"filename": file.filename, "url": public_url})
+
+#             add_entry_to_firestore({
+#                 'date': datetime.datetime.now(tz=datetime.timezone.utc),
+#                 'file_name': file.filename,
+#                 'file_url': public_url
+#             })
+
+#         return jsonify({"status": "success", "uploaded_files": uploaded_files})
+#     except Exception as e:
+#         print(f"Error in uploading files: {e}")
+#         return jsonify({"error": str(e)}), 500
+    
 @app.route('/api/process', methods=['POST'])
 def process():
     try:
@@ -77,35 +139,16 @@ def process():
             filename = files.create_response_pdf(response.candidates[0].content.parts[0].text)
         else: 
             filename = files.create_response_txt(response.candidates[0].content.parts[0].text)
+        
+        with open(filename, 'rb') as file:
+            public_url = upload_file_to_gcs(bucket_name, 'assets/superhero-04-01', file, filename)
 
-        print(f"Generated file: {filename}")
-        data = {
-            'date': datetime.datetime.now(tz=datetime.timezone.utc),
-            'title': request.form.get('title', 'Untitled'),
-            # 'prompt_file_url': prompt_urls,
-            # 'answer_file_url': answer_urls
-        }
-            
-        add_entry_to_gcs(filename, data)
+        add_entry_to_firestore({
+            'title': datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),  
+            'response_file_url': public_url
+        })
 
         return send_file(filename, as_attachment=True)
-
-        # answer_urls = []
-        # with open(filename, 'rb') as f:
-        #     answer_url = upload_to_gcs(f.read(), f"answer_{filename}")
-        #     answer_urls.append(answer_url)
-
-
-        # data = {
-        #     'date': datetime.datetime.now(tz=datetime.timezone.utc),
-        #     'title': request.form.get('title', 'Untitled'),
-            # 'prompt_file_url': prompt_urls,
-            # 'answer_file_url': answer_urls
-        # }
-
-        # db.collection("chat_history_rrbuddy").document().set(data, merge=True)
-
-        # return send_file(filename, as_attachment=True)
 
     except Exception as e:
         print(f"Error processing request: {e}")
@@ -114,6 +157,16 @@ def process():
 
 # Uncomment when we want to reset the chat history entries
 
+@app.route('/api/history', methods=['GET'])
+def get_history():
+    try:
+        entries = db.collection(os.environ["ASSISTANT_ID"]).document("chat_history").collection("entries").stream()
+        history = [entry.to_dict() for entry in entries]
+        return jsonify({"status": "success", "history": history})
+    except Exception as e:
+        print(f"Error retrieving chat history: {e}")
+        return jsonify({"error": str(e)}), 500
+    
 def delete_collection(db, collection_path):
     docs = db.collection(collection_path).stream()
     for doc in docs:
@@ -126,6 +179,46 @@ def reset():
         return jsonify({"status": "success"})
     except Exception as e:
         print(f"Error resetting chat history: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/list_blobs', methods=['GET'])
+def list_blobs():
+    try:
+        blobs = storage_client.bucket(bucket_name).list_blobs(prefix="assets/superhero-04-01")
+        blob_names = [blob.name for blob in blobs]
+
+        print(f"Found blobs: {blob_names}")
+        return jsonify({
+            "status": "success",
+            "blobs": blob_names
+        })
+    except Exception as e:
+        print(f"Error listing blobs: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/delete_gcs_folder', methods=['GET'])
+def delete_folder():
+    try:
+        folder_path = "assets/superhero-04-01"  
+        bucket = storage_client.bucket(bucket_name)
+
+        # DELETE EVERYTHING IN THE FOLDER, including subfolders
+        blobs_deleted = []
+        blobs = bucket.list_blobs(prefix=folder_path)
+        for blob in blobs:
+            blob.delete()
+            blobs_deleted.append(blob.name)
+
+        print(f"Deleted {len(blobs_deleted)} objects from folder '{folder_path}'.")
+
+        return jsonify({
+            "status": "success",
+            "message": f"Deleted {len(blobs_deleted)} objects from folder '{folder_path}'.",
+            "deleted_blobs": blobs_deleted
+        })
+
+    except Exception as e:
+        print(f"Error deleting folder: {e}")
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
