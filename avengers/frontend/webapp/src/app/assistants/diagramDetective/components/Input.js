@@ -6,20 +6,42 @@ import Image from "next/image";
 import { Input as UIInput } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
 
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = 'https://superhero-06-02-150699885662.europe-west1.run.app/';
 
 function Input() {
-    const { sharedVariable, setSharedVariable } = useChatContext();
+    const { sharedVariable, setSharedVariable, chatId } = useChatContext();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
 
     const toggleMenu = () => {
         setIsMenuVisible(!isMenuVisible); // Toggle menu visibility
     };
 
+
+
+    // const postContent = async (event) => {
+    //     event.preventDefault();
+    //     const form = document.querySelector('form');
+    //     const formData = new FormData(form);
+    //     console.log(BASE_URL);
+    //     console.log(formData);
+    //     const response = await axios.post(BASE_URL + '/app/get_content/', formData);
+    //     setSharedVariable(!sharedVariable); 
+    //     console.log(response);
+    // };
     const postContent = async (event) => {
         event.preventDefault();
         const form = document.querySelector('form');
         const formData = new FormData(form);
+        // if (chatId === null || chatId === undefined) {
+        //     // create a new session if chatId is null
+        //     const response = await axios.post(BASE_URL + '/app/create_session/');
+        //     //set chatId
+        //     const newChatId = response.data.session.session_id;
+            
+
+
+        // };
+        //formData.append("session_id", chatId);
         console.log(BASE_URL);
         console.log(formData);
         const response = await axios.post(BASE_URL + '/app/get_content/', formData);
