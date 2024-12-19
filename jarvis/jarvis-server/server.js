@@ -15,9 +15,12 @@ app.use(bodyParser.json());
 app.post("/webhook", async (req, res) => {
     try {
         const event = req.headers["x-github-event"];
+        const payload = req.body;
+
         console.log(`Received GitHub webhook event: ${event}`);
+
         if (event === "push") {
-            const { repository, ref } = req.body;
+            const { repository, ref } = payload;
             console.log(`Push event received for ${repository.full_name} on branch ${ref}`);
 
             // Trigger `uploadRepo` for the repository
@@ -31,6 +34,14 @@ app.post("/webhook", async (req, res) => {
                 console.error(`Error processing repository ${repo}:`, err.message);
             }
         }
+
+        // Publish a message to echo-jarvis
+        handleWebhookEvent(event, payload)
+            .then(() => res.status(200).send('Event received.'))
+            .catch(err => {
+                console.error('Error handling webhook event:', err);
+                res.status(500).send('Internal Server Error.');
+            });
 
         res.status(200).send("Webhook processed");
     } catch (error) {
