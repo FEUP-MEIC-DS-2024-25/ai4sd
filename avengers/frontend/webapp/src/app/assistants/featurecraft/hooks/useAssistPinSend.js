@@ -17,26 +17,16 @@ export default function useAssistPinSend() {
 
 
     const handleSendPin = async (pinnedMessage, conversationId) => {
-        if (pinnedMessage.trim()) {
-            try {
-                const newPinnedMessage = {
-                    message: pinnedMessage
-                };
-                const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, newPinnedMessage);
-                return response;
-            } catch (error) {
-                return error;
-            }
-        //try {
-        //    //const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, pinnedMessage);
-        //    const response = await axios.post(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/${conversationId}`, pinnedMessage);
-        //    return response;
-        //} catch (error) {
-        //    //Return the error
-        //    return error;
-        //}
+        try {
+            //const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, pinnedMessage);
+            const response = await axios.post(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/${conversationId}`, pinnedMessage);
+            return response;
+        } catch (error) {
+            //Return the error
+            return error;
+        }
     };
-    }
+    
 
     //const handleEditPin = async (pinnedId, newMessage, conversationId) => {
     //    try {
@@ -81,6 +71,6 @@ export default function useAssistPinSend() {
         setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
     }
 
-    return { handleSendPin, handleEditPin, updatePinnedMessagesText };
+    return { handleSendPin, handleEditPin, updatePinnedMessagesText, updatePinnedMessages };
     
 }
