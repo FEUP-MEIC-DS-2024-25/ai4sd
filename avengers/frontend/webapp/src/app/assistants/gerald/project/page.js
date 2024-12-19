@@ -4,12 +4,11 @@ import 'bootstrap/dist/css/bootstrap.css';
 import '@/app/globals.css';
 
 
-import ProjectPicker from "./components/projectPicker";
+import ProjectPicker from "../components/projectPicker";
 
 export default function Projects() {
     return(
         <div>
-          
             <ProjectPicker></ProjectPicker>
         </div>
     )

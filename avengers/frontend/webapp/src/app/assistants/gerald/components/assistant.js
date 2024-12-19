@@ -14,7 +14,7 @@ export default function Assistant() {
     return (
         <div className={`${styles.assistantInteraction} assistantInteraction`}>
             <header>
-                <a href="">
+                <a href="project">
                     <h2><i className="fas fa-sync-alt"></i> Change to another Project</h2>
                 </a>
                 <a className="aboutus" href="">

@@ -1,7 +1,8 @@
 import styles from "@/app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.css';
-
+import "./gerald.css";
 import '@/app/globals.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function ProjectPicker() {
     return(
@@ -13,7 +14,7 @@ export default function ProjectPicker() {
                 </a>
             </header>
             <div className="project">
-                <a href="">
+                <a href="chat">
                     <div className="card">  
                         <h2>This is a project name</h2>
                         <p>This is a project description which has more info than the title</p>

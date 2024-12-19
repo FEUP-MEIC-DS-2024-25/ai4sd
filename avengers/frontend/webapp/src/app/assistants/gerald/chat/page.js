@@ -5,7 +5,7 @@ import '@/app/globals.css';
 
 import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
-import Assistant from "./components/assistant";
+import Assistant from "../components/assistant";
 
 export default function AI() {
     //preparing mock data
