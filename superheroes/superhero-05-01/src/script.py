@@ -31,6 +31,7 @@ Please try to be synthetic in your answers.
 
 with open('/etc/gemini_token', 'r') as file:
   gemini_token = file.read().strip()
+  print(gemini_token)
 
 def run_online(files):
   # credentials = service_account.Credentials.from_service_account_file('wardenai-bbe86d6d2916.json')
