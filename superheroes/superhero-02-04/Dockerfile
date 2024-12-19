@@ -10,9 +10,6 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy the gemini key from google environment variable
-RUN echo 'GEMINI_API_KEY=$(superhero-02-04-secret)' > .env
-
 # Copy the rest of the application code
 COPY . .
 

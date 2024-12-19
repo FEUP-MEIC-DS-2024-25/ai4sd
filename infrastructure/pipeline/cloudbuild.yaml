@@ -11,28 +11,6 @@ substitutions:
   _GITHUB_ORG: "FEUP-MEIC-DS-2024-25"
 
 steps:
-  
-  # Step 0: Install GitHub CLI (gh)
-  - id: "Install GitHub CLI"
-    name: "gcr.io/cloud-builders/curl"
-    entrypoint: "bash"
-    args:
-      - "-c"
-      - |
-          echo "Installing GitHub CLI..."
-          
-          # Ensure prerequisites are installed
-          apt-get update && apt-get install -y software-properties-common apt-transport-https curl
-
-          # Add the GitHub CLI repository
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-
-          # Update package list and install gh
-          apt-get update && apt-get install -y gh
-
-          # Verify installation
-          gh --version && echo "GitHub CLI installed successfully."
 
   # Step 1: Fetch the latest updated merged PR number and set it as an environment variable
   - id: "Fetch Last Updated Merged PR"
@@ -40,7 +18,6 @@ steps:
     entrypoint: "bash"
     args:
       - "-c"
-      - |
       - |
           echo "Installing jq..."
           apt-get update && apt-get install -y jq
@@ -129,12 +106,18 @@ steps:
     args:
       - "-c"
       - |
-          echo "Fetching PR_ID from file..."
 
+          echo "Installing jq..."
+          apt-get update && apt-get install -y jq
+
+          echo "Fetching PR_ID from file..."
           echo "PR_ID: $(cat /workspace/pr_id.txt)"
 
           echo "Fetching changed superhero directories from the pull request..."
-          changed_dirs=$(gh pr view $(cat /workspace/pr_id.txt) --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+
+          changed_dirs=$(curl -s "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls/$(cat /workspace/pr_id.txt)/files" | \
+           jq -r '.[].filename' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+
           
           echo "Changed superhero directories: $changed_dirs"
 
@@ -188,21 +171,19 @@ steps:
             if [ -f "${dockerfile}" ]; then
 
                 echo "Fetching secret for jarvis..."
-                secret_file="/tmp/jarvis_secret"
 
-                gcloud secrets versions access latest \
-                  --secret="jarvis-secret" \
-                  --project="${_PROJECT_ID}" > "${secret_file}"
+                jarvis_secret=$(gcloud secrets versions access latest \
+                --secret="jarvis-secret" \
+                --project="${_PROJECT_ID}")
 
               echo "Building image for ${service}..."
-              if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
+              if docker build --build-arg SERVICE_ACCOUNT_KEY="${jarvis_secret}" -t "${image_with_build_id}" "${dir}"; then
                 echo "Pushing image for ${service}..."
                 docker push "${image_with_build_id}" || echo "Failed to push image for ${service}. Skipping."
               else
                   echo "Failed to build image for ${service}. Skipping."
               fi
               
-              rm -rf "${secret_file}"
             else
               echo "No Dockerfile found for ${service}, using fallback image."
             fi

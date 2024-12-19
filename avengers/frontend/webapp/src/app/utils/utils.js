@@ -30,17 +30,17 @@ export function getShadowColor(area) {
 
   export const assistantFilters = {
     RRBuddy: {
-        Functional: false,
+        Functional: true,
         NonFunctional: {
-            Performance: false,
-            Scalability: false,
-            Portability: false,
-            Compatibility: false,
-            Reliability: false,
-            Maintainability: false,
-            Availability: false,
-            Security: false,
-            Usability: false
+            Performance: true,
+            Scalability: true,
+            Portability: true,
+            Compatibility: true,
+            Reliability: true,
+            Maintainability: true,
+            Availability: true,
+            Security: true,
+            Usability: true
         },
     },
     AssistantName: {
