@@ -1,13 +1,8 @@
 import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
 import { Link, useNavigate } from "react-router-dom";
-import "./Header.css"; // Import the Header CSS
+import "../styles/Header.css"
 import apiClient from "../config/axios";
-=======
-import apiClient from "../config/axios";
-import { Link, useNavigate } from "react-router-dom";
-import "../styles/Header.css"; // Import the Header CSS
->>>>>>> origin/assistant/spark/react-integration-2
+
 
 function Header() {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -17,11 +12,7 @@ function Header() {
   // Fetch user authentication status
   useEffect(() => {
     apiClient
-<<<<<<< HEAD
-      .get("/user-status/", { withCredentials: true }) // Replace with your endpoint
-=======
       .get("/user-status/", { withCredentials: true })
->>>>>>> origin/assistant/spark/react-integration-2
       .then((response) => {
         console.log("Auth status response:", response.data);
         const { isAuthenticated } = response.data;
