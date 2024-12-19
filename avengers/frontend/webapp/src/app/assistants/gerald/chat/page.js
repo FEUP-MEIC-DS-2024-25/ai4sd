@@ -1,3 +1,4 @@
+'use client';
 import styles from "@/app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.css';
 
@@ -7,7 +8,15 @@ import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
 import Assistant from "../components/assistant";
 
+import React, {useEffect} from "react";
+import { downloadRepo } from "../services/gerald";
+
 export default function AI() {
+
+    useEffect(() => {
+        downloadRepo();
+    }, []);
+
     //preparing mock data
     const assistName = "Gerald";
     const assistType = "Gerald"; // change according to the assistant type (req, arch, refact, verif)
