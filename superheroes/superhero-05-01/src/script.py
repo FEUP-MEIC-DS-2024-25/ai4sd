@@ -18,7 +18,7 @@ You must identify all possible vulnerabilities, if any, in the code, and provide
 title: <Title of the vulnerability>
 description: <Small description of the vulnerability>
 file: <File where the vulnerability is located>
-lines: <Line numbers of the code that is vulnerable>
+lines: <Exact line numbers of the code that is vulnerable>
 fix: <How to fix the vulnerability>
 
 Only provide the JSON array of vulnerabilities.
