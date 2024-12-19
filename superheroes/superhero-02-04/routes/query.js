@@ -3,7 +3,6 @@ const multer = require('multer');
 var router = express.Router();
 var path = require('path')
 var { processArchitecture } = require('../scripts/processArchitecture');
-var { parseInputFiles } = require('../scripts/parseInputFiles');
 const fsPromises = require('fs/promises');
 
 
@@ -24,7 +23,6 @@ const uploadZipAdd = multer({
 
 
 //// ## ENDPOINTS
-
 // endpoint for LLM queries
 router.post('/', uploadZipAdd, async function(req, res, next) {
 
@@ -34,11 +32,11 @@ router.post('/', uploadZipAdd, async function(req, res, next) {
   }
 
   const zipFilePath = req.file.path; // path to uploaded zip file
-  const extractDir = path.join('uploads/', 'unzipped'); // directory where to unzip files into
+  const extractDir = 'uploads/'; // directory where to extract temp files into
+  const language = req.body.language;
 
   try {
-    const files = await parseInputFiles(zipFilePath, extractDir)
-    const result = await processArchitecture(files)
+    const result = await processArchitecture(zipFilePath, extractDir, language)
 
     res.json({"output":result});
 
@@ -47,6 +45,10 @@ router.post('/', uploadZipAdd, async function(req, res, next) {
       res.status(500).json({ error: 'Error processing architectural analysis' });
 
   }
+});
+
+router.get('/', async function(req, res, next) {
+  res.render('query', {});
 });
 
 // ##aux funcs
