@@ -76,6 +76,31 @@ def extract_story_points(issue):
                 return int(label['name'].split()[-1])  # Assumes label format like "Story Point: 5"
             except ValueError:
                 continue
-    # Alternatively, parse the body to find story points
-    # Implement your parsing logic here
     return None
+
+def get_contributors_activity(repo_owner, repo_name):
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/contributors"
+    response = requests.get(url)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print(f"Failed to fetch contributors' activity: {response.status_code}")
+        return None
+
+def get_all_commits(repo_owner, repo_name, branch="main"):
+    url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/commits"
+    commits = []
+    params = {"sha": branch, "per_page": 100, "page": 1}
+
+    while True:
+        response = requests.get(url, params=params)
+        if response.status_code == 200:
+            batch = response.json()
+            if not batch:
+                break
+            commits.extend(batch)
+            params["page"] += 1
+        else:
+            print(f"Failed to fetch commits: {response.status_code}")
+            break
+    return commits

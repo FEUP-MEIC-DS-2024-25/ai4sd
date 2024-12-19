@@ -2,6 +2,7 @@ import axios from "axios";
 
 export default async function deletePinnedMessage(conversationId, pinnedMessageId, setPinnedMessages, setError) {
     try {
+        //const response = await axios.delete('http://localhost:8080/chat/pin/delete', {
         const response = await axios.delete('https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/delete', {
             data: {
                 chatId: conversationId,
