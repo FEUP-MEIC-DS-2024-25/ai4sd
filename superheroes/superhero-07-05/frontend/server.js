@@ -169,8 +169,6 @@ app.post('/save-context', async (req, res) => {
       console.warn('O ficheiro context.txt não foi encontrado.');
     }
 
-    
-
     // Executar o script Python
     const scriptPath = path.join(__dirname, '../juncao.py');
     const pythonProcess = spawn(

@@ -33,14 +33,6 @@ WORKDIR /app
 # Copie todos os arquivos do projeto para o container
 COPY . .
 
-# Instale dependências do Node.js (JavaScript e backend)
-RUN npm install --prefix javascript
-RUN npm install --prefix back_end_bd
-
-# Instale Jest e Stryker globalmente
-RUN npm install -g jest
-RUN npm install -g stryker-cli
-
 # Adicionar JUnit ao projeto
 RUN curl -O https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.9.3/junit-platform-console-standalone-1.9.3.jar \
     && mv junit-platform-console-standalone-1.9.3.jar /usr/local/lib/
