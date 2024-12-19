@@ -36,31 +36,6 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
         setDeletingMessageId(null);
     };
 
-    /* const handleSaveEdit = async () => {
-        if (editedMessage.trim()) {
-            try {
-                console.log(conversationId)
-                // Make the API call to update the pinned message
-                const response = await axios.put(`http://localhost:8080/chat/pin/${conversationId}`, {
-                    pinned_id: editingMessageId,
-                    message: editedMessage,
-                });
-                console.log(conversationId)
-                console.log(response)
-                if (response.status === 200) {
-                    // Update the pinnedMessages state with the new message
-                    const updatedMessages = pinnedMessages.map((msg) =>
-                        msg.id === editingMessageId ? { ...msg, message: editedMessage } : msg
-                    );
-                    setPinnedMessages(updatedMessages);
-                    setEditingMessageId(null);  // Stop editing
-                }
-            } catch (error) {
-                console.error("Failed to update pinned message", error);
-            }
-        }
-    };
- */
     const handleSaveEdit = async () => {
         if (editedMessage.trim()) {
             try {
@@ -153,8 +128,8 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                 </div>
                 <div className="overflow-y-auto max-h-[63vh] w-full pb-4">
                     <ul className="space-y-2">
-                        {pinnedMessages.map((pinnedMessage) => (
-                            <li key={pinnedMessage.id} className="p-2 bg-gray-50 rounded-xl shadow-sm max-w-lg">
+                        {pinnedMessages.map((pinnedMessage, index) => (
+                            <li key={pinnedMessage.id || index} className={`p-2 rounded-xl shadow-sm max-w-lg ${!pinnedMessage.id ? 'bg-gray-200' : 'bg-gray-50'}`}>
                                 {editingMessageId === pinnedMessage.id ? (
                                     <div className="flex space-x-2">
                                         <input
@@ -162,30 +137,30 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                                             value={editedMessage}
                                             onChange={(e) => setEditedMessage(e.target.value)}
                                             className="w-full p-2 border rounded"
+                                            disabled={!pinnedMessage.id}
                                         />
-                                        <button onClick={handleSaveEdit} className="bg-blue-500 text-white p-2 rounded">
+                                        <button onClick={pinnedMessage.id ? handleSaveEdit : null} className="bg-blue-500 text-white p-2 rounded" disabled={!pinnedMessage.id}>
                                             Save
                                         </button>
-                                        <button onClick={handleCancelEdit} className="bg-gray-300 p-2 rounded">
+                                        <button onClick={pinnedMessage.id ? handleCancelEdit : null} className="bg-gray-300 p-2 rounded" disabled={!pinnedMessage.id}>
                                             Cancel
                                         </button>
                                     </div>
                                 ) : (
                                     <div className="flex justify-between items-center space-x-4">
-                                        <p className="font-semibold break-words max-w-[80%]">{pinnedMessage.message}</p>
+                                        <p className={`font-semibold break-words max-w-[80%] ${!pinnedMessage.id ? 'text-gray-500' : ''}`}>{pinnedMessage.message}</p>
                                         <div className="w-20 space-x-2 flex justify-center">
-                                            <button onClick={() => handleEditClick(pinnedMessage.id, pinnedMessage.message)} className="text-blue-500">
+                                            <button onClick={pinnedMessage.id ? () => handleEditClick(pinnedMessage.id, pinnedMessage.message) : null} className="text-blue-500" disabled={!pinnedMessage.id}>
                                                 <svg className="h-6 w-6 text-gray-500" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
                                             </button>
                                             {deletingMessageId === pinnedMessage.id ? (
                                                 <Loading height="h-6 w-6" />
                                             ) : (
-                                                <DeleteButton onClick={() => handleDelete(pinnedMessage.id)} />
+                                                pinnedMessage.id ? <DeleteButton onClick={() => handleDelete(pinnedMessage.id)} /> : <DeleteButton onClick={() => null} color="gray" /> 
                                             )}
                                         </div>
                                     </div>
                                 )}
-
                             </li>
                         ))}
                     </ul>
