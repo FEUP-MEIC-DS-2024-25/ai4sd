@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { Link, useNavigate } from "react-router-dom";
 import "./Header.css"; // Import the Header CSS
 import apiClient from "../config/axios";
+=======
+import apiClient from "../config/axios";
+import { Link, useNavigate } from "react-router-dom";
+import "../styles/Header.css"; // Import the Header CSS
+>>>>>>> origin/assistant/spark/react-integration-2
 
 function Header() {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -11,8 +17,13 @@ function Header() {
   // Fetch user authentication status
   useEffect(() => {
     apiClient
+<<<<<<< HEAD
       .get("/user-status/", { withCredentials: true }) // Replace with your endpoint
+=======
+      .get("/user-status/", { withCredentials: true })
+>>>>>>> origin/assistant/spark/react-integration-2
       .then((response) => {
+        console.log("Auth status response:", response.data);
         const { isAuthenticated } = response.data;
         setIsAuthenticated(isAuthenticated);
       })
@@ -33,9 +44,13 @@ function Header() {
     }
   };
 
+  const handleNavigateHome = () => {
+    navigate("/");
+  };
+
   return (
     <div className="nav">
-      <div className="together">
+      <div className="together" onClick={handleNavigateHome} style={{ cursor: "pointer" }}>
         {/* Logo */}
         <img src="/favicon.ico" alt="logo" height="50" style={{ width: "auto" }} />
         <h1 id="spark-title" className="sparkTitle">
@@ -77,9 +92,8 @@ function Header() {
           </svg>
         </span>
 
-        {/* Expandable Menu */}
         <div className={`toggleMenu ${menuVisible ? "show" : ""}`}>
-        {isAuthenticated ? (
+          {isAuthenticated ? (
             <>
               <Link to="/profile">Profile</Link>
               <button className="logout-button" onClick={handleLogout}>
@@ -92,9 +106,6 @@ function Header() {
               <Link to="/signup">Signup</Link>
             </>
           )}
-
-          <Link to="/option1">Option 1</Link>
-
         </div>
       </div>
     </div>

@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "../../config/axios";
+<<<<<<< HEAD
 import { Link, useParams } from "react-router-dom";
 import "./Profile.css";
+=======
+import { useNavigate, Link, useParams } from "react-router-dom";
+import "../../styles/Profile.css";
+>>>>>>> origin/assistant/spark/react-integration-2
 
 function Profile() {
   const { username } = useParams();

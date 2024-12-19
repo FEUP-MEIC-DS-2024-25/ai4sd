@@ -30,7 +30,7 @@ def run_shell_script_javascript(code, test,context):
     script_path = "./script_javascript.sh"
     try:
         # Chamar o script com os argumentos passados
-        subprocess.run(["bash", script_path, code, test], check=True)
+        subprocess.run(["bash", script_path, code], check=True)
     except subprocess.CalledProcessError as e:
         print(f"Erro ao executar o script: {e}")
     

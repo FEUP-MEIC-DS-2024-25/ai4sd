@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Filters from "./filters";
 import InputSubmission from "./inputSubmission";
 import Loading from "./loading";
@@ -10,7 +10,7 @@ import "bootstrap/dist/css/bootstrap.css";
 import { Button } from "@/app/components/ui/button";
 import { getAssistantSelectedFilters } from "@/app/utils/utils";
 
-export default function Application() {
+export default function Application({setHistoryData}) {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [downloadUrl, setDownloadUrl] = useState(null);
@@ -20,6 +20,7 @@ export default function Application() {
     const [outputType, setOutputType] = useState("pdf");
     const [outputLanguage, setOutputLanguage] = useState("english");
     const [promptType, setOutputPromptType] = useState("N");
+
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
@@ -52,7 +53,7 @@ export default function Application() {
 
         setLoading(true);
         try {
-            // const response = await fetch("http://172.23.0.3:8080/api/process", {
+            // const response = await fetch("http://localhost:8080/api/process", {
             const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/process", {
                 method: "POST",
                 body: formData,
@@ -85,10 +86,33 @@ export default function Application() {
         }
     };
 
+    useEffect(() => {
+        fetchHistory();
+    }, []);
+
+    const fetchHistory = async () => {
+        try {
+            // const response = await fetch("http://localhost:8080/api/history");
+            const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/reset");
+            if (!response.ok) {
+                throw new Error(`Error fetching history: ${response.statusText}`);
+            }
+            const data = await response.json();
+            const formattedHistory = data.history.map(entry => ({
+                text: entry.title || entry.file_name || "Untitled",
+                link: entry.response_file_url || "#",
+            }));
+            setHistoryData(formattedHistory);
+        } catch (error) {
+            console.error("Error fetching history:", error);
+            setHistoryData([]);
+        }
+    };
+
     const resetHistory = async (event) => {
         event.preventDefault();
         try {
-            // const response = await fetch("http://172.23.0.3:8080/api/reset", {
+            // const response = await fetch("http://localhost:8080/api/reset", {
             const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/reset", {
                 method: "POST",
             });
@@ -109,14 +133,14 @@ export default function Application() {
     return (
         <>
             <div className="p-2 flex flex-col mx-auto bg-gray-300 shadow-md rounded-md w-5/6">
-                <div className="p-2 mb-3 flex flex-col mx-auto bg-gray-100 shadow-md rounded-md w-5/6">
+                {/* <div className="p-2 mb-3 flex flex-col mx-auto bg-gray-100 shadow-md rounded-md w-5/6">
                     <Button className="m-2 bg-purple-600 shadow-md rounded-md text-white" onClick={() => setSelectedFiles([])}>
                         Clear
                     </Button>
                     <Button className="m-2 bg-purple-600 shadow-md rounded-md text-white" onClick={resetHistory}>
                         Reset history
                     </Button>
-                </div>
+                </div> */}
                 <form onSubmit={handleFormSubmit}>
                     <Filters onOutputTypeChange={setOutputType}
                      onOutputLanguageChange={setOutputLanguage}
