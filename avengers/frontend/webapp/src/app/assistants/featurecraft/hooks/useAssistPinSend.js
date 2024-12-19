@@ -12,6 +12,13 @@ export default function useAssistPinSend() {
             } catch (error) {
                 return error;
             }
+        try {
+            //const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, pinnedMessage);
+            const response = await axios.post(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/${conversationId}`, pinnedMessage);
+            return response;
+        } catch (error) {
+            //Return the error
+            return error;
         }
     };
 
@@ -34,6 +41,34 @@ export default function useAssistPinSend() {
         };
         setPinnedMessages(prevMessages => prevMessages.map(msg => msg.id === responseData.id ? updatedMessage : msg));
     };
+        // Extract all messages from responseData
+        const newMessages = responseData.map(item => ({
+            message: item.message,
+            id: item.id
+        }));
+
+        if (pinnedMessages === undefined) {
+            setPinnedMessages(newMessages);
+            return;
+        }
+        // Add new messages to the existing messages array
+        setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
+    }
+
+    const updatePinnedMessagesText = async (pinnedMessages, setPinnedMessages, data) => {
 
     return { handleSendPin, handleEditPin, updatePinnedMessages };
+        const newMessages = data.map(item => ({
+            message: item
+        }));
+
+        if (pinnedMessages === undefined) {
+            setPinnedMessages(newMessages);
+            return;
+        }
+        // Add new messages to the existing messages array
+        setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
+    }
+
+    return { handleSendPin, updatePinnedMessages, updatePinnedMessagesText };
 }

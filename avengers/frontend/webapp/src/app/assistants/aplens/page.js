@@ -7,48 +7,30 @@ import '@/app/globals.css';
 import AssistantPicker from "@/app/components/assistantPicker";
 import Assistant from "./components/assistant";
 
-import React, {useEffect, useState, useCallback, useRef} from "react";
-import { signInAnonymously, onAuthStateChanged } from "firebase/auth"; 
-import { doc, collection, setDoc, getDocs } from "firebase/firestore"
-import {v4 as uuidv4} from 'uuid';
+import React, { useState, useRef, useEffect } from "react";
+import { v4 as uuidv4 } from 'uuid'; 
 
 export default function Interactor() {
     const name = "APlens";
 
-    const reports = useRef([])
-    const [user, setUser] = useState(null)
     const [activeView, setActiveView] = useState("Forms");
-    //const [retrievedData] = useState(reports)
+    const [clientId, setClientId] = useState(null);
 
-    /*
-    const loadUserData = useCallback(async (uid) => {
-        reports.current = [];
+    const retrievedData = useRef([{retrievedData: {name: "Stub", id: 10000, timestamp: "teste", pattern: "MVC", percentage: "95", explanation: "Very nice, good programming here", improvements: [{Improve1: "This"}, {Improve2: "Then"}, {Improve3: "That"}], strenghts: [{Stregth1: "This"}, {Stregth2: "Then"}, {Stregth3: "That"}]}}]);
 
-        const userCollectionRef = collection(db, "users", uid, "documentsCollection");
-        const querySnapshot = await getDocs(userCollectionRef);
-
-        querySnapshot.forEach((doc) => {
-            reports.current.push(doc.data());
-        });
-
+    useEffect(() => {
+        const existingId = localStorage.getItem('clientId');
+        if (existingId) {
+            console.log("ALREADY EXISTS AN ID: " , existingId)
+            setClientId(existingId);
+        } else {
+            const newId = uuidv4(); 
+            localStorage.setItem('clientId', newId);
+            setClientId(newId);
+            console.log("WE HAVE CREATE AN ID FOR THE CLIENT: ", newId)
+        }
     }, []);
 
-    
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            if (currentUser) {
-            setUser(currentUser);
-            loadUserData(currentUser.uid);
-            } else {
-            signInAnonymously(auth)
-                .then((userCredential) => setUser(userCredential.user))
-                .catch((error) => console.error("Authentication error:", error));
-            }
-        });
-
-        return () => unsubscribe();
-    }, [loadUserData]);
-    */
 
     const saveData = async (jsonResponse) => {
         if (!user) return;
@@ -61,14 +43,11 @@ export default function Interactor() {
         await loadUserData(user.uid)
     };
     
-
-    // Stubb info for demo purposes
-    const retrievedData = useRef([{retrievedData: {name: "Stub", id: 1, timestamp: "teste", pattern: "MVC", percentage: "95", explanation: "Very nice, good programming here", improvements: [{Improve1: "This"}, {Improve2: "Then"}, {Improve3: "That"}], strenghts: [{Stregth1: "This"}, {Stregth2: "Then"}, {Stregth3: "That"}]}}])
-
+    
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
-            <Assistant name = {name} saveData = {saveData} activeView = {activeView} setActiveView = {setActiveView} retrievedData = {retrievedData} />
+            <Assistant name={name} saveData={saveData} activeView={activeView} setActiveView={setActiveView} retrievedData={retrievedData} clientId={clientId} />
         </div>
     );
 }

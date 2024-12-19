@@ -52,7 +52,7 @@ RUN javac -cp /usr/local/lib/junit-platform-console-standalone-1.9.3.jar java/*.
 RUN chmod +x *.sh
 
 # Exponha portas necessárias (se tiver serviços web ou APIs)
-EXPOSE 3000
+EXPOSE 8080
 
 # Comando padrão para iniciar o container
 CMD ["bash"]

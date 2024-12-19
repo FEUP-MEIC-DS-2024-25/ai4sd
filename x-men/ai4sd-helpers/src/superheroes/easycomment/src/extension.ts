@@ -21,14 +21,42 @@ async function updateCofiguration(configuration:string,searchQuery:string){
 }
 
 async function getCommentsFromServer(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
-    const response = await axios.post("http://localhost:8080/generate-comments", {
+    try {
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app", {
         languageId,
         text,
         apiKey,
-        language
-    });
-    return response.data.comments;
-}
+        language,
+      },
+        {
+            headers: {
+            'Content-Type': 'application/json',
+            },
+        }
+    );
+      return response.data.comments;
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          // that falls out of the range of 2xx
+          console.error(`HTTP status code: ${error.response.status}`);
+          console.error(`HTTP status message: ${error.response.statusText}`);
+          console.error(`Response data: ${JSON.stringify(error.response.data, null, 2)}`);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error("No response received from the server");
+        } else {
+          // Something else happened while setting up the request
+          console.error("Error setting up the request:", error.message);
+        }
+      } else {
+        // A non-Axios error occurred
+        console.error("An unexpected error occurred:", error);
+      }
+      throw error;
+    }
+  }
 
 async function getCommentsFromServerSplitFunctions(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
     if (languageId !== "cpp") {
