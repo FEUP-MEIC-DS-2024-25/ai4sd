@@ -5,17 +5,20 @@ import  ExpandingTextarea  from "./ui/expanding-textarea";
 import { Button } from "./ui/button";
 import { useState, useEffect, useRef } from "react";
 import SpeechToText from "./SpeechToText";
-import ReactMarkdown from "react-markdown";
 import { Mic } from "lucide-react"; 
+
+//Previous Messages
+import axios from "axios";
+import { ChatList } from "./ChatList";
  
 //Notifications 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function LandingPage({ chat }) {
+export default function MainChat({ chatID }) {
     
     const [message, setMessage] = useState("");
-    const [conversations, setConversations] = useState(chat || []);
+    const [conversations, setConversations] = useState([]);
     const [disabled, setDisabled] = useState(false);
     const disableTimerMult = useRef(5); 
     const disabeTimerCntr = useRef(0); 
@@ -27,6 +30,38 @@ export default function LandingPage({ chat }) {
     //Text To Speech Dialog Trigger
     const [activeDialog, setActiveDialog] = useState(false);
     const [showSpeechDialog, setShowSpeechDialog] = useState(false);
+
+    //On page load, load chat messages from the backend
+    
+    useEffect(() => {
+
+        const fetchConversations = async () => {
+
+            try {
+
+                const backendUrl = "http://localhost:8080";
+                const response = await axios.get(`${backendUrl}/req2speech/chat/${chatID}`);
+                const data = response.data;
+
+                if (data) {
+                    data.map((chat) => {    
+                        setConversations((prevConversations) => [
+                            ...prevConversations,
+                            { query: chat.msg, answer: chat.reply }
+                        ]);
+                    });
+                }
+
+            } catch (error) {
+                console.error("Error fetching conversations:", error);
+            }
+
+        };
+
+        fetchConversations();
+
+    }, []);
+
 
     //Show Speech Dialog
     useEffect(() => {
@@ -86,14 +121,16 @@ export default function LandingPage({ chat }) {
             }
 
             const data = await response.json();
-            console.log(data); 
 
             if (data) {
                 // Append new conversation pair (user query and answer)
                 setConversations((prevConversations) => [
                     ...prevConversations,
-                    { query: message, answer: data }
+                    { query: msg, answer: data.reply }
                 ]);
+
+                console.log("Conversations:", conversations);   
+                console.log("Data: ", data);
             } else {
                 console.error("No answer in response:", data);
                 setConversations((prevConversations) => [
@@ -122,18 +159,8 @@ export default function LandingPage({ chat }) {
             </div>
 
             {/* Stack of Answers */}
-            <div className={`flex-grow p-4 border border-gray-300 rounded bg-gray-100 overflow-auto my-12 ${conversations.length === 0 ? 'hidden' : ''}`}>
-                {conversations.length > 0 && (
-                    <div className="flex flex-col space-y-2">
-                        {conversations.map((conv, index) => (
-                            <div key={index} className="p-2 border-b border-gray-300">
-                                <p className="font-bold">You: {conv.query}</p>
-                                <p className="ml-4">Bot:</p>
-                                <ReactMarkdown className="markdown">{conv.answer}</ReactMarkdown>
-                            </div>
-                        ))}
-                    </div>
-                )}
+            <div className="container max-w-4xl py-6">
+                <ChatList conversations={conversations} />
             </div>
 
             {/* Input Bar */}
