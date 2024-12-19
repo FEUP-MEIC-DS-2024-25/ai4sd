@@ -67,7 +67,12 @@ export default function MessageBlock({ messages, totalMessages, description, con
         const response = await deleteChat(conversationId, setError);
         setIsLoading(false);
         if (response) {
-            router.push('/assistants/featurecraft');
+            // If it is in ../assistants/featurecraft, reload the page
+            if (window.location.pathname === '/assistants/featurecraft') {
+                window.location.reload();
+            } else {
+                router.push('/assistants/featurecraft');
+            }
         }
     };
 
