@@ -1,13 +1,16 @@
 import React, { useState, useRef, useEffect } from "react";
 import AssistantForm from "./form.js";
-import { createProject, getMessages, createChatSession, generateResponse, uploadFile, listChatSessions, getProjectSessions } from "../services/gerald";
+import { createProject, getMessages, createChatSession, generateResponse, uploadFile, listChatSessions, getProjectSessions, downloadRepo, getProjectId, repoExists } from "../services/gerald";
 import Message from "./message.js"
 import LoadingDots from "./loadingDots.js";
+import LoadingPopup from "./loadingPopup.js";
 
-export default function AssistantChat(props) {
+export default function AssistantChat({ addChatToHistory, chatHistoryLength }) {
     const [messages, setMessages] = useState([]);
     const [sessionId, setSessionId] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [projectId, setProjectId] = useState(null);
+    const [isInitializing, setIsInitializing] = useState(true);
     const messagesEndRef = useRef(null);
 
     const scrollToBottom = () => {
@@ -41,30 +44,43 @@ export default function AssistantChat(props) {
         })));
     };
 
+    const processMessageAndFiles = async (message, files, currentSessionId) => {
+        if (!currentSessionId) {
+            const newSessionId = await createChatSession(projectId);
+            setSessionId(newSessionId);
+            currentSessionId = newSessionId;
+
+            // Add new chat session to history
+            addChatToHistory({
+                text: `Chat ${chatHistoryLength + 1}`,
+                link: `#${newSessionId}`,
+                session_id: newSessionId
+            });
+        }
+
+        if (files.length > 0) {
+            for (const file of files) {
+                await uploadFile(currentSessionId, file);
+            }
+        }
+
+        const response = await generateResponse(currentSessionId, message || "Please process the uploaded files.");
+        setMessages(prev => [...prev, { text: response, attachments: [] }]);
+    };
+
     const handleCallback = async (message, files) => {
+        if (!projectId) {
+            console.error("Project ID not initialized");
+            return;
+        }
+
         setIsLoading(true);
         
         try {
-            if (!sessionId) {
-                const newSessionId = await createChatSession(132);
-                setSessionId(newSessionId);
-                window.location.hash = newSessionId;
-            }
-
-            if (message) {
+            if (message || files.length > 0) {
                 setMessages(prev => [...prev, { text: message, attachments: files }]);
             }
-    
-            if (files.length > 0) {
-                for (const file of files) {
-                    await uploadFile(sessionId, file);
-                }
-            }
-    
-            if (message || files.length > 0) {
-                const response = await generateResponse(sessionId, message || "Please process the uploaded files.");
-                setMessages(prev => [...prev, { text: response, attachments: [] }]);
-            }
+            await processMessageAndFiles(message, files, sessionId);
         } catch (error) {
             console.error(error);
         } finally {
@@ -73,18 +89,30 @@ export default function AssistantChat(props) {
     };
 
     useEffect(() => {
-        if (sessionId) {
+        const url_session_id = window.location.hash.replace('#', '');
+        if (url_session_id) {
             fetchChat(sessionId);
+            setIsInitializing(false);
         } else {
             const initializeChat = async () => {
-                const chatList = await listChatSessions(132);
-                if (chatList.length > 0) {
-                    setSessionId(chatList[0].session_id);
+                const downloaded = await repoExists();
+                if (!downloaded) {
+                    await downloadRepo();
+                    let proj_id = await createProject();
+                    setProjectId(proj_id.id);
+                    console.log(proj_id);
+                } else{
+                    let proj_id = await getProjectId();
+                    setProjectId(proj_id);
+                    console.log(proj_id);
                 }
+
             };
-            initializeChat();
+            initializeChat().then(() => {
+                scrollToBottom();
+                setIsInitializing(false);
+            });
         }
-        scrollToBottom();
     }, [sessionId]);
 
     useEffect(() => {
@@ -93,6 +121,7 @@ export default function AssistantChat(props) {
 
     return (
         <div>
+            {isInitializing && <LoadingPopup />}
             {messages.length > 0 ? (
                 <div className="scrollable">
                     <div>

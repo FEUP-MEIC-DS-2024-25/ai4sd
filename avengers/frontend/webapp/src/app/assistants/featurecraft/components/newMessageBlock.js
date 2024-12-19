@@ -10,16 +10,25 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
 
     const handleSend = async () => {
         if (message.trim()) {
-            // Create the correct message object
-            const newMessage = { 
-                "currentConversation": conversationId,
-                "newMessage":{
-                    "authorName": "You",
-                    "body": message,
-                    "timestamp": new Date().toISOString(),
-                    "isDeleted": false
-                }
+
+            let newMessageBody = message;
+            let pinned = [];
+
+            if (pinnedMessages) {
+                pinned = pinnedMessages.map(item => item.message);
             }
+
+            const newMessage = {
+                "currentConversation": conversationId,
+                "newMessage": {
+                    "authorName": "You",
+                    "body": newMessageBody,
+                    "timestamp": new Date().toISOString(),
+                    "isDeleted": false,
+                    "pinnedMessages": pinned
+                }
+            };
+
             // Send the message to the server
             try {
                 onSendMessage(newMessage);
@@ -30,6 +39,7 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
                     textarea.style.height = 'auto';
                 }
                 const response = await axios.post("https://superhero-03-01-150699885662.europe-west1.run.app/chat", newMessage);
+                //const response = await axios.post("http://localhost:8080/chat", newMessage);
                 onReceiveMessage(response);
                 
             } catch (error) {
