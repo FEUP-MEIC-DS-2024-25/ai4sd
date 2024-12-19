@@ -60,9 +60,16 @@ json_data = {
 # Serve the Swagger UI static files
 swagger_static_path = os.path.join(os.path.dirname(__file__), "Swagger")
 if os.path.exists(swagger_static_path):
-    app.mount("/", StaticFiles(directory=swagger_static_path, html=True), name="swagger")
+    app.mount("/swagger", StaticFiles(directory=swagger_static_path, html=True), name="swagger")
 else:
     raise FileNotFoundError(f"Swagger UI static files not found at {swagger_static_path}")
+
+@app.get("/")
+async def serve_swagger_ui():
+    index_file_path = os.path.join(swagger_static_path, "redirect.html")
+    if os.path.exists(index_file_path):
+        return FileResponse(index_file_path)
+    return {"error": "Swagger UI index.html not found"}
 
 #@app.get("/")
 #def read_root():
