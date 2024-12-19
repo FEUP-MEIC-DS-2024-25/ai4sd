@@ -6,6 +6,8 @@ import DeleteButton from "@/app/assistants/featurecraft/components/ui/deleteButt
 import deleteChat from "@/app/assistants/featurecraft/hooks/useAssistChatDelete";
 import Loading from "@/app/assistants/featurecraft/components/ui/loading";
 import { useRouter } from 'next/navigation';
+import ErrorNotification from "@/app/assistants/featurecraft/components/ui/errorNotification";
+
 
 export default function MessageBlock({ messages, totalMessages, description, conversationId, pinnedMessages, setPinnedMessages }) {
 
@@ -82,6 +84,7 @@ export default function MessageBlock({ messages, totalMessages, description, con
 
     return (
         <div className="p-4 shadow-sm flex-grow h-full">
+            <ErrorNotification error={error} setError={setError} />
             <div className="flex items-center">
                 {isLoading ? (
                     <div className="ml-2 mr-2">
