@@ -73,8 +73,17 @@ function App() {
               </Layout>
             }
           />
+          <Route
+            path="/spark/create/"
+            element={
+              <Layout>
+                <Create />
+              </Layout>
+            }
+          />
         </Routes>
       </Router>
+
     </div>
   );
 }
