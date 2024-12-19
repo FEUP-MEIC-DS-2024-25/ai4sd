@@ -93,7 +93,7 @@ export default function Application({setHistoryData}) {
     const fetchHistory = async () => {
         try {
             // const response = await fetch("http://localhost:8080/api/history");
-            const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/reset");
+            const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/history");
             if (!response.ok) {
                 throw new Error(`Error fetching history: ${response.statusText}`);
             }
@@ -109,26 +109,26 @@ export default function Application({setHistoryData}) {
         }
     };
 
-    const resetHistory = async (event) => {
-        event.preventDefault();
-        try {
-            // const response = await fetch("http://localhost:8080/api/reset", {
-            const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/reset", {
-                method: "POST",
-            });
+    // const resetHistory = async (event) => {
+    //     event.preventDefault();
+    //     try {
+    //         // const response = await fetch("http://localhost:8080/api/reset", {
+    //         const response = await fetch("https://superhero-04-01-150699885662.europe-west1.run.app/api/reset", {
+    //             method: "POST",
+    //         });
 
-            if (!response.ok) {
-                throw new Error(`Error: ${response.statusText}`);
-            }
+    //         if (!response.ok) {
+    //             throw new Error(`Error: ${response.statusText}`);
+    //         }
 
-            setFeedbackInfo("History reset successfully");
+    //         setFeedbackInfo("History reset successfully");
 
-        } catch (error) {
-            console.error("Error:", error.message);
-        } finally {
-            setTimeout(() => setFeedbackInfo(""), 5000);
-        }
-    }
+    //     } catch (error) {
+    //         console.error("Error:", error.message);
+    //     } finally {
+    //         setTimeout(() => setFeedbackInfo(""), 5000);
+    //     }
+    // }
 
     return (
         <>
