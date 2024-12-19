@@ -48,7 +48,6 @@ export function activate(context: vscode.ExtensionContext) {
 
 	whattheduck.activate(context);
 
-	easycomment.activate(context);
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(wakeUp);
