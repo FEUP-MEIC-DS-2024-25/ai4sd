@@ -8,7 +8,6 @@ import useAssistPinSend from "@/app/assistants/featurecraft/hooks/useAssistPinSe
 import axios from "axios";
 
 export default function PinnedMessagesBlock({ pinnedMessages, conversationId, setPinnedMessages, setError }) {
-export default function PinnedMessagesBlock({ pinnedMessages, conversationId, setPinnedMessages }) {
     const [isHidden, setIsHidden] = useState(true);
     const [isExporting, setIsExporting] = useState(false);
     const [deletingMessageId, setDeletingMessageId] = useState(null);
@@ -132,22 +131,20 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                     <h2 className="text-xl font-bold w-80">Pinned Messages</h2>
                     <div className="flex gap-2">
                         {isExporting ? (
-                            <div className="h-12 w-12 flex justify-center items-center">
-                                <Loading />
-                            </div>
+                            <Loading />
                         ) : (
                             <button onClick={handleExport} className="text-blue-500">
-                                <svg className="h-12 w-12 text-gray-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z"/>
-                                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/>
-                                    <path d="M7 11l5 5l5 -5"/>
-                                    <path d="M12 4l0 12"/>
+                                <svg className="h-12 w-12 text-gray-500" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                    <path d="M0 0h24v24H0z" stroke="none" />
+                                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2" />
+                                    <path d="M7 11l5 5l5 -5" />
+                                    <path d="M12 4v12" />
                                 </svg>
                             </button>
                         )}
                         <button onClick={toggleView} className="text-blue-500">
-                            <svg className="h-12 w-12 text-gray-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z" />
+                            <svg className="h-12 w-12 text-gray-500" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M0 0h24v24H0z" stroke="none" />
                                 <rect x="4" y="4" width="16" height="16" rx="2" />
                                 <line x1="15" y1="4" x2="15" y2="20" />
                             </svg>
@@ -166,42 +163,26 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                                             onChange={(e) => setEditedMessage(e.target.value)}
                                             className="w-full p-2 border rounded"
                                         />
-                                        <button
-                                            onClick={handleSaveEdit}
-                                            className="bg-blue-500 text-white p-2 rounded"
-                                        >
+                                        <button onClick={handleSaveEdit} className="bg-blue-500 text-white p-2 rounded">
                                             Save
                                         </button>
-                                        <button
-                                            onClick={handleCancelEdit}
-                                            className="bg-gray-300 p-2 rounded"
-                                        >
+                                        <button onClick={handleCancelEdit} className="bg-gray-300 p-2 rounded">
                                             Cancel
                                         </button>
                                     </div>
                                 ) : (
-                                    <div className="flex justify-between">
+                                    <div className="flex justify-between items-center">
                                         <p className="font-semibold">{pinnedMessage.message}</p>
-                                        <button
-                                            onClick={() => handleEditClick(pinnedMessage.id, pinnedMessage.message)}
-                                            className="text-blue-500"
-                                        >
+                                        <button onClick={() => handleEditClick(pinnedMessage.id, pinnedMessage.message)} className="text-blue-500">
                                             Edit
                                         </button>
                                     </div>
                                 )}
-                        {pinnedMessages.map((pinnedMessage, index) => (
-                            <li key={index} className="p-2 bg-white rounded-md shadow-sm max-w-96">
-                                <div className="flex justify-between items-center">
-                                    <p className="font-semibold">{pinnedMessage.message}</p>
-                                    {deletingMessageId === pinnedMessage.id ? (
-                                        <div className="h-6 w-6 flex justify-center items-center">
-                                            <Loading />
-                                        </div>
-                                    ) : (
-                                        <DeleteButton onClick={() => handleDelete(pinnedMessage.id)} />
-                                    )}
-                                </div>
+                                {deletingMessageId === pinnedMessage.id ? (
+                                    <Loading />
+                                ) : (
+                                    <DeleteButton onClick={() => handleDelete(pinnedMessage.id)} />
+                                )}
                             </li>
                         ))}
                     </ul>
