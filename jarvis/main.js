@@ -88,19 +88,6 @@ export async function addWebhooksToAllRepos(octokit, org, webhookUrl) {
 
 
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-const webhookUrl = "https://9057-193-136-33-116.ngrok-free.app/"; // Replace with your server URL
-//await addWebhooksToAllRepos(octokit, config.org, webhookUrl);
-await addWebhook(octokit, config.org, "T02_G02_BackEnd", webhookUrl);
-//await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
-
-//import fs from "fs";
-//const path = '/tmp/secret.txt';
-//
-//try {
-//    // Read the file synchronously
-//    const secret = fs.readFileSync(path, 'utf8');
-//    console.log('Secret content:', secret);
-//} catch (err) {
-//    console.error(`Error reading secret file at ${path}:`, err.message);
-//}
+const webhookUrl = "https://jarvis-150699885662.europe-west1.run.app/webhook";
+await addWebhooksToAllRepos(octokit, config.org, webhookUrl);
 

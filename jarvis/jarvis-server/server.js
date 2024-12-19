@@ -1,9 +1,13 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { uploadRepo } from "../jarvis-writer/writer.js";
+import { getAuthOctokit } from "../jarvis-fetcher/auth.js";
+import { config } from "../config.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
+
 
 app.use(bodyParser.json());
 
@@ -11,6 +15,7 @@ app.use(bodyParser.json());
 app.post("/webhook", async (req, res) => {
     try {
         const event = req.headers["x-github-event"];
+        console.log(`Received GitHub webhook event: ${event}`);
         if (event === "push") {
             const { repository, ref } = req.body;
             console.log(`Push event received for ${repository.full_name} on branch ${ref}`);
