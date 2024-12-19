@@ -15,7 +15,7 @@ export default function useAssistHistory(initialId) {
             .then(response => {
                 if (response.status === 200) {
                     if (response.data && response.data.length > 0) {
-                        const MAX_DESC_LENGTH = 130;
+                        const MAX_DESC_LENGTH = 90;
                         
                         // Organize the data
                         response.data.forEach((item) => {
