@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
+import apiClient from "../../config/axios";
 
 function Project() {
   const { projectId } = useParams();
@@ -12,8 +13,8 @@ function Project() {
 
   // Fetch project details
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/projects/${projectId}/`)
+    apiClient
+      .get(`spark/${projectId}/`)
       .then((response) => setProject(response.data))
       .catch((error) => console.error("Error fetching project:", error));
   }, [projectId]);
