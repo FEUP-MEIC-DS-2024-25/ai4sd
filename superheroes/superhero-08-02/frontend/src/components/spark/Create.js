@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import apiClient from "../../config/axios";
 import { useNavigate } from "react-router-dom";
-import "./Create.css"; // Import the Create CSS
+import "../../styles/Create.css";
 
 function Create() {
   const [formData, setFormData] = useState({

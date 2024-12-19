@@ -7,9 +7,8 @@ import google.generativeai as genai
 import uuid
 
 from backend.github_retrieval import get_github_artifacts
+from google.cloud import firestore
 
-import os
-from dotenv import load_dotenv
 from datetime import datetime
 
 class ReviewView(APIView):
@@ -22,9 +21,21 @@ class ReviewView(APIView):
         # Parse the repo url
         _, _, _, repoOwner, repoName = repo_url.rstrip('/').split('/')
 
-        # Configure the API key
-        load_dotenv()
-        gemini_key = os.getenv('GEMINI_API_KEY')
+        try:
+            db = firestore.Client()
+            collection_ref = db.collection('superhero-06-03')
+            doc_ref = collection_ref.document('secrets')
+            doc = doc_ref.get()
+            secrets = doc.to_dict()
+            gemini_key = secrets.get('gemini_api_key')
+            print("THE GEMINI KEY IS : ", gemini_key)
+        except Exception as e:
+            print("Error retrieving gemini key from Firestore:", str(e))
+            return Response({
+                "message": f"Catch statement caught an exception: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
         genai.configure(api_key=gemini_key)
         model = genai.GenerativeModel("gemini-1.5-flash")

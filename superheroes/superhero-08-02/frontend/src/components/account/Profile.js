@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "../../config/axios";
 import { useNavigate, Link, useParams } from "react-router-dom";
-import "./Profile.css";
+import "../../styles/Profile.css";
 
 function Profile() {
   const { username } = useParams();

@@ -4,3 +4,4 @@ api/__pycache__
 api/services/__pycache__
 .env
 hero-alliance-feup-ds-24-25-07ba64d54b53.json
+db.sqlite3

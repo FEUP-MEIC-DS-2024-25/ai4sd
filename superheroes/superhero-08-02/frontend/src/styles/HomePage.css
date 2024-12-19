@@ -1,0 +1,113 @@
+.home-page {
+    padding: 2rem;
+    max-width: 800px;
+    margin: auto;
+  }
+  
+  /* Loading and Error Messages */
+  .loading, .error {
+    font-size: 1.5rem;
+    color: #e74c3c;
+    text-align: center;
+    margin-top: 2rem;
+  }
+  
+  /* Main Content */
+  .main-content {
+    background: var(--grey);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* User Info Section */
+  .user-info {
+    text-align: left;
+  }
+  
+  .welcome-message {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #2c3e50;
+  }
+  
+  .projects-title {
+    font-size: 1.4rem;
+    margin-top: 1.5rem;
+    color: #34495e;
+  }
+  
+  .project-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .project-item {
+    margin: 0.5rem 0;
+  }
+  
+  .project-link {
+    color: #3498db;
+    text-decoration: none;
+    font-size: 1.2rem;
+  }
+  
+  .project-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Create Project Link */
+  .create-project-link {
+    display: inline-block;
+    margin-top: 1.5rem;
+    font-size: 1.2rem;
+    color: #27ae60;
+    text-decoration: none;
+  }
+  
+  .create-project-link:hover {
+    text-decoration: underline;
+  }
+  
+  /* Logout Button */
+  .logout-button {
+    display: block;
+    margin-top: 2rem;
+    padding: 0.8rem 1.5rem;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  
+  .logout-button:hover {
+    background: #c0392b;
+  }
+  
+  /* Guest Info Section */
+  .guest-info {
+    text-align: center;
+  }
+  
+  .not-logged-message {
+    font-size: 1.5rem;
+    color: #e74c3c;
+  }
+  
+  .login-prompt {
+    font-size: 1.2rem;
+    margin-top: 1rem;
+  }
+  
+  .login-link, .signup-link {
+    color: var(--blue);
+    text-decoration: none;
+  }
+  
+  .login-link:hover, .signup-link:hover {
+    text-decoration: underline;
+  }
+  
