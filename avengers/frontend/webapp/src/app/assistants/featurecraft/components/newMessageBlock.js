@@ -56,7 +56,7 @@ export default function NewMessageBlock({ onSendMessage, onReceiveMessage, conve
     };
 
     return (
-        <div className="flex flex-col justify-end items-center bg-white max-h">
+        <div className="flex flex-col justify-end items-center bg-white max-h-[80%]">
             <div className="min-h-20 w-full flex flex-col justify-center p-3">
                 <div className={`p-2 border rounded-xl ${isFocused ? 'border-gray-500' : 'border-gray-300'}`}>
                     <textarea
