@@ -47,11 +47,11 @@ def setup_gemini_api():
         raise ValueError("GCP_PROJECT_ID environment variable is not set")
 
     # Retrieve the API key from Secret Manager
-    api_key = get_secret(secret_name, project_id)
+    # api_key = get_secret(secret_name, project_id)
     if not api_key:
         raise ValueError(f"Secret '{secret_name}' is empty or could not be retrieved")
 
-    genai.configure(api_key=api_key)
+    genai.configure(api_key="AIzaSyAIhI9mcl81-FLsHeY5FV4FHfuDhsTZduc")
     return genai.GenerativeModel(model_name="gemini-1.5-pro")
 
 try:

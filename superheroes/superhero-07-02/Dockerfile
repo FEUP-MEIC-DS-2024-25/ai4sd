@@ -8,9 +8,7 @@ RUN pip install --no-cache-dir fastapi uvicorn google-generativeai python-dotenv
 # Set environment variable for Cloud Run to expect the port
 ENV PORT 8080
 ENV GCP_PROJECT_ID hero-alliance-feup-ds-24-25 
-
-# Copy the FastAPI app into the container
-COPY . .
+ENV GOOGLE_APPLICATION_CREDENTIALS key_thing.json
 
 # Copy the superheroes folder as well
 # COPY ../superheroes /superheroes
