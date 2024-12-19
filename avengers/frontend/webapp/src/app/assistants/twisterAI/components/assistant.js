@@ -1,10 +1,10 @@
 import styles from "@/app/page.module.css";
 import "./assistant.css";
-import { useState } from "react";
-import { uploadFile, saveContext, downloadMutations } from "./api/api";
+//import { useState } from "react";
+// import { uploadFile, saveContext, downloadMutations } from "./api/api";
 
 export default function Assistant() {
-  const [codeFile, setCodeFile] = useState(null);
+  /*const [codeFile, setCodeFile] = useState(null);
   const [testFile, setTestFile] = useState(null);
   const [context, setContext] = useState("");
   const [language, setLanguage] = useState("java");
@@ -35,7 +35,7 @@ export default function Assistant() {
     } catch (error) {
       console.error("Error downloading mutations file:", error);
     }
-  };
+  };*/
 
   return (
     <div className="TwisterAI">
@@ -46,11 +46,11 @@ export default function Assistant() {
         <div>
           <nav>
             <label>Select the language:</label>
-            <select id="language" value={language} onChange={(e) => setLanguage(e.target.value)}>
+            {/* <select id="language" value={language} onChange={(e) => setLanguage(e.target.value)}> */}
               <option value="java">Java</option>
               <option value="javascript">JavaScript</option>
               <option value="python">Python</option>
-            </select>
+            {/* </select> */}
           </nav>
         </div>
       </header>
@@ -63,8 +63,8 @@ export default function Assistant() {
             <input
               className="upload_btn"
               type="file"
-              onChange={(e) => handleFileChange(e, 'code')}
-            />
+/*               onChange={(e) => handleFileChange(e, 'code')}
+ */            />
           </div>
           <div>
             <label className="upload" htmlFor="tests-file">
@@ -73,8 +73,8 @@ export default function Assistant() {
             <input
               className="upload_btn"
               type="file"
-              onChange={(e) => handleFileChange(e, 'test')}
-            />
+/*               onChange={(e) => handleFileChange(e, 'test')}
+ */            />
           </div>
         </section>
 
@@ -83,14 +83,14 @@ export default function Assistant() {
           <textarea
             id="context"
             placeholder="Insert context here."
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
+/*             value={context}
+            onChange={(e) => setContext(e.target.value)} */
           ></textarea>
         </section>
 
         <section>
-          <button onClick={handleGenerateMutants}>Generate mutant tests</button>
-          <button onClick={handleDownloadMutations}>Download mutant tests</button>
+          <button /* onClick={handleGenerateMutants} */>Generate mutant tests</button>
+          <button /* onClick={handleDownloadMutations} */>Download mutant tests</button>
         </section>
       </main>
     </div>
