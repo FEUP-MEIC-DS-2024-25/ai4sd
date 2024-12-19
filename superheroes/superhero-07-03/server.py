@@ -9,7 +9,9 @@ import time
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+with open('/etc/gemini_token', 'r') as file:
+  GEMINI_API_KEY = file.read().strip()
+
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
