@@ -16,6 +16,17 @@ export async function fetchRepoContents(octokit, org, repo, path = "") {
     return data;
 }
 
+/**
+ * Adds a webhook to a GitHub repository.
+ * 
+ * @param {Object} octokit - An authenticated Octokit instance.
+ * @param {string} org - The owner or organization name of the repository.
+ * @param {string} repo - The name of the repository.
+ * @param {string} webhookUrl - The URL for the webhook to be added.
+ * @returns {Promise<void>} - Resolves when the webhook is successfully added.
+ * 
+ * @throws Will throw an error if the request to GitHub fails.
+ */
 export async function addWebhook(octokit, org, repo, webhookUrl) {
     const data = await octokit.request('POST /repos/{owner}/{repo}/hooks', {
         owner: org,
@@ -36,6 +47,18 @@ export async function addWebhook(octokit, org, repo, webhookUrl) {
     })
 }
 
+/**
+ * Removes a webhook from a GitHub repository.
+ * 
+ * @param {Object} octokit - An authenticated Octokit instance.
+ * @param {string} org - The owner or organization name of the repository.
+ * @param {string} repo - The name of the repository.
+ * @param {string} webhookUrl - The URL of the webhook to be removed.
+ * @returns {Promise<void>} - Resolves when the webhook is successfully removed.
+ * 
+ * @throws Will throw an error if the webhook with the specified URL is not found
+ *         or if the request to GitHub fails.
+ */
 export async function removeWebhook(octokit, org, repo, webhookUrl) {
     // Get all webhooks for the repository
     const { data: webhooks } = await octokit.request('GET /repos/{owner}/{repo}/hooks', {
