@@ -12,10 +12,10 @@ import { Mic } from "lucide-react";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export default function LandingPage() {
+export default function LandingPage({ chat }) {
     
     const [message, setMessage] = useState("");
-    const [conversations, setConversations] = useState([]);
+    const [conversations, setConversations] = useState(chat || []);
     const [disabled, setDisabled] = useState(false);
     const disableTimerMult = useRef(5); 
     const disabeTimerCntr = useRef(0); 
@@ -30,8 +30,6 @@ export default function LandingPage() {
 
     //Show Speech Dialog
     useEffect(() => {
-
-        console.log("Mostra-te filho da puta", activeDialog)
 
         if (activeDialog) {
 
