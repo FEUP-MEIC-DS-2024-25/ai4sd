@@ -10,6 +10,7 @@ from backend.back_server import db_helper
 from ..JSONValidation.validators import new_chat_validator, ValidationError
 import datetime
 from fastapi.responses import JSONResponse
+from fastapi.responses import PlainTextResponse
 
 from google.cloud import secretmanager
 
@@ -248,6 +249,78 @@ async def delete_pinned_message_by_id(body: DeletePinnedMessageRequest):
         if not success:
             return JSONResponse(content={"detail": "Pinned message not found"}, status_code=404)
         return JSONResponse(content={"message": "Pinned message deleted successfully."}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+def createRequirementsGemini(text_content):
+    try:
+        context = (
+            "Please format and organize the following software requirements.\n"
+            "Your answer should contain **only** the requirements in simple text with a estimation in points and acceptance criteria.\n"
+            "There must be nothing else in your response. Please use the following format:\n"
+            "A. Functional Requirements\n"
+            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |\n"
+            "| -------- | ---------- | ------------------- | ------------------- |\n"
+            "| FR1 | [User Story] | [Estimation] | [Acceptance Criteria] |\n"
+            "B. Non-Functional Requirements\n"
+            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |\n"
+            "| -------- | ---------- | ------------------- | ------------------- |\n"
+            "| NFR1 | [User Story] | [Estimation] | [Acceptance Criteria] |\n"
+            f"Requirements to format:\n{text_content}"
+        )
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+        gemini_payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": context
+                        }
+                    ]
+                }
+            ]
+        }
+
+        gemini_api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key={LLM_API_KEY}"
+        
+        gemini_response = requests.post(gemini_api_url, json=gemini_payload, headers=headers)
+        if gemini_response.status_code != 200:
+            return text_content  # Return original content if API fails
+            
+        formatted_text = gemini_response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", text_content)
+        return formatted_text
+
+    except Exception as e:
+        print(f"Error formatting requirements: {str(e)}")
+        return text_content  # Return original content if processing fails
+
+@router.get("/pin/{id}/export")
+async def export_pinned_messages(id: str):
+    try:
+        exists, chat = db_helper.getPinnedMessages(id)
+        if not exists or not chat.get("pinnedMessage"):
+            raise HTTPException(status_code=404, detail="Chat not found or no pinned messages exist")
+
+        # Format pinned messages into text
+        pinned_messages = chat.get("pinnedMessage", [])
+        text_content = ""
+        for idx, msg in enumerate(pinned_messages, 1):
+            text_content += f"{msg['message']}\n"
+
+        # Ask gemini to format the requirements
+        # formatted_requirements = createRequirementsGemini(text_content)
+
+        # Return as text file
+        return PlainTextResponse(
+            content= text_content,
+            headers={
+                "Content-Disposition": f"attachment; filename=featurecraft_requirements_{id}.txt"
+            }
+        )
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
