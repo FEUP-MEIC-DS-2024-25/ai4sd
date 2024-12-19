@@ -1,5 +1,6 @@
 const promptService = require('../services/geminiService');
 const { GoogleAICacheManager } = require('@google/generative-ai/server');
+const { admin, db } = require('./chatController');
 
 // Initialize a cache manager instance
 const cacheManager = new GoogleAICacheManager();
@@ -19,6 +20,13 @@ exports.sendPrompt = async (req, res) => {
             throw new Error('Please provide a prompt.');
         }
 
+        const chatId = req.body.chat;
+        console.log('Chat:', chatId);
+
+        if (!chatId) {
+            throw new Error('Please provide a chat ID.');
+        }
+
         // Retrieve existing context or initialize it
         let existingContext = contextCache['requirements_engineering'];
 
@@ -32,6 +40,19 @@ exports.sendPrompt = async (req, res) => {
 
         // Update the context with the current prompt and response
         contextCache['requirements_engineering'] += ` Prompt: ${prompt} Response: ${result}`;
+
+        // Save the prompt and response in Firestore under the given chatId
+        const messageDocument = {
+            prompt: prompt,
+            response: result,
+            timestamp: admin.firestore.FieldValue.serverTimestamp() // Automatically add server timestamp
+        };
+
+        await db
+            .collection('superhero-03-03') // Main collection
+            .doc(chatId) // Chat document (one per chatId)
+            .collection('messages') // Subcollection for chat messages
+            .add(messageDocument); // Add the message to the subcollection
 
         res.json(result); 
     } catch (error) {

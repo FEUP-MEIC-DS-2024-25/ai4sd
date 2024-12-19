@@ -55,6 +55,7 @@ export default function LandingPage({ chat }) {
                 },
                 body: JSON.stringify({
                     text: message,
+                    chat: 1 // NEEDS TO BE CHANGED
                 }),
             });
 
