@@ -17,7 +17,7 @@ export default function UnitTestAssistant() {
   const handleGenerateTests = async () => {
     setError("");
     try {
-        const response = await axios.post("http://localhost:3333/api/generate_tests", {
+        const response = await axios.post("https://superhero-07-02-150699885662.europe-west1.run.app/api/generate_tests", {
             function_code: functionCode,
             file_content: fileContent,
             });
