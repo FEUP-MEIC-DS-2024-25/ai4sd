@@ -467,7 +467,93 @@
             }
           }
         }
+      },
+      "put": {
+  "summary": "Edit a pinned message by ID",
+  "description": "Edits a pinned message of a chat by the provided chat ID and pinned message ID.",
+  "operationId": "editPinMessageById",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The ID of the chat where the message should be updated.",
+      "schema": {
+        "type": "string"
       }
+    }
+  ],
+  "requestBody": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "pinned_id": {
+              "type": "string",
+              "description": "The ID of the pinned message to update."
+            },
+            "message": {
+              "type": "string",
+              "description": "The updated content of the pinned message."
+            }
+          },
+          "required": ["pinned_id", "message"]
+        }
+      }
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Pinned message updated successfully.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Pinned message updated successfully"
+              }
+            }
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "Chat or pinned message not found.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "detail": {
+                "type": "string",
+                "example": "Pinned message not found"
+              }
+            }
+          }
+        }
+      }
+    },
+    "500": {
+      "description": "Internal server error.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "detail": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
     }
   },
   "components": {
