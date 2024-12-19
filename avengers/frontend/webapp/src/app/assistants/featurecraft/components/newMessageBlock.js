@@ -51,9 +51,9 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
     return (
         <div className="flex flex-col justify-end items-center">
             <div className="min-h-20 w-full flex justify-center p-3 relative">
-                <div className="w-full flex">
+                <div className="w-full flex items-center">
                     <button
-                        className="w-16 flex justify-center items-center border bg-[#6C757D] rounded"
+                        className="w-16 h-16 flex justify-center items-center bg-blue-400 rounded-xl"
                         onClick={() => setIsPopupVisible(true)}
                     >
                         <svg
@@ -86,12 +86,12 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                     />
-                    <button className="w-16 flex justify-center items-center border bg-[#6C757D] rounded"
+                    <button className="w-16 h-16 flex justify-center items-center  bg-blue-400 rounded-xl"
                             onClick={handleSend}>
-                        <svg className="w-6 h-6 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
-                             fill="none" viewBox="0 0 10 14">
-                            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1"
-                                  d="M5 13V1m0 0L1 5m4-4 4 4"/>
+                        <svg className="h-8 w-8 text-white" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">  
+                            <path stroke="none" d="M0 0h24v24H0z" />  
+                            <line x1="10" y1="14" x2="21" y2="3" />  
+                            <path d="M21 3L14.5 21a.55 .55 0 0 1 -1 0L10 14L3 10.5a.55 .55 0 0 1 0 -1L21 3" />
                         </svg>
                     </button>
                 </div>
