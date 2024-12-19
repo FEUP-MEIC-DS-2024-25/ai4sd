@@ -366,3 +366,13 @@ async def get_message_by_id(id: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+
+@router.delete("/{id}")
+async def delete_chat_by_id(id: str):
+    try:
+        success = db_helper.deleteChat(id)
+        if not success:
+            raise HTTPException(status_code=404, detail="Chat not found")
+        return JSONResponse(content={"message": "Chat deleted successfully."}, status_code=200)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

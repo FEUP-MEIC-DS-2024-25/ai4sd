@@ -273,5 +273,19 @@ class FirestoreHelper:
             print(f"Failed to update chat description: {e}")
             return False
 
+    def deleteChat(self, conversation_id):
+        try:
+            chat_ref = self.collection.document("chat").collection("history").document(conversation_id)
+            chat = chat_ref.get()
+
+            if not chat.exists:
+                return False
+
+            chat_ref.delete()
+            return True
+        except Exception as e:
+            print(f"Failed to delete chat: {e}")
+            return False
+
 # Initialize Firestore helper
 db_helper = FirestoreHelper(collectionName=db_collection)

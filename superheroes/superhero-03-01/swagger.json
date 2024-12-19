@@ -95,6 +95,75 @@
             "description": "Not Found"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Delete a chat conversation by ID",
+        "description": "Deletes a chat conversation by the provided chat ID.",
+        "operationId": "deleteChatById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the chat to delete.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Chat deleted successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Chat document does not exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/chat": {
