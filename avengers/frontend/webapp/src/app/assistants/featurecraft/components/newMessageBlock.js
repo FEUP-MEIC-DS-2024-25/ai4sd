@@ -38,8 +38,8 @@ export default function NewMessageBlock({onSendMessage, onReceiveMessage, conver
                 if (textarea) {
                     textarea.style.height = 'auto';
                 }
-                //const response = await axios.post("https://superhero-03-01-150699885662.europe-west1.run.app/chat", newMessage);
-                const response = await axios.post("http://localhost:8080/chat", newMessage);
+                const response = await axios.post("https://superhero-03-01-150699885662.europe-west1.run.app/chat", newMessage);
+                //const response = await axios.post("http://localhost:8080/chat", newMessage);
                 onReceiveMessage(response);
                 
             } catch (error) {

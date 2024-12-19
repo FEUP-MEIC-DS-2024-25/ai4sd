@@ -28,48 +28,6 @@ if not LLM_API_KEY:
 
 router = APIRouter()
 
-class NewMessage(BaseModel):
-    authorName: str
-    body: str
-    timestamp: str
-    isDeleted: bool
-    pinnedMessages: List[str]
-
-class Message(BaseModel):
-    currentConversation: str
-    newMessage: NewMessage
-
-# def createGeminiContext(messages):
-#     return " ".join([message['body'] for message in messages])
-
-def createGeminiContext(chat, new_message):
-    # Combine chat messages and the new message
-    complete_messages = [
-        {
-            "authorName": new_message.authorName,
-            "body": new_message.body,
-            "timestamp": new_message.timestamp,
-            "isDeleted": new_message.isDeleted,
-        }
-    ]
-
-    complete_messages = chat['messages'] + complete_messages
-    context = (
-        "I am working on requirements engineering. I would like original features suggestions based on existing project requirements.\n"
-        "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
-        "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
-        "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
-    )
-    # Handle pinned messages
-    if new_message.pinnedMessages and len(new_message.pinnedMessages) > 0:
-        pinned_context = "Pinned Requirements:\n" + "\n".join(
-            f"- {requirement}" for requirement in new_message.pinnedMessages
-        )
-        context += f"\n\n{pinned_context}"
-    for message in complete_messages:
-        context += f"\n{message['authorName']}: {message['body']}"
-    return context
-
 def buildDescriptionContext(chat):
     """Builds context for description generation from chat content."""
     context = "Generate a brief one-line description (max 200 characters) for a conversation about software requirements based on the following content.\n\n"
@@ -118,22 +76,23 @@ def createDescription(chat):
         print(f"Error generating description: {e}")
         return "New conversation"
 
-def createGeminiContextWithPinnedMessages(new_message):
-    # Initialize context with general instructions
-    context = (
-        "I am working on requirements engineering. I would like original feature suggestions based on existing project requirements.\n"
-        "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
-        "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
-        "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
-    )
 
-    # Handle pinned messages
-    if new_message.pinnedMessages and len(new_message.pinnedMessages) > 0:
-        pinned_context = "Pinned Requirements:\n" + "\n".join(
-            f"- {requirement}" for requirement in new_message.pinnedMessages
-        )
-        context += f"\n\n{pinned_context}"
 
+class NewMessage(BaseModel):
+    authorName: str
+    body: str
+    timestamp: str
+    isDeleted: bool
+    pinnedMessages: List[str]
+
+class Message(BaseModel):
+    currentConversation: str
+    newMessage: NewMessage
+
+# def createGeminiContext(messages):
+#     return " ".join([message['body'] for message in messages])
+
+def createGeminiContext(chat, new_message):
     # Combine chat messages and the new message
     complete_messages = [
         {
@@ -144,10 +103,23 @@ def createGeminiContextWithPinnedMessages(new_message):
         }
     ]
 
-    # Add conversation messages to the context
+    if chat:
+        complete_messages = chat['messages'] + complete_messages
+
+    context = (
+        "I am working on requirements engineering. I would like original features suggestions based on existing project requirements.\n"
+        "Next is the current state of my suggestions in a conversation format. I would like you to answer the latest message while taking into account the previous conversation.\n"
+        "If you are suggesting new features, your answer should outline them so that it is clear what they are.\n"
+        "If the latest message is a question, your answer should be a short and clear response only to that question but taking into account the conversation if necessary.\n"
+    )
+    # Handle pinned messages
+    if new_message.pinnedMessages and len(new_message.pinnedMessages) > 0:
+        pinned_context = "Pinned Requirements:\n" + "\n".join(
+            f"- {requirement}" for requirement in new_message.pinnedMessages
+        )
+        context += f"\n\n{pinned_context}"
     for message in complete_messages:
         context += f"\n{message['authorName']}: {message['body']}"
-
     return context
 
 
@@ -173,7 +145,7 @@ async def send_message(message: Message):
             # complete_messages = chat[0]['messages'] + [message.newMessage.model_dump()]
             context = createGeminiContext(chat, message.newMessage)
         else:
-            context = createGeminiContextWithPinnedMessages(message.newMessage)
+            context = createGeminiContext(None,message.newMessage)
 
 
         # Send the context to the gemini
