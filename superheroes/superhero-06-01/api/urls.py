@@ -37,5 +37,9 @@ urlpatterns = [
         views.analyze_full_repo,
         name="analyze_full_repo",
     ),
+    path(
+        "analyze_commit_activity/<str:repo_owner>/<str:repo_name>",
+        views.analyze_commit_activity,
+        name="analyze_commit_activity",
+    ),
 ]
-
