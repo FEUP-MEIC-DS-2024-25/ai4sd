@@ -115,7 +115,7 @@ steps:
 
           echo "Fetching changed superhero directories from the pull request..."
 
-          changed_dirs=$(curl -s "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls/367/files" | \
+          changed_dirs=$(curl -s "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls/$(cat /workspace/pr_id.txt)/files" | \
           jq -r '.[].filename' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
 
           echo "Changed superhero directories: $changed_dirs"
