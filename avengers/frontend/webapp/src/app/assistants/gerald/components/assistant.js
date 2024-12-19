@@ -3,14 +3,9 @@ import styles from "@/app/page.module.css";
 import "./gerald.css";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import AssistantChat from "./chat";
-import React, { useState } from "react";
+import React from "react";
 
 export default function Assistant() {
-    const [hasMsg, setHasMsg] = useState(false); 
-
-    const checkMsg = ()=>{
-        setHasMsg(true)
-    }
     return (
         <div className={`${styles.assistantInteraction} assistantInteraction`}>
             <header>
@@ -20,16 +15,10 @@ export default function Assistant() {
                 <a className="aboutus" href="">
                     <h2>About us</h2>
                 </a>
-                </header>
+            </header>
             <div className="main">
-            {!hasMsg ?(
-                <div className="info">
-                    <h1 className="">gerald.</h1>
-                    <p className="">not your average assistant</p>
-                </div>
-            ):(<></>)}
-                <AssistantChat callback={checkMsg}></AssistantChat>
+                <AssistantChat />
             </div>
         </div>
-    )
+    );
 }

@@ -104,7 +104,7 @@ export async function uploadFile(sessionId, file) {
     return data.message;
 }
 
-export async function getProjectSessions(projectId) {
+export async function getProjectSessions() {
     const response = await fetch(`${URL}/list_projects`, {
         method: 'GET',
         headers: {
@@ -114,6 +114,23 @@ export async function getProjectSessions(projectId) {
 
     if (!response.ok) {
         throw new Error('Error fetching project sessions');
+    }
+
+    const data = await response.json();
+    return data;
+}
+
+export async function listChatSessions(projectId) {
+    const response = await fetch(`${URL}/chat_sessions/${projectId}`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Error fetching chat sessions: ${errorData.error}`);
     }
 
     const data = await response.json();
