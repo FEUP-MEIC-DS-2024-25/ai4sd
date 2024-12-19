@@ -1,17 +1,17 @@
-#Python version
+#גרסת פייתון
 FROM python:3.9-slim
 
-#Wokring directory
+#ספריית עבודה
 WORKDIR /app
 
-#Copy files to working directory
+#העתק קבצים לספריית עבודה
 COPY requirements.txt requirements.txt
 
-#Install dependencies
+#התקנת תלות
 RUN pip3 install -r requirements.txt
 
-#Copy project
+#העתק פרויקט
 COPY . .
 
-#Run the application on port 80
+#הפעל את האפליקציה
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload"]
