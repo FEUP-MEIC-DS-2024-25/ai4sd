@@ -8,3 +8,5 @@ django-cors-headers
 google-generativeai
 PyGithub
 whitenoise
+google-cloud-firestore
+google-cloud
