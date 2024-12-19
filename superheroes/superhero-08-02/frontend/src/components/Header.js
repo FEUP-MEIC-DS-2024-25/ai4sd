@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import "./Header.css"; // Import the Header CSS
+import apiClient from "../config/axios";
 
 function Header() {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -10,8 +10,8 @@ function Header() {
 
   // Fetch user authentication status
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/user-status/", { withCredentials: true }) // Replace with your endpoint
+    apiClient
+      .get("/user-status/", { withCredentials: true }) // Replace with your endpoint
       .then((response) => {
         const { isAuthenticated } = response.data;
         setIsAuthenticated(isAuthenticated);
@@ -25,7 +25,7 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:8000/logout/", {}, { withCredentials: true });
+      await apiClient.post("/logout/", {}, { withCredentials: true });
       setIsAuthenticated(false); // Update authentication state
       navigate("/login");
     } catch (error) {

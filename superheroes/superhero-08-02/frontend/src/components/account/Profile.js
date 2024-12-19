@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import apiClient from "../../config/axios";
-import { useNavigate, Link, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import "./Profile.css";
 
 function Profile() {
   const { username } = useParams();
-  const [user, setUser] = useState(null);
-  const [miroToken, setMiroToken] = useState("");
+  const [miroTokenInput, setMiroTokenInput] = useState("");
+  const [user, setUser] = useState({
+    username: "",
+    is_own_profile: null,
+    github_username: "",
+    miro_token: false,
+  });
+  
   const [errors, setErrors] = useState("");
-  const navigate = useNavigate();
 
   const profileEndpoint = username
     ? `/profile/${username}/`
@@ -22,20 +27,42 @@ function Profile() {
       .catch((error) => console.error("Error fetching profile:", error));
   }, [profileEndpoint]);
 
+  const handleGitHubLink = async () => {
+    try {
+      const response = await apiClient.get("/github/login/");
+      const { auth_url } = response.data;
+      window.location.href = auth_url;
+    } catch (error) {
+      console.error("Error fetching GitHub auth URL:", error);
+      alert("Error fetching GitHub auth URL.");
+    }
+  };
+
+  const handleGitHubUnlink = async () => {
+    try {
+      await apiClient.post("/github/unlink/");
+      alert("GitHub account unlinked successfully!");
+      setUser((prevUser) => ({
+        ...prevUser,
+        github_username: null,
+      }));
+    } catch (error) {
+      console.error("Error unlinking GitHub account:", error);
+      alert("Error unlinking GitHub account.");
+    }
+  };
+
   const handleMiroTokenSubmit = (e) => {
     e.preventDefault();
     apiClient
-      .post("/api/add-miro-token/", { miro_token: miroToken })
+      .post("/miro/add-token/", { miro_token: miroTokenInput })
       .then((response) => {
         alert("Miro token saved successfully!");
         setUser((prevUser) => ({
           ...prevUser,
-          profile: {
-            ...prevUser.profile,
-            miro_token: miroToken,
-          },
+          miro_token: true,
         }));
-        setMiroToken("");
+        setMiroTokenInput("");
       })
       .catch((error) => {
         if (error.response && error.response.data) {
@@ -44,27 +71,19 @@ function Profile() {
       });
   };
 
-  // Handle Unlink Actions
-  const handleAction = (url, message) => {
-    apiClient
-      .post(url)
-      .then((response) => {
-        alert(message);
-
-        if (url.includes("github-unlink")) {
-          setUser((prevUser) => ({
-            ...prevUser,
-            profile: { ...prevUser.profile, github_username: null },
-          }));
-        } else if (url.includes("delete-miro-token")) {
-          setUser((prevUser) => ({
-            ...prevUser,
-            profile: { ...prevUser.profile, miro_token: null },
-          }));
-        }
-      })
-      .catch((error) => console.error(`Error performing action on ${url}:`, error));
-  };
+  const handleMiroTokenDelete = async () => {
+    try {
+      await apiClient.post("miro/delete-token/");
+      alert("Miro token deleted successfully!");
+      setUser((prevUser) => ({
+        ...prevUser,
+        miro_token: null,
+      }));
+    } catch (error) {
+      console.error("Error deleting Miro token:", error);
+      alert("Error deleting Miro token.");
+    }
+  }
 
   if (errors) {
     return <p>{errors}</p>;
@@ -90,25 +109,17 @@ function Profile() {
 
         <li className="list-group-item">
           Github Username:{" "}
-          {user.profile.github_username ? (
+          {user.github_username ? (
             <>
               <a
-                href={`https://github.com/${user.profile.github_username}`}
+                href={`https://github.com/${user.github_username}`}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {user.profile.github_username}
+                {user.github_username}
               </a>
-              {user.is_current_user && (
-                <button
-                  className="btn btn-danger btn-sm ms-2"
-                  onClick={() =>
-                    handleAction(
-                      "http://localhost:8000/api/github-unlink/",
-                      "GitHub account unlinked successfully!"
-                    )
-                  }
-                >
+              {user.is_own_profile && (
+                <button className="btn btn-danger btn-sm ms-2" onClick={handleGitHubUnlink}>
                   Unlink
                 </button>
               )}
@@ -120,18 +131,13 @@ function Profile() {
 
         <li className="list-group-item">
           Miro Token:{" "}
-          {user.profile.miro_token ? (
+          {user.miro_token ? (
             <>
               <span>Token is associated</span>
-              {user.is_current_user && (
+              {user.is_own_profile && (
                 <button
                   className="btn btn-danger btn-sm ms-2"
-                  onClick={() =>
-                    handleAction(
-                      "http://localhost:8000/api/delete-miro-token/",
-                      "Miro token deleted successfully!"
-                    )
-                  }
+                  onClick={handleMiroTokenDelete}
                 >
                   Delete Miro Token
                 </button>
@@ -140,16 +146,16 @@ function Profile() {
           ) : (
             <>
               Not associated
-              {user.is_current_user && (
+              {user.is_own_profile && (
                 <form onSubmit={handleMiroTokenSubmit} className="mt-3">
                   <input
                     type="text"
                     id="miro_token"
                     name="miro_token"
-                    value={miroToken}
-                    onChange={(e) => setMiroToken(e.target.value)}
                     className="form-control mb-2"
                     placeholder="Enter your Miro token"
+                    value={miroTokenInput}
+                    onChange={(e) => setMiroTokenInput(e.target.value)}
                     required
                   />
                   <button type="submit" className="btn btn-primary">
@@ -163,10 +169,10 @@ function Profile() {
       </ul>
 
       {/* Associate Github Button */}
-      {user.is_current_user && (
-        <a href="http://localhost:8000/api/github-login/" className="btn btn-primary">
+      {user.is_own_profile && (
+        <button onClick={handleGitHubLink} className="btn btn-primary">
           Associate Github Account
-        </a>
+        </button>
       )}
     </div>
   );

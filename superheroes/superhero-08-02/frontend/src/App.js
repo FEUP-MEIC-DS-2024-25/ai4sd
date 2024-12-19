@@ -81,6 +81,14 @@ function App() {
               </Layout>
             }
           />
+          <Route
+            path="github/login"
+            element={
+              <Layout>
+                <h1>Not Found</h1>
+              </Layout>
+            }
+          />
         </Routes>
       </Router>
     </div>

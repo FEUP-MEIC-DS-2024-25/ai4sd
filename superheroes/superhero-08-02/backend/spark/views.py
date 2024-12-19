@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from api.services.github_rest import githubRestAPI
 from .forms import MyUserCreationForm, SparkProjectSerializer
 from .models import SparkProject, Profile
@@ -59,7 +59,7 @@ class ProfileAPIView(APIView):
         profile = user.profile
         is_own_profile = request.user == user
 
-        return Response({'username': user.username, 'is_own_profile': is_own_profile, 'github_username': profile.github_username, 'github_token': bool(profile.github_token)}, status=status.HTTP_200_OK)
+        return Response({'username': user.username, 'is_own_profile': is_own_profile, 'github_username': profile.github_username, 'github_token': bool(profile.github_token), 'miro_token': bool(profile.miro_token)}, status=status.HTTP_200_OK)
     
     
 class LoginAPIView(APIView):
@@ -104,6 +104,7 @@ class SparkProjectAPIView(APIView):
             "description": project.description,
             "github_project_link": project.github_project_link or None,
             "miro_board_id": project.miro_board_id or None,
+            "miro_board_link": project.miro_board_url or None,
             "owner": project.owner.user.username,
             "members": [member.user.username for member in project.members.all()],
         }
@@ -160,6 +161,8 @@ class AddMemberToSparkProjectAPIView(APIView):
 
 
 class GitHubLoginAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         redirect_uri = "http://localhost:8000/github/callback"
         scopes = "repo user admin:org project"
@@ -169,6 +172,8 @@ class GitHubLoginAPIView(APIView):
     
 
 class GitHubCallbackAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         code = request.GET.get('code')
         state = request.GET.get('state')
@@ -193,7 +198,8 @@ class GitHubCallbackAPIView(APIView):
         profile.github_username = github_username
         profile.save()
 
-        return Response({'message': 'GitHub account linked successfully.', 'github_username': github_username}, status=status.HTTP_200_OK)
+        frontend_url = "http://localhost:3000/profile"
+        return redirect(frontend_url)
 
 
 class CheckGitHubTokenValidityAPIView(APIView):

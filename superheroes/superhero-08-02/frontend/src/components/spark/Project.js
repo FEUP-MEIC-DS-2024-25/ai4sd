@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
 import apiClient from "../../config/axios";
 
 function Project() {
@@ -22,8 +21,8 @@ function Project() {
   // Handle adding new member
   const handleAddMember = (e) => {
     e.preventDefault();
-    axios
-      .post(`http://localhost:8000/api/projects/${projectId}/add-member/`, {
+    apiClient
+      .post(`spark/${projectId}/add-member/`, {
         username: newMember,
       })
       .then(() => {
@@ -57,7 +56,7 @@ function Project() {
 
   return (
     <div className="container mt-4">
-      <h1>{project.project_name}</h1>
+      <h1>{project.name}</h1>
       <p>
         <strong>Description:</strong> {project.description || "No description available."}
       </p>
@@ -66,17 +65,17 @@ function Project() {
 
         <p>
           <strong>GitHub Link:</strong>{" "}
-          <a href={project.github_project_link} target="_blank" rel="noopener noreferrer">
+          <Link to={project.github_project_link} target="_blank" rel="noopener noreferrer">
             {project.github_project_link}
-          </a>
+          </Link>
         </p>
 
-        {project.miro_board_link && (
+        {project.miro_board_id && (
           <p>
             <strong>Miro Board:</strong>{" "}
-            <a href={project.miro_board_link} target="_blank" rel="noopener noreferrer">
-              {project.miro_board_link}
-            </a>
+            <Link to={project.miro_board_link} target="_blank" rel="noopener noreferrer">
+              {project.miro_board_id}
+            </Link>
           </p>
         )}
       </div>
@@ -84,8 +83,8 @@ function Project() {
       <h2 className="mt-4">Members</h2>
       <ul>
         {project.members.map((member) => (
-          <li key={member.user}>
-            <Link to={`/profile/${member.user}`}>{member.user}</Link>
+          <li key={member}>
+            <Link to={`/profile/${member}`}>{member}</Link>
           </li>
         ))}
       </ul>
