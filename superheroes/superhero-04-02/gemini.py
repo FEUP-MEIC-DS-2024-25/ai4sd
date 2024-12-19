@@ -33,6 +33,17 @@ genai.configure(api_key=api_key)
 
 blueprint = Blueprint("gemini_api", __name__)
 
+INVEST_text = (
+    "Must follow the INVEST characteristics.\n"
+    "INVEST is an acronym that defines the essential characteristics of a good user story in agile development.\n"
+    "Independent: Each user story should be self-contained, without relying on others to be completed:\n"
+    "Negotiable: The details of the story can be discussed and adjusted as needed by the project.\n"
+    "Valuable: The story should provide real value to the user or the business.\n"
+    "Estimable: The complexity of the story should be quantifiable to allow for the creation of a realistic development plan.\n"
+    "Small: The story should be small enough to be completed within a sprint.\n"
+    "Testable: The story should have clear acceptance criteria, allowing verification of whether it has been implemented correctly.\n"
+)
+
 @blueprint.route("/generate", methods=["POST"])
 def generate_response():
     data = request.get_json()
@@ -61,10 +72,10 @@ def generate_response():
     format_info = formats.get(language, formats["en"])  
 
     prompt = str([
-        f"With the use of the following requirements, give a list of userstories and a list of possible acceptance criteria for each user story.\n",
-        f"The userstories have the format: {format_info['user_story']}\n",
-        f"Each acceptance test inside the acceptance criteria have the {format_info['given_when_then']} format\n"
-        'Give in a JSON format, where there is "index" and the "user_story" are type string so wrapped in quotation marks, and the "acceptance_criteria" a list of acceptance tests, all of type string so wrapped in quotation marks within a JSON list.\n',
+        f"With the use of the following requirements, give a list of user stories\n",
+        f"The user stories have the format: {format_info['user_story']}\n",
+        INVEST_text,
+        'Give in a JSON format, where there is "index" and the "user_story" are type string so wrapped in quotation marks.\n',
         "The result must be only a JSON list, no more information.\n",
         "Don't add any more text or newlines to the JSON, without ```json```.\n",
         f"Generate the response in {language} language.\n",
@@ -116,12 +127,12 @@ def regenerate_response():
     }
 
     format_info = formats.get(language, formats["en"])  
-
+    
     prompt = str([
-        f"With the use of the following requirements, give a list of userstories and a list of possible acceptance criteria for each user story.\n",
-        f"The userstories have the format: {format_info['user_story']}\n",
-        f"Each acceptance test inside the acceptance criteria have the {format_info['given_when_then']} format\n"
-        'Give in a JSON format, where there is "index" and the "user_story" are type string so wrapped in quotation marks, and the "acceptance_criteria" a list of acceptance tests, all of type string so wrapped in quotation marks within a JSON list.\n',
+        f"With the use of the following requirements, give a list of user stories\n",
+        f"The user stories have the format: {format_info['user_story']}\n",
+        INVEST_text,
+        'Give in a JSON format, where there is "index" and the "user_story" are type string so wrapped in quotation marks\n',
         "The result must be only a JSON list, no more information.\n",
         "Don't add any more text or newlines to the JSON, without ```json```.\n",
         f"Generate the response in {language} language.\n",
