@@ -26,7 +26,7 @@ export default function Interactor() {
 function prepareMockHistory() {
     const history = [];
     for (let i = 1; i <= 20; i++) {
-        const chat = { text: `Chat ${i}`, link: "#" };
+        const chat = { text: `Chat ${i}`, link: `/assistants/req2speech/${i}` };
         history.push(chat);
     }
     return history;
