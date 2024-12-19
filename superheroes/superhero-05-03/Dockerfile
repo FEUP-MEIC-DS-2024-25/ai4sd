@@ -9,6 +9,7 @@ COPY package*.json ./
 # Install all dependencies
 RUN npm install
 
+
 # Copy all the files to the container
 COPY . .
 

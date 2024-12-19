@@ -18,8 +18,8 @@ function getAssistantList() {
     let ai3 = { name: "TOOPAI", type: "verif", link: "/assistants/toopai" };
     let ai4 = { name: "UTA", type: "verif", link: "/assistants/uta" };
     let ai5 = { name: "ai5", type: "arch", link: "#" };
-    let ai6 = { name: "FeatureCraft", type: "req", link: "/assistants/featurecraft" };
     let ai7 = { name: "RRBuddy", type: "req", link: "/assistants/rrbuddy" };
+    let ai6 = { name: "FeatureCraft", type: "req", link: "/assistants/featurecraft" };
     let ai8 = { name: "APLens", type: "req", link: "/assistants/aplens"};
     let ai9 = { name: "Req2Speech", type: "req", link: "/assistants/req2speech" };
     let ai10 = { name: "ReqToStory", type: "req", link: "/assistants/reqtostory" };
@@ -27,9 +27,11 @@ function getAssistantList() {
     let ai12 = { name: "Warden AI", type: "refact", link: "/assistants/wardenAI" };
     let ai13 = { name: "TeXes", type:"verif", link: "/assistants/texes"};
     let ai14 = { name: "DiagramIt", type: "req", link: "/assistants/diagramit" };
-    let ai15 = { name: "OptiReq", type: "req", link: "/assistants/optireq" };
+    let ai15 = { name: "SPARK", type: "req", link: "/assistants/spark" };
+    let ai16 = { name: "BANANAI", type: "req", link: "/assistants/bananai" };
+    let ai17 = { name: "TwisterAI", type: "verif", link: "/assistants/twisterAI" };
 
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, ai15]
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, ai15, ai16, ai17];
 }
 
 function AssistantPickerItems() {

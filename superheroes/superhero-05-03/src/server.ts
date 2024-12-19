@@ -9,6 +9,7 @@ const enum DiagramTypes {
     ACTIVITY = "Activity Diagram"
 }
 
+
 const app = express();
 const port = 8080;
 
@@ -17,7 +18,8 @@ app.use(bodyParser.json());
 const jsonPath = path.join(__dirname, 'strings.json');
 const json = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 
-const genAI = new GoogleGenerativeAI(json.apiKey);
+
+const genAI = new GoogleGenerativeAI("AIzaSyBvZAs-HpqX-u-QJq5S9b0HVpCU8ayWwIE");
 const model = genAI.getGenerativeModel({ model: json.model });
 const clientChats = new Map<string, [number, any]>();
 
