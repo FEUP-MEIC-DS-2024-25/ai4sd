@@ -33,8 +33,8 @@ RUN python3 -m pip install "fastapi[standard]"
 COPY ./src .
 
 # RUN --mount=type=secret,id=secret \
-#     cat /run/secrets/secret > /etc/gemini_token
+#     cat /tmp/superhero-05-01_secret > /etc/gemini_token
 
-RUN echo "${GCLOUD_SECRET}" > /etc/gemini_token
+RUN echo "AIzaSyAtSSHni87FP3Hy3GIsE3bQkwnJV5dz4-E" > /etc/gemini_token
 
 CMD ["uvicorn" ,"api:app", "--host", "0.0.0.0", "--port", "8080"]
