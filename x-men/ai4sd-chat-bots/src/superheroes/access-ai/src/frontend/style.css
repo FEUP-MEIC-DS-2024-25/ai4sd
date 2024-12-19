@@ -1,0 +1,120 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1e1e1e;
+    color: #fff;
+    height: 100vh;
+}
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    border-radius: 10px;
+    overflow: hidden;
+}
+.messages {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.input-container {
+    display: flex;
+    padding: 15px;
+    background-color: #2d2d2d;
+    border-top: 1px solid #333;
+}
+input {
+    flex: 1;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    background-color: #3c3c3c;
+    color: #fff;
+    font-size: 14px;
+    outline: none;
+    transition: border 0.3s;
+}
+input:focus {
+    border-color: #0078d4;
+}
+button {
+    padding: 10px 15px;
+    margin-left: 10px;
+    background-color: #0078d4;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+button:hover {
+    background-color: #005a8c;
+}
+.message {
+    display: flex;
+    flex-direction: column;
+    max-width: 80%;
+    padding: 10px 15px;
+    border-radius: 20px;
+    background-color: #3c3c3c;
+    margin: 5px 0;
+    word-wrap: break-word;
+}
+.user-message {
+    background-color: #4e94d1;
+    align-self: flex-start;
+}
+.bot-message {
+    background-color: #575757;
+    align-self: flex-end;
+}
+.message-label {
+    font-weight: bold;
+    font-size: 14px;
+    margin-bottom: 5px;
+}
+.message-time {
+    font-size: 10px;
+    color: #888;
+    text-align: right;
+    margin-top: 5px;
+}
+.typing-indicator {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 14px;
+    color: #aaa;
+}
+.dot {
+    height: 8px;
+    width: 8px;
+    margin: 0 3px;
+    background-color: #aaa;
+    border-radius: 50%;
+    animation: blink 1.5s infinite;
+}
+.dot:nth-child(1) {
+    animation-delay: 0s;
+}
+.dot:nth-child(2) {
+    animation-delay: 0.3s;
+}
+.dot:nth-child(3) {
+    animation-delay: 0.6s;
+}
+@keyframes blink {
+    0% { opacity: 0; }
+    50% { opacity: 1; }
+    100% { opacity: 0; }
+}
+.messages {
+    scroll-behavior: smooth;
+}
