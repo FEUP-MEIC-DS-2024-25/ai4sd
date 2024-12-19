@@ -5,10 +5,60 @@ import Markdown from 'react-markdown';
 
 const Warden = () => {
   const [files, setFiles] = useState([]);
+  const [filesKeep, setFilesKeep] = useState({});
   const [responseData, setResponseData] = useState(null);
   const [loading, setLoading] = useState(false);
+  let counter = 0;
+
+  const parseNumbers = (input) => {
+    if (typeof input !== "string") {
+      return [input];
+    }
+    const result = [];
+    const parts = input.split(","); // Split by comma
+    parts.forEach((part) => {
+      part = part.trim();
+      if (part.includes("-")) {
+        // Handle ranges
+        const [start, end] = part.split("-").map(Number);
+        const range = [];
+        for (let i = start; i <= end; i++) {
+          range.push(i);
+        }
+        result.push(range);
+      } else {
+        // Handle single numbers
+        result.push([Number(part)]);
+      }
+    });
+    return result;
+  };
+
+  const getFileLines = (file, linesStr) => {
+    const content = filesKeep[file];
+    if (!content) {
+      return linesStr;
+    }
+    const lines = parseNumbers(linesStr);
+    const fileLines = content.split("\n"); // Split file content into lines
+  
+    // Iterate over the groups and build the result
+    const result = lines.map((group) => {
+      let groupContent = group
+      .map((line) => {
+        let lineContent = fileLines[line - 1] || "";
+        lineContent = lineContent.replace(/\r/g, ""); 
+        return `${line} ${lineContent}`;
+      });
+      let groupJoin = groupContent.join("\n");
+      return groupJoin;
+    });
+  
+    return result.join("\n...\n") // Join all groups with newlines
+  };
 
   const handleFileChange = (event) => {
+    if (loading) return;
     const newFiles = Array.from(event.target.files);
 
     // Merge new files with existing ones and remove duplicates
@@ -110,12 +160,15 @@ const Warden = () => {
 
   // Handle file removal
   const handleRemoveFile = (fileName) => {
+    if (loading) return;
     setFiles((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (files.length === 0) return;
+
+    setFilesKeep({});
 
     setLoading(true);
 
@@ -131,7 +184,7 @@ const Warden = () => {
       );
       
       const xhr = new XMLHttpRequest();
-      // xhr.open('POST', 'http://localhost:8080/online', true)
+      //xhr.open('POST', 'http://localhost:8080/online', true)
       xhr.open('POST', 'https://superhero-05-01-150699885662.europe-west1.run.app/online', true)
       xhr.setRequestHeader('Content-Type', 'application/json');
       xhr.onload = function() {
@@ -140,7 +193,13 @@ const Warden = () => {
         if (xhr.status === 200){
           let response = JSON.parse(xhr.responseText);
           setResponseData(response);
+          let keepers = {};
+          contentsArray.forEach((file) => {
+            keepers[file.name] = file.content;
+          });
+          setFilesKeep(keepers);
           setFiles([]);
+          setLoading(false);
         }
         else{
           console.error("Error uploading file:", xhr.statusText);
@@ -148,7 +207,8 @@ const Warden = () => {
       }
 
       xhr.onerror = function () {
-        setResponseData({ "error": "Sorry, but we had a problem rendering vulnerabilities. Please try again later." });
+        setLoading(false);
+        setResponseData({ "message": "Failure" });
       };
 
       xhr.send(JSON.stringify({files: contentsArray}));
@@ -156,13 +216,12 @@ const Warden = () => {
     } catch (error) {
       console.error('Error uploading file:', error);
     } finally {
-      setLoading(false);
     }
     
     };
 
   return (
-    <div className="bg-light container-fluid min-vh-100 text-dark">
+    <div className="bg-light container-fluid min-vh-100 text-dark" style={{ 'overflow-x': 'hidden' }}>
       <div className="d-flex justify-content-center align-items-center">
         <h1 className='text-center text-primary display-4 p-4' style={{ minHeight: '20vh' }}>
           WardenAI
@@ -217,44 +276,52 @@ const Warden = () => {
           </form>
         </div>
       ) : (
-        responseData.error ? (
+        responseData.message === "Failure" ? (
           <div className="alert alert-danger" role="alert">
-            {responseData.error}
+            {"Sorry, but we had a problem rendering vulnerabilities. Please try again later."}
           </div>
         ) : (
-          <div className="container p-4 m-4">
-            <button 
-              className="btn btn-success mb-4 m-2" 
-              onClick={downloadTxt}
-            >
-              Download Vulnerability Report - Text
-            </button>
-            <button 
-              className="btn btn-success mb-4 m-2" 
-              onClick={downloadMarkdown}
-            >
-              Download Vulnerability Report - Markdown
-            </button>
-            {responseData.data.map((vulnerability) => (
-              <div key={vulnerability.title} className="card mb-4 p-3 bg-light shadow-sm" id="markdown-preview">
-                <h2 className="text-success">{vulnerability.title}</h2>
-                <p className="text-muted small mb-2">
-                  <strong>File:</strong> {vulnerability.file}
-                </p>
-                <Markdown>{vulnerability.description}</Markdown>
-                <div>
-                  <h5 className="mt-3">Lines:</h5>
+          responseData.data.length === 0 ? (
+            <div className="alert alert-success" role="alert">
+              {"No vulnerabilities found. Your files are secure!"}
+            </div>
+          ) : (
+            <div className="container p-4 m-4">
+              <button 
+                className="btn btn-success mb-4 m-2" 
+                onClick={downloadMarkdown}
+              >
+                Download Vulnerability Report - Markdown
+              </button>
+              <button 
+                className="btn btn-success mb-4 m-2" 
+                onClick={downloadTxt}
+              >
+                Download Vulnerability Report - Text
+              </button>
+              {
+              responseData.data.map((vulnerability) => (
+                <div key={counter++} className="card mb-4 p-3 bg-light shadow-sm">
+                  <h2 className="text-success">{vulnerability.title}</h2>
+                  <p className="text-muted small mb-2">
+                    <strong>File:</strong> {vulnerability.file}
+                  </p>
+                  <Markdown>{vulnerability.description}</Markdown>
+                  <div>
+                    <h5 className="mt-3">Lines:</h5>
+                    <Markdown className="bg-light p-2 rounded border">
+                    {"```\n" + getFileLines(vulnerability.file, vulnerability.lines) + "\n```"}
+                    </Markdown>
+                  </div>
+                  <h5 className="mt-3">Fix:</h5>
                   <Markdown className="bg-light p-2 rounded border">
-                    {"```" + vulnerability.lines + "```"}
+                    {vulnerability.fix}
                   </Markdown>
                 </div>
-                <h5 className="mt-3">Fix:</h5>
-                <Markdown className="bg-light p-2 rounded border">
-                  {vulnerability.fix}
-                </Markdown>
-              </div>
-            ))}
-          </div>
+              ))
+              }
+            </div>
+          )
         )
       )}
       </div>
