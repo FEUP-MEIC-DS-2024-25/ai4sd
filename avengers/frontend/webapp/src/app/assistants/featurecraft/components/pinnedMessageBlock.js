@@ -72,7 +72,7 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                     const updatedMessages = pinnedMessages.map((msg) =>
                         msg.id === editingMessageId ? { ...msg, message: editedMessage } : msg
                     );
-                    //setPinnedMessages(updatedMessages);
+                    setPinnedMessages(updatedMessages);
                     setEditingMessageId(null); // Stop editing
                 } else {
                     console.error("Failed to update pinned message:", response.statusText);
