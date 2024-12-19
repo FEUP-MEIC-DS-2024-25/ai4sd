@@ -123,14 +123,37 @@ export default function MainChat({ chatID }) {
             const data = await response.json();
 
             if (data) {
+
+                //New Chat Message - Generate a chatID
+                if(conversations.length === 0){
+
+                    const chatID = Math.random().toString(36).substring(7);
+                }
+
+                //Post the new message to the backend
+                try{
+
+                    const response = await axios.post(`${backendUrl}/req2speech/chat/${chatID}`, {
+                        msg: message,
+                        reply: data.reply
+                    });
+
+                    //Append new conversation pair (user query and answer)
+                    setConversations((prevConversations) => [
+                        ...prevConversations,
+                        { query: message, answer: data.reply }
+                    ]);
+                    
+                } catch (error){
+                    console.error("Error submitting prompt to backend:", error);
+                }
+
                 // Append new conversation pair (user query and answer)
                 setConversations((prevConversations) => [
                     ...prevConversations,
                     { query: msg, answer: data.reply }
                 ]);
 
-                console.log("Conversations:", conversations);   
-                console.log("Data: ", data);
             } else {
                 console.error("No answer in response:", data);
                 setConversations((prevConversations) => [
