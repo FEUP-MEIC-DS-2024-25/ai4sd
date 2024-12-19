@@ -35,15 +35,15 @@ class LogoutAPIView(APIView):
 class HomeAPIView(APIView):
     def get(self, request):
 
-        sparkProjects = []
+        projects = []
 
         if not request.user.is_authenticated:
-            return Response({'username': None, 'isAuthenticated': False, 'sparkProjects': sparkProjects}, status=status.HTTP_200_OK)
+            return Response({'username': None, 'isAuthenticated': False, 'projects': projects}, status=status.HTTP_200_OK)
  
         profile = request.user.profile
-        sparkProjects = profile.owned_projects.all()
+        projects = profile.owned_projects.all()
 
-        return Response({'username': request.user.username, 'isAuthenticated': True, 'sparkProjects': sparkProjects}, status=status.HTTP_200_OK)
+        return Response({'username': request.user.username, 'isAuthenticated': True, 'projects': SparkProjectSerializer(projects, many=True).data}, status=status.HTTP_200_OK)
     
 
 class ProfileAPIView(APIView):

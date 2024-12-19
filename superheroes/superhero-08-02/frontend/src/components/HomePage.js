@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [username, setUsername] = useState(null);
-  const [sparkProjects, setSparkProjects] = useState([]);
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -26,10 +26,10 @@ function HomePage() {
     const fetchUserData = async () => {
       try {
         const response = await apiClient.get("/");
-        const { isAuthenticated, username, sparkProjects } = response.data;
+        const { isAuthenticated, username, projects } = response.data;
         setIsAuthenticated(isAuthenticated);
         setUsername(username);
-        setSparkProjects(sparkProjects);
+        setProjects(projects);
       } catch (error) {
         console.error("Error fetching user data:", error);
         setError("Error fetching user data");
@@ -60,9 +60,9 @@ function HomePage() {
             <p>Your SPARK projects:</p>
 
             <ul>
-              {sparkProjects.map((project) => (
+              {projects.map((project) => (
                 <li key={project.id}>
-                  <a href={`/spark-project/${project.id}`}>{project.name}</a>
+                  <Link to={`/spark/${project.id}`}>{project.name}</Link>
                 </li>
               ))}
             </ul>

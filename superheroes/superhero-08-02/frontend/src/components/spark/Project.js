@@ -63,9 +63,7 @@ function Project() {
       </p>
 
       <div className="mt-3">
-        <p>
-          <strong>Created At:</strong> {new Date(project.created_at).toLocaleString()}
-        </p>
+
         <p>
           <strong>GitHub Link:</strong>{" "}
           <a href={project.github_project_link} target="_blank" rel="noopener noreferrer">
