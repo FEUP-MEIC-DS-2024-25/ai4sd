@@ -195,9 +195,9 @@ def delete_folder():
         folder_path = "assets/superhero-04-01"  
         bucket = storage_client.bucket(bucket_name)
 
-        blobs = bucket.list_blobs(prefix=folder_path)
+        # DELETE EVERYTHING IN THE FOLDER, including subfolders
         blobs_deleted = []
-
+        blobs = bucket.list_blobs(prefix=folder_path)
         for blob in blobs:
             blob.delete()
             blobs_deleted.append(blob.name)
