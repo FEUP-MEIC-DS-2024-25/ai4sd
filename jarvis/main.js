@@ -1,6 +1,7 @@
 import { getAuthOctokit } from "./jarvis-fetcher/auth.js";
 import { config } from "./config.js";
 import { uploadRepo } from "./jarvis-writer/writer.js";
+import { accessSecret } from "./utils/secret_manager.js";
 
 /**
  * Fetches all repositories in an organization.
@@ -55,18 +56,9 @@ export async function uploadAllReposInOrg(octokit, org) {
 }
 
 
-//const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-//await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
 
-import fs from "fs";
 
-const path = './service_account_key.json';
+const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
+//await uploadRepo(octokit, config.org, "T07_G05"); // Upload all repositories in the organization
 
-try {
-  // Read the file synchronously
-  const secret = fs.readFileSync(path, 'utf8');
-  console.log('Successfully read secret');
-} catch (err) {
-  console.error(`Error reading secret file at ${path}:`, err.message);
-}
 
