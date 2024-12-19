@@ -5,14 +5,21 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-json_cred = os.getenv("MY_FIREBASE_ADMIN", None)
 
-if json_cred:
-    # Inicializa o Firebase apenas se o JSON estiver definido
-    cred = credentials.Certificate(json_cred)
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    print("Firebase started successfully!")
-else:
-    db = None
-    print("MY_FIREBASE_ADMIN don't define")
+FIREBASE = "superhero-04-02.json"
+
+
+def get_firebase():
+    try:
+        cred = credentials.Certificate(FIREBASE)
+        firebase_admin.initialize_app(cred, {
+            'databaseURL': "https://hero-alliance-feup-ds-24-25.firebaseio.com"
+        })
+        return firestore.client()
+    except Exception as e:
+        print(f"Error accessing firebase: {e}")
+        return None
+
+
+db = get_firebase()
+

@@ -26,7 +26,11 @@ SECRET_KEY = 'django-insecure-(6wr_+#f_2blsxz(2s5%rlto0)zv%+!%%0i17a*)lgp_1=!d3f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "0.0.0.0",
+    "localhost",
+    "superhero-06-02-150699885662.europe-west1.run.app"
+]
 
 
 # Application definition
@@ -61,10 +65,6 @@ REST_FRAMEWORK = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = True
-
-CSRF_TRUSTED_ORIGINS = [
-    'http://localhost:3000',
-]
 
 ROOT_URLCONF = 'backend.urls'
 
@@ -131,7 +131,3 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
-if not GEMINI_API_KEY:
-    raise ValueError('The GEMINI_API_KEY environment variable is not set.')

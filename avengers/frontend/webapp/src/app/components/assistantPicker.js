@@ -28,8 +28,9 @@ function getAssistantList() {
     let ai13 = { name: "TeXes", type:"verif", link: "/assistants/texes"};
     let ai14 = { name: "DiagramIt", type: "req", link: "/assistants/diagramit" };
     let ai15 = { name: "SPARK", type: "req", link: "/assistants/spark" };
-  
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14]
+    let ai16 = { name: "BANANAI", type: "req", link: "/assistants/bananai" };
+
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, ai15, ai16]
 }
 
 function AssistantPickerItems() {
