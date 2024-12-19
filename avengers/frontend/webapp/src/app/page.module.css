@@ -234,6 +234,13 @@ a.secondary {
 }
 
 .assistantInteractionDark {
+  background-color: #212121;
+  color: var(--bs-body-color);
+  flex: 1;
+  padding: 2em;
+}
+
+.assistantInteractionDark {
   background-color: #121212;
   color: var(--bs-body-color);
   flex: 1;

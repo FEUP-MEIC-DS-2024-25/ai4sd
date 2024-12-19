@@ -6,7 +6,6 @@ import shutil
 from .prompt import generate_description_uml
 import requests
 
-
 class Project(models.Model):
     name = models.CharField(max_length=255)
     response = models.TextField(null=True, blank=True)
@@ -20,7 +19,6 @@ class Project(models.Model):
         if self.github_link:
             repo_name = os.path.basename(self.github_link).replace('.git', '')
             repo_dir = os.path.join(settings.MEDIA_DIR, 'repos', repo_name)
-            print(repo_dir)
 
             # Clone repo if it doesn't exist
             if not os.path.exists(repo_dir):
@@ -30,7 +28,6 @@ class Project(models.Model):
 
     def generate_plantuml_image(self):
         """ Sends PlantUML code to a server to generate an image and stores it. """
-        print("Generating PlantUML image")
         if self.plantuml_code:
             url = settings.PLANTUML_SERVER_URL
             headers = {'Content-Type': 'text/plain'}
@@ -45,43 +42,29 @@ class Project(models.Model):
                     f.write(response.content)
 
                 self.plantuml_image = f'plantuml_images/{self.id}_diagram.png'
-                print(f"PlantUML image saved to {self.plantuml_image}")
                 self.save()
 
-
     def save(self, *args, **kwargs):
-        initial_save = not self.pk
-        if initial_save:
-            print("Initial save")
+        if self.pk:
+            original = Project.objects.get(pk=self.pk)
+            if self.plantuml_code != original.plantuml_code:
+                self.generate_plantuml_image()
+        else:
+            # First save to generate PK
             super().save(*args, **kwargs)
+
             # Clone GitHub repository when creating the project
             if not self.repo_path:
-                print("Cloning repo")
                 self.clone_repo()
-            
+
+            # Generate description and PlantUML code
             if self.repo_path:
-                print("Generating description")
                 description, code = generate_description_uml(self.repo_path)
                 self.response = description
                 self.plantuml_code = code
 
             # Generate PlantUML image
             if self.plantuml_code:
-                print("Generating PlantUML image")
                 self.generate_plantuml_image()
 
-            super().save(*args, **kwargs)
-        else:
-            print("else")
-            # Fetch the current value from the database
-            original = Project.objects.get(pk=self.pk)
-            original_code = original.plantuml_code
-
-            # Save the new values to the database
-            super().save(*args, **kwargs)
-
-            # Check if the plantuml_code has changed and regenerate the image if it has
-            if self.plantuml_code != original_code:
-                self.generate_plantuml_image()
-                super().save(*args, **kwargs)  # Update the instance with the new image path
-            
+        super().save(*args, **kwargs)

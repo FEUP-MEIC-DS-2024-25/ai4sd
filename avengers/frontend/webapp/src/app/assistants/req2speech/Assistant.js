@@ -9,7 +9,7 @@ import Header from "./components/Header"
 //Contexts 
 import { ThemeProvider } from "./components/contexts/ThemeContext"
 
-export default function Assistant() {
+export default function Assistant({ chat=[] }) {
 
     //Static Mock data 
     const user = {
@@ -21,7 +21,7 @@ export default function Assistant() {
         <div className={`${styles.assistantInteraction} dark:bg-neutral-950 bg-gray-200`}>
             <ThemeProvider className="flex flex-col items-center">
                 <Header user={user}/>
-                <LandingPage />
+                <LandingPage chat={chat}/>
             </ThemeProvider>
         </div>
     )

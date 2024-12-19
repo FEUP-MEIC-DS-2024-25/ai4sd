@@ -73,6 +73,13 @@ function Input() {
                             Get improvement recommendations
                         </label>
                     </div>
+                    <div className="form-check">
+                        <input className="form-check-input" type="radio" name="options"
+                            value="realExamples" id="realExamples" />
+                        <label className="form-check-label" htmlFor="realExamples">
+                            Explore real examples
+                        </label>
+                    </div>
                 </div>)}
             <div className="input-group">
                 <UIInput type="url" className="form-control bg-white text-black border-gray-300" style={{ height: '35px' }} name="repo_url" placeholder="Insert your repository's URL here" aria-label="Insert your repository's URL here" aria-describedby="button-input" />

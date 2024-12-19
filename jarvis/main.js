@@ -1,7 +1,11 @@
 import { getAuthOctokit } from "./jarvis-fetcher/auth.js";
 import { config } from "./config.js";
 import { uploadRepo } from "./jarvis-writer/writer.js";
+<<<<<<< HEAD
 import { addWebhook } from "./jarvis-fetcher/githubClient.js";
+=======
+import { accessSecret } from "./utils/secret_manager.js";
+>>>>>>> 28d6a012bc13fb0c6454e664b4f04240870dd0d7
 
 /**
  * Fetches all repositories in an organization.

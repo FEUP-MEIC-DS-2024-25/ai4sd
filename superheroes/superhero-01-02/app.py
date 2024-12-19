@@ -10,11 +10,9 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-# Chargement des variables d'environnement
 load_dotenv()
-
-# Initialisation de l'API Google Generative AI avec la clé API
-genai.configure(api_key=os.environ["API_KEY"])
+api_key = os.getenv("API_KEY", "default_value")
+genai.configure(api_key=api_key)
 
 # Création de l'application FastAPI
 app = FastAPI()
@@ -29,7 +27,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialisation du modèle au démarrage de l'application
 model = None
 
 @app.on_event("startup")
@@ -42,25 +39,20 @@ async def startup():
         )
     )
 
-# Route POST pour envoyer un fichier et un prompt
 @app.post("/api/chat-with-file")
 async def chat_with_file(
-    prompt: str = Form(...),  # Récupérer le prompt depuis le formulaire
-    file: UploadFile = None   # Récupérer le fichier téléchargé, s'il existe
+    prompt: str = Form(...),  
+    file: UploadFile = None   
 ):
 
     try:
-        # Si un fichier est fourni, on l'enregistre temporairement
         if file:
-            # Lire le contenu du fichier téléchargé
             file_contents = await file.read()
 
-            # Sauvegarder le fichier temporairement ou l'utiliser directement comme un fichier binaire
             file_bytes = BytesIO(file_contents)
 
             mime_type = file.content_type if file.content_type != "application/octet-stream" else "text/plain"
 
-            # Télécharger le fichier avec l'API Google, en passant le type MIME
             myfile = genai.upload_file(file_bytes, mime_type=mime_type)
 
             result = model.generate_content([myfile, "\n\n", prompt])
@@ -68,10 +60,8 @@ async def chat_with_file(
         else:
             result = model.generate_content([prompt])
 
-        # Extraction de la réponse texte
         markdown_response = result.text
 
-        # Conversion du Markdown en HTML
         html_response = markdown.markdown(markdown_response, extensions=['fenced_code']).replace('\n', '&#10;')
 
         return JSONResponse(content={"response": html_response})
@@ -79,10 +69,8 @@ async def chat_with_file(
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Erreur lors de la génération de contenu: {str(e)}")
 
-# Récupération du port à utiliser
-host = "0.0.0.0"  # Cette adresse permet d'écouter toutes les interfaces réseau.
-port = int(os.getenv("PORT", 8080))  # Utiliser le port fourni par Google Cloud ou 8000 par défaut.
+host = "0.0.0.0"  
+port = int(os.getenv("PORT", 8080))  
 
-# Lancer l'application
 if __name__ == "__main__":
     uvicorn.run(app, host=host, port=port)

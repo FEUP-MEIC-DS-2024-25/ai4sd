@@ -33,7 +33,7 @@ export async function analyzeRemote(llm: string): Promise<void> {
         const jsonData = await sendRequest(apiUrl, "POST", params);
         const markdownContent = utils.parseApiMdResponse(jsonData);
         repoUtils.writeToFile(markdownFilePath, markdownContent);
-        utils.openMarkdownFile(markdownFilePath);
+        utils.openMarkdownFile(markdownFilePath, true);
     } catch (error) {
         utils.showError("Command Execution", error);
     }

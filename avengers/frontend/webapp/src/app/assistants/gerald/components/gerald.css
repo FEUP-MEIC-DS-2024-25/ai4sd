@@ -1,0 +1,234 @@
+:root {
+
+    --primary-color: #2C2F57;
+    --primary-text-color: white; 
+    --hover: #6165A4;
+    --gradient:linear-gradient(45deg,#6165A4,#d0d0d0,#B895B9); 
+    --input-primary: #272727 ;
+    --primary-widget:#6165A4;
+    --secondary-widget:#B895B9;
+}
+
+
+.assistantInteraction{
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
+    display: flex;
+    flex-direction: column;
+   position: relative;
+    height: 100vh;
+    align-items: center;
+}
+
+.main{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+
+}
+
+.main div{
+    width: 100%;
+    max-width: 50rem;
+
+}
+
+.main .info{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.scrollable{
+    height: 65vh;
+    overflow-y: scroll; 
+}
+
+/* Apply to the target element */
+.scrollable {
+    scrollbar-width: none; /* For Firefox */
+    -ms-overflow-style: none; /* For Internet Explorer and Edge */
+}
+
+.scrollable::-webkit-scrollbar {
+    display: none; /* For Chrome, Safari, and Edge */
+}
+
+header{
+    width: 100%;
+    display: flex;
+}
+
+header h2{
+   
+    font-size: 1.2em;
+}
+
+header a{
+    padding: 1em;
+    border-radius: 5em;
+}
+header a:hover{
+    background-color: var(--hover);
+}
+
+header .aboutus{
+    margin-left: auto;
+}
+
+.assistantInteraction h1{
+    font-size: 6em;
+    font-weight: bold;
+}
+
+.assistantInteraction p{
+    font-size: 2em;
+    font-weight: 300;
+}
+.assistantInteraction form.input{
+    padding: 1rem 4px;
+    background-color: var(--input-primary);
+    width: 100%;
+    height: 3em;
+    border-radius: 10rem;
+    display: flex;
+    margin-top: 5em;
+    position: relative;
+    z-index: 1;
+}
+
+.assistantInteraction form.input::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 10rem; 
+    padding: 4px; 
+    background: var(--gradient); 
+    mask: 
+      linear-gradient(#000 0 0) content-box, 
+      linear-gradient(#000 0 0);
+    mask-composite: exclude; 
+    z-index: -1;
+  }
+
+
+
+.assistantInteraction input[type=text]{
+    background-color: inherit;
+    outline: none;
+    font-size: 1.2rem;
+    flex-grow: 1;
+}
+
+.assistantInteraction input[type=file], .assistantInteraction input[type=submit]{
+  display: none;
+
+}
+
+
+.assistantInteraction .custom-file-label {
+
+    padding: 0 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: var(--primary-text-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    border-radius:  10rem ;
+  }
+
+  .assistantInteraction .custom-file-label:hover {
+    background-color: var(--hover); /* Darker indigo */
+  }
+
+  .assistantInteraction .custom-file-label i {
+    font-size: 1.2em; /* Adjust icon size */
+  }
+
+
+.assistantInteraction .msg{
+    background-color: var(--primary-widget);
+    width: 45%;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-radius: 1rem;
+}
+
+.assistantInteraction .msg.user{
+    background-color: var(--secondary-widget);
+    margin-left: auto;
+}
+
+.assistantInteraction h2{
+    text-align: center;
+    align-self: center;
+}
+.assistantInteraction h2.logo{
+    font-weight: bold;
+    font-size: 1.3rem;
+}
+
+
+
+
+.project{
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: start;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+    overflow-y: scroll;
+}
+.project .card{
+    width: 10rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    background-color:  var(--primary-widget);
+    color: white;
+    padding: 1rem;
+    min-width: 20rem;
+    min-height: 10rem;
+   
+}
+
+.project .card.new{
+    background-color:  var(--secondary-widget);
+    justify-content: center;
+    align-items: center;
+}
+
+.project .card.new i{
+ 
+    font-size: 3.5rem;
+}
+
+
+
+.project .card p{
+    font-size: 1rem;
+}
+.project .card h2{
+    font-size: 1.2rem;
+    font-weight: 900;
+}
+
+@media (max-width: 600px) {
+    .assistantInteraction .msg{
+        width: 80%;
+    }
+
+    .main div{
+        width: 100%;
+        max-width: 100%;
+    
+    }
+
+}
