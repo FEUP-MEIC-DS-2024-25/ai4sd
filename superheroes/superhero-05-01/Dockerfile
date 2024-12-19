@@ -32,8 +32,8 @@ RUN python3 -m pip install "fastapi[standard]"
 
 COPY ./src .
 
-# RUN --mount=type=secret,id=superhero-05-01-secret \
-#     cat /run/secrets/superhero-05-01-secret > /etc/gemini_token
+# RUN --mount=type=secret,id=secret \
+#     cat /tmp/superhero-05-01_secret > /etc/gemini_token
 
 RUN echo "AIzaSyAtSSHni87FP3Hy3GIsE3bQkwnJV5dz4-E" > /etc/gemini_token
 

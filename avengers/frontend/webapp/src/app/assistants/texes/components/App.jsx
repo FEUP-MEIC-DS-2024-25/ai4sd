@@ -20,7 +20,7 @@ const App = () => {
     }
   
     try {
-      const response = await fetch("http://localhost:5000/Chat", {
+      const response = await fetch("https://superhero-07-03-150699885662.europe-west1.run.app/Chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json", // Specify JSON content type
@@ -52,7 +52,7 @@ const App = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const uploadResponse = await fetch("http://localhost:5000/UploadFile", {
+      const uploadResponse = await fetch("https://superhero-07-03-150699885662.europe-west1.run.app/UploadFile", {
         method: "POST",
         body: formData,
       });
@@ -72,7 +72,7 @@ const App = () => {
   const trackProgress = async () => {
     const interval = setInterval(async () => {
       try {
-        const response = await fetch("http://localhost:5000/progress");
+        const response = await fetch("https://superhero-07-03-150699885662.europe-west1.run.app/progress");
         if (response.ok) {
           const jsonResponse = await response.json();
           setProgress(jsonResponse.status);

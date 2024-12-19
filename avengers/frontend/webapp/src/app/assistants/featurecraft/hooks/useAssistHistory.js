@@ -10,11 +10,12 @@ export default function useAssistHistory(initialId) {
 
     useEffect(() => {
         setLoading(true);
+        //axios.get("http://localhost:8080/history")
         axios.get("https://superhero-03-01-150699885662.europe-west1.run.app/history")
             .then(response => {
                 if (response.status === 200) {
                     if (response.data && response.data.length > 0) {
-                        const MAX_DESC_LENGTH = 130;
+                        const MAX_DESC_LENGTH = 90;
                         
                         // Organize the data
                         response.data.forEach((item) => {

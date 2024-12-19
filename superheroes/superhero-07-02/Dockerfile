@@ -1,5 +1,7 @@
 FROM python:3.11-alpine
 
+WORKDIR /app
+
 # Install FastAPI and Uvicorn (ASGI server)
 RUN pip install --no-cache-dir fastapi uvicorn google-generativeai python-dotenv
 
@@ -7,7 +9,7 @@ RUN pip install --no-cache-dir fastapi uvicorn google-generativeai python-dotenv
 ENV PORT 8080
 
 # Copy the FastAPI app into the container
-COPY app.py /app.py
+COPY . .
 
 # Copy the superheroes folder as well
 # COPY ../superheroes /superheroes
@@ -17,4 +19,4 @@ COPY . .
 EXPOSE 8080
 
 # Run the FastAPI app with Uvicorn
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "3333"]
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]

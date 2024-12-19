@@ -9,7 +9,9 @@
   "categories": [
     "Other"
   ],
-
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
@@ -28,11 +30,23 @@
         "title": "AI4SD Analysers: Analyse repository"
       },
       {
+        "command": "ai4sd-analysers.wakeup",
+        "title": "Wake up assistants"
+      },
+      {
         "command": "archy.startExecution",
         "title": "Archy: Start Execution",
         "category": "Archy"
       }
     ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "ai4sd-analysers.wakeup",
+          "when": "false"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
