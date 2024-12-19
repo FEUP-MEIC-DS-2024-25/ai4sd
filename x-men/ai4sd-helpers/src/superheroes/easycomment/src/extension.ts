@@ -22,6 +22,7 @@ async function updateCofiguration(configuration:string,searchQuery:string){
 
 async function getCommentsFromServer(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
     try {
+      console.log("Getting comments from server");
     const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-comments", {
         languageId,
         text,
@@ -59,11 +60,11 @@ async function getCommentsFromServer(languageId: string, text: string, apiKey: s
   }
 
 async function getCommentsFromServerSplitFunctions(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
-    if (languageId !== "cpp") {
-        throw new Error(`Only C++ is supported for split functions mode language ${languageId}`);
+    if (languageId !== "cpp" && languageId !== "dart") {
+        throw new Error(`Only C++ and Dart is supported for split functions mode language ${languageId}`);
     }
     console.log("Getting comments from server split functions");
-    const response = await axios.post("http://localhost:8080/generate-comments-splited", {
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-comments-splited", {
         languageId,
         text,
         apiKey,
@@ -74,10 +75,10 @@ async function getCommentsFromServerSplitFunctions(languageId: string, text: str
 
 async function getParsedFunctions(languageId: string, text: string, apiKey: string, language: string): Promise<[number,string][]> {
     if (languageId !== "cpp" && languageId !== "dart") {
-        throw new Error(`Only C++ is supported for split functions mode language ${languageId}`);
+        throw new Error(`Only C++ and Dart is supported for split functions mode language ${languageId}`);
     }
     console.log("Getting comments from server split functions");
-    const response = await axios.post("http://localhost:8080/generate-split-code", {
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-split-code", {
         languageId,
         text,
         apiKey,
@@ -197,7 +198,7 @@ export function activate(context: vscode.ExtensionContext) {
         console.log(testResult);
         console.log('Language:', textEditor.document.languageId);
         let mode = 2;//TODO Leagacy is going to be a bit changed
-        if(language === "python"){
+        if(textEditor.document.languageId === "python"){
             const response = await getCommentsFromServer(textEditor.document.languageId, textEditor.document.getText(), apiKey, language);
             //console.log(response);
             const comments: CodeComment[] = JSON.parse(response);

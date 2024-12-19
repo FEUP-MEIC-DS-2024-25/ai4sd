@@ -25,19 +25,23 @@ export function extractFunctionsFlutter(sourceCode: string): Map<number, Object>
       
       // Determine function type and extract declaration
       let declaration = '';
+      let add= false;
       if (ts.isFunctionDeclaration(node) && node.name) {
         declaration = `function ${node.name.getText()}`;
+        //add = true;
       } else if (ts.isMethodDeclaration(node) && node.name) {
         declaration = `method ${node.name.getText()}`;
+        add = true;
       } else if (ts.isArrowFunction(node)) {
         declaration = 'arrow function';
       } else if (ts.isFunctionExpression(node)) {
         declaration = 'function expression';
       }
-
-      functions.set(lineNumber,{
-        body: declaration+"\n"+nodeText
-      });
+      if(add===true){
+        functions.set(lineNumber,{
+          body: nodeText
+        });
+    }
     }
 
     // Continue traversing the AST

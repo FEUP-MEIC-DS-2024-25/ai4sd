@@ -51,7 +51,9 @@ app.post('/generate-comments-splited', async (req, res) => {
     let functions;
     if(languageId === 'cpp'){
         functions = parseCppCode(text);
+        console.log(functions);
     }else if(languageId === 'dart'){
+        console.log('Extracting functions for flutter');
         functions = extractFunctionsFlutter(text);
     }
     if (!functions) {
@@ -78,16 +80,16 @@ app.post('/generate-comments-splited', async (req, res) => {
 
                         // Split the string into an array of lines
             const linesArray: string[] = result.response.text().split('\n');
-
             // Remove the first and last lines
-            if (linesArray.length > 1) {
+            //console.log('Lines:', linesArray);
+            console.log('test:',functions);
+            if (linesArray.length > 4) {
                 linesArray.shift(); // Remove the first element
                 linesArray.pop();
                 linesArray.pop();   // Remove the last element
             }
-
             // Join the remaining lines back into a single string
-            const resultString: string = linesArray.join('\n');
+            const resultString: string = "/*\n"+linesArray.join('\n') + "\n*/";
             console.log('Result:', resultString);
             comments.push({ line: key -1, comment:  resultString });
         }
