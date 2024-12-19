@@ -189,7 +189,6 @@ class FirestoreHelper:
                 "totalMessages": 1
             }
             result = self.create("chat", "history", new_conversation)
-            print(f"Created new conversation with ID: {result['id']}")
             return result
         except Exception as e:
             print(f"Failed to create new conversation: {e}")
@@ -215,6 +214,27 @@ class FirestoreHelper:
             return True
         except Exception as e:
             print(f"Failed to delete pinned message: {e}")
+            return False
+
+    def updateChatDescription(self, chat_id, description):
+        """Updates the description of a chat document in Firestore.
+
+        Args:
+            chat_id (str): The ID of the chat to update
+            description (str): The new description to set
+
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        try:
+            chat_ref = self.collection.document("chat").collection("history").document(chat_id)
+            chat_ref.update({
+                "description": description,
+                "lastChanged": datetime.datetime.now().isoformat()
+            })
+            return True
+        except Exception as e:
+            print(f"Failed to update chat description: {e}")
             return False
 
 # Initialize Firestore helper
