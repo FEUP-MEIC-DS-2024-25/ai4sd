@@ -1,21 +1,20 @@
-"use client";
-
-// Assets
 import styles from "@/app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.css';
-import "@/app/globals.css";
 
-// Components
-import NavBar from "@/app/components/navbar";
-import UploadFile from "@/app/assistants/wardenAI/components/uploadFile";
-import Footer from "@/app/components/footer"
+import '@/app/globals.css';
 
-export default function WardenAI() {
+import AssistantPicker from "@/app/components/assistantPicker";
+import Warden from "./components/warden";
+
+export default function Interactor() {
+    //preparing mock data
+    const assistName = "Warden AI";
+    const assistType = "refact"; // change according to the assistant type (req, arch, refact, verif)
     return (
-        <main className={styles.main} style={{ color: "none" }}>
-            <NavBar />
-            <UploadFile />
-            <Footer />
-        </main>
-    );
+        <div className={styles.interactorLayout + " bg-light"}>
+            <AssistantPicker />
+            <Warden />
+        </div>
+    )
 }
+

@@ -1,10 +1,8 @@
-version: '3.8'
-
 services:
   featurecraft:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: dev.Dockerfile
     image: t03_g01_featurecraft:latest
     ports:
       - "8080:8080" # Backend
@@ -13,10 +11,8 @@ services:
     environment:
       - NAME=FeatureCraft
       - PYTHONUNBUFFERED=1
-      - C3T1_LLM_API_KEY=${C3T1_LLM_API_KEY}
-      - C3T1_CORS_URL=${C3T1_CORS_URL}
-      - C3T1_DB_COLLECTION=${C3T1_DB_COLLECTION}
-      - GOOGLE_APPLICATION_CREDENTIALS=/app/firebase.json
+      - superhero-03-01-secret=${superhero_03_01_secret}
+      - GOOGLE_APPLICATION_CREDENTIALS=/app/superhero_03_01.json
   swagger:
     image: swaggerapi/swagger-ui
     ports:
