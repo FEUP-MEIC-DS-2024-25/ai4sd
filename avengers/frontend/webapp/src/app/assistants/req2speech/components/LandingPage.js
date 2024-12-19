@@ -46,13 +46,8 @@ export default function LandingPage({ chat }) {
     const handleSubmit = async () => {
 
         try {
-            const backendUrl = import.meta.env.VITE_BACKEND_URL || null; // Fallback URL
-
-            if(backendUrl ===null){
-                console.warn("Backend URL is not defined. Please check your .env file.");
-                return; 
-            }
             
+            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
             const response = await fetch(`${backendUrl}/api/prompt`, {
                 method: "POST",
                 headers: {

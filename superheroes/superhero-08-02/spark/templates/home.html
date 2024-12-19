@@ -1,0 +1,81 @@
+
+{% extends "base.html" %}
+
+{% block title %}
+    Home Page
+{% endblock %}
+
+{% block content %}
+<!--     <h1>Welcome to SPARK!</h1> -->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPARK</title>
+
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
+
+</head>
+<body>
+    <!-- <h1>Welcome to SPARK!</h1> -->
+
+    {% include 'header.html' %}
+
+    {% if user.is_authenticated %}
+        <p>Hello, {{ user.username }}! You are logged in.</p>
+        <p>View your <a href="{% url 'profile' username=user.username %}">profile</a>.</p>
+
+        <p> Your SPARK projects:</p>
+        <ul>
+            {% for project in spark_projects %}
+                <li><a href="{% url 'spark_project_view' project.id %}">{{ project.name }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'create_spark_project' %}">Create a new SPARK project</a>
+
+        <form method="POST" action="{% url 'logout' %}">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+        
+    {% else %}
+        <p>You are not logged in.</p>
+        <p><a href="{% url 'login' %}">Log in</a> or <a href="{% url 'signup' %}">Sign up</a> to create an account.</p>
+
+    {% endif %}
+
+    <!--
+    <div class="settings-container">
+        <h2 class="titles">Setting Connections</h2>
+        <div class="buttons-container">
+            <div class="token-section">
+                <form action="{% url 'add_github_username' %}" method="POST">
+                    {% csrf_token %}
+                    <button class="primary-button">Add Github username</button>
+                    <input type="text" name="github_username" placeholder="Add username...">
+                </form>
+            </div>
+            <div class="token-section">
+                <button class="primary-button">Add Miro Token</button>
+                <input type="text" placeholder="Add key...">
+            </div>
+        </div>
+    
+        <h2 class="titles">Sprint Generation</h2>
+        <div class="buttons-container">
+            <button class="primary-button">Load Github Board</button>
+            <button class="primary-button">Generate Sprints</button>
+        </div>
+        
+    </div>
+    -->
+
+    {% include 'footer.html' %}
+</body>
+</html>
+{% endblock %}
+
