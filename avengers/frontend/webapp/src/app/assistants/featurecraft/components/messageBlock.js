@@ -85,42 +85,50 @@ export default function MessageBlock({ messages, totalMessages, description, con
     return (
         <div className="p-4 shadow-sm flex-grow h-full">
             <ErrorNotification error={error} setError={setError} />
-            <div className="flex items-center">
-                {isLoading ? (
-                    <div className="ml-2 mr-2">
-                        <Loading height="h-8 w-8" />
-                    </div>
-                ) : (
-                    conversationId && (
+            <div className="p-2 mb-4" style={{ boxShadow: '0 4px 2px -2px rgba(0, 0, 0, 0.1)' }}>
+                <div className="flex items-center">
+                    {isLoading ? (
                         <div className="ml-2 mr-2">
-                            <DeleteButton onClick={handleDeleteChat} color="text-gray-500" size="h-8 w-8" />
+                            <Loading height="h-8 w-8" />
                         </div>
-                    )
-                )}
-                <div className="">
-                    <h2 className="text-xl font-bold">Your Conversation</h2>
-                </div>
-
-            </div>
-            <div className="text-sm text-gray-600 mb-4">
-                <div className="flex flex-wrap items-center gap-2">
-                    <p className="inline">{displayedDescription}</p>
-                    {description.split(' ').length > 20 && (
-                        <button
-                            onClick={() => setShowFullDescription(!showFullDescription)}
-                            className="inline-flex text-blue-500 hover:text-blue-700 text-sm"
-                        >
-                            {showFullDescription ? 'Show Less' : 'Show More'}
-                        </button>
+                    ) : (
+                        conversationId && (
+                            <div className="ml-2 mr-2">
+                                <DeleteButton onClick={handleDeleteChat} color="text-gray-500" size="h-8 w-8" />
+                            </div>
+                        )
                     )}
+                    <div className="">
+                        <h2 className="text-xl font-bold">Your Conversation</h2>
+                    </div>
+
+                </div>
+                <div className="text-sm text-gray-600">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <p className="inline">{displayedDescription}</p>
+                        {description.split(' ').length > 20 && (
+                            <button
+                                onClick={() => setShowFullDescription(!showFullDescription)}
+                                className="inline-flex text-blue-500 hover:text-blue-700 text-sm"
+                            >
+                                {showFullDescription ? 'Show Less' : 'Show More'}
+                            </button>
+                        )}
+                    </div>
                 </div>
             </div>
             <div className="overflow-y-auto max-h-[63vh]">
                 <ul className="space-y-2">
                     {messages.filter(Boolean).map((message, index) => (
-                        <li key={index} className="p-2 bg-white rounded-md shadow-sm">
+                        <li 
+                            key={index} 
+                            className={`p-2 rounded-xl shadow-sm w-[90%] ${message.authorName === 'You' ? 'ml-auto bg-blue-50' : 'mr-auto bg-green-50'}`}
+                        >
                             <p className="font-semibold p-2">{message.authorName}</p>
-                            <div className="message-selectable hover:bg-gray-50 p-2 rounded-md" onMouseUp={handleMouseUp}>
+                            <div 
+                                className={`message-selectable p-2 rounded-xl ${message.authorName === 'You' ? 'hover:bg-blue-100' : 'hover:bg-green-100'}`} 
+                                onMouseUp={handleMouseUp}
+                            >
                                 <ReactMarkdown>{message.body}</ReactMarkdown>
                             </div>
                             <p className="text-xs text-gray-500 p-2">{new Date(message.timestamp).toLocaleString()}</p>
