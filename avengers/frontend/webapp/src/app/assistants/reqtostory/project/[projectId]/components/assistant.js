@@ -157,9 +157,7 @@ const Assistant = () => {
     const handleSubmit = async (projId, reqVersion, newContent, submittedContent = null) => {
         try {
             setIsLoading(true);
-            let content = submittedContent || editContent;
-            //let content = editReq;
-
+            let content = editContent;
 
             if (!newContent) {
                 content = submittedContent || requirements.content;
@@ -369,10 +367,6 @@ const Assistant = () => {
                             setEditingStory={setEditingStory}
                             tempContent={tempContent}
                             setTempContent={setTempContent}
-                            queryAdders={handleFeedback}
-                            projectId = {projectId}
-                            reqVersion = {requirements.version}
-                            userStoriesVersion = {userStoriesVersion}
                         />
                     </div>
                     <div className="versionSelect">
