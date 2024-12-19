@@ -40,4 +40,4 @@ RUN npm install
 EXPOSE 8080
 
 # Comando padrão para iniciar o container
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
