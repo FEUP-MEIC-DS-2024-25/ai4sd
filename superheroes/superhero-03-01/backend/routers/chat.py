@@ -292,11 +292,11 @@ async def export_pinned_messages(id: str):
             text_content += f"{msg['message']}\n"
 
         # Ask gemini to format the requirements
-        formatted_requirements = createRequirementsGemini(text_content)
+        # formatted_requirements = createRequirementsGemini(text_content)
 
         # Return as text file
         return PlainTextResponse(
-            content=formatted_requirements,
+            content= text_content,
             headers={
                 "Content-Disposition": f"attachment; filename=featurecraft_requirements_{id}.txt"
             }
