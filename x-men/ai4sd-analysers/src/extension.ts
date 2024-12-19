@@ -20,6 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
 			{ label: "ArchiDetect", description: "Executes ArchiDetect superhero" },
 			{ label: "Warden AI", description: "Executes Warden AI superhero" },
 			{ label: "SARA", description: "Executes SARA superhero" },
+			{ label: "Archy", description: "Executes Archy superhero" },
 			{ label: "Template", description: "Executes Template superhero" },
 		  ];
 	  
@@ -31,6 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
 	  
 		  // Import and execute different superheros based on selection
 		  if (selectedOption) {
+			vscode.commands.executeCommand('setContext', 'archy.visible', false);
 			switch (selectedOption.label) {
 			  case "ArchiDetect":
 				// Import and execute ArchiDetect
@@ -42,6 +44,11 @@ export function activate(context: vscode.ExtensionContext) {
 			  case "SARA":
 				// Import and execute SARA
 				(await import('./superheroes/SARA/SARA.js')).execute(context);
+				break;
+			  case "Archy":
+				// Import and execute Archy
+				
+				(await import('./superheroes/Archy/Archy.js')).execute(context);
 				break;
 			  case "Template":
 				// Import and execute Template
