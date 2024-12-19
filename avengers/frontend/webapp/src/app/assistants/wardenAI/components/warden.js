@@ -185,7 +185,7 @@ const Warden = () => {
     <div className="bg-light container-fluid min-vh-100 text-dark" style={{ 'overflow-x': 'hidden' }}>
       <div className="d-flex justify-content-center align-items-center">
         <h1 className='text-center text-primary display-4 p-4' style={{ minHeight: '20vh' }}>
-          WardenAI
+          <a href="/assistants/wardenAI">WardenAI</a>
         </h1>
         <br />
       </div>
