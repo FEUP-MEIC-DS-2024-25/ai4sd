@@ -297,7 +297,7 @@ export const Chatbot = () => {
               size="sm"
               className="ml-auto gap-1.5"
             >
-              Send Message
+              Send Code
               <CornerDownLeft className="size-3.5" />
             </Button>
           </div>

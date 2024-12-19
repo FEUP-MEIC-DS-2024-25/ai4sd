@@ -58,7 +58,8 @@ export const UserMessage = ({ message, isLoading = false, index }) => {
             "GG"
           </AvatarFallback>
         </Avatar>
-        <ChatBubbleMessage isLoading={isLoading}>
+        <ChatBubbleMessage isLoading={isLoading}
+        className='p-3 font-normal text-sm bg-gray-100 text-gray-800'>
           {renderMessageContent()}
         </ChatBubbleMessage>
       </ChatBubble>
