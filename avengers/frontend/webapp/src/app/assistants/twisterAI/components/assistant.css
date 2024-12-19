@@ -4,7 +4,7 @@
     background-color: #302c54;
     color: white;
     height: 100%; 
-    width: 80%;
+    width: 100%;
     display: flex; 
     flex-direction: column; 
 }
@@ -70,6 +70,10 @@ textarea {
     text-indent: 20px;
 }   
 
+textarea::placeholder {
+    font-size: 30px;
+}
+
 input.upload_btn {
     display: block;
     margin-top: 20px; /* Aumentado de 15px */
@@ -126,6 +130,11 @@ main .upload_section {
     justify-content: space-between;
     align-items: center;
     width: 100%;
+}
+
+main .upload_section input {
+    width: 100%;
+    background-color: #242642;
 }
 
 main .upload_section div {

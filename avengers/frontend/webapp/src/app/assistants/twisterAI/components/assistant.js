@@ -59,26 +59,22 @@ export default function Assistant() {
       <main>
         <section className="upload_section">
           <div>
-            <label className="upload" htmlFor="code_file">
+            <label className="upload">
               Upload code file<i className="fa-solid fa-paperclip"></i>
             </label>
             <input
-              id="code_file"
               className="upload_btn"
               type="file"
-              style={{ display: 'none' }}
               onChange={(e) => handleFileChange(e, 'code')}
             />
           </div>
           <div>
-            <label className="upload" htmlFor="tests_file">
+            <label className="upload">
               Upload tests file<i className="fa-solid fa-paperclip"></i>
             </label>
             <input
-              id="tests_file"
               className="upload_btn"
               type="file"
-              style={{ display: 'none' }}
               onChange={(e) => handleFileChange(e, 'test')}
             />
           </div>
@@ -87,6 +83,7 @@ export default function Assistant() {
         <section>
           <label htmlFor="context">Give me some context about your code:</label>
           <textarea
+            style={{ fontSize: '30px', padding: '20px' }}
             id="context"
             placeholder="Insert context here."
             value={context}
