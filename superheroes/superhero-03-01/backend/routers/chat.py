@@ -1,3 +1,4 @@
+from typing import List
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
@@ -54,9 +55,9 @@ async def send_message(message: Message):
         raise HTTPException(status_code=400, detail=f"Bad request: {e.message}")
     
     try:
-        LLM_API_KEY = os.getenv("C3T1_LLM_API_KEY")
+        LLM_API_KEY = os.getenv("superhero-03-01-secret")
         if not LLM_API_KEY:
-            raise ValueError("C3T1_LLM_API_KEY not found in environment variables")
+            raise ValueError("superhero-03-01-secret not found in environment variables")
 
         success, chat = db_helper.getChat(message.currentConversation)
 
@@ -122,7 +123,6 @@ async def send_message(message: Message):
 async def get_pin_message_by_id(id: str):
     try:
         exists, chat = db_helper.getPinnedMessages(id)
-        print(chat,"HERE")
         if not exists:
             raise HTTPException(status_code=404, detail="Chat not found")
 
@@ -135,13 +135,16 @@ class PinMessageRequest(BaseModel):
     message: str
 
 @router.post("/pin/{id}")
-async def pin_message_by_id(id: str, body: PinMessageRequest):
+async def pin_messages_by_id(id: str, messages: List[str]):
     try:
-        # Use the message from the request body
-        chat = db_helper.addPinnedToChat(id, body.message)
-        if not chat:
-            raise HTTPException(status_code=404, detail="Chat not found")
-        return JSONResponse(content=chat['pinnedMessages'][-1], status_code=200)
+        pinned_messages = []
+        for message in messages:
+            chat = db_helper.addPinnedToChat(id, message)
+            if not chat:
+                raise HTTPException(status_code=404, detail="Chat not found")
+            pinned_messages.append(chat['pinnedMessages'][-1])
+
+        return JSONResponse(content=pinned_messages, status_code=200)
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")

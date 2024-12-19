@@ -61,6 +61,7 @@ def process():
         output_language = request.form.get('outputLanguage')
         additional_info = request.form.get('additionalInfo')
         files_data = request.files.getlist('files')
+        prompt_type = request.form.get('promptType')
 
         # prompt_urls = []
         # for file in files_data:
@@ -69,7 +70,7 @@ def process():
         
         files_text = files.process_files(files_data)
 
-        prompt = prompting.generate(files_text, additional_info, output_language)
+        prompt = prompting.generate(files_text, additional_info, output_language,prompt_type)
         response = model.generate_content(prompt)
 
         if output_type == 'pdf':
@@ -128,4 +129,4 @@ def reset():
         return jsonify({"error": str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(host="0.0.0.0", port=5001)
+    app.run(host="0.0.0.0", port=8080)
