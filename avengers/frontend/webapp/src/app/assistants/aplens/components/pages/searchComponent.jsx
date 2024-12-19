@@ -30,6 +30,12 @@ const SearchComponent = ({ activeView, setActiveView, clientId }) => {
         }
       );
       const data = await response.json();
+      
+      if (!response.ok) {
+        console.log("THE RESPONSE FROM BACKEND WAS NOT OK")
+        throw new Error(response.statusText);
+      }
+
       console.log("THE DATA I HAVE RECEIVED IS : ", response)
       setReports(data.reports || []); 
     } catch (error) {
@@ -85,7 +91,7 @@ const SearchComponent = ({ activeView, setActiveView, clientId }) => {
         ) : (
           reports.map((report, index) => (
             <button
-              key={report.id ? report.id : `report-${index}`}
+              key={report.id ? report.id : `ISreport-${index}`}
               className={`flex flex-col items-start px-4 py-4 w-full h-auto border-1.5 border-zinc-800 rounded-sm text-ellipsis overflow-hidden whitespace-nowrap transition duration-300 ease-in-out ${
                 selectedReportId === report.id
                   ? "bg-zinc-800 text-white"
