@@ -64,8 +64,11 @@ const secretpath = './service_account_key.txt';
 try {
     // Read the file synchronously
     const secret = fs.readFileSync(secretpath, 'utf8');
+    console.log(`Secret read from file: ${secret}`);
     const decodedString = atob(secret);
+    console.log(`Decoded secret: ${decodedString}`);
     const jsonObject = JSON.parse(decodedString);
+    console.log(`Secret JSON object:`, jsonObject);
 
     const filePath = './service_account_key.json';
 
@@ -89,6 +92,6 @@ try {
 }
 
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
+//await uploadRepo(octokit, config.org, "T07_G05"); // Upload all repositories in the organization
 
 
