@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Filters from "./filters";
 import InputSubmission from "./inputSubmission";
 import Loading from "./loading";
@@ -9,7 +9,7 @@ import "tailwindcss/tailwind.css";
 import "bootstrap/dist/css/bootstrap.css";
 import { Button } from "@/app/components/ui/button";
 
-export default function Application() {
+export default function Application({setHistoryData}) {
     const [selectedFiles, setSelectedFiles] = useState([]);
     const [loading, setLoading] = useState(false);
     const [downloadUrl, setDownloadUrl] = useState(null);
@@ -18,6 +18,7 @@ export default function Application() {
     const [feedbackInfo, setFeedbackInfo] = useState("");
     const [outputType, setOutputType] = useState("pdf");
     const [outputLanguage, setOutputLanguage] = useState("english");
+
 
     const handleFileChange = (event) => {
         const files = Array.from(event.target.files);
@@ -76,6 +77,28 @@ export default function Application() {
             console.error("Error:", error.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchHistory();
+    }, []);
+
+    const fetchHistory = async () => {
+        try {
+            const response = await fetch("http://localhost:5001/api/history");
+            if (!response.ok) {
+                throw new Error(`Error fetching history: ${response.statusText}`);
+            }
+            const data = await response.json();
+            const formattedHistory = data.history.map(entry => ({
+                text: entry.title || entry.file_name || "Untitled",
+                link: entry.response_file_url || "#",
+            }));
+            setHistoryData(formattedHistory);
+        } catch (error) {
+            console.error("Error fetching history:", error);
+            setHistoryData([]);
         }
     };
 
