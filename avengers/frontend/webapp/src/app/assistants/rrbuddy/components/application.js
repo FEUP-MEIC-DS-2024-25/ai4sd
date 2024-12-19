@@ -49,8 +49,7 @@ export default function Application({setHistoryData}) {
         formData.append("additionalInfo", additionalInfo);
         formData.append("outputType", outputType);
         formData.append("outputLanguage", outputLanguage);
-        formData.append("promptType", promptType);
-        formData.append("filters", JSON.stringify(filters));
+        formData.append("promptType", promptType)
 
         setLoading(true);
         try {
