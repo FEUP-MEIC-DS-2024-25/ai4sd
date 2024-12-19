@@ -107,11 +107,14 @@ steps:
       - "-c"
       - |
 
+          echo "Installing jq..."
+          apt-get update && apt-get install -y jq
+
           echo "Fetching PR_ID from file..."
           echo "PR_ID: $(cat /workspace/pr_id.txt)"
 
           echo "Fetching changed superhero directories from the pull request..."
-          
+
           changed_dirs=$(curl -s "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls/367/files" | \
            jq -r '.[].filename' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
 
