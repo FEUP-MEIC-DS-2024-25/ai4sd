@@ -96,7 +96,7 @@ export default function UnitTestAssistant() {
               value={functionCode}
               onChange={(e) => setFunctionCode(e.target.value)}
               placeholder="Enter your code here..."
-              className="w-3/4 p-2 sm:p-4 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-32 sm:h-auto resize-y"
+              className="w-3/4 p-2 sm:p-4 text-black border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 h-32 sm:h-auto resize-y"
             />
             <div
               className={`w-1/4 p-4 border-dashed text-gray-600 border-2 border-gray-400 rounded-lg text-center cursor-pointer bg-white relative ${fileName ? 'border-green-500' : ''}`}
