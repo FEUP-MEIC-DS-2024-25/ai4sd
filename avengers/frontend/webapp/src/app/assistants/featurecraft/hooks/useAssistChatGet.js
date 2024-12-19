@@ -21,7 +21,7 @@ export default function useAssistChatGet(
         
         async function fetchData() {
             try {
-                const response = await axios.get(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/${conversationId}`);
+                const response = await axios.get(`http://localhost:8080/chat/${conversationId}`);
                 return response.data;
             } catch (error) {
                 setError("Error connecting to the backend.\n" + error);
