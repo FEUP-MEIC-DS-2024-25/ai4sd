@@ -16,7 +16,8 @@ export function activate(context: vscode.ExtensionContext) {
 	const options: AI4SDMenuOption[] = [
 		{ label: "ArchiDetect", description: "Executes ArchiDetect superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/ArchiDetect/ArchiDetect.js')).execute(context)},
 		{ label: "Warden AI", description: "Executes Warden AI superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/warden_ai/warden_ai.js')).execute()},
-		{ label: "SARA", description: "Executes SARA superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/SARA/SARA.js')).execute(context)}
+		{ label: "SARA", description: "Executes SARA superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/SARA/SARA.js')).execute(context)},
+		{ label: "Archy", description: "Executes Archy superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/Archy/Archy.js')).execute(context)}
 	  ];
 
 	// The command has been defined in the package.json file
@@ -24,6 +25,14 @@ export function activate(context: vscode.ExtensionContext) {
 	// The commandId parameter must match the command field in package.json
 	const disposable = vscode.commands.registerCommand('ai4sd-analysers.call', async () => {
 		// The code you place here will be executed every time your command is executed
+		
+		const options: vscode.QuickPickItem[] = [
+			{ label: "ArchiDetect", description: "Executes ArchiDetect superhero" },
+			{ label: "Warden AI", description: "Executes Warden AI superhero" },
+			{ label: "SARA", description: "Executes SARA superhero" },
+			{ label: "Archy", description: "Executes Archy superhero" },
+			{ label: "Template", description: "Executes Template superhero" },
+		  ];
 	  
 		  // Show dropdown and await user's choice
 		  const selectedOption = await vscode.window.showQuickPick(options, {

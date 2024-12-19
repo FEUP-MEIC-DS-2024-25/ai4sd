@@ -133,11 +133,10 @@ export const createResponse = async (promptId, aiResponse) => {
     }
 };
 
-export const updateChat = async (chatId, promptId, responseId) => {
+export const updateChat = async (chatId, promptId) => {
     const response = await axios.post(`${BASE_URL}/update_chat`, {
         chat_id: chatId,
-        prompt_id: promptId,
-        response_id: responseId
+        prompt_id: promptId
     });
     try {
         if (response.status === 200) {

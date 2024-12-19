@@ -68,24 +68,11 @@ export const Chatbot = ({ chat, setChat }) => {
         messages: [...chat.messages, newMessage]
       }
       setChat(updatedChat)
-
-      // Call createPrompt API
-      const prompt = await createPrompt(chat.id, input);
-      const promptId = prompt.id;
+      setInput("")
 
       // API call to get AI response
       const gherkinResponse = await convertRequirementToText(input);
       const aiResponseText = gherkinResponse.gherkin;
-
-      // Call createResponse API
-      const response = await createResponse(promptId, aiResponseText);
-      const responseId = response.id;
-
-      // Call updatePrompt with prompt and AI response
-      await updatePrompt(promptId, responseId);
-
-      // Call updateChat with prompt and AI response
-      await updateChat(chat.id, promptId, responseId);
 
       const aiResponse = {
         content: aiResponseText,
@@ -99,8 +86,21 @@ export const Chatbot = ({ chat, setChat }) => {
 
       setChat(chatWithBotResponse)
 
+      /* Update DB with user input and AI response */
 
-      setInput("")
+      // Call createPrompt API
+      const prompt = await createPrompt(chat.id, input);
+      const promptId = prompt.id;
+
+      // Call createResponse API
+      const response = await createResponse(promptId, aiResponseText);
+      const responseId = response.id;
+
+      // Call updatePrompt with prompt and AI response
+      await updatePrompt(promptId, responseId);
+
+      // Call updateChat with prompt
+      await updateChat(chat.id, promptId);
     }
   }
 
