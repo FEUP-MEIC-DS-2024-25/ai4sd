@@ -107,21 +107,17 @@ steps:
       - "-c"
       - |
 
-          echo "Installing GitHub CLI..."
-              
-          apt-get update && apt-get install -y software-properties-common apt-transport-https curl
-
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
-
-          apt-get update && apt-get install -y gh
-          gh --version && echo "GitHub CLI installed successfully."
+          echo "Installing jq..."
+          apt-get update && apt-get install -y jq
 
           echo "Fetching PR_ID from file..."
           echo "PR_ID: $(cat /workspace/pr_id.txt)"
 
           echo "Fetching changed superhero directories from the pull request..."
-          changed_dirs=$(gh pr view $(cat /workspace/pr_id.txt) --json files --jq '.files[].path' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+
+          changed_dirs=$(curl -s "https://api.github.com/repos/FEUP-MEIC-DS-2024-25/ai4sd/pulls/367/files" | \
+           jq -r '.[].filename' | awk -F/ '/^superheroes/ {print $1"/"$2}' | sort | uniq)
+
           
           echo "Changed superhero directories: $changed_dirs"
 
