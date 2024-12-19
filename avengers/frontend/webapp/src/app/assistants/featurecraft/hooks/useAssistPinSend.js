@@ -3,29 +3,43 @@ import axios from "axios";
 export default function useAssistPinSend() {
 
     const handleSendPin = async (pinnedMessage, conversationId) => {
-        if (pinnedMessage.trim()) {
-            try {
-                const newPinnedMessage = {
-                    message: pinnedMessage
-                };
-                const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, newPinnedMessage);
-                return response;
-            } catch (error) {
-                //Return the error
-                return error;
-            }
+        try {
+            const response = await axios.post(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/${conversationId}`, pinnedMessage);
+            return response;
+        } catch (error) {
+            //Return the error
+            return error;
         }
     };
 
     const updatePinnedMessages = async (pinnedMessages, setPinnedMessages, responseData) => {
-        // Extract message from response data
-        const newMessage = {
-            message: responseData.message
-        };
+        // Extract all messages from responseData
+        const newMessages = responseData.map(item => ({
+            message: item.message,
+            id: item.id
+        }));
 
-        // Add new message to existing messages array
-        setPinnedMessages(prevMessages => [...prevMessages, newMessage]);
+        if (pinnedMessages === undefined) {
+            setPinnedMessages(newMessages);
+            return;
+        }
+        // Add new messages to the existing messages array
+        setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
     }
 
-    return { handleSendPin, updatePinnedMessages };
+    const updatePinnedMessagesText = async (pinnedMessages, setPinnedMessages, data) => {
+
+        const newMessages = data.map(item => ({
+            message: item
+        }));
+
+        if (pinnedMessages === undefined) {
+            setPinnedMessages(newMessages);
+            return;
+        }
+        // Add new messages to the existing messages array
+        setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
+    }
+
+    return { handleSendPin, updatePinnedMessages, updatePinnedMessagesText };
 }

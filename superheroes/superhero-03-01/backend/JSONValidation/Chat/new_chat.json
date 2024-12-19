@@ -14,7 +14,8 @@
           "type": "string",
           "format": "date-time"
         },
-        "isDeleted": {"type": "boolean"}
+        "isDeleted": {"type": "boolean"},
+        "pinnedMessages" : {"type": "array", "items": {"type": "string"}}
       },
       "required": ["authorName", "body", "timestamp", "isDeleted"],
       "additionalProperties": false
