@@ -28,7 +28,7 @@ async function warden(input: string)
 {
     const content = { "content": input };
 
-    fetch("http://localhost:8000/online",
+    fetch("https://superhero-05-01-150699885662.europe-west1.run.app/online",
     {
         method: "post",
         headers:
