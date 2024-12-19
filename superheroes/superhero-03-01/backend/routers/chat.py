@@ -233,6 +233,50 @@ async def delete_pinned_message_by_id(body: DeletePinnedMessageRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
+def createRequirementsGemini(text_content):
+    try:
+        context = (
+            "Please format and organize the following software requirements into the following structure.\n"
+            "Your answer should contain only the formatted requirements in simple text.\n"
+            "A. Functional Requirements\n"
+            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |"
+            "| -------- | ---------- | ------------------- | ------------------- |"
+            "| FR1 | ... | ... | ... |\n"
+            "B. Non-Functional Requirements\n"
+            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |"
+            "| -------- | ---------- | ------------------- | ------------------- |"
+            "| NFR1 | ... | ... | ... |\n"
+            f"Requirements to format:\n{text_content}"
+        )
+
+        headers = {
+            "Content-Type": "application/json",
+        }
+        gemini_payload = {
+            "contents": [
+                {
+                    "parts": [
+                        {
+                            "text": context
+                        }
+                    ]
+                }
+            ]
+        }
+
+        gemini_api_url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-8b:generateContent?key={LLM_API_KEY}"
+        
+        gemini_response = requests.post(gemini_api_url, json=gemini_payload, headers=headers)
+        if gemini_response.status_code != 200:
+            return text_content  # Return original content if API fails
+            
+        formatted_text = gemini_response.json().get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", text_content)
+        return formatted_text
+
+    except Exception as e:
+        print(f"Error formatting requirements: {str(e)}")
+        return text_content  # Return original content if processing fails
+
 @router.get("/pin/{id}/export")
 async def export_pinned_messages(id: str):
     try:
@@ -246,9 +290,12 @@ async def export_pinned_messages(id: str):
         for idx, msg in enumerate(pinned_messages, 1):
             text_content += f"{msg['message']}\n"
 
+        # Ask gemini to format the requirements
+        formatted_requirements = createRequirementsGemini(text_content)
+
         # Return as text file
         return PlainTextResponse(
-            content=text_content,
+            content=formatted_requirements,
             headers={
                 "Content-Disposition": f"attachment; filename=featurecraft_requirements_{id}.txt"
             }
