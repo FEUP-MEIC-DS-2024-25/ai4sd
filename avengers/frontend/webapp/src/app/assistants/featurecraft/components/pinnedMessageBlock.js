@@ -2,14 +2,21 @@ import { useState } from "react";
 import DeleteButton from "@/app/assistants/featurecraft/components/ui/deleteButton";
 import deletePinnedMessage from "@/app/assistants/featurecraft/hooks/useAssistPinDelete";
 import exportPinnedMessages from "@/app/assistants/featurecraft/hooks/useAssistPinExport";
+import Loading from "@/app/assistants/featurecraft/components/ui/loading";
 
 export default function PinnedMessagesBlock({ pinnedMessages, conversationId, setPinnedMessages, setError }) {
     const [isHidden, setIsHidden] = useState(true);
+    const [isExporting, setIsExporting] = useState(false);
 
     const toggleView = () => {
         setIsHidden(!isHidden);
     };
 
+    const handleExport = async () => {
+        setIsExporting(true);
+        await exportPinnedMessages(conversationId, setError);
+        setIsExporting(false);
+    };
 
     if (isHidden) {
         return (
@@ -53,14 +60,20 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                 <div className="flex justify-between items-center mb-2">
                     <h2 className="text-xl font-bold w-80">Pinned Messages</h2>
                     <div className="flex gap-2">
-                        <button onClick={exportPinnedMessages} className="text-blue-500">
-                            <svg className="h-12 w-12 text-gray-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                                <path stroke="none" d="M0 0h24v24H0z"/>
-                                <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/>
-                                <path d="M7 11l5 5l5 -5"/>
-                                <path d="M12 4l0 12"/>
-                            </svg>
-                        </button>
+                        {isExporting ? (
+                            <div className="h-12 w-12 flex justify-center items-center">
+                                <Loading />
+                            </div>
+                        ) : (
+                            <button onClick={handleExport} className="text-blue-500">
+                                <svg className="h-12 w-12 text-gray-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z"/>
+                                    <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2 -2v-2"/>
+                                    <path d="M7 11l5 5l5 -5"/>
+                                    <path d="M12 4l0 12"/>
+                                </svg>
+                            </button>
+                        )}
                         <button onClick={toggleView} className="text-blue-500">
                             <svg className="h-12 w-12 text-gray-500" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
                                 <path stroke="none" d="M0 0h24v24H0z" />
