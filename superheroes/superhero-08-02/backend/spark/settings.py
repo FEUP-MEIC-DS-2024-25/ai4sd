@@ -24,7 +24,7 @@ ASGI_APPLICATION = 'spark.asgi.application'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 load_dotenv()
-SECRET_KEY = os.getenv('SECRET_KEY')
+SECRET_KEY = 'm4a2p+0g)!suj_86%nys-e!=lb6c=mo$upk9x)10@k34&54i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
@@ -54,7 +54,7 @@ else: # Running in production
     ALLOWED_HOSTS = [
         'localhost',
         '127.0.0.1',
-        'https://superhero-08-02-150699885662.europe-west1.run.app/',
+        'superhero-08-02-150699885662.europe-west1.run.app/',
     ]
 
 
