@@ -61,7 +61,6 @@ class FirestoreRef(BaseModel):
         return db.document(self.id) 
 
 class Prompt(BaseModel):
-    id: str  
     created_at: datetime
     response: Optional[FirestoreRef]  
     user_input: str
@@ -156,7 +155,6 @@ async def create_prompt(request: CreatePromptRequest):
     Endpoint to create a new prompt in Firestore.
     """
     prompt = Prompt(
-        id=request.chat_id,
         created_at=datetime.now(),
         response=None,
         user_input=request.user_input
@@ -317,12 +315,11 @@ UPDATE ENDPOINTS
 class UpdateChatRequest(BaseModel):
     chat_id: str
     prompt_id: str
-    response_id: str
 
 @app.post("/update_chat")
 async def update_chat(request: UpdateChatRequest):
     """
-    Endpoint to update a chat in Firestore by adding a new prompt and response.
+    Endpoint to update a chat in Firestore by adding a new prompt.
     """
     try:
         # Get the chat document reference
@@ -333,17 +330,15 @@ async def update_chat(request: UpdateChatRequest):
         if not chat_doc.exists:
             raise HTTPException(status_code=404, detail="Chat not found")
 
-        # Get the prompt and response references
+        # Get the prompt reference
         prompt_ref = db.collection("superhero-01-03").document("development").collection("prompts").document(request.prompt_id)
-        response_ref = db.collection("superhero-01-03").document("development").collection("ai_responses").document(request.response_id)
 
-        # Check if the prompt and response exist
+        # Check if the prompt exist
         if not prompt_ref.get().exists:
             raise HTTPException(status_code=404, detail="Prompt not found")
-        if not response_ref.get().exists:
-            raise HTTPException(status_code=404, detail="Response not found")
 
-        # Add the prompt and response to the chat
+
+        # Add the prompt to the chat
         chat_data = chat_doc.to_dict()
         if "prompts" not in chat_data:
             chat_data["prompts"] = []
