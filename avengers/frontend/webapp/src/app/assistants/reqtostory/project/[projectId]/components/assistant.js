@@ -16,8 +16,8 @@ const Assistant = () => {
     const [userStories, setUserStories] = useState([]);
     const [feedbackQueries, setFeedbackQueries] = useState([]);
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-    const [userStoryIndex, setUserStoryIndex] = useState(0);
+    const [reqVersion, setReqVersion] = useState(0);
+    const [userStoriesVersion, setUserStoriesVersion] = useState(0);
     const numberVersion = useRef(0);
 
     const { projectId } = useParams();
@@ -27,7 +27,7 @@ const Assistant = () => {
     const version = null;
 
     const [isEditing, setIsEditing] = useState(false);
-    const [editContent, setEditContent] = useState(requirements.content);
+    const [editReq, setEditReq] = useState(requirements.content);
 
     const [editingStory, setEditingStory] = useState(null);
     const [tempContent, setTempContent] = useState("");
@@ -41,31 +41,32 @@ const Assistant = () => {
         } else {
             setVersions(version);
         }
-        setCurrentIndex(0);
-        setUserStoryIndex(0);
+        setReqVersion(0);
+        setUserStoriesVersion(0);
     }, [projectId, version]);
 
     useEffect(() => {
         if (versions.length === 0) return;
         setRequirements({
-            content: versions[currentIndex].content,
-            version: versions[currentIndex].version,
+            content: versions[reqVersion].content,
+            version: versions[reqVersion].version,
         });
-        numberVersion.current = versions[currentIndex].user_stories.length;
-        setEditContent(versions[currentIndex].content);
-    }, [currentIndex, versions]);
+        if (!versions[reqVersion].user_stories) return;
+        numberVersion.current = versions[reqVersion].user_stories.length;
+        setEditReq(versions[reqVersion].content);
+    }, [reqVersion, versions]);
 
     useEffect(() => {
         if (
             versions.length === 0 ||
-            !versions[currentIndex] ||
-            !versions[currentIndex].user_stories
+            !versions[reqVersion] ||
+            !versions[reqVersion].user_stories
         )
             return;
         const userStories =
-            versions[currentIndex].user_stories[userStoryIndex].user_stories;
-        setUserStories(JSON.parse(userStories));
-    }, [currentIndex, versions, userStoryIndex]);
+            versions[reqVersion].user_stories[userStoriesVersion].user_stories;
+        setUserStories(userStories);
+    }, [reqVersion, versions, userStoriesVersion]);
 
     const fetchProjectContent = async (projectId) => {
         try {
@@ -128,28 +129,28 @@ const Assistant = () => {
     };
 
     const goBack = () => {
-        if (currentIndex > 0) {
-            setCurrentIndex(currentIndex - 1);
-            setUserStoryIndex(0);
+        if (reqVersion > 0) {
+            setReqVersion(reqVersion - 1);
+            setUserStoriesVersion(0);
         }
     };
 
     const goForward = () => {
-        if (currentIndex < versions.length - 1) {
-            setCurrentIndex(currentIndex + 1);
-            setUserStoryIndex(0);
+        if (reqVersion < versions.length - 1) {
+            setReqVersion(reqVersion + 1);
+            setUserStoriesVersion(0);
         }
     };
 
     const goBackUS = () => {
-        if (userStoryIndex > 0) {
-            setUserStoryIndex(userStoryIndex - 1);
+        if (userStoriesVersion > 0) {
+            setUserStoriesVersion(userStoriesVersion - 1);
         }
     };
 
     const goForwardUS = () => {
-        if (userStoryIndex < numberVersion.current - 1) {
-            setUserStoryIndex(userStoryIndex + 1);
+        if (userStoriesVersion < numberVersion.current - 1) {
+            setUserStoriesVersion(userStoriesVersion + 1);
         }
     };
 
@@ -157,6 +158,8 @@ const Assistant = () => {
         try {
             setIsLoading(true);
             let content = submittedContent || editContent;
+            //let content = editReq;
+
 
             if (!newContent) {
                 content = submittedContent || requirements.content;
@@ -217,6 +220,7 @@ const Assistant = () => {
                 ...updatedVersions.map((v) => v.version),
                 0
             );
+            console.log(user_stories);
             const newReqVersion = {
                 version: lastVersion + 1,
                 content: req,
@@ -240,6 +244,8 @@ const Assistant = () => {
                 setUserStoryIndex(currentVersion.user_stories.length - 1);
             }
         }
+        console.log(versions)
+        console.log(updatedVersions)
 
         setVersions(updatedVersions);
     };
@@ -265,7 +271,7 @@ const Assistant = () => {
 
     const handleCancelClick = () => {
         setIsEditing(false);
-        setEditContent(requirements.content);
+        setEditReq(requirements.content);
     };
 
     return (
@@ -294,8 +300,8 @@ const Assistant = () => {
                             <p>Project's Requirements</p>
                             <textarea
                                 className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%] resize-none"
-                                value={editContent}
-                                onChange={(e) => setEditContent(e.target.value)}
+                                value={editReq}
+                                onChange={(e) => setEditReq(e.target.value)}
                             />
                             <div className="flex justify-end items-center mx-auto my-2 w-[80%]">
                                 <button
@@ -315,7 +321,6 @@ const Assistant = () => {
                     ) : (
                         <div className="w-[100%]">
                             <p>Project's Requirements</p>
-                            {console.log(requirements.content)}
                             <textarea
                                 className="bg-[#e1e1e1] text-[#2f2f2f] border-4 border-[#e1e1e1] rounded-[20px] mx-auto p-2 w-[80%] resize-none"
                                 placeholder={requirements.content}
@@ -331,17 +336,17 @@ const Assistant = () => {
                                 </button>
                                 <button
                                     onClick={goBack}
-                                    disabled={currentIndex === 0}
+                                    disabled={reqVersion === 0}
                                 >
                                     ⮜{" "}
                                 </button>
                                 <span>
-                                    {currentIndex + 1}/{versions.length}
+                                    {reqVersion + 1}/{versions.length}
                                 </span>
                                 <button
                                     onClick={goForward}
                                     disabled={
-                                        currentIndex === versions.length - 1
+                                        reqVersion === versions.length - 1
                                     }
                                 >
                                     {" "}
@@ -365,22 +370,25 @@ const Assistant = () => {
                             tempContent={tempContent}
                             setTempContent={setTempContent}
                             queryAdders={handleFeedback}
+                            projectId = {projectId}
+                            reqVersion = {requirements.version}
+                            userStoriesVersion = {userStoriesVersion}
                         />
                     </div>
                     <div className="versionSelect">
                         <button
                             onClick={goBackUS}
-                            disabled={userStoryIndex === 0}
+                            disabled={userStoriesVersion === 0}
                         >
                             ⮜{" "}
                         </button>
                         <span>
-                            {userStoryIndex + 1}/{numberVersion.current}
+                            {userStoriesVersion + 1}/{numberVersion.current}
                         </span>
                         <button
                             onClick={goForwardUS}
                             disabled={
-                                userStoryIndex === numberVersion.current - 1
+                                userStoriesVersion === numberVersion.current - 1
                             }
                         >
                             {" "}

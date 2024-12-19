@@ -8,7 +8,10 @@ export default function UserStoryTable({
     setEditingStory,
     tempContent,
     setTempContent,
-    queryAdders
+    queryAdders,
+    projectId,
+    reqVersion,
+    userStoriesVersion
 }) {
     const handleEditClick = (storyIndex) => {
         setEditingStory(storyIndex);
@@ -20,13 +23,14 @@ export default function UserStoryTable({
         setTempContent("");
     };
 
-    const handleSaveEdit = () => {
+    const handleSaveEdit = (index) => {
         if (!tempContent.trim()) return;
         setUserStories((prevStories) => {
             const updatedStories = [...prevStories];
             updatedStories[editingStory].user_story = tempContent;
             return updatedStories;
         });
+        updateUserStoryContent(projectId, reqVersion, userStoriesVersion, index, tempContent)
         setEditingStory(null);
         setTempContent("");
     };
@@ -85,6 +89,51 @@ export default function UserStoryTable({
             queryAdders(null, index);
         }
     };
+    ///////////////////////////////////////////////////////////////////////////////////////////
+    const updateUserStoryContent = async (projectId, reqVersion, userStoriesVersion, index, content) => {
+        try {
+            const response = await fetch('http://localhost:8080/project/userstory/update', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    req_version: reqVersion,
+                    version: userStoriesVersion + 1,
+                    index: index,
+                    content: content,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+        } catch (error) {
+            setError(`Failed to generate user stories:  ${error}.`);
+            console.error(error);
+        } 
+    };
+
+    const updateUserStoryFeedback = async (projectId, reqVersion, userStoriesVersion, index, feedback) => {
+        try {
+            const response = await fetch(`http://localhost:8080/project/userstory/feedback`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    req_version: reqVersion,
+                    version: userStoriesVersion + 1,
+                    index: index,
+                    feedback: feedback,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+        } catch (error) {
+            setError(`Failed to generate user stories:  ${error}.`);
+            console.error(error);
+        } 
+    };
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return (
         <table className="bg-[#e1e1e1] text-[#2f2f2f] p-4 m-auto w-[90%]">
@@ -125,7 +174,7 @@ export default function UserStoryTable({
                         <td className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
                             {editingStory === idx ? (
                                 <>
-                                    <button onClick={handleSaveEdit}>
+                                    <button onClick={() => handleSaveEdit(story.index)}>
                                         Save
                                     </button>
                                     <button onClick={handleCancelEdit}>
