@@ -38,7 +38,6 @@ def initialize_firebase():
 db = initialize_firebase()
 
 class Response(BaseModel):
-    id: str
     ai_response: str
     created_at: datetime
 
@@ -163,7 +162,7 @@ async def create_prompt(request: CreatePromptRequest):
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("prompts")
 
-        prompt_data = prompt.model_dump()  
+        prompt_data = prompt.model_dump(exclude={"id"})  
         prompt_data["created_at"] = datetime.now()  
 
         if prompt.response:
@@ -194,7 +193,6 @@ async def create_response(request: CreateResponseRequest):
     Endpoint to create a new response in Firestore.
     """
     response = Response(
-        id=request.prompt_id,
         ai_response=request.ai_response,
         created_at=datetime.now()
     )
@@ -202,7 +200,7 @@ async def create_response(request: CreateResponseRequest):
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("ai_responses")
 
-        response_data = response.model_dump()  
+        response_data = response.model_dump(exclude={"id"})  
         response_data["created_at"] = datetime.now()  
 
         new_doc_ref = collection_ref.add(response_data)  
