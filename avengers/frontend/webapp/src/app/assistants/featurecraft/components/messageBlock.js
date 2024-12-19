@@ -122,7 +122,7 @@ export default function MessageBlock({ messages, totalMessages, description, con
                     {messages.filter(Boolean).map((message, index) => (
                         <li 
                             key={index} 
-                            className={`p-2 rounded-xl shadow-sm w-[90%] ${message.authorName === 'You' ? 'ml-auto bg-blue-50' : 'mr-auto bg-green-50'}`}
+                            className={`p-2 rounded-xl shadow-sm w-[90%] mb-4 ${message.authorName === 'You' ? 'ml-auto bg-blue-50' : 'mr-auto bg-green-50'}`}
                         >
                             <p className="font-semibold p-2">{message.authorName}</p>
                             <div 
@@ -147,10 +147,10 @@ export default function MessageBlock({ messages, totalMessages, description, con
                     }}
                 >
                     <button
-                        className="bg-blue-400 shadow-md text-white py-2 px-3 rounded-md"
+                        className="bg-blue-400 shadow-md text-white py-2 px-3 rounded-xl"
                         onClick={handleButtonClick}
                     >
-                        Pin Message
+                        Add Requirement
                     </button>
                 </div>
             )}
