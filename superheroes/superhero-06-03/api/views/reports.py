@@ -7,12 +7,29 @@ from google.cloud import firestore
 
 class ReportsView(APIView):
     def post(self, request):
-        userID = request.data.get('client_id')
+        userID = None
+        try:
+            userID = request.data.get('client_id')
+        except KeyError:
+            return Response({
+                "message": "Invalid request body"
+            }, status=status.HTTP_400_BAD_REQUEST)
 
-        db = firestore.Client()
-        collection_ref = db.collection('superhero-06-03')
-        users_ref = collection_ref.document('users')
-        users_json = users_ref.get().to_dict()
+        if not userID:
+            return Response({
+                "message": "Client ID is required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        users_json = user_data = None
+
+        try:
+            db = firestore.Client()
+            collection_ref = db.collection('superhero-06-03')
+            users_json = collection_ref.document('users').get().to_dict()
+        except Exception as e:
+            return Response({
+                "message": f"Error connecting to Firestore: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         try:
             user_data = users_json[userID]['reports']

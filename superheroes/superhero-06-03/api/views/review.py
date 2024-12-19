@@ -16,10 +16,24 @@ class ReviewView(APIView):
     def post(self, request):
         print("Parsing request body")
 
-        repo_url = request.data.get('repo_url')
-        auth_token = request.data.get('token')
-        pattern = request.data.get('architecture') 
-        userID = request.data.get('client_id')
+        repo_url = auth_token = pattern = userID = None
+
+        try:
+            repo_url = request.data.get('repo_url')
+            auth_token = request.data.get('token')
+            pattern = request.data.get('architecture') 
+            userID = request.data.get('client_id')
+        except KeyError:
+            return Response({
+                "message": "Invalid request body"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not repo_url or not pattern or not userID:
+            return Response({
+                "message": "Repo URL, pattern and client ID are required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        repoOwner = repoName = None
 
         try: 
             _, _, _, repoOwner, repoName = repo_url.rstrip('/').split('/')
@@ -28,24 +42,41 @@ class ReviewView(APIView):
                 "message": "Invalid repository URL"
             }, status=status.HTTP_400_BAD_REQUEST)
 
-        db = firestore.Client()
-        collection_ref = db.collection('superhero-06-03')
-        doc_ref = collection_ref.document('secrets')
-        doc = doc_ref.get()
+        db = collection_ref = secrets = None
 
-        secrets = doc.to_dict()
-
-        gemini_key = secrets.get('gemini_api_key')
-
-        genai.configure(api_key=gemini_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
-
-        if not repo_url:
+        try: 
+            db = firestore.Client()
+            collection_ref = db.collection('superhero-06-03')
+            secrets = collection_ref.document('secrets').get().to_dict()
+        except Exception as e:
             return Response({
-                "message": "Repo URL and auth token, in case of private repository, are required"
-            }, status=status.HTTP_400_BAD_REQUEST)
+                "message": f"Error connecting to Firestore: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            gemini_key = secrets.get('gemini_api_key')
+        except KeyError:
+            return Response({
+                "message": "Gemini API key not found in secrets"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        try:
+            genai.configure(api_key=gemini_key)
+        except Exception as e:
+            return Response({
+                "message": f"Error configuring Gemini API: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        model = genai.GenerativeModel("gemini-1.5-flash")
         
-        artifacts = get_github_artifacts(repo_url, auth_token)
+        artifacts = None
+        
+        try:
+            get_github_artifacts(repo_url, auth_token)
+        except Exception as e:
+            return Response({
+                "message": f"Error getting artifacts from GitHub: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         prompt = f"""I'm need you to analyses the following files and tell me how well the {pattern} pattern is implemented in this project.
                     I'll send you, for each file, the name, the path and the content of the file. Then, you'll give some conclusions. Later on the message I'll ask you for them.
@@ -101,8 +132,10 @@ class ReviewView(APIView):
 
             formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
+            id = str(uuid.uuid4())
+
             report = {
-                "id" : str(uuid.uuid4()),
+                "id" : id,
                 "name": repoName,
                 "timestamp": formatted_datetime,
                 "pattern": pattern,
@@ -120,7 +153,7 @@ class ReviewView(APIView):
             users_ref.update(users_json)
 
             return Response({
-                "id" : str(uuid.uuid4()),
+                "id" : id,
                 "name": repoName,
                 "timestamp": formatted_datetime,
                 "pattern": pattern,
