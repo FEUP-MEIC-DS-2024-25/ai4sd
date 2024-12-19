@@ -2,7 +2,7 @@ import axios from "axios";
 
 export default async function exportPinnedMessages(conversationId, setError) {
     try {
-        const response = await axios.get(`http://localhost:8080/chat/pin/${conversationId}/export`, {
+        const response = await axios.get(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/${conversationId}/export`, {
             responseType: 'blob'
         });
 

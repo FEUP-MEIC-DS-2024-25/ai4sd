@@ -7,6 +7,7 @@ import Loading from "@/app/assistants/featurecraft/components/ui/loading";
 export default function PinnedMessagesBlock({ pinnedMessages, conversationId, setPinnedMessages, setError }) {
     const [isHidden, setIsHidden] = useState(true);
     const [isExporting, setIsExporting] = useState(false);
+    const [deletingMessageId, setDeletingMessageId] = useState(null);
 
     const toggleView = () => {
         setIsHidden(!isHidden);
@@ -16,6 +17,12 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
         setIsExporting(true);
         await exportPinnedMessages(conversationId, setError);
         setIsExporting(false);
+    };
+
+    const handleDelete = async (messageId) => {
+        setDeletingMessageId(messageId);
+        await deletePinnedMessage(conversationId, messageId, setPinnedMessages, setError);
+        setDeletingMessageId(null);
     };
 
     if (isHidden) {
@@ -89,7 +96,13 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                             <li key={index} className="p-2 bg-white rounded-md shadow-sm max-w-96">
                                 <div className="flex justify-between items-center">
                                     <p className="font-semibold">{pinnedMessage.message}</p>
-                                    <DeleteButton onClick={() => deletePinnedMessage(conversationId, pinnedMessage.id, setPinnedMessages, setError)} />
+                                    {deletingMessageId === pinnedMessage.id ? (
+                                        <div className="h-6 w-6 flex justify-center items-center">
+                                            <Loading />
+                                        </div>
+                                    ) : (
+                                        <DeleteButton onClick={() => handleDelete(pinnedMessage.id)} />
+                                    )}
                                 </div>
                             </li>
                         ))}
