@@ -21,8 +21,6 @@ class SparkProject(models.Model):
     description = models.TextField(blank=True, null=True)
     github_project_link = models.URLField(blank=True, null=True, unique=True)
     miro_board_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now=True)
 
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='owned_projects')
     members = models.ManyToManyField(Profile, related_name='member_projects', blank = True)
