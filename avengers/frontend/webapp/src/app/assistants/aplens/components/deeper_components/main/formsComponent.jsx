@@ -54,6 +54,7 @@ function FormsComponent({ setActiveView  , clientId}) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            request_type: "get-review",
             repo_url: repoUrl,
             token: authToken || null,
             architecture: (Array.from(selectedOption)[0]),
