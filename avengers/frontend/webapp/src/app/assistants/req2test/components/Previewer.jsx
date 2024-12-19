@@ -58,6 +58,29 @@ export default function Previewer(msg) {
     )
 }
 
+export function PreviewerDark(msg) {
+
+    const customRenderer = {
+      code: (code, lang) => {
+        if (lang === 'gherkin') {
+          return (
+            <section key={crypto.randomUUID()} className="my-2 p-3 bg-gray-950 outline outline-gray-700 rounded-md">
+              <Header code={code} />
+              <div
+                dangerouslySetInnerHTML={{ __html: formatGherkin(code) }}
+              />
+            </section>
+          )
+        }
+        return <pre key={crypto.randomUUID()}><code>{code}</code></pre>;
+      }
+    };
+
+    return(
+        <Markdown value={msg.content} renderer={customRenderer} />
+    )
+}
+
 const Header = ({ code }) => {
   return (
     <>
