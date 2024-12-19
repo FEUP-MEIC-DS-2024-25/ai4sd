@@ -2,7 +2,7 @@
 
 # How to run extensions integrated in the theme extensions (e.g. ai4sd-analysers)
 
-To run the extensions, open VS Code in the x-men folder. Afterwards, edit the .vscode/launch.json file in order to include the extensions you want to run. In each desired extension's folder, install dependencies and run `npm run compile`. Then you can run with F5 as you did previously (if it fails, try a second time and it should work).
+To run the extensions, open VS Code in the x-men folder. Afterwards, edit the `x-men/.vscode/launch.json` file in order to include the extensions you want to run. In each desired extension's folder, install dependencies and run `npm run compile`. Then you can run with F5 as you did previously (if it fails, try a second time and it should work).
 
 ## Initial setup
 Insert here the contents of the .env file for each of the extensions, if needed.
