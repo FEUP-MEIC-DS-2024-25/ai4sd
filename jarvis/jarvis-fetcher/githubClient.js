@@ -16,7 +16,7 @@ export async function fetchRepoContents(octokit, org, repo, path = "") {
     return data;
 }
 
-export async function addWebhook(octokit, org, repo) {
+export async function addWebhook(octokit, org, repo, webhookUrl) {
     const data = await octokit.request('POST /repos/{owner}/{repo}/hooks', {
         owner: org,
         repo: repo,
@@ -26,7 +26,7 @@ export async function addWebhook(octokit, org, repo) {
             'push',
         ],
         config: {
-            url: 'https://example.com/webhook',
+            url: webhookUrl,
             content_type: 'json',
             insecure_ssl: '0'
         },
