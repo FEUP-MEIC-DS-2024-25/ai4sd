@@ -14,6 +14,7 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
     const [editingMessageId, setEditingMessageId] = useState(null);  // Track the message being edited
     const [editedMessage, setEditedMessage] = useState("");  // Store the new message for editing
     const { handleEditPin } = useAssistPinSend();
+    const [isUsingIndex, setIsUsingIndex] = useState(false);
 
     const toggleView = () => {
         setIsHidden(!isHidden);
@@ -24,6 +25,11 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
         setEditedMessage(currentMessage);  // Set the current message as the default text in the input
     };
 
+    const handleEditClickIndex = (index, currentMessage) => {
+        setEditingMessageId(index);  
+        setEditedMessage(currentMessage);
+        setIsUsingIndex(true);
+    };
     const handleExport = async () => {
         setIsExporting(true);
         await exportPinnedMessages(conversationId, setError);
@@ -34,6 +40,10 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
         setDeletingMessageId(messageId);
         await deletePinnedMessage(conversationId, messageId, setPinnedMessages, setError);
         setDeletingMessageId(null);
+    };
+
+    const handleDeleteIndex = async (index) => {
+        setPinnedMessages(pinnedMessages.filter((msg, i) => i !== index));
     };
 
     const handleSaveEdit = async () => {
@@ -58,9 +68,23 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
         }
     };
 
+    const handleSaveEditIndex = async () => {
+        if(editedMessage.trim()) {
+            setPinnedMessages(pinnedMessages.map((msg, index) => index === editingMessageId ? { ...msg, message: editedMessage } : msg));
+            setEditingMessageId(null);
+            setIsUsingIndex(false);
+        }
+    };
+
     const handleCancelEdit = () => {
         setEditingMessageId(null);  // Cancel editing
         setEditedMessage("");  // Reset the message input
+    };
+
+    const handleCancelEditIndex = () => {
+        setEditingMessageId(null);
+        setIsUsingIndex(false);
+        setEditedMessage("");
     };
 
     if (isHidden) {
@@ -130,19 +154,18 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                     <ul className="space-y-2">
                         {pinnedMessages.map((pinnedMessage, index) => (
                             <li key={pinnedMessage.id || index} className={`p-2 rounded-xl shadow-sm max-w-lg ${!pinnedMessage.id ? 'bg-gray-200' : 'bg-gray-50'}`}>
-                                {editingMessageId === pinnedMessage.id ? (
+                                {(editingMessageId === pinnedMessage.id ) || (editingMessageId === index && isUsingIndex) ? (
                                     <div className="flex space-x-2">
                                         <input
                                             type="text"
                                             value={editedMessage}
                                             onChange={(e) => setEditedMessage(e.target.value)}
                                             className="w-full p-2 border rounded"
-                                            disabled={!pinnedMessage.id}
                                         />
-                                        <button onClick={pinnedMessage.id ? handleSaveEdit : null} className="bg-blue-500 text-white p-2 rounded" disabled={!pinnedMessage.id}>
+                                        <button onClick={pinnedMessage.id ? handleSaveEdit : handleSaveEditIndex} className="bg-blue-500 text-white p-2 rounded" >
                                             Save
                                         </button>
-                                        <button onClick={pinnedMessage.id ? handleCancelEdit : null} className="bg-gray-300 p-2 rounded" disabled={!pinnedMessage.id}>
+                                        <button onClick={pinnedMessage.id ? handleCancelEdit : handleCancelEditIndex} className="bg-gray-300 p-2 rounded" >
                                             Cancel
                                         </button>
                                     </div>
@@ -150,13 +173,13 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
                                     <div className="flex justify-between items-center space-x-4">
                                         <p className={`font-semibold break-words max-w-[80%] ${!pinnedMessage.id ? 'text-gray-500' : ''}`}>{pinnedMessage.message}</p>
                                         <div className="w-20 space-x-2 flex justify-center">
-                                            <button onClick={pinnedMessage.id ? () => handleEditClick(pinnedMessage.id, pinnedMessage.message) : null} className="text-blue-500" disabled={!pinnedMessage.id}>
+                                                <button onClick={pinnedMessage.id ? () => handleEditClick(pinnedMessage.id, pinnedMessage.message) : () => handleEditClickIndex(index,pinnedMessage.message)} className="text-blue-500">
                                                 <svg className="h-6 w-6 text-gray-500" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">  <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" /></svg>
                                             </button>
                                             {deletingMessageId === pinnedMessage.id ? (
                                                 <Loading height="h-6 w-6" />
                                             ) : (
-                                                pinnedMessage.id ? <DeleteButton onClick={() => handleDelete(pinnedMessage.id)} /> : <DeleteButton onClick={() => null} color="gray" /> 
+                                                pinnedMessage.id ? <DeleteButton onClick={() => handleDelete(pinnedMessage.id)} /> : <DeleteButton onClick={() => handleDeleteIndex(index)} /> 
                                             )}
                                         </div>
                                     </div>
