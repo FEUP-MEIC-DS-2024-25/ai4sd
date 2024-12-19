@@ -42,8 +42,8 @@ function Project() {
   // Handle project deletion
   const handleDeleteProject = (e) => {
     e.preventDefault();
-    axios
-      .delete(`http://localhost:8000/api/projects/${projectId}/`)
+    apiClient
+      .post(`spark/${projectId}/delete/`)
       .then(() => {
         alert("Project deleted successfully!");
         navigate("/");
