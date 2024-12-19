@@ -55,4 +55,4 @@ RUN chmod +x *.sh
 EXPOSE 8080
 
 # Comando padrão para iniciar o container
-CMD ["bash"]
+CMD ["node", "frontend/server.js"]

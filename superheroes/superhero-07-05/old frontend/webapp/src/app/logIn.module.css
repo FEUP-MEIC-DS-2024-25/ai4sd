@@ -1,0 +1,135 @@
+.twister_ai {
+  background-color: #6066A9;
+  width: 100%;
+}
+
+.twister_ai header {
+  background-color: #242642;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.twister_ai header h1 {
+  font-size: xx-large;
+  margin-left: 10px;
+  font-size: 24px;
+  color: #FFFFFF;
+}
+
+.twister_ai header .header_div {
+  display: flex;
+  align-items: center;
+}
+
+.twister_ai header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #2B2D42;
+  color: white;
+}
+
+.twister_ai header div {
+  display: flex;
+  align-items: center;
+}
+
+.twister_ai header div a {
+  display: flex;
+  align-items: center;
+}
+
+.twister_ai header div:last-child nav {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.language {
+  background-color: white;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 14px;
+}
+
+.twister_ai main {
+  margin: 1.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+}
+
+.twister_ai main section{
+  margin-bottom: 1em;
+}
+
+.twister_ai main .upload_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.twister_ai  main .upload_section div {
+  background-color: #242642;
+  padding: 10px;
+  border-radius: 10px;
+  width: 47%;
+  text-align: center;
+}
+
+.twister_ai  main .upload_section i {
+  margin-left: 1em;
+}
+
+.twister_ai main .context_section {
+  background-color: #242642;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  padding: 10px 10px;
+  border-radius: 10px;
+}
+
+.twister_ai main .context_section label {
+  padding-bottom: 10px;
+}
+
+.twister_ai main textarea {
+  background-color: white;
+  border-radius: 10px;
+  width: 100%;
+  height: 7rem;
+  padding: 10px;
+}
+
+.twister_ai main .action_section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.twister_ai main .action_section button {
+  background-color: #242642;
+  padding: 10px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.twister_ai main .action_section button:first-of-type {
+  margin-bottom: 1rem;
+}
+
+/* .twister_ai main .upload_section input {
+  display: none;
+}
+*/

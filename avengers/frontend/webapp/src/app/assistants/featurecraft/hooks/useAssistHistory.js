@@ -10,6 +10,7 @@ export default function useAssistHistory(initialId) {
 
     useEffect(() => {
         setLoading(true);
+        //axios.get("http://localhost:8080/history")
         axios.get("https://superhero-03-01-150699885662.europe-west1.run.app/history")
             .then(response => {
                 if (response.status === 200) {
