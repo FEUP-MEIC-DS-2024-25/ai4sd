@@ -8,7 +8,7 @@ import { AnalysisProvider } from "./context/AnalysisContext";
 import { SaveDataProvider } from "./context/SaveDataContext";
 import gradientImage from './assets/gradient.png';
 
-export default function Assistant({ name, saveData, activeView, setActiveView, retrievedData}) {
+export default function Assistant({ name, saveData, activeView, setActiveView, retrievedData, clientId}) {
 
     return (
         <div className="bg-white text-[var(--bs-body-color)] flex-1 flex-grow flex-shrink basis-0 p-0">
@@ -27,13 +27,13 @@ export default function Assistant({ name, saveData, activeView, setActiveView, r
                     <SaveDataProvider saveData={saveData}>
                         <div className="flex-1 p-6 overflow-y-auto">
                             {activeView === "Forms" 
-                            ? <FormsComponent setActiveView={setActiveView} />
+                            ? <FormsComponent setActiveView={setActiveView} clientId={clientId}/>
                             : activeView === "Reports" 
                             ? <Results /> 
                             : null}
                         </div>
                         <div className="w-1/4 p-6">
-                            <SearchComponent activeView={activeView} setActiveView={setActiveView} reports={retrievedData} />
+                            <SearchComponent activeView={activeView} setActiveView={setActiveView} reports={retrievedData} clientId={clientId} />
                         </div>
                     </SaveDataProvider>
                 </AnalysisProvider>
