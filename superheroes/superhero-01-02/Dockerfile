@@ -1,12 +1,14 @@
 FROM python:3.11-slim
 
+ARG GCLOUD_SECRET
+
 WORKDIR /app
 
 COPY . /app
 
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN echo '$(superhero-01-02-secret)' > /app/.env
+RUN echo "${GCLOUD_SECRET}" > /app/.env
 
 EXPOSE 8080
 
