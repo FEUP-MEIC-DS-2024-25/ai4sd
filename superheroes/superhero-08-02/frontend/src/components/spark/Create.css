@@ -1,0 +1,93 @@
+/* Container for the create page */
+.create-container {
+     max-width: 30em;
+     margin: 2em auto;
+     padding: 1.5em;
+     border-radius: 0.5em;
+     background-color: var(--grey);
+     box-shadow: 0 0.25em 0.375em rgba(0, 0, 0, 0.1);
+}
+
+.create-title {
+     font-size: 2em;
+     font-weight: bold;
+     text-align: center;
+     margin-bottom: 1em;
+     color: var(--dark-blue);
+}
+
+/* Success message */
+.success-message {
+     text-align: center;
+     color: #28a745;
+     background-color: #d4edda;
+     border: 0.05em solid #c3e6cb;
+     border-radius: 0.3em;
+     padding: 0.5em;
+     margin-bottom: 1em;
+}
+
+/* Form group */
+.create-form .form-group {
+     margin-bottom: 1.5em;
+}
+
+/* Labels */
+.create-form label {
+     display: block;
+     margin-bottom: 0.5em;
+     font-weight: bold;
+     color: var(--dark-blue);
+     font-size: 1.15em;
+}
+
+/* Input and Textarea */
+.create-form input,
+.create-form textarea {
+     width: 100%;
+     padding: 0.65em;
+     border: 0.065em solid #ccc;
+     border-radius: 0.25em;
+     font-size: 1em;
+     transition: border-color 0.3s ease;
+}
+
+.create-form input:focus,
+.create-form textarea:focus {
+     outline: none;
+     border-color: var(--cyan);
+     box-shadow: 0 0 0.25em var(--cyan);
+}
+
+/* Invalid input styling */
+.create-form input.is-invalid,
+.create-form textarea.is-invalid {
+     border-color: #d9534f;
+     background-color: #f8d7da;
+}
+
+.create-form .invalid-feedback {
+     color: #d9534f;
+     font-size: 0.875em;
+     margin-top: 0.3em;
+}
+
+/* Submit button */
+.create-button {
+     display: block;
+     width: 100%;
+     padding: 0.75em;
+     background-color: var(--blue);
+     color: var(--white);
+     font-size: 1.15em;
+     border: none;
+     border-radius: 0.25em;
+     cursor: pointer;
+     text-align: center;
+     transition: background-color 0.3s ease;
+}
+
+.create-button:hover {
+     background-color: var(--cyan);
+     transition-duration: 0.3s;
+}

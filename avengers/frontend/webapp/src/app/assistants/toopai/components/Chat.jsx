@@ -24,7 +24,6 @@ const ChatArea = () => {
   
   const sendMessage = async () => {
     if (userMessage.trim() === "") return; 
-
     const newMessages = [...messages, { text: userMessage, sender: "user" }];
     setMessages(newMessages);
     setUserMessage(""); 
@@ -32,12 +31,12 @@ const ChatArea = () => {
 
     const formData = new FormData();
     formData.append("prompt", userMessage); 
+
     if (file) {
       formData.append("file", file); 
     }
 
     try {
-      
       const response = await fetch("https://superhero-01-02-150699885662.europe-west1.run.app/api/chat-with-file", {
         method: "POST",
         body: formData,
@@ -49,7 +48,6 @@ const ChatArea = () => {
 
       const data = await response.json();
 
-      
       setMessages([
         ...newMessages,
         { text: data.response, sender: "bot" },
@@ -57,15 +55,16 @@ const ChatArea = () => {
     } catch (error) {
       console.error("Erreur lors de l'appel API:", error);
 
-      
       setMessages([
         ...newMessages,
         { text: "API Error: Unable to get a response.", sender: "bot" },
       ]);
     } finally {
       setIsLoading(false); 
+      setFile(null); 
     }
   };
+
 
   
   useEffect(() => {
