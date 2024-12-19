@@ -41,7 +41,8 @@ resource "google_project_service" "enable_services" {
     "firestore.googleapis.com",
     "compute.googleapis.com", 
     "cloudresourcemanager.googleapis.com",
-    "iam.googleapis.com"
+    "iam.googleapis.com",
+    "secretmanager.googleapis.com"
   ])
   service = each.key
 }
@@ -541,6 +542,13 @@ resource "google_firestore_database" "vault" {
   location_id = "europe-west1"
   type        = "FIRESTORE_NATIVE"
   depends_on  = [google_project_service.enable_services]
+
+  lifecycle {
+    ignore_changes = [
+      etag,
+      earliest_version_time
+    ]
+  }
 }
 
 #################################
@@ -599,7 +607,6 @@ resource "google_storage_bucket_iam_member" "public_read_access" {
   role   = "roles/storage.objectViewer"
   member = "allUsers"
 }
-
 
 resource "google_project_iam_member" "strange_firestore_permissions" {
   project  = var.project_id

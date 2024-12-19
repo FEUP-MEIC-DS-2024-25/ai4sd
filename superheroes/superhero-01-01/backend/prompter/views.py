@@ -6,9 +6,9 @@ from django.conf import settings
 from dotenv import load_dotenv
 import google.generativeai as genai
 
-load_dotenv(dotenv_path=os.path.join(settings.BASE_DIR, "config/.env"))
+#load_dotenv(dotenv_path=os.path.join(settings.BASE_DIR, "config/.env"))
 
-API_KEY = os.getenv("API_KEY")
+API_KEY = os.getenv("superhero-01-01-secret")
 OUTPUT_DIR = os.path.join(settings.BASE_DIR, "backend", "results")
 PROMPT = '''Evaluate the following code according to Good Coding Practices and suggest changes where necessary. Do not generate new code, simply point out errors and suggest changes using this JSON format:
         output: {

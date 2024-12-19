@@ -1,6 +1,7 @@
 "use client"
 
 import Image from 'next/image'
+import Link from 'next/link'
 import React, { useState, useEffect, useRef } from 'react'
 
 import { Avatar, AvatarFallback } from "@/app/components/ui/avatar"
@@ -9,11 +10,13 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/app/components/ui/c
 import { Input } from "@/app/components/ui/input"
 import { ScrollArea } from "@/app/components/ui/scroll-area"
 import Previewer from "./Previewer"
+import { createPrompt, createResponse, convertRequirementToText } from '@/app/assistants/req2test/api/api'
 
 import { Send } from "lucide-react"
 
 import logo from '../assets/logo.png'
 import logoName from '../assets/logoName.png'
+import story2TestLogo from "../assets/story2testLogoWhite.png"
 
 const BotAvatar = ({ className }) => (
   <Avatar className='border border-neutral-700'>
@@ -33,6 +36,18 @@ const UserAvatar = () => (
   </Avatar>
 );
 
+const Story2TestLink = () => (
+  <Link href="/assistants/story2test" title='Try Story2Test'>
+    <Avatar className='border border-neutral-700 h-14 w-14'>
+        <AvatarFallback className="!bg-black hover:!bg-indigo-600 transition-all duration-300 ease-in-out">
+            <div className={"rounded-full p-1.5 "}>
+                <Image src={story2TestLogo} alt='Story2Test Logo'/>
+            </div>
+        </AvatarFallback>
+    </Avatar>
+  </Link>
+);
+
 export const Chatbot = ({ chat, setChat }) => {
   const [input, setInput] = useState("")
   const messagesEndRef = useRef(null)
@@ -45,17 +60,7 @@ export const Chatbot = ({ chat, setChat }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
 
-  // Mock API call
-  const convertRequirementToText = async (req) => {
-    return new Promise((resolve) => {
-        setTimeout(() => {
-            resolve(`Feature: ${req}`)
-        }, 1000)
-        }
-    )
-  }
-
-  const handleSend = () => {
+  const handleSend = async () => {
     if (input.trim()) {
       const newMessage = { content: input, sender: "user" }
       const updatedChat = {
@@ -63,17 +68,23 @@ export const Chatbot = ({ chat, setChat }) => {
         messages: [...chat.messages, newMessage]
       }
       setChat(updatedChat)
-      const allMessages = [...chat.messages, { content: input }]
-        .map(msg => msg.content)
-        .join(' ');
-      convertRequirementToText(allMessages).then((response) => {
-        const botResponse = { content: response.toString(), sender: "bot" }
-        const chatWithBotResponse = {
-          ...updatedChat,
-          messages: [...updatedChat.messages, botResponse]
-        }
-        setChat(chatWithBotResponse)
-      })
+
+      // Call createPrompt API
+      //const prompt = await createPrompt(chat.id, input);
+      //const promptId = prompt.id;
+
+      // API call to get AI response
+      const aiResponseText = await convertRequirementToText(input);
+
+      // Call createResponse API
+      //const response = await createResponse(promptId, aiResponseText);
+
+      const botResponse = { content: aiResponseText, sender: "bot" }
+      const chatWithBotResponse = {
+        ...updatedChat,
+        messages: [...updatedChat.messages, botResponse]
+      }
+      setChat(chatWithBotResponse)
 
       setInput("")
     }
@@ -82,11 +93,14 @@ export const Chatbot = ({ chat, setChat }) => {
   return (
     <div className="flex bg-white dark:bg-neutral-950">
       <Card className="flex flex-col w-full justify-between">
-        <CardHeader>
-          <div className="w-1/5 flex justify-center p-2.5 rounded-md bg-black">
-            <Image src={logoName} alt='Req2Test Logo'/>
+        <CardHeader className="flex flex-row justify-between">
+          <div>
+            <div className="w-1/5 flex justify-center p-2.5 rounded-md bg-black">
+              <Image src={logoName} alt='Req2Test Logo'/>
+            </div>
+            <h2 className="pl-2 text-xl font-medium text-neutral-900 dark:text-white">{chat.name}</h2>
           </div>
-          <h2 className="pl-2 text-xl font-medium text-neutral-900 dark:text-white">{chat.name}</h2>
+           <Story2TestLink/>
         </CardHeader>
         <CardContent className="!p-3 md:p-6 mt-4">
           <ScrollArea className="h-[calc(100vh-320px)]">

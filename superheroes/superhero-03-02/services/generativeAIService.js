@@ -1,9 +1,10 @@
 import plantumlEncoder from 'plantuml-encoder';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { encodeForPlantUML } from '../utils/plantumlUtils.js';
+import { getApiKey } from './geminiKeyService.js';
 
 // Configure the Google Generative AI instance
-const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+const genAI = new GoogleGenerativeAI(getApiKey());
 const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 // Variables to store conversations
@@ -26,6 +27,9 @@ export function isConversationInitialized(conversationId) {
 // Function to generate UML
 export async function generateUML(conversationId, umlType, requirements) {
   try {
+    if (!model) {
+      throw new Error('Gemini model not initialized');
+    }
     // Initialize history if it doesn't exist
     if (!conversations[conversationId]) {
       initializeConversation(conversationId);
@@ -59,6 +63,10 @@ export async function generateUML(conversationId, umlType, requirements) {
 // Function to apply changes to the UML
 export async function applyChanges(conversationId, changes) {
   try {
+    if (!model) {
+      throw new Error('Gemini model not initialized');
+    }
+
     if (!conversations[conversationId] || !conversations[conversationId].lastUMLCode) {
       return { message: 'No UML diagram found. Use /generate to create one first.' };
     }
