@@ -3,6 +3,13 @@ import { config } from "../config.js";
 import fs from "fs";
 import path from "path";
 
+/**
+ * Ensures that the service account key is available at the specified path.
+ * If the key is not already available, it reads the encoded JSON secret
+ * and decodes it to create the service account key file.
+ *
+ * @throws {Error} If the key cannot be read or saved.
+ */
 export async function ensureServiceAccountKey() {
     if (!fs.existsSync(config.serviceAccountKeyPath)) {
         console.log("Reading encoded JSON secret");
@@ -10,6 +17,14 @@ export async function ensureServiceAccountKey() {
     }
 }
 
+/**
+ * Reads an encoded JSON secret from a specified file path, decodes it,
+ * and saves the decoded JSON object to a new file.
+ *
+ * @param {string} secretPath - The path to the file containing the encoded JSON secret.
+ * @param {string} savePath - The path where the decoded JSON should be saved.
+ * @throws {Error} If the file cannot be read, decoded, or saved.
+ */
 export async function readEncodedJSONSecret(secretPath, savePath) {
     console.log(`Reading secret from ${secretPath} to save to ${savePath}`);
 
@@ -41,6 +56,13 @@ export async function readEncodedJSONSecret(secretPath, savePath) {
 
 }
 
+/**
+ * Accesses a secret stored in Google Cloud Secret Manager.
+ *
+ * @param {string} secretName - The name of the secret to access.
+ * @returns {Promise<string>} The payload of the accessed secret as a UTF-8 string.
+ * @throws {Error} If the secret cannot be accessed or does not exist.
+ */
 export async function accessSecret(secretName) {
     const client = new SecretManagerServiceClient();
 
