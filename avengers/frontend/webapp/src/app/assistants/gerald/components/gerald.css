@@ -184,6 +184,7 @@ header .aboutus{
     gap: 2rem;
     flex-wrap: wrap;
     margin-top: 2rem;
+    overflow-y: scroll;
 }
 .project .card{
     width: 10rem;

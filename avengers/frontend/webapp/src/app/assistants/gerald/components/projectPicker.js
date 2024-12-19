@@ -39,14 +39,8 @@ export default function ProjectPicker() {
                 </a>
             </header>
             <div className="project">
-                <a href="chat">
-                    <div className="card">  
-                        <h2>This is a project name</h2>
-                        <p>This is a project description which has more info than the title</p>
-                    </div>
-                </a>
                 {repos.map((repo) => (
-                    <a href={"chat?owner=" + repo.owner.login + "&repo=" + repo.name + "&branch=" + repo.default_branch + "&username=" + username} key={repo.id}>
+                    <a href={"gerald/chat?owner=" + repo.owner.login + "&repo=" + repo.name + "&branch=" + repo.default_branch + "&username=" + username} key={repo.id}>
                         <div className="card">  
                             <h2>{repo.name}</h2>
                             <p>{repo.description}</p>
