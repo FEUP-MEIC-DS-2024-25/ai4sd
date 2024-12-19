@@ -95,7 +95,7 @@ header .aboutus{
     height: 3em;
     border-radius: 10rem;
     display: flex;
-    margin-top: 5em;
+    margin-top: 2em;
     position: relative;
     z-index: 1;
 }
@@ -196,6 +196,129 @@ header .aboutus{
     font-size: 1em;
     margin: 0.5em 0;
 }
+
+.assistantInteraction .msg ol li p {
+    font-size: 0.7143em;
+    margin: 0.5em 0;
+}
+
+.assistantInteraction .msg ol li {
+    font-size: 1em;
+    margin: 0.5em 0;
+}
+
+.selected-files {
+    margin: 10px 0;
+    max-height: 100px;
+    overflow-y: auto;
+}
+
+.file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 10px;
+    background: var(--secondary-widget);
+    margin: 5px 0;
+    border-radius: 4px;
+}
+
+.file-item button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+.file-item button:hover {
+    color: var(--primary-widget);
+}
+
+.loading-msg {
+    background-color: var(--primary-widget);
+    width: 45%;
+    padding: 1rem;
+    margin-top: 2rem;
+    border-radius: 1rem;
+    font-size: 10px;
+    text-align: justify;
+}
+
+.loading-msg.user {
+    background-color: var(--secondary-widget);
+    margin-left: auto;
+}
+
+.loading-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.loading-dots div {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: var(--primary-text-color);
+    border-radius: 50%;
+    animation: loading-dots 1s infinite;
+}
+
+@keyframes loading-dots {
+    0%, 80%, 100% {
+        opacity: 0;
+    }
+    40% {
+        opacity: 1;
+    }
+}
+
+.attachments {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--primary-text-color);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.attachments i {
+    margin-right: 0.5rem;
+}
+
+.attachments:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    z-index: 1;
+    opacity: 1;
+    transition: opacity 0.3s;
+}
+
+.attachments::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--primary-color);
+    color: var(--primary-text-color);
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    white-space: nowrap;
+    z-index: 1;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
 
 @media (max-width: 600px) {
     .assistantInteraction .msg{

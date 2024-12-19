@@ -1,3 +1,5 @@
+import { SUPPORTED_FILE_TYPES } from '../constants/fileTypes';
+
 const URL = 'http://localhost:8000';
 
 export async function createProject(githubAccountName, githubRepoName) {
@@ -80,6 +82,10 @@ export async function generateResponse(sessionId, message) {
 }
 
 export async function uploadFile(sessionId, file) {
+    if (!Object.keys(SUPPORTED_FILE_TYPES).includes(file.type)) {
+        throw new Error('Unsupported file type');
+    }
+
     const formData = new FormData();
     formData.append('session_id', sessionId);
     formData.append('file', file);
@@ -96,4 +102,20 @@ export async function uploadFile(sessionId, file) {
 
     const data = await response.json();
     return data.message;
+}
+
+export async function getProjectSessions(projectId) {
+    const response = await fetch(`${URL}/list_projects`, {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+        }
+    });
+
+    if (!response.ok) {
+        throw new Error('Error fetching project sessions');
+    }
+
+    const data = await response.json();
+    return data;
 }
