@@ -33,36 +33,41 @@ from firebase_admin import credentials, firestore
 # if on_google_cloud:
 #     os.environ["API_KEY"] = get_secret("RRBUDDY_API_KEY")
 
-if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
-    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "hero-alliance-feup-ds-24-25-146d9ba8a2d0.json"
-
 def initialize_firebase():
-    """Initializes Firebase using Application Default Credentials (ADC)."""
     try: 
-        # Use ADC by not passing explicit credentials.
-        cred = credentials.ApplicationDefault()
-        firebase_admin.initialize_app(cred)
-        print("Firebase initialized using Application Default Credentials")
+        if not firebase_admin._apps:
+            # Use ADC by not passing explicit credentials.
+            cred = credentials.ApplicationDefault()
+            firebase_admin.initialize_app(cred)
+            print("Firebase initialized using Application Default Credentials")
         return firestore.client()
     except Exception as e:
         print(f"Error initializing Firebase using ADC: {e}")
+        if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+            os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "hero-alliance-feup-ds-24-25-146d9ba8a2d0.json"
         # Fallback for local development, trying to read credentials from GOOGLE_APPLICATION_CREDENTIALS
         if "GOOGLE_APPLICATION_CREDENTIALS" in os.environ:
             try:
-                 cred_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
-                 if os.path.exists(cred_path):
+                cred_path = os.environ["GOOGLE_APPLICATION_CREDENTIALS"]
+                if os.path.exists(cred_path):
+                    print(f"Initializing Firebase using Service Account from {cred_path}")
                     cred = credentials.Certificate(cred_path)
-                    firebase_admin.initialize_app(cred)
-                    print("Firebase initialized using Service Account from GOOGLE_APPLICATION_CREDENTIALS.")
+                    if not firebase_admin._apps:
+                        firebase_admin.initialize_app(cred)
+                        print("Firebase initialized using Service Account from GOOGLE_APPLICATION_CREDENTIALS.")
                     return firestore.client()
-                 else:
-                     print("Error: the file specified in GOOGLE_APPLICATION_CREDENTIALS doesn't exist")
+                else:
+                    print("Error: the file specified in GOOGLE_APPLICATION_CREDENTIALS doesn't exist")
             except Exception as e:
-                    print(f"Error initializing Firebase from GOOGLE_APPLICATION_CREDENTIALS: {e}")
+                print(f"Error initializing Firebase from GOOGLE_APPLICATION_CREDENTIALS: {e}")
         return None
     
 os.environ["ASSISTANT_ID"] = "superhero-04-01"
 db = initialize_firebase()
+# check if db is None
+if db is None:
+    print("Could not initialize Firebase. Exiting.")
+    exit(1)
 secretmanager_client = secretmanager.SecretManagerServiceClient()
 secret_name = f"projects/hero-alliance-feup-ds-24-25/secrets/superhero-04-01-secret/versions/latest"
 response = secretmanager_client.access_secret_version(request={"name": secret_name})
