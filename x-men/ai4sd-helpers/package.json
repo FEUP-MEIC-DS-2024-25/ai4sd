@@ -20,6 +20,11 @@
           "default": "",
           "markdownDescription": "Gemini API Key String"
         },
+        "EasyComment.mode": {
+          "type": "number",
+          "default": "",
+          "markdownDescription": "mode 1 use llm local when possible, mode 2 use llm from openai"
+        },
         "EasyComment.language": {
           "type": "string",
           "default": "",
