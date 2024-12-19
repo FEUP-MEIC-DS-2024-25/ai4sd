@@ -136,7 +136,6 @@ steps:
 
               if [ -f "${dockerfile}" ]; then
                 echo "Fetching secret for ${hero_name}..."
-                secret_file="/tmp/${hero_name}_secret"
 
                 superhero-secret=$(gcloud secrets versions access latest \
                   --secret="${hero_name}-secret" \
