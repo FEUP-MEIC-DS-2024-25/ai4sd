@@ -9,7 +9,7 @@ from utils.utils_misc import get_env_variable
 class Gemini(LLM):
 
     def run(self, repoDir="files", mdResponse="prompt_feedback"):
-        key = get_env_variable("GEMINI_PRIVATE_KEY", "Gemini key not found.")
+        key = 'AIzaSyBWXnKOqM2sTmm7XegDjmxyi01iw9qUZJk'
         genai.configure(api_key=key)
 
         model = genai.GenerativeModel(model_name="gemini-1.5-flash")

@@ -9,7 +9,7 @@ from utils.utils_misc import get_env_variable
 class Groq(LLM):
 
     def __init__(self, model_name: str = "llama3-8b-8192"):
-        key = get_env_variable("GROQ_PRIVATE_KEY", "GROQ key not found.")
+        key = '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'
 
         self.MODEL_NAME = model_name
         self.groq = groq.Groq(api_key=key)
