@@ -31,9 +31,11 @@ class ReviewView(APIView):
             print("THE GEMINI KEY IS : ", gemini_key)
         except Exception as e:
             print("Error retrieving gemini key from Firestore:", str(e))
+            return Response({
+                "message": f"Catch statement caught an exception: {str(e)}"
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Configure the API key
-        gemini_key = "AIzaSyBylXr0VxhozhM34rx_nHJgHeIi4PG5COc"
+
 
         genai.configure(api_key=gemini_key)
         model = genai.GenerativeModel("gemini-1.5-flash")
