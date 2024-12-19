@@ -225,6 +225,12 @@ app.get('/files/mutations.txt', (req, res) => {
   }
 });
 
+// Rota GET simples para testar o servidor
+app.get('/test', (req, res) => {
+  res.send('Servidor está funcionando corretamente!');
+});
+
+
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);
 });
