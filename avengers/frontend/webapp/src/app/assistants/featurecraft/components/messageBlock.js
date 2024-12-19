@@ -2,6 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import styles from "@/app/page.module.css";
 import useAssistPinSend from "@/app/assistants/featurecraft/hooks/useAssistPinSend";
+import DeleteButton from "@/app/assistants/featurecraft/components/ui/deleteButton";
+import deleteChat from "@/app/assistants/featurecraft/hooks/useAssistChatDelete";
+import Loading from "@/app/assistants/featurecraft/components/ui/loading";
+import { useRouter } from 'next/navigation';
+import ErrorNotification from "@/app/assistants/featurecraft/components/ui/errorNotification";
+
 
 export default function MessageBlock({ messages, totalMessages, description, conversationId, pinnedMessages, setPinnedMessages }) {
 
@@ -10,10 +16,12 @@ export default function MessageBlock({ messages, totalMessages, description, con
     const [isPopupVisible, setIsPopupVisible] = useState(false);
     const [error, setError] = useState("");
     const [showFullDescription, setShowFullDescription] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     const { handleSendPin, updatePinnedMessages } = useAssistPinSend();
 
     const messagesEndRef = useRef(null);
+    const router = useRouter();
 
     useEffect(() => {
         if (messagesEndRef.current) {
@@ -54,6 +62,15 @@ export default function MessageBlock({ messages, totalMessages, description, con
 
     };
 
+    const handleDeleteChat = async () => {
+        setIsLoading(true);
+        const response = await deleteChat(conversationId, setError);
+        setIsLoading(false);
+        if (response) {
+            router.push('/assistants/featurecraft');
+        }
+    };
+
     const truncateDescription = (text, wordLimit) => {
         const words = text.split(' ');
         if (words.length > wordLimit) {
@@ -67,7 +84,24 @@ export default function MessageBlock({ messages, totalMessages, description, con
 
     return (
         <div className="p-4 shadow-sm flex-grow h-full">
-            <h2 className="text-xl font-bold mb-2">Your Conversation</h2>
+            <ErrorNotification error={error} setError={setError} />
+            <div className="flex items-center">
+                {isLoading ? (
+                    <div className="ml-2 mr-2">
+                        <Loading height="h-8 w-8" />
+                    </div>
+                ) : (
+                    conversationId && (
+                        <div className="ml-2 mr-2">
+                            <DeleteButton onClick={handleDeleteChat} color="text-gray-500" size="h-8 w-8" />
+                        </div>
+                    )
+                )}
+                <div className="">
+                    <h2 className="text-xl font-bold">Your Conversation</h2>
+                </div>
+
+            </div>
             <div className="text-sm text-gray-600 mb-4">
                 <div className="flex flex-wrap items-center gap-2">
                     <p className="inline">{displayedDescription}</p>

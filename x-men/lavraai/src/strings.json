@@ -1,0 +1,21 @@
+{
+    "successfullActivation": "Congratulations, your extension 'lavraai' is now active!",
+    "successfullUpdate": "Graph updated successfully",
+    "generateUrl": "https://superhero-05-03-150699885662.europe-west1.run.app/generate",
+    "chatUrl": "https://superhero-05-03-150699885662.europe-west1.run.app/chat",
+    "diagramPlaceholder": "Pick a diagram type",
+    "diagramTitle": "Diagram Type",
+    "codeLanguage": "plantuml",
+    "vscodeCommand": "plantuml.preview",
+    "informationMessages": {
+        "documentClosed": "closed"
+    },
+    "errorMessages": {
+        "noDiagramOpen": "There is no diagram open, or the diagram's tab has been lost. Please create a new diagram.",
+        "diagramAlreadyOpen": "A diagram is already open",
+        "notDetectingActiveWindow": "Error in detecting the current active window",
+        "emptyTextSelection": "The current text selection is empty.",
+        "missingCodeOrDiagramType": "Both 'code' and 'diagramType' are required.",
+        "invalidDiagramType": "A valid diagram type was not found."
+    }
+}
