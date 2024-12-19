@@ -26,9 +26,12 @@ export async function execute()
 
 async function warden(input: string)
 {
-    const content = { "content": input };
+    var list = {
+        "name": "Name2",
+        "content": input
+      }
 
-    fetch("http://localhost:8000/online",
+    fetch("https://superhero-05-01-150699885662.europe-west1.run.app/online",
     {
         method: "post",
         headers:
@@ -38,7 +41,7 @@ async function warden(input: string)
         },
         
         //make sure to serialize your JSON body
-        body: JSON.stringify(content),
+        body: JSON.stringify({files: [list]}),
 
         // signal: AbortSignal.timeout(5000)
     })
@@ -52,11 +55,33 @@ async function warden(input: string)
             {} // Webview options. More on these later.
         );
 
-        response.json().then((cont) => {
-            console.log(cont);
-            panel.webview.html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Warden AI</title></head><body><div>'
-            + JSON.stringify(cont.data)
-            + "</div></body></html>";
+        response.json().then((cont: any) => {
+            if (cont.length == 0) return;
+
+            panel.webview.html = '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Warden AI</title></head><body>';
+
+            for (var c in cont.data)
+            {
+                const title = cont.data[c].title;
+                const description = cont.data[c].description;
+                const lines = cont.data[c].lines;
+                const fix = cont.data[c].fix;
+
+                var lines_str = ""
+                for (var l in lines)
+                {
+                    lines_str += lines[l].toString();
+                }
+
+                panel.webview.html +=   "<div>"
+                                            + "Title: " + title + "<br>"
+                                            + "Description: " + description + "<br>"
+                                            + "Lines: " + lines_str + "<br>"
+                                            + "Fix: " + fix + "<br>" +
+                                        "</div><br>"
+            }
+
+            panel.webview.html += "</body></html>";
         });
     })
     .catch((e) =>
