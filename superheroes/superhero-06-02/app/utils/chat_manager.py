@@ -1,25 +1,24 @@
+import io
+import json
 import uuid
+import base64
 import tempfile
-from typing import Optional, List, Dict, Any
-from django.core.files.base import File
 import google.generativeai as genai
-from tenacity import retry, stop_after_attempt, wait_exponential
+
+from PIL import Image
 from ..firebase import db
 from google.cloud import firestore
-from PIL import Image
-import base64
-import io
-from django.conf import settings
+from django.core.files.base import File
+from typing import Optional, List, Dict, Any
 from ..secret_accesser import access_specific_secret
-import json
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 setup_path = 'app/static/setup_prompt.txt'
 
 class GeminiChatManager:
     def __init__(self, session_id: Optional[str] = None):
         """Initialize the chat manager with optional session ID."""
-        #Get gemini key from firestore
-        
+        # Get Gemini API key from Firestore secrets
         secret_json = access_specific_secret("superhero-06-02-secret2")
         self.api_key = json.loads(secret_json)['gemini_key']
         genai.configure(api_key=self.api_key)
@@ -28,29 +27,31 @@ class GeminiChatManager:
         
         self.superhero_ref = db.collection('superhero-06-02')
 
-        if(session_id):    
+        if session_id:
             self.session_id = session_id
             self.session_ref = self.superhero_ref.document(self.session_id)
+            # Check if session exists
+            if not self.session_ref.get().exists:
+                raise ValueError(f"Session ID {self.session_id} does not exist.")
         else:
-            self.session_id = "session1"
+            # Create a new session
+            self.session_id = str(uuid.uuid4())
             self.session_ref = self.superhero_ref.document(self.session_id)
-            self.session_ref.set({'session_id': self.session_id})
+            self.session_ref.set({
+                'session_id': self.session_id,
+                'name': 'New Chat',
+                'created_at': firestore.SERVER_TIMESTAMP,
+                'last_activity': firestore.SERVER_TIMESTAMP
+            })
         
+        # Send setup prompt
         with open(setup_path, 'r') as file:
             setup_prompt = file.read()
-        self.send_message(
-            message=setup_prompt,
-            is_setup=True)
+        self.send_message(message=setup_prompt, is_setup=True)
 
     def _prepare_files_for_gemini(self, files: List[Any]) -> List[Any]:
         """
         Convert file-like objects to the format expected by Gemini using genai.upload_file.
-
-        Args:
-            files (List[Any]): List of file-like objects to be uploaded.
-
-        Returns:
-            List[Any]: List of uploaded file objects from Gemini.
         """
         prepared_files = []
 
@@ -78,18 +79,8 @@ class GeminiChatManager:
     ) -> Dict[str, Any]:
         """
         Manually add a message to the chat history.
-        
-        Args:
-            content: The message content
-            message_type: Type of message (USER, ASSISTANT, SYSTEM, etc.)
-            files: Optional list of file attachments
-            timestamp: Optional specific timestamp for the message
-        
-        Returns:
-            Dict containing success status and message details
         """
         try:
-            # Create message with optional timestamp
             message_data = {
                 'message_type': message_type,
                 'content': content,
@@ -122,14 +113,19 @@ class GeminiChatManager:
                     except Exception as e:
                         return {
                             "success": False,
-                            "error": str(e)
+                            "error": f"Error processing file {file.name}: {str(e)}"
                         }
             message_data['attachments'] = base64_images
             
             messages_ref = self.session_ref.collection('messages')
             messages_ref.add(message_data)
+
+            # Update last_activity timestamp
+            self.session_ref.update({'last_activity': firestore.SERVER_TIMESTAMP})
+
             return {
                 "success": True,
+                "message_id": str(uuid.uuid4()),  # Firestore auto-generates IDs; here for consistency
             }
 
         except Exception as e:
@@ -144,17 +140,17 @@ class GeminiChatManager:
         retry_error_callback=lambda _: {"error": "Rate limit exceeded"}
     )
     def send_message(
-    self, 
+        self, 
         message: str, 
         files: Optional[List[Any]] = None,  # Accept file-like objects
         is_setup: bool = False
     ) -> Dict[str, Any]:
-        """Send a message to Gemini and store in database."""
+        """Send a message to Gemini and store in Firestore."""
         try:
             if is_setup:
                 self.chat.send_message(message)
 
-                resonse_message = {
+                response_message = {
                     'message_type': 'ASSISTANT',
                     'content': "Setup complete",
                     'timestamp': firestore.SERVER_TIMESTAMP,
@@ -162,7 +158,10 @@ class GeminiChatManager:
                 }
                                     
                 messages_ref = self.session_ref.collection('messages')
-                messages_ref.add(resonse_message)
+                messages_ref.add(response_message)
+
+                # Update last_activity timestamp
+                self.session_ref.update({'last_activity': firestore.SERVER_TIMESTAMP})
             else:
                 # Handle file attachments
                 gemini_files = []
@@ -178,15 +177,18 @@ class GeminiChatManager:
                     # For text-only messages
                     gemini_response = self.chat.send_message(message)
                 
-                resonse_message = {
-                    'message_type':'ASSISTANT',
-                    'content':gemini_response.text,
-                    'timestamp':firestore.SERVER_TIMESTAMP,
+                response_message = {
+                    'message_type': 'ASSISTANT',
+                    'content': gemini_response.text,
+                    'timestamp': firestore.SERVER_TIMESTAMP,
                     'attachments': []
                 }
 
                 messages_ref = self.session_ref.collection('messages')
-                messages_ref.add(resonse_message)
+                messages_ref.add(response_message)
+
+                # Update last_activity timestamp
+                self.session_ref.update({'last_activity': firestore.SERVER_TIMESTAMP})
 
             return {
                 "success": True,
@@ -208,23 +210,27 @@ class GeminiChatManager:
             
             for message in messages:
                 message_data = message.to_dict()
-                message ={
-                    "type": message_data['message_type'],
-                    "content": message_data['content'],
-                    "timestamp": message_data['timestamp'],
-                    "attachments": message_data['attachments']
+                formatted_message = {
+                    "type": message_data.get('message_type', ''),
+                    "content": message_data.get('content', ''),
+                    "timestamp": message_data.get('timestamp'),
+                    "attachments": message_data.get('attachments', [])
                 }
                 
-                history.append(message)
+                history.append(formatted_message)
             
             return history
         except Exception as e:
-            print("error", str(e))
+            print("Error retrieving chat history:", str(e))
             return {"error": str(e)}
 
     def delete_session(self):
         """Delete the current chat session and all associated data."""
-        # self.session.delete()
+        try:
+            self.delete_collection(self.superhero_ref, batch_size=10)
+            print(f"Session {self.session_id} and all its data have been deleted.")
+        except Exception as e:
+            print(f"Error deleting session {self.session_id}: {str(e)}")
 
     def delete_collection(self, coll_ref, batch_size):
         docs = coll_ref.limit(batch_size).stream()
@@ -249,3 +255,90 @@ class GeminiChatManager:
         # Delete the document itself
         print(f"Deleting document {doc_ref.id}")
         doc_ref.delete()
+
+    # Additional Session Management Methods
+
+    def create_session(self, name: str = 'New Chat') -> Dict[str, Any]:
+        """Create a new chat session."""
+        try:
+            new_session_id = str(uuid.uuid4())
+            new_session_ref = self.superhero_ref.document(new_session_id)
+            new_session_ref.set({
+                'session_id': new_session_id,
+                'name': name,
+                'created_at': firestore.SERVER_TIMESTAMP,
+                'last_activity': firestore.SERVER_TIMESTAMP
+            })
+            return {
+                "success": True,
+                "session_id": new_session_id,
+                "name": name,
+                "created_at": firestore.SERVER_TIMESTAMP  # Placeholder; actual timestamp is set by Firestore
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    def delete_session_by_id(self, session_id: str) -> Dict[str, Any]:
+        """Delete a chat session by its ID."""
+        try:
+            session_ref = self.superhero_ref.document(session_id)
+            if not session_ref.get().exists:
+                return {
+                    "success": False,
+                    "error": f"Session ID {session_id} does not exist."
+                }
+            # Delete the session and its subcollections
+            self.delete_collection(session_ref, batch_size=10)
+            return {
+                "success": True,
+                "message": f"Session {session_id} deleted successfully."
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }
+
+    def get_sessions(self) -> List[Dict[str, Any]]:
+        """Retrieve all active chat sessions."""
+        try:
+            sessions = self.superhero_ref.order_by('created_at', direction=firestore.Query.DESCENDING).stream()
+            session_list = []
+            for session in sessions:
+                session_data = session.to_dict()
+                session_list.append({
+                    "session_id": session_data.get('session_id', ''),
+                    "name": session_data.get('name', ''),
+                    "created_at": session_data.get('created_at'),
+                    "last_activity": session_data.get('last_activity')
+                })
+            return session_list
+        except Exception as e:
+            print("Error retrieving sessions:", str(e))
+            return {"error": str(e)}
+
+    def update_session_name(self, session_id: str, new_name: str) -> Dict[str, Any]:
+        """Update the name of a chat session."""
+        try:
+            session_ref = self.superhero_ref.document(session_id)
+            if not session_ref.get().exists:
+                return {
+                    "success": False,
+                    "error": f"Session ID {session_id} does not exist."
+                }
+            session_ref.update({
+                'name': new_name,
+                'last_activity': firestore.SERVER_TIMESTAMP
+            })
+            return {
+                "success": True,
+                "message": f"Session {session_id} renamed to {new_name}."
+            }
+        except Exception as e:
+            return {
+                "success": False,
+                "error": str(e)
+            }

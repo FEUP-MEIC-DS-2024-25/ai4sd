@@ -2,22 +2,162 @@ import io
 import json
 import requests
 import mimetypes
+
 from typing import List, Any
-from django.conf import settings
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.uploadedfile import UploadedFile
 from .chat_manager import GeminiChatManager
 from ..secret_accesser import access_specific_secret
 
-# Initialize the chat manager as a global instance
-# We will likely handle this differently in the final version
-chat_manager = GeminiChatManager()
-
 # Global constants
 IMAGE_DIR = "./images"
 IMAGE_EXTENSIONS = {'.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.svg', '.webp'}
 GITHUBAPI_HEADER = {"Authorization": json.loads(access_specific_secret("superhero-06-02-secret3"))['github_key']}
+
+@csrf_exempt
+def create_session(request) -> JsonResponse:
+    """Create a new chat session."""
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
+    
+    try:
+        data = json.loads(request.body) if request.body else {}
+        session_name = data.get('name', 'New Chat')
+        
+        chat_manager = GeminiChatManager()
+        result = chat_manager.create_session(name=session_name)
+        
+        if result["success"]:
+            return JsonResponse({
+                "success": True,
+                "session": {
+                    "session_id": result["session_id"],
+                    "name": result["name"],
+                    "created_at": result["created_at"],  # Note: Actual timestamp handled by Firestore
+                }
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": result["error"]
+            }, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
+
+@csrf_exempt
+def delete_session(request) -> JsonResponse:
+    """Delete a specified chat session."""
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return JsonResponse({"error": "session_id is required."}, status=400)
+        
+        chat_manager = GeminiChatManager(session_id=session_id)
+        result = chat_manager.delete_session_by_id(session_id)
+        
+        if result["success"]:
+            return JsonResponse({
+                "success": True,
+                "message": result["message"]
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": result["error"]
+            }, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except ValueError as ve:
+        return JsonResponse({"error": str(ve)}, status=404)
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
+
+@csrf_exempt
+def get_sessions(request) -> JsonResponse:
+    """Retrieve all active chat sessions."""
+    if request.method != 'GET':
+        return JsonResponse({"error": "Method not allowed. Use GET."}, status=405)
+    
+    try:
+        chat_manager = GeminiChatManager()
+        sessions = chat_manager.get_sessions()
+        
+        if isinstance(sessions, dict) and "error" in sessions:
+            return JsonResponse({
+                "success": False,
+                "error": sessions["error"]
+            }, status=500)
+        
+        # Format timestamps if needed
+        formatted_sessions = []
+        for session in sessions:
+            formatted_sessions.append({
+                "session_id": session["session_id"],
+                "name": session["name"],
+                "created_at": session["created_at"].strftime("%Y-%m-%d %H:%M:%S") if session["created_at"] else None,
+                "last_activity": session["last_activity"].strftime("%Y-%m-%d %H:%M:%S") if session["last_activity"] else None,
+            })
+        
+        return JsonResponse({
+            "success": True,
+            "sessions": formatted_sessions
+        })
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": f"Failed to retrieve sessions: {str(e)}"
+        }, status=500)
+
+@csrf_exempt
+def update_session_name_view(request) -> JsonResponse:
+    """Update the name of a specific chat session."""
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
+    
+    try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        new_name = data.get('name')
+        
+        if not session_id or not new_name:
+            return JsonResponse({"error": "session_id and name are required."}, status=400)
+        
+        chat_manager = GeminiChatManager(session_id=session_id)
+        result = chat_manager.update_session_name(session_id, new_name)
+        
+        if result["success"]:
+            return JsonResponse({
+                "success": True,
+                "message": result["message"]
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "error": result["error"]
+            }, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    except ValueError as ve:
+        return JsonResponse({"error": str(ve)}, status=404)
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e)
+        }, status=500)
 
 @csrf_exempt
 def process_architectural_images(request) -> JsonResponse:
@@ -30,6 +170,16 @@ def process_architectural_images(request) -> JsonResponse:
         }, status=405)
 
     try:
+        # Validate session_id
+        session_id = request.POST.get("session_id")
+        if not session_id:
+            return JsonResponse({
+                "error": "Session ID is required"
+            }, status=400)
+        
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
+        
         # Get images from request
         uploaded_images = request.FILES.getlist("image")
         
@@ -39,7 +189,7 @@ def process_architectural_images(request) -> JsonResponse:
             return JsonResponse({
                 "error": error_message
             }, status=400)
-        
+
         # Prepare the inference prompt
         prompt = """
             Analyze each image, and try to infer if there are any patterns present or implied. 
@@ -48,16 +198,23 @@ def process_architectural_images(request) -> JsonResponse:
             If you are unable to infer any pattern from an image, that should be explicitly stated. 
             Provide your answer in Markdown format.
         """
-        chat_manager.add_manual_message(content="",message_type="USER",files=uploaded_images)
         
+        # Add user message with attachments
+        chat_manager.add_manual_message(content="", message_type="USER", files=uploaded_images)
+        
+        # Send message to Gemini
         result = chat_manager.send_message(
             message=prompt,
             files=uploaded_images
         )
-        if result["success"]== True:
+        
+        if result["success"]:
+            # Retrieve the latest assistant message
+            history = chat_manager.get_chat_history()
+            assistant_message = history[-1] if history else {}
             return JsonResponse({
                 "success": "Images processed successfully",
-                "result": result["response"]
+                "result": assistant_message.get("content", "")
             })
         else:
             return JsonResponse({
@@ -86,11 +243,22 @@ def validate_image_files(files: List[UploadedFile]) -> tuple[bool, str]:
             
     return True, ""
 
-
+@csrf_exempt
 def process_repository_url(request) -> JsonResponse:
     """Process a GitHub repository URL and analyze images with Gemini"""
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
+    
     try:
-        url = request.POST.get("repo_url")
+        data = json.loads(request.body)
+        url = data.get("repo_url")
+        session_id = data.get("session_id")
+        
+        if not url or not session_id:
+            return JsonResponse({"error": "repo_url and session_id are required."}, status=400)
+        
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
 
         # Log the URL in chat history
         chat_manager.add_manual_message(
@@ -99,11 +267,13 @@ def process_repository_url(request) -> JsonResponse:
         )
 
         # Parse owner and repo name from URL
-        path_parts = url.split('/')
+        path_parts = url.rstrip('/').split('/')
+        if len(path_parts) < 2:
+            return JsonResponse({"error": "Invalid repository URL format."}, status=400)
         owner = path_parts[-2]
         repo_name = path_parts[-1]
 
-        # Extract images as Django File objects
+        # Extract images as file-like objects
         image_files = extract_images_from_repo(owner, repo_name)
 
         if not image_files:
@@ -112,7 +282,7 @@ def process_repository_url(request) -> JsonResponse:
                 message_type="ASSISTANT"
             )
             return JsonResponse({"result": "No images found in the repository."})
-
+        
         # Send images to Gemini with architectural pattern analysis prompt
         prompt = (
             "Analyze each image, and try to infer if there are any patterns present or implied. "
@@ -126,17 +296,33 @@ def process_repository_url(request) -> JsonResponse:
             files=image_files
         )
 
-        return JsonResponse({
-            "success": "Images found and processed successfully",
-            "result": response.get("response", "")
-        })
+        if response["success"]:
+            # Retrieve the latest assistant message
+            history = chat_manager.get_chat_history()
+            assistant_message = history[-1] if history else {}
+            return JsonResponse({
+                "success": "Images found and processed successfully",
+                "result": assistant_message.get("content", "")
+            })
+        else:
+            return JsonResponse({
+                "error": "Failed to process images",
+                "result": response["error"]
+            }, status=500)
 
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         error_message = f"Error processing repository: {str(e)}"
-        chat_manager.add_manual_message(
-            content=error_message,
-            message_type="ASSISTANT"
-        )
+        # Initialize chat manager without session_id to log the error
+        try:
+            chat_manager = GeminiChatManager(session_id=session_id)
+            chat_manager.add_manual_message(
+                content=error_message,
+                message_type="ASSISTANT"
+            )
+        except:
+            pass  # If session_id is invalid, skip logging
         return JsonResponse({"error": error_message}, status=500)
 
 def extract_images_from_repo(owner: str, repo_name: str, path: str = "") -> List[Any]:
@@ -173,38 +359,62 @@ def get_repo_contents(owner: str, repo_name: str, path: str = "") -> dict:
         return response.json()
     return None
 
-
-def suggest_architecture_improvements():
+@csrf_exempt
+def suggest_architecture_improvements(request) -> JsonResponse:
     """Get architecture improvement recommendations."""
-    prompt = '''Based on the previously evaluated architecture, suggest specific improvements or optimizations.
-    Prioritize recommendations that enhance efficiency, scalability, maintainability, and alignment with best practices.
-    Avoid repeating the evaluation and focus solely on actionable changes with clear justifications.'''
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
     
     try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return JsonResponse({"error": "session_id is required."}, status=400)
+        
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
+        
+        prompt = '''Based on the previously evaluated architecture, suggest specific improvements or optimizations.
+        Prioritize recommendations that enhance efficiency, scalability, maintainability, and alignment with best practices.
+        Avoid repeating the evaluation and focus solely on actionable changes with clear justifications.'''
+        
         result = chat_manager.send_message(prompt)
         
         if result["success"]:
+            # Retrieve the latest assistant message
+            history = chat_manager.get_chat_history()
+            assistant_message = history[-1] if history else {}
             return JsonResponse({
                 "success": "Response received successfully",
-                "result": result["response"]
+                "result": assistant_message.get("content", "")
             })
         else:
             return JsonResponse({
                 "error": "Gemini related error",
                 "result": result["error"]
-            })
+            }, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         return JsonResponse({
             "error": "Unexpected error",
             "result": str(e)
-        })
+        }, status=500)
 
 @csrf_exempt
-def change_expertise(request):
+def change_expertise(request) -> JsonResponse:
     """Change the expertise level of responses."""
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
+    
     try:
         data = json.loads(request.body)
         expertise = data.get('expertise')
+        session_id = data.get('session_id')
+        
+        if not expertise or not session_id:
+            return JsonResponse({"error": "expertise and session_id are required."}, status=400)
         
         expertise_prompts = {
             'Beginner': "From now on, please provide information as if the user is a beginner with no prior knowledge.",
@@ -215,21 +425,27 @@ def change_expertise(request):
         prompt = expertise_prompts.get(expertise)
         if not prompt:
             return JsonResponse({
-                "error": "Invalid expertise level"
+                "error": "Invalid expertise level. Choose from Beginner, Intermediate, Expert."
             }, status=400)
             
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
+        
         result = chat_manager.send_message(prompt)
         
         if result["success"]:
+            # Retrieve the latest assistant message
+            history = chat_manager.get_chat_history()
+            assistant_message = history[-1] if history else {}
             return JsonResponse({
                 "success": "Response received successfully",
-                "result": result["response"]
+                "result": assistant_message.get("content", "")
             })
         else:
             return JsonResponse({
                 "error": "Gemini related error",
                 "result": result["error"]
-            })
+            }, status=500)
             
     except json.JSONDecodeError:
         return JsonResponse({"error": "Invalid JSON"}, status=400)
@@ -237,62 +453,112 @@ def change_expertise(request):
         return JsonResponse({
             "error": "Unexpected error",
             "result": str(e)
-        })
+        }, status=500)
 
-
-def get_explanation():
+@csrf_exempt
+def get_explanation(request) -> JsonResponse:
     """Get reasoning explanation for the system output."""
-    prompt = '''Please provide an explanation of the output generated by the system.
-    Include details on the architecture components, relationships, and any other relevant information.'''
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
     
     try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return JsonResponse({"error": "session_id is required."}, status=400)
+        
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
+        
+        prompt = '''Please provide an explanation of the output generated by the system.
+        Include details on the architecture components, relationships, and any other relevant information.'''
+        
         result = chat_manager.send_message(prompt)
         
         if result["success"]:
+            # Retrieve the latest assistant message
+            history = chat_manager.get_chat_history()
+            assistant_message = history[-1] if history else {}
             return JsonResponse({
                 "success": "Response received successfully",
-                "result": result["response"]
+                "result": assistant_message.get("content", "")
             })
         else:
             return JsonResponse({
                 "error": "Gemini related error",
                 "result": result["error"]
-            })
+            }, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         return JsonResponse({
             "error": "Unexpected error",
             "result": str(e)
-        })
+        }, status=500)
 
-
-def get_literature_references():
+@csrf_exempt
+def get_literature_references(request) -> JsonResponse:
     """Get literature references for architectural concepts."""
-    prompt = '''Please provide literature references or resources that can help the user understand the architectural concepts and patterns discussed.'''
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
     
     try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return JsonResponse({"error": "session_id is required."}, status=400)
+        
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
+        
+        prompt = '''Please provide literature references or resources that can help the user understand the architectural concepts and patterns discussed.'''
+        
         result = chat_manager.send_message(prompt)
         
         if result["success"]:
+            # Retrieve the latest assistant message
+            history = chat_manager.get_chat_history()
+            assistant_message = history[-1] if history else {}
             return JsonResponse({
                 "success": "Response received successfully",
-                "result": result["response"]
+                "result": assistant_message.get("content", "")
             })
         else:
             return JsonResponse({
                 "error": "Gemini related error",
                 "result": result["error"]
-            })
+            }, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         return JsonResponse({
             "error": "Unexpected error",
             "result": str(e)
-        })
-    
+        }, status=500)
 
-def get_chat_history(request):
+@csrf_exempt
+def get_chat_history(request) -> JsonResponse:
+    """Retrieve chat history for a specific session."""
+    if request.method != 'GET':
+        return JsonResponse({"error": "Method not allowed. Use GET."}, status=405)
+    
     try:
-        # Use the global chat_manager instance
+        session_id = request.GET.get('session_id')
+        if not session_id:
+            return JsonResponse({"error": "session_id is required as a query parameter."}, status=400)
+        
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
+        
         history = chat_manager.get_chat_history()
+        
+        if isinstance(history, dict) and "error" in history:
+            return JsonResponse({
+                "success": False,
+                "error": history["error"]
+            }, status=500)
         
         # Transform the history to match the frontend's expected format
         formatted_history = []
@@ -301,10 +567,10 @@ def get_chat_history(request):
                 "sender": message["type"].lower(),
                 "chat_content": message["content"],
                 "chat_image": message["attachments"][0] if message["attachments"] else None,
-                "chat_date": message["timestamp"].strftime("%Y-%m-%d %H:%M:%S")
+                "chat_date": message["timestamp"].strftime("%Y-%m-%d %H:%M:%S") if message["timestamp"] else None
             }
             formatted_history.append(chat_dict)
-            
+        
         return JsonResponse(formatted_history, safe=False)
         
     except Exception as e:
@@ -312,34 +578,51 @@ def get_chat_history(request):
             {"error": f"Failed to retrieve chat history: {str(e)}"},
             status=500
         )
-    
-def get_real_examples():
+
+def get_real_examples(request) -> JsonResponse:
     """Explore real examples"""
-    prompt = '''Based on the previously evaluated architecture, provide real-world implementation examples. For each pattern, include:
-                Pattern: The name of the architectural pattern.
-                Example: A real-world implementation of the pattern.
-                Context: The scenario or conditions where the pattern is applied.
-                Practical Application: How the pattern solves the problem or enhances the system.
-                Link: A reference or resource to explore the example further.
-                Present the results as a well-structured Markdown document using bullet points for each topic, ensuring the information for each pattern is clearly separated.
-                Avoid overly large or distracting titles.
-            '''
+    if request.method != 'POST':
+        return JsonResponse({"error": "Method not allowed. Use POST."}, status=405)
     
     try:
+        data = json.loads(request.body)
+        session_id = data.get('session_id')
+        
+        if not session_id:
+            return JsonResponse({"error": "session_id is required."}, status=400)
+        
+        # Initialize chat manager with session_id
+        chat_manager = GeminiChatManager(session_id=session_id)
+        
+        prompt = '''Based on the previously evaluated architecture, provide real-world implementation examples. For each pattern, include:
+                    Pattern: The name of the architectural pattern.
+                    Example: A real-world implementation of the pattern.
+                    Context: The scenario or conditions where the pattern is applied.
+                    Practical Application: How the pattern solves the problem or enhances the system.
+                    Link: A reference or resource to explore the example further.
+                    Present the results as a well-structured Markdown document using bullet points for each topic, ensuring the information for each pattern is clearly separated.
+                    Avoid overly large or distracting titles.
+                '''
+        
         result = chat_manager.send_message(prompt)
         
         if result["success"]:
+            # Retrieve the latest assistant message
+            history = chat_manager.get_chat_history()
+            assistant_message = history[-1] if history else {}
             return JsonResponse({
                 "success": "Response received successfully",
-                "result": result["response"]
+                "result": assistant_message.get("content", "")
             })
         else:
             return JsonResponse({
                 "error": "Gemini related error",
                 "result": result["error"]
-            })
+            }, status=500)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
     except Exception as e:
         return JsonResponse({
             "error": "Unexpected error",
             "result": str(e)
-        })
+        }, status=500)
