@@ -7,7 +7,7 @@ const DownloadSRS = ({ transcription, summary }) => {
     if (!transcription || !summary.length) return;
 
     try {
-      const response = await fetch("http://localhost:5000/download_srs", {
+      const response = await fetch("http://localhost:5000/api/download_srs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

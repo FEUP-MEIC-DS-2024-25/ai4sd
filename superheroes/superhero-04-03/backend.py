@@ -33,7 +33,7 @@ def load_history():
 # Get the gemini secret from the environment
 def get_secret():
     client = secretmanager.SecretManagerServiceClient()
-    name = f"projects/150699885662/secrets/superhero-04-03-secret"
+    name = f"projects/150699885662/secrets/superhero-04-03-secret/versions/latest"
     response = client.access_secret_version(name=name)
     return response.payload.data.decode("UTF-8")
 
@@ -165,7 +165,7 @@ def generate_srs(transcription, summary):
     doc.save(output_file)
     return output_file
 
-@app.route("/transcribe", methods=["POST"])
+@app.route("/api/transcribe", methods=["POST"])
 def transcribe():
 
     print("Request received:", request)
@@ -200,7 +200,7 @@ def transcribe():
 
     return jsonify({"transcription": transcription, "summary": summary})
 
-@app.route("/download_srs", methods=["POST"])
+@app.route("/api/download_srs", methods=["POST"])
 def download_srs():
     data = request.json
     transcription = data.get("transcription")
@@ -213,7 +213,7 @@ def download_srs():
     srs_path = generate_srs(transcription, summary)
     return send_file(srs_path, as_attachment=True)
 
-@app.route("/history", methods=["GET"])
+@app.route("/api/history", methods=["GET"])
 def history():
     return jsonify(load_history())
 
