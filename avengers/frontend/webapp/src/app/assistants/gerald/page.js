@@ -1,7 +1,8 @@
+"use client";
 import styles from "@/app/page.module.css";
-import 'bootstrap/dist/css/bootstrap.css';
+import "bootstrap/dist/css/bootstrap.css";
 
-import '@/app/globals.css';
+import "@/app/globals.css";
 
 import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
@@ -15,10 +16,14 @@ export default function Interactor() {
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
-            <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
+            <AssistantHistory
+                name={assistName}
+                type={assistType}
+                interactions={assistHistory}
+            />
             <Assistant />
         </div>
-    )
+    );
 }
 function prepareMockHistory() {
     const history = [];
