@@ -236,16 +236,17 @@ async def delete_pinned_message_by_id(body: DeletePinnedMessageRequest):
 def createRequirementsGemini(text_content):
     try:
         context = (
-            "Please format and organize the following software requirements into the following structure.\n"
-            "Your answer should contain only the formatted requirements in simple text.\n"
+            "Please format and organize the following software requirements.\n"
+            "Your answer should contain **only** the requirements in simple text with a estimation in points and acceptance criteria.\n"
+            "There must be nothing else in your response. Please use the following format:\n"
             "A. Functional Requirements\n"
-            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |"
-            "| -------- | ---------- | ------------------- | ------------------- |"
-            "| FR1 | ... | ... | ... |\n"
+            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |\n"
+            "| -------- | ---------- | ------------------- | ------------------- |\n"
+            "| FR1 | [User Story] | [Estimation] | [Acceptance Criteria] |\n"
             "B. Non-Functional Requirements\n"
-            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |"
-            "| -------- | ---------- | ------------------- | ------------------- |"
-            "| NFR1 | ... | ... | ... |\n"
+            "| Story ID | User Story | Estimation (Points) | Acceptance Criteria |\n"
+            "| -------- | ---------- | ------------------- | ------------------- |\n"
+            "| NFR1 | [User Story] | [Estimation] | [Acceptance Criteria] |\n"
             f"Requirements to format:\n{text_content}"
         )
 
