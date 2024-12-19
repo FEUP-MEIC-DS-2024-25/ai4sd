@@ -50,7 +50,13 @@ async function getSelectedServiceName() : Promise<string> {
     }
 }
 
-export async function execute(context: vscode.ExtensionContext) {
+function extractJson(data: string) : string {
+  let start = data.indexOf('{');
+  let end = data.lastIndexOf('}') + 1;
+  return data.substring(start, end);
+}
+
+export async function execute() {
     const { repoOwner, repoName } = await repoInfo.getRepositoryInfo();
     const serviceName = await getSelectedServiceName();
 
@@ -71,12 +77,6 @@ export async function execute(context: vscode.ExtensionContext) {
       // Fetch GET request
       const apiResponse = await fetch(`https://superhero-06-01-150699885662.europe-west1.run.app/api/${serviceName}/${repoOwner}/${repoName}`);
       
-      // if (!apiResponse.ok) {
-      //   throw new Error('Failed to fetch API response: ' + apiResponse.statusText);
-      // }
-      // const apiData = await apiResponse.json();
-      // console.log('GET response data:', apiData);
-
       //stub
       //const apiResponse = 
       //`{
@@ -150,24 +150,30 @@ export async function execute(context: vscode.ExtensionContext) {
       //    "toolVersion": "1.0.0"
       //  }
       //}`;
+      
+      // if (!apiResponse.ok) {
+      //   throw new Error('Failed to fetch API response: ' + apiResponse.statusText);
+      // }
+      // const apiData = await apiResponse.json();
+      // console.log('GET response data:', apiData);
 
       let apiString = await apiResponse.text();
 
       if (!apiResponse.ok){
-        const errorjson = JSON.parse(apiString);
-        vscode.window.showErrorMessage(errorjson.error);
+        const errorjson = apiResponse.statusText;
+        vscode.window.showErrorMessage(errorjson);
         return;
       }
 
       console.log('GET response full data:', apiString);
-      apiString = apiString.substring(10, apiString.length - 8);
-      apiString = apiString.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\/g, '');
-      console.log('GET response data:', apiString);
+      let parsedString = extractJson(apiString);
+      parsedString = parsedString.replace(/\\n/g, '\n').replace(/\\"/g, '"').replace(/\\/g, '');
+      console.log('GET response data:', parsedString);
       
-      const jsonData : analysisJson.AnalysisJson = JSON.parse(apiString);
+      const jsonData : analysisJson.AnalysisJson = JSON.parse(parsedString);
       console.log("JSON: ", jsonData);
       const markdownData = analysisJson.transformToMarkdown(jsonData);
-      
+
       // Convert Markdown to HTML using Showdown.js
       const converter = new showdown.Converter();
       const responseContent = converter.makeHtml(markdownData);
