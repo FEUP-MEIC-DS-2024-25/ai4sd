@@ -1,13 +1,13 @@
-version: '1.0'
+version: '3.8'
 
 services:
   app:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: docker-py
     ports:
-      - '3333:3333'
+      - "8080:8080"
     volumes:
       - .:/app
-      - /app/node_modules      
+    environment:
+      - PYTHONUNBUFFERED=1
