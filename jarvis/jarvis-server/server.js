@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import { uploadRepo } from "../jarvis-writer/writer.js";
 import { getAuthOctokit } from "../jarvis-fetcher/auth.js";
 import { config } from "../config.js";
+import { handleWebhookEvent } from "../jarvis-publisher/webhook-handler.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
