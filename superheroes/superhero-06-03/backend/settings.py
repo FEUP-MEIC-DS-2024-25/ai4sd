@@ -59,6 +59,7 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
+    'https://superhero-06-03-150699885662.europe-west1.run.app/',
 ]
 
 ROOT_URLCONF = 'backend.urls'
