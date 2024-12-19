@@ -1,6 +1,6 @@
 # Superhero implementation
 
-# NEW INFO ON RUNNING THE EXTENSIONS
+# How to run extensions integrated in the theme extensions (e.g. ai4sd-analysers)
 
 To run the extensions, open VS Code in the x-men folder. Afterwards, edit the .vscode/launch.json file in order to include the extensions you want to run. In each desired extension's folder, install dependencies and run `npm run compile`. Then you can run with F5 as you did previously (if it fails, try a second time and it should work).
 
@@ -24,7 +24,7 @@ Nothing needed
 5. Now you can code inside you superhero file just like you would if you were developing the extension by yourself! We recomend you to have a look at the [Visual Studio Code Extension Guide](https://code.visualstudio.com/api/extension-guides/overview), as it contains multiple examples of some features you may want in your extension!
 6. Finally, to test your code just make sure you have the respective extension folder open in the Explorer of your IDE, click f5 and chose VSCode Extension Development. Then Ctrl+Shift+P and search for the AI4SD extension command relative to your extension (All of them start by AI4SD so you can find it easily by just searching that). Once selected, just find your superhero name and select it and watch it run!
 
-## New Superhero implementation (standalone)
+## New Superhero implementation (subextension)
 1. For this, the code for your assistant needs to be in its own extension, placed in the `x-men` folder.
 2. In your extension's `package.json`, add an activation command corresponding to your base extension's `wakeup` command (you can see an example in `lavraai/package.json`)
 3. In your extension's source code, add the code that registers your extension to the base extension's menu (you can see an example in `lavraai/src/extension.ts`, but you don't need to call it in exactly the same way).
