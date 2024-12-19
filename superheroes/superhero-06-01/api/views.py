@@ -154,10 +154,23 @@ def analyze_user_stories(request, repo_owner, repo_name):
         "Analyze the following user stories for complexity and identify potential architectural challenges. "
         "Provide insights based on their descriptions and story points. Please return your response in the following JSON format:\n"
         "{\n"
-        '  "repositoryAnalysis": {\n'
+         '  "repositoryAnalysis": {\n'
         '    "repoName": "", // string\n'
+        '    "lastUserStorieHash": "", // string\n'
         '    "analysisDate": "", // string (ISO date format)\n'
-        '    "predictedDesignPatterns": [],\n'
+        '    "predictedDesignPatterns": [\n'
+        "      {\n"
+        '        "patternName": "", // string\n'
+        '        "confidence": 0.0, // float (0.0 to 1.0)\n'
+        '        "evidence": [\n'
+        "          {\n"
+        '            "type": "", // string ("file", "commit", "branch", etc.)\n'
+        '            "path": "", // string (file path or branch name)\n'
+        '            "reason": "" // string (explanation of why this is evidence)\n'
+        "          }\n"
+        "        ]\n"
+        "      }\n"
+        "    ],\n"
         '    "unusualPatterns": []\n'
         "  },\n"
         '  "meta": {\n'
@@ -165,7 +178,7 @@ def analyze_user_stories(request, repo_owner, repo_name):
         '    "linesOfCode": 0, // integer\n'
         '    "toolVersion": "" // string\n'
         "  }\n"
-        "}\n\n"
+        "}"
     )
     for story in user_stories:
         prompt += f"Description:\n{story['description']}\n"
