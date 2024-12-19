@@ -57,24 +57,28 @@ export default function Assistant() {
         </div>
       </header>
       <main>
-        <section>
+        <section className="upload_section">
           <div>
-            <label className="upload" htmlFor="code-file">
+            <label className="upload" htmlFor="code_file">
               Upload code file<i className="fa-solid fa-paperclip"></i>
             </label>
             <input
+              id="code_file"
               className="upload_btn"
               type="file"
+              style={{ display: 'none' }}
               onChange={(e) => handleFileChange(e, 'code')}
             />
           </div>
           <div>
-            <label className="upload" htmlFor="tests-file">
+            <label className="upload" htmlFor="tests_file">
               Upload tests file<i className="fa-solid fa-paperclip"></i>
             </label>
             <input
+              id="tests_file"
               className="upload_btn"
               type="file"
+              style={{ display: 'none' }}
               onChange={(e) => handleFileChange(e, 'test')}
             />
           </div>
@@ -90,7 +94,7 @@ export default function Assistant() {
           ></textarea>
         </section>
 
-        <section>
+        <section className="action_section">
           <button onClick={handleGenerateMutants}>Generate mutant tests</button>
           <button onClick={handleDownloadMutations}>Download mutant tests</button>
         </section>

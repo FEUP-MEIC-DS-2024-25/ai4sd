@@ -101,3 +101,48 @@ button:last-child {
     margin-right: 0;
 }
 
+main .action_section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+main .action_section button {
+    background-color: #242642;
+    padding: 10px;
+    border-radius: 10px;
+    width: 100%;
+    font-size: 34px; /* Aumentado de 18px */
+}
+
+main .action_section button:first-of-type {
+    margin-bottom: 1rem;
+}
+
+main .upload_section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+main .upload_section div {
+    padding: 10px;
+    border-radius: 10px;
+    width: 47%;
+    text-align: center;
+}
+
+main .upload_section i {
+    margin-left: 1em;
+}
+
+main .upload_section label {
+    cursor: pointer;
+}
+
+.upload_section div {
+    background-color: #242642;
+}
