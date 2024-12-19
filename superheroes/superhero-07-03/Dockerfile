@@ -14,5 +14,8 @@ COPY . .
 # Expose the port
 EXPOSE 8080
 
+RUN --mount=type=secret,id=secret \
+    cat /run/secrets/secret > /etc/gemini_token
+
 # Command to run the gRPC server
 CMD ["python", "server.py"]
