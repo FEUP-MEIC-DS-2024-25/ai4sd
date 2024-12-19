@@ -10,8 +10,9 @@ export const config = {
     appId: process.env.APP_ID,
     org: process.env.GITHUB_ORG,
     privateKeyPath: GITHUB_APP_PRIVATE_KEY_PATH,
-    serviceAccountKeyPath: SERVICE_ACCOUNT_KEY_PATH,
-    downloadDir: DOWNLOAD_DIR
+//    serviceAccountKeyPath: SERVICE_ACCOUNT_KEY_PATH,
+    downloadDir: DOWNLOAD_DIR,
+    privateKey: process.env.SERVICE_ACCOUNT_KEY,
 };
 
 console.log("SERVICE_ACCOUNT_PATH:", config.serviceAccountKeyPath);
