@@ -37,11 +37,8 @@ function Input() {
         //     const response = await axios.post(BASE_URL + '/app/create_session/');
         //     //set chatId
         //     const newChatId = response.data.session.session_id;
-            
-
-
-        // };
-        //formData.append("session_id", chatId);
+                    // };
+        formData.append("session_id", chatId);
         console.log(BASE_URL);
         console.log(formData);
         const response = await axios.post(BASE_URL + '/app/get_content/', formData);
