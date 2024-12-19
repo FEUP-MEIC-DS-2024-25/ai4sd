@@ -156,11 +156,45 @@ header .aboutus{
     padding: 1rem;
     margin-top: 2rem;
     border-radius: 1rem;
+    font-size: 10px;
+    text-align: justify;
 }
+
 
 .assistantInteraction .msg.user{
     background-color: var(--secondary-widget);
     margin-left: auto;
+}
+
+.assistantInteraction .msg h1,
+.assistantInteraction .msg h2,
+.assistantInteraction .msg h3,
+.assistantInteraction .msg h4,
+.assistantInteraction .msg h5,
+.assistantInteraction .msg h6 {
+    font-size: 2em;
+    margin: 0.5em 0;
+}
+
+.assistantInteraction .msg p {
+    font-size: 1.5em;
+    margin: 0.5em 0;
+}
+
+.assistantInteraction .msg ul,
+.assistantInteraction .msg ol {
+    margin: 0.5em 0;
+    padding-left: 1.5em;
+}
+
+.assistantInteraction .msg li {
+    font-size: 1.5em;
+    margin: 0.5em 0;
+}
+
+.assistantInteraction .msg ul li p {
+    font-size: 1em;
+    margin: 0.5em 0;
 }
 
 @media (max-width: 600px) {
