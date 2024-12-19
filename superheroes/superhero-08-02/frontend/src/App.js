@@ -42,7 +42,7 @@ function App() {
             }
           />
           <Route
-            path="/project/:projectId"
+            path="/spark/:projectId"
             element={
               <Layout>
                 <Project />

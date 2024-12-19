@@ -56,14 +56,14 @@ function Create() {
 
       <form className="create-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="projectName">Project Name</label>
+          <label htmlFor="name">Name</label>
           <input
             type="text"
             id="name"
             name="name"
             value={formData.name}
             onChange={handleChange}
-            className={`form-input ${errors.projectName ? "is-invalid" : ""}`}
+            className={`form-input ${errors.name ? "is-invalid" : ""}`}
             required
           />
           {errors.name && (

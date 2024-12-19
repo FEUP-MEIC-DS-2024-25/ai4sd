@@ -7,8 +7,8 @@ from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 from api.services.github_rest import githubRestAPI
-from .forms import MyUserCreationForm, SparkProjectForm
-from .models import SparkProject
+from .forms import MyUserCreationForm, SparkProjectSerializer
+from .models import SparkProject, Profile
 import requests
 from django.contrib.auth import authenticate, login
 from rest_framework.views import APIView
@@ -104,30 +104,37 @@ class SparkProjectAPIView(APIView):
             "description": project.description,
             "github_project_link": project.github_project_link or None,
             "miro_board_id": project.miro_board_id or None,
-            "created_at": project.created_at,
-            "updated_at": project.updated_at,
             "owner": project.owner.user.username,
             "members": [member.user.username for member in project.members.all()],
         }
 
         return Response(project_data, status=status.HTTP_200_OK)
 
-
 class CreateSparkProjectAPIView(APIView):
-    def post(self, request):
-        form = SparkProjectForm(request.data)
+    permission_classes = [IsAuthenticated]
 
-        if form.is_valid():
-            project = form.save(commit = False)
-            project.owner = request.user.profile
-            project.save()
-            project.members.add(request.user.profile)
+    def post(self, request):
+
+        if SparkProject.objects.filter(github_project_link=request.data.get('github_project_link')).exists():
+            return Response({'errors': 'Project with this GitHub link already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if SparkProject.objects.filter(miro_board_id=request.data.get('miro_board_id')).exists():
+            return Response({'errors': 'Project with this Miro board ID already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = SparkProjectSerializer(data=request.data)
+
+        if serializer.is_valid():
+            profile = request.user.profile
+            project = serializer.save(owner=profile)
+            project.members.add(profile)
             return Response({'message': 'Project created successfully.', 'project_id': project.id}, status=status.HTTP_201_CREATED)
         
-        return Response({'error': 'Invalid data.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
 
 class DeleteSparkProjectAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, id):
         project = get_object_or_404(SparkProject, id = id, owner = request.user.profile)
         project.delete()
