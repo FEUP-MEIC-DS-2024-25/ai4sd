@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../config/axios";
+import { Link } from "react-router-dom";
 
 function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -66,7 +67,7 @@ function HomePage() {
               ))}
             </ul>
 
-            <a href="/create-spark-project">Create a new SPARK project</a>
+            <Link to ="/spark/create">Create a new SPARK project</Link>
 
             <button onClick={handleLogout}>Log out</button>
 

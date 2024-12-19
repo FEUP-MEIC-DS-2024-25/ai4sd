@@ -34,7 +34,7 @@ function App() {
             }
           />
           <Route
-            path="/create"
+            path="/spark/create"
             element={
               <Layout>
                 <Create />
@@ -62,6 +62,14 @@ function App() {
             element={
               <Layout>
                 <Signup />
+              </Layout>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <Layout>
+                <Profile />
               </Layout>
             }
           />

@@ -1,30 +1,41 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
+import apiClient from "../../config/axios";
+import { useNavigate, Link, useParams } from "react-router-dom";
 import "./Profile.css";
 
 function Profile() {
+  const { username } = useParams();
   const [user, setUser] = useState(null);
   const [miroToken, setMiroToken] = useState("");
   const [errors, setErrors] = useState("");
   const navigate = useNavigate();
 
+  const profileEndpoint = username
+    ? `/profile/${username}/`
+    : "/profile/";
+
   // Fetch user profile data
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/profile/")
+    apiClient
+      .get(profileEndpoint)
       .then((response) => setUser(response.data))
       .catch((error) => console.error("Error fetching profile:", error));
-  }, []);
+  }, [profileEndpoint]);
 
-  // Handle Miro Token Submission
   const handleMiroTokenSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:8000/api/add-miro-token/", { miro_token: miroToken })
-      .then(() => {
+    apiClient
+      .post("/api/add-miro-token/", { miro_token: miroToken })
+      .then((response) => {
         alert("Miro token saved successfully!");
-        window.location.reload(); // Reload profile data
+        setUser((prevUser) => ({
+          ...prevUser,
+          profile: {
+            ...prevUser.profile,
+            miro_token: miroToken,
+          },
+        }));
+        setMiroToken("");
       })
       .catch((error) => {
         if (error.response && error.response.data) {
@@ -35,14 +46,29 @@ function Profile() {
 
   // Handle Unlink Actions
   const handleAction = (url, message) => {
-    axios
+    apiClient
       .post(url)
-      .then(() => {
+      .then((response) => {
         alert(message);
-        window.location.reload(); // Reload profile data
+
+        if (url.includes("github-unlink")) {
+          setUser((prevUser) => ({
+            ...prevUser,
+            profile: { ...prevUser.profile, github_username: null },
+          }));
+        } else if (url.includes("delete-miro-token")) {
+          setUser((prevUser) => ({
+            ...prevUser,
+            profile: { ...prevUser.profile, miro_token: null },
+          }));
+        }
       })
       .catch((error) => console.error(`Error performing action on ${url}:`, error));
   };
+
+  if (errors) {
+    return <p>{errors}</p>;
+  }
 
   if (!user) {
     return <p>Loading profile...</p>;
