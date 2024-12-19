@@ -2,31 +2,62 @@ from fastapi import FastAPI, Request, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.encoders import jsonable_encoder
 import google.generativeai as genai
+from google.cloud import secretmanager
 import os
-from dotenv import load_dotenv
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend origin
+    allow_origins=["http://localhost:3000", "http://104.155.4.93", "https://104.155.4.93"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+def get_secret(secret_name: str, project_id: str) -> str:
+    """
+    Retrieve a secret's value from Google Cloud Secret Manager.
+
+    Args:
+        secret_name (str): The name of the secret.
+        project_id (str): The Google Cloud project ID.
+
+    Returns:
+        str: The value of the secret.
+    """
+    client = secretmanager.SecretManagerServiceClient()
+    secret_path = f"projects/{project_id}/secrets/{secret_name}/versions/latest"
+
+    try:
+        response = client.access_secret_version(request={"name": secret_path})
+        secret_value = response.payload.data.decode("UTF-8")
+        return secret_value
+    except Exception as e:
+        raise RuntimeError(f"Error retrieving secret '{secret_name}': {str(e)}")
+
 def setup_gemini_api():
-    load_dotenv()
-    api_key = os.environ.get("GEMINI_API_KEY")
+    """
+    Configure the Gemini API using a key retrieved from Google Cloud Secret Manager.
+    """
+    project_id = os.getenv("GCP_PROJECT_ID")
+    secret_name = "superhero-07-02"
+
+    if not project_id:
+        raise ValueError("GCP_PROJECT_ID environment variable is not set")
+
+    # Retrieve the API key from Secret Manager
+    api_key = get_secret(secret_name, project_id)
     if not api_key:
-        raise ValueError("GEMINI_API_KEY not found in environment variables")
+        raise ValueError(f"Secret '{secret_name}' is empty or could not be retrieved")
+
     genai.configure(api_key=api_key)
     return genai.GenerativeModel(model_name="gemini-1.5-pro")
 
 try:
     model = setup_gemini_api()
-except ValueError as e:
-    model = None  # Ensure model is None if setup fails
+except Exception as e:
+    model = None
     print(f"Error: {e}")
 
 def generate_unit_tests(function_code):
@@ -71,4 +102,4 @@ async def generate_tests(request: Request):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=3333)
+    uvicorn.run(app, host="0.0.0.0", port=8080)

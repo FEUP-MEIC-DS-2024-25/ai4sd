@@ -101,7 +101,7 @@ export async function downloadFiles(files, save_to_fs = false) {
             if (save_to_fs) { ensureDownloadDir(); saveFile(response.content, file.name, config.downloadDir, response.isBinary); }
         } catch (error) {
             console.error(`Error downloading file ${file.name}:`, error.message);
-            throw error; // Rethrow to handle at higher level
+            // Continue with the next file in case of errors
         }
     }
     return result;

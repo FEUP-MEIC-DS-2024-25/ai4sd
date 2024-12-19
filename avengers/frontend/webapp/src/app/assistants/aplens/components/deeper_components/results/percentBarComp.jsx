@@ -1,6 +1,5 @@
 import React from "react";
 import { CircularProgressBar } from "react-percentage-bar";
-import DownloadComponent from "./downloadComp";
 
 const PercentageBarComponent = ({results}) => {
 
@@ -10,17 +9,16 @@ const PercentageBarComponent = ({results}) => {
     return (
       <div className="flex items-center justify-center p-6">
         <div className="relative w-full max-w-xs">
-
-          <DownloadComponent results={results}/>
-
           <CircularProgressBar
             percentage={percentage}
             size={"2rem"}
             radius={"9rem"}
             roundLineCap={false}
             styles="separators"
-            separator={[5, 10, "#fff"]}
+            separator={[5, 20, "#e7e7e7"]}
             color={"#333"}
+            trackColor={"#e7e7e7"}
+            duration={750}
             percentageStyle={{
               color: "#000",
               fontSize: "1.5rem",

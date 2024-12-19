@@ -38,7 +38,6 @@ def initialize_firebase():
 db = initialize_firebase()
 
 class Response(BaseModel):
-    id: str
     ai_response: str
     created_at: datetime
 
@@ -61,7 +60,6 @@ class FirestoreRef(BaseModel):
         return db.document(self.id) 
 
 class Prompt(BaseModel):
-    id: str  
     created_at: datetime
     response: Optional[FirestoreRef]  
     user_input: str
@@ -88,6 +86,13 @@ class Chat(BaseModel):
         data["prompts"] = [FirestoreRef.from_firestore(ref) for ref in data.get("prompts", [])]
         data["created_at"] = data["created_at"].isoformat()  
         return cls(**data)
+    
+    @classmethod
+    def to_firestore(cls, chat: "Chat"):
+        chat_data = chat.model_dump(exclude={"id"})
+        chat_data["created_at"] = datetime.now()
+        chat_data["prompts"] = [ref.to_firestore_ref() for ref in chat.prompts]
+        return chat_data
     
 class RequirementRequest(BaseModel):
     requirement: str
@@ -116,7 +121,7 @@ async def create_chat(chat: Chat):
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("chats")
 
-        chat_data = chat.dict(exclude={"id"})  
+        chat_data = chat.model_dump()
         chat_data["created_at"] = datetime.now() 
 
         prompts_as_refs = []
@@ -139,23 +144,25 @@ async def create_chat(chat: Chat):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while creating the chat: {str(e)}")
 
+class CreatePromptRequest(BaseModel):
+    chat_id: str
+    user_input: str
 
 @app.post("/create_prompt")
-async def create_prompt(chat_id: str, user_input: str):
+async def create_prompt(request: CreatePromptRequest):
     """
     Endpoint to create a new prompt in Firestore.
     """
     prompt = Prompt(
-        id=chat_id,
         created_at=datetime.now(),
         response=None,
-        user_input=user_input
+        user_input=request.user_input
     )
 
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("prompts")
 
-        prompt_data = prompt.dict(exclude={"id"})  
+        prompt_data = prompt.model_dump(exclude={"id"})  
         prompt_data["created_at"] = datetime.now()  
 
         if prompt.response:
@@ -174,16 +181,26 @@ async def create_prompt(chat_id: str, user_input: str):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred while creating the prompt: {str(e)}")
-    
+
+
+class CreateResponseRequest(BaseModel):
+    prompt_id: str
+    ai_response: str
+
 @app.post("/create_response")
-async def create_response(response: Response):
+async def create_response(request: CreateResponseRequest):
     """
     Endpoint to create a new response in Firestore.
     """
+    response = Response(
+        ai_response=request.ai_response,
+        created_at=datetime.now()
+    )
+
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("ai_responses")
 
-        response_data = response.dict(exclude={"id"})  
+        response_data = response.model_dump(exclude={"id"})  
         response_data["created_at"] = datetime.now()  
 
         new_doc_ref = collection_ref.add(response_data)  
@@ -206,10 +223,12 @@ async def get_chats():
     try:
         collection_ref = db.collection("superhero-01-03").document("development").collection("chats")
         chat_documents = collection_ref.stream()
+        print(chat_documents)
 
         chats = []
         for doc in chat_documents:
             chat = Chat.from_firestore(doc)
+            print(chat)
             chats.append(chat)
 
         return chats if chats else {"error": "No chat data found in the collection"}
@@ -291,69 +310,80 @@ UPDATE ENDPOINTS
 
 """
 
-@app.put("/update_chat/{chat_id}")
-async def update_chat(chat_id: str, updated_chat: Chat):
+class UpdateChatRequest(BaseModel):
+    chat_id: str
+    prompt_id: str
+
+@app.post("/update_chat")
+async def update_chat(request: UpdateChatRequest):
     """
-    Endpoint to update a specific chat identified by its ID in Firestore.
+    Endpoint to update a chat in Firestore by adding a new prompt.
     """
     try:
-        chat_ref = db.collection("superhero-01-03").document("development").collection("chats").document(chat_id)
+        # Get the chat document reference
+        chat_ref = db.collection("superhero-01-03").document("development").collection("chats").document(request.chat_id)
+        
+        # Check if the chat exists
         chat_doc = chat_ref.get()
-
         if not chat_doc.exists:
             raise HTTPException(status_code=404, detail="Chat not found")
 
-        chat_data = updated_chat.dict(exclude={"id"})  
-        chat_data["created_at"] = datetime.now()  
+        # Get the prompt reference
+        prompt_ref = db.collection("superhero-01-03").document("development").collection("prompts").document(request.prompt_id)
 
-        prompts_as_refs = []
-        for prompt in updated_chat.prompts:
-            prompt_doc_path = f"superhero-01-03/development/prompts/{prompt.id}"  
-            prompt_ref = db.document(prompt_doc_path)
+        # Check if the prompt exist
+        if not prompt_ref.get().exists:
+            raise HTTPException(status_code=404, detail="Prompt not found")
 
-            if not prompt_ref.get().exists:
-                raise HTTPException(status_code=400, detail=f"Prompt with ID '{prompt.id}' does not exist")
 
-            prompts_as_refs.append(prompt_ref)
+        # Add the prompt to the chat
+        chat_data = chat_doc.to_dict()
+        if "prompts" not in chat_data:
+            chat_data["prompts"] = []
+        chat_data["prompts"].append(prompt_ref)
 
-        chat_data["prompts"] = prompts_as_refs  
+        # Update the chat document in Firestore
+        chat_ref.update(chat_data)
 
-        chat_ref.set(chat_data)
+        return {"success": True, "message": "Chat updated successfully"}
 
-        return {"success": True, "message": f"Chat {chat_id} updated successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"An error occurred while updating the chat: {str(e)}")
 
+class UpdatePromptRequest(BaseModel):
+    prompt_id: str
+    response_id: str
 
-
-@app.put("/update_prompt/{prompt_id}")
-async def update_prompt(prompt_id: str, updated_prompt: Prompt):
+@app.put("/update_prompt")
+async def update_prompt(request: UpdatePromptRequest):
     """
-    Endpoint to update a specific prompt identified by its ID in Firestore.
+    Endpoint to update a prompt in Firestore by adding a response reference.
     """
     try:
-        prompt_ref = db.collection("superhero-01-03").document("development").collection("prompts").document(prompt_id)
+        # Get the prompt document reference
+        prompt_ref = db.collection("superhero-01-03").document("development").collection("prompts").document(request.prompt_id)
+        
+        # Check if the prompt exists
         prompt_doc = prompt_ref.get()
-
         if not prompt_doc.exists:
             raise HTTPException(status_code=404, detail="Prompt not found")
 
-        prompt_data = updated_prompt.dict(exclude={"id"})  
-        prompt_data["created_at"] = datetime.now()  
-        if updated_prompt.response:
-            response_doc_path = f"superhero-01-03/development/ai_responses/{updated_prompt.response.id}" 
-            response_ref = db.document(response_doc_path)
+        # Get the response reference
+        response_ref = db.collection("superhero-01-03").document("development").collection("ai_responses").document(request.response_id)
 
-            if not response_ref.get().exists:
-                raise HTTPException(status_code=400, detail=f"Response with ID '{updated_prompt.response.id}' does not exist")
+        # Check if the response exists
+        if not response_ref.get().exists:
+            raise HTTPException(status_code=404, detail="Response not found")
 
-            prompt_data["response"] = response_ref  
+        # Update the response field in the prompt document
+        prompt_ref.update({
+            "response": response_ref
+        })
 
-        prompt_ref.set(prompt_data)
+        return {"success": True, "message": "Prompt updated successfully"}
 
-        return {"success": True, "message": f"Prompt {prompt_id} updated successfully"}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"An error occurred while updating the prompt: {str(e)}")
 
 
 """
@@ -363,7 +393,7 @@ DELETE ENDPOINTS
 """
 
 @app.delete("/delete_chat/{chat_id}")
-async def delete_chat(chat_id: str):
+async def do(chat_id: str):
     """
     Endpoint to delete an existing chat by its ID.
     """
