@@ -10,7 +10,7 @@ import { Card, CardHeader, CardContent, CardFooter } from "@/app/components/ui/c
 import { Input } from "@/app/components/ui/input"
 import { ScrollArea } from "@/app/components/ui/scroll-area"
 import Previewer from "./Previewer"
-import { createPrompt, createResponse, convertRequirementToText } from '@/app/assistants/req2test/api/api'
+import { createPrompt, createResponse, updatePrompt, updateChat, convertRequirementToText } from '@/app/assistants/req2test/api/api'
 
 import { Send } from "lucide-react"
 
@@ -68,25 +68,39 @@ export const Chatbot = ({ chat, setChat }) => {
         messages: [...chat.messages, newMessage]
       }
       setChat(updatedChat)
-
-      // Call createPrompt API
-      //const prompt = await createPrompt(chat.id, input);
-      //const promptId = prompt.id;
+      setInput("")
 
       // API call to get AI response
-      const aiResponseText = await convertRequirementToText(input);
+      const gherkinResponse = await convertRequirementToText(input);
+      const aiResponseText = gherkinResponse.gherkin;
 
-      // Call createResponse API
-      //const response = await createResponse(promptId, aiResponseText);
+      const aiResponse = {
+        content: aiResponseText,
+        sender: "bot"
+      }
 
-      const botResponse = { content: aiResponseText, sender: "bot" }
       const chatWithBotResponse = {
         ...updatedChat,
-        messages: [...updatedChat.messages, botResponse]
+        messages: [...updatedChat.messages, aiResponse]
       }
+
       setChat(chatWithBotResponse)
 
-      setInput("")
+      /* Update DB with user input and AI response */
+
+      // Call createPrompt API
+      const prompt = await createPrompt(chat.id, input);
+      const promptId = prompt.id;
+
+      // Call createResponse API
+      const response = await createResponse(promptId, aiResponseText);
+      const responseId = response.id;
+
+      // Call updatePrompt with prompt and AI response
+      await updatePrompt(promptId, responseId);
+
+      // Call updateChat with prompt
+      await updateChat(chat.id, promptId);
     }
   }
 
