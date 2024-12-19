@@ -9,12 +9,12 @@ def get_content(request):
     if request.FILES.get('image'):
         process_architectural_images(request)
     if request.method == "POST" and request.POST.get("options", "") == "recommendations":
-        suggest_architecture_improvements()
+        suggest_architecture_improvements(request)
     if request.method == "POST" and request.POST.get("options", "") == "ExplainReasoning":
-        get_explanation()
+        get_explanation(request)
     if request.method == "POST" and request.POST.get("options", "") == "literature":
-        get_literature_references()
+        get_literature_references(request)
     if request.method == "POST" and request.POST.get("options", "") == "realExamples":
-        get_real_examples()
+        get_real_examples(request)
     return JsonResponse({"success": "Request received successfully"})
 
