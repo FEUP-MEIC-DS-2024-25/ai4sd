@@ -13,7 +13,7 @@ export default function PinnedMessagesBlock({ pinnedMessages, conversationId, se
     const [deletingMessageId, setDeletingMessageId] = useState(null);
     const [editingMessageId, setEditingMessageId] = useState(null);  // Track the message being edited
     const [editedMessage, setEditedMessage] = useState("");  // Store the new message for editing
-    const { handleEditPin } = useAssistPinSend();
+    const { handleEditPin  } = useAssistPinSend();
 
     const toggleView = () => {
         setIsHidden(!isHidden);
