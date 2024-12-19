@@ -171,8 +171,8 @@ function FormsComponent({ setActiveView  }) {
       <Button 
         radius="sm"
         size="md"
-        onClick={handleTestClick}
-        className={`px-10 text-lg bg-zinc-800 border-zinc-800 border-1.5 hover:text-zinc-800 transition duration-300 ${
+        onPress={handleTestClick}
+        className={`px-10 text-lg bg-zinc-800 border-zinc-800 border-1.5 hover:!text-zinc-800 transition duration-300 ${
           loading
             ? "bg-zinc-800 cursor-not-allowed"
             : "text-white hover:bg-white"
