@@ -14,7 +14,7 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ai4sd-analysers" is now active!');
 	const options: AI4SDMenuOption[] = [
-		{ label: "ArchiDetect", description: "Executes ArchiDetect superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/ArchiDetect/ArchiDetect.js')).execute(context)},
+		{ label: "ArchiDetect", description: "Executes ArchiDetect superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/ArchiDetect/ArchiDetect.js')).execute()},
 		{ label: "Warden AI", description: "Executes Warden AI superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/warden_ai/warden_ai.js')).execute()},
 		{ label: "SARA", description: "Executes SARA superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/SARA/SARA.js')).execute(context)},
 		{ label: "Archy", description: "Executes Archy superhero", execute: async (context: vscode.ExtensionContext) => (await import('./superheroes/Archy/Archy.js')).execute(context)}
