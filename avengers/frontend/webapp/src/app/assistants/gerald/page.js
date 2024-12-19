@@ -1,35 +1,17 @@
-"use client";
-import styles from "@/app/page.module.css";
-import "bootstrap/dist/css/bootstrap.css";
 
-import "@/app/globals.css";
+import 'bootstrap/dist/css/bootstrap.css';
+import AI from './chat/page';
+import '@/app/globals.css';
+import Projects from './project/page';
 
-import AssistantPicker from "@/app/components/assistantPicker";
-import AssistantHistory from "@/app/components/assistantHistory";
-import Assistant from "./components/assistant";
+
 
 export default function Interactor() {
-    //preparing mock data
-    const assistName = "Gerald";
-    const assistType = "Gerald"; // change according to the assistant type (req, arch, refact, verif)
-    const assistHistory = prepareMockHistory();
-    return (
-        <div className={styles.interactorLayout}>
-            <AssistantPicker />
-            <AssistantHistory
-                name={assistName}
-                type={assistType}
-                interactions={assistHistory}
-            />
-            <Assistant />
-        </div>
-    );
-}
-function prepareMockHistory() {
-    const history = [];
-    for (let i = 1; i <= 20; i++) {
-        const chat = { text: `Chat ${i}`, link: "#" };
-        history.push(chat);
+    let cond = false
+    if (cond) {
+        return <AI></AI>
+    }else{
+        return <Projects></Projects>
     }
-    return history;
 }
+

@@ -1,5 +1,6 @@
 flask
 flask_cors
 google.generativeai
+google-cloud-secret-manager
 python-dotenv
 firebase-admin
