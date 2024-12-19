@@ -17,7 +17,7 @@ const App = () => {
     if (input) formData.append("content", input);
 
     try {
-      const response = await fetch("http://localhost:5000/Chat", {
+      const response = await fetch("http://localhost:8080/Chat", {
         method: "POST",
         body: formData,
       });
@@ -43,7 +43,7 @@ const App = () => {
       const formData = new FormData();
       formData.append("file", file);
 
-      const uploadResponse = await fetch("http://localhost:5000/UploadFile", {
+      const uploadResponse = await fetch("http://localhost:8080/UploadFile", {
         method: "POST",
         body: formData,
       });
@@ -63,7 +63,7 @@ const App = () => {
   const trackProgress = async () => {
     const interval = setInterval(async () => {
       try {
-        const response = await fetch("http://localhost:5000/progress");
+        const response = await fetch("http://localhost:8080/progress");
         if (response.ok) {
           const jsonResponse = await response.json();
           setProgress(jsonResponse.status);
