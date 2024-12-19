@@ -2,6 +2,21 @@ import axios from "axios";
 
 export default function useAssistPinSend() {
 
+    const handleEditPin = async (pinnedId, newMessage, conversationId) => {
+        try {
+            const editPinnedMessage = {
+                pinned_id: pinnedId,
+                message: newMessage
+            }
+            //const response = await axios.put(`http://localhost:8080/chat/pin/${conversationId}`, editPinnedMessage);
+            const response = await axios.put(`https://superhero-03-01-150699885662.europe-west1.run.app/chat/pin/${conversationId}`, editPinnedMessage);
+            return response;
+        } catch (error) {
+            console.error("Error updating pinned message:", error);
+        }
+    };
+
+
     const handleSendPin = async (pinnedMessage, conversationId) => {
         try {
             //const response = await axios.post(`http://localhost:8080/chat/pin/${conversationId}`, pinnedMessage);
@@ -12,6 +27,21 @@ export default function useAssistPinSend() {
             return error;
         }
     };
+    
+
+    //const handleEditPin = async (pinnedId, newMessage, conversationId) => {
+    //    try {
+    //        const editPinnedMessage = {
+    //            pinned_id: pinnedId,
+    //            message: newMessage
+    //        }
+    //        const response = await axios.put(`http://localhost:8080/chat/pin/${conversationId}`, editPinnedMessage);
+    //        return response;
+    //    } catch (error) {
+    //        console.error("Error updating pinned message:", error);
+    //    }
+    //};
+
 
     const updatePinnedMessages = async (pinnedMessages, setPinnedMessages, responseData) => {
         // Extract all messages from responseData
@@ -42,5 +72,6 @@ export default function useAssistPinSend() {
         setPinnedMessages(prevMessages => [...prevMessages, ...newMessages]);
     }
 
-    return { handleSendPin, updatePinnedMessages, updatePinnedMessagesText };
+    return { handleSendPin, handleEditPin, updatePinnedMessagesText, updatePinnedMessages };
+    
 }

@@ -18,13 +18,14 @@ const SearchComponent = ({ activeView, setActiveView, clientId }) => {
     try {
       
       const response = await fetch(
-        "https://superhero-06-03-150699885662.europe-west1.run.app/api/get-client-reports/",
+        "https://superhero-06-03-150699885662.europe-west1.run.app",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
+            request_type: "get-client-reports",
             client_id : clientId
           }),
         }
