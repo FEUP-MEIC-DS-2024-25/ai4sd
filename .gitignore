@@ -41,4 +41,4 @@ terraform.rc
 
 *.env
 
-node_modules/
+*node_modules/

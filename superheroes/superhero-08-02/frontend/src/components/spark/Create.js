@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import axios from "axios";
-import "./Create.css"; // Import the Create CSS
+import apiClient from "../../config/axios";
+import { useNavigate } from "react-router-dom";
+import "../../styles/Create.css";
 
 function Create() {
   const [formData, setFormData] = useState({
-    projectName: "",
+    name: "",
     description: "",
+    github_project_link: "",
+    miro_board_id: "",
   });
 
   const [errors, setErrors] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const navigate = useNavigate();
 
   // Handle form changes
   const handleChange = (e) => {
@@ -20,27 +25,27 @@ function Create() {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:8000/api/projects/", formData, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      setSuccessMessage("Project created successfully!");
-      setFormData({
-        projectName: "",
-        description: "",
-      });
-      setErrors({});
-    } catch (error) {
-      if (error.response && error.response.data) {
-        setErrors(error.response.data);
+    setErrors("");
+
+    setIsLoading(true);
+
+    apiClient.post("/spark/create/", formData)
+    .then((response) => {
+      alert(response.data.message);
+      const projectID = response.data.project_id;
+      navigate(`/spark/${projectID}`);
+    })
+    .catch((error) => {
+      console.error("Error creating project: ", error);
+      if (error.response?.data?.error) {
+        setErrors(error.response.data.error);
       } else {
-        console.error("Error creating project:", error);
+        setErrors("An unexpected error occurred. Please try again.");
       }
-    }
+    })
+    .finally(() => { setIsLoading(false); });
   };
 
   return (
@@ -51,18 +56,18 @@ function Create() {
 
       <form className="create-form" onSubmit={handleSubmit}>
         <div className="form-group">
-          <label htmlFor="projectName">Project Name</label>
+          <label htmlFor="name">Name</label>
           <input
             type="text"
-            id="projectName"
-            name="projectName"
-            value={formData.projectName}
+            id="name"
+            name="name"
+            value={formData.name}
             onChange={handleChange}
-            className={`form-input ${errors.projectName ? "is-invalid" : ""}`}
+            className={`form-input ${errors.name ? "is-invalid" : ""}`}
             required
           />
-          {errors.projectName && (
-            <div className="invalid-feedback">{errors.projectName}</div>
+          {errors.name && (
+            <div className="invalid-feedback">{errors.name}</div>
           )}
         </div>
 
@@ -81,8 +86,40 @@ function Create() {
           )}
         </div>
 
-        <button type="submit" className="create-button">
-          Create Project
+        <div className="form-group">
+          <label htmlFor="githubLink">GitHub Project Link</label>
+          <input
+            type="text"
+            id="github_project_link"
+            name="github_project_link"
+            value={formData.github_project_link}
+            onChange={handleChange}
+            className={`form-input ${errors.githubLink ? "is-invalid" : ""}`}
+            required
+          />
+          {errors.githubLink && (
+            <div className="invalid-feedback">{errors.githubLink}</div>
+          )}
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="miroBoard">Miro Board ID</label>
+          <input
+            type="text"
+            id="miro_board_id"
+            name="miro_board_id"
+            value={formData.miro_board_id}
+            onChange={handleChange}
+            className={`form-input ${errors.miroBoard ? "is-invalid" : ""}`}
+            required
+          />
+          {errors.miroBoard && (
+            <div className="invalid-feedback">{errors.miroBoard}</div>
+          )}
+        </div>
+
+        <button type="submit" className="create-button" disabled={isLoading}>
+          {isLoading ? "Creating..." : "Create Project"}
         </button>
       </form>
     </div>

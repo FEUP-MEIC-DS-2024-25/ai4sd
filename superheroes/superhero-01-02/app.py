@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import google.generativeai as genai
+from google.cloud import secretmanager
 import os
 import re
 import markdown
@@ -10,15 +11,37 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-load_dotenv()
-api_key = os.getenv("API_KEY", "default_value")
-genai.configure(api_key=api_key)
+def access_secret(project_id, secret_id):
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+        resource_name = client.secret_version_path(project_id, secret_id, "latest")
+        response = client.access_secret_version(request={"name": resource_name})
+        return response.payload.data.decode("UTF-8")
+    except Exception as e:
+        print(f"Error accessing secret: {e}")
+        if "API_KEY" in os.environ:
+            try:
+                return os.environ["API_KEY"]
+            except Exception as e:
+                print(f"Error accessing secret from environment variable: {e}")
+        return None
 
-# Création de l'application FastAPI
+project_id = "hero-alliance-feup-ds-24-25"
+secret_id = "superhero-01-02-secret"
+
+API_KEY = access_secret(project_id, secret_id)
+
+if API_KEY:
+    secret_parts = API_KEY.split("=")
+    if len(secret_parts) == 2:
+        key = secret_parts[0]
+        api_key = secret_parts[1]
+        genai.configure(api_key=api_key)
+
+
 app = FastAPI()
  
 
-# Autoriser les requêtes CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],

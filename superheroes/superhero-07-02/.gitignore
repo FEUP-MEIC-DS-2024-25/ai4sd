@@ -1,6 +1,7 @@
 .env
+key_thing.json
 bin
-include
 lib
 lib64
-key_thing.json
+include
+pyenv.cfg
