@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import apiClient from "../config/axios";
 import { Link, useNavigate } from "react-router-dom";
-import "../styles/Header.css"; // Import the Header CSS
+import "../styles/Header.css"; 
+import apiClient from "../config/axios";
+
 
 function Header() {
   const [menuVisible, setMenuVisible] = useState(false);
