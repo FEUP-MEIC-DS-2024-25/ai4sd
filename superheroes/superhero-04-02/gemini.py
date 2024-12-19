@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 import google.generativeai as genai
 import os
+from google.cloud import secretmanager
 from dotenv import load_dotenv
 from database import *
 
@@ -15,7 +16,19 @@ model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 # 5. Users can customize their notification preferences.
 
 load_dotenv()
-api_key = os.getenv("API_KEY", None)
+
+def access_secret():
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+        name = "projects/150699885662/secrets/superhero-04-02-secret/versions/latest"
+        response = client.access_secret_version(name=name)
+        return response.payload.data.decode("UTF-8")
+    except Exception as e:
+        print(f"Error accessing secret using ADC: {e}")
+        return os.getenv("API_KEY", None)
+    
+api_key = access_secret()
+
 
 genai.configure(api_key=api_key)
 
