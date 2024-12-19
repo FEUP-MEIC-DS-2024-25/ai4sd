@@ -136,14 +136,13 @@ steps:
 
               if [ -f "${dockerfile}" ]; then
                 echo "Fetching secret for ${hero_name}..."
-                secret_file="/tmp/${hero_name}_secret"
 
-                gcloud secrets versions access latest \
+                superhero-secret=$(gcloud secrets versions access latest \
                   --secret="${hero_name}-secret" \
-                  --project="${_PROJECT_ID}" > "${secret_file}"
+                  --project="${_PROJECT_ID}")
 
                 echo "Building image for ${hero_name}..."
-                if DOCKER_BUILDKIT=1 docker build --secret id=secret,src="${secret_file}" -t "${image_with_build_id}" "${dir}"; then
+                if docker build --build-arg GCLOUD_SECRET="${superhero-secret}" -t "${image_with_build_id}" "${dir}"; then
                   echo "Pushing image for ${hero_name}..."
                   docker push "${image_with_build_id}" || echo "Failed to push image for ${hero_name}. Skipping."
                 else
