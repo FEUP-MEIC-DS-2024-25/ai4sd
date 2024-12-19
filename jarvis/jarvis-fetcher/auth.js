@@ -1,6 +1,7 @@
 import { App } from "octokit";
 import { config } from "../config.js";
-import { accessSecret } from "../utils/secret_manager.js";
+import { accessSecret, ensureServiceAccountKey, readEncodedJSONSecret } from "../utils/secret_manager.js";
+import fs from 'fs';
 
 /**
  * Retrieves an authenticated Octokit instance for a specific GitHub organization.
@@ -9,6 +10,9 @@ import { accessSecret } from "../utils/secret_manager.js";
  * @throws {Error} - Throws an error if the app is not installed on the organization or the request fails.
  */
 export async function getAuthOctokit(org) {
+    console.log("Getting auth octokit");
+    await ensureServiceAccountKey();
+    
     config.privateKey = await accessSecret('jarvis-secret2');
 
     const app = new App({

@@ -56,40 +56,7 @@ export async function uploadAllReposInOrg(octokit, org) {
 }
 
 
-import fs from "fs";
-import path from "path";
 
-const secretpath = './service_account_key.txt';
-
-try {
-    // Read the file synchronously
-    const secret = fs.readFileSync(secretpath, 'utf8');
-    console.log(`Secret read from file: ${secret}`);
-    const decodedString = atob(secret);
-    console.log(`Decoded secret: ${decodedString}`);
-    const jsonObject = JSON.parse(decodedString);
-    console.log(`Secret JSON object:`, jsonObject);
-
-    const filePath = './service_account_key.json';
-
-    // Ensure the directory exists
-    const dirPath = path.dirname(filePath);
-    if (!fs.existsSync(dirPath)) {
-        fs.mkdirSync(dirPath, { recursive: true }); // Create the directory if it doesn't exist
-    }
-
-    // Convert the JSON object to a string and write it to a file
-    await fs.writeFile(filePath, JSON.stringify(jsonObject, null, 2), (err) => {
-        if (err) {
-            console.error("Error saving JSON to file:", err);
-        } else {
-            console.log(`Secret JSON saved to ${filePath}`);
-        }
-    });
-    console.log(`Successfully read secret ${secretpath}`);
-} catch (err) {
-    console.error(`Error reading secret file at ${secretpath}:`, err.message);
-}
 
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
 //await uploadRepo(octokit, config.org, "T07_G05"); // Upload all repositories in the organization
