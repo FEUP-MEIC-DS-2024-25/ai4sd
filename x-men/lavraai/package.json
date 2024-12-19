@@ -1,0 +1,95 @@
+{
+  "name": "lavraai",
+  "displayName": "LavraAI",
+  "description": "",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.94.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onView:chat",
+    "onCommand:ai4sd-chat-bots.wakeup"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lavraai.pumlTest",
+        "title": "Preview Control Flow"
+      },
+      {
+        "command": "lavraai.refresh",
+        "title": "Refresh Diagram"
+      }
+     
+    ],
+    "chatParticipants": [
+    {
+        "id": "lavra-ai",
+        "fullName": "Lavra AI",
+        "name": "lavra-ai",
+        "description": "What can I do for you",
+        "isSticky": true
+    }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorHasSelection",
+          "command": "lavraai.pumlTest",
+          "group": "1_modification"
+        },
+        {
+          "command": "lavraai.refresh",
+          "group": "1_modification"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "lavraai.pumlTest",
+        "key": "ctrl+alt+p",
+        "mac": "cmd+alt+p",
+        "when": "editor.hasSelection"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.8",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.94.0",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.11.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.6.2",
+    "uuid": "11.0.3"
+  },
+  "dependencies": {
+    "childprocess": "^2.0.2",
+    "axios": "^1.4.0"
+  },
+  "extensionDependencies": [
+    "jebbs.plantuml"
+  ]
+}

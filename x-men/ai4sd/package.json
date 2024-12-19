@@ -9,13 +9,17 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "ai4sd.ai4sd",
         "title": "AI4SD: Artificial Intelligence for Software Development"
+      },
+      {
+        "command": "ai4sd.wakeup",
+        "title": "AI4SD: Wake up assistants"
       }
     ],
     "viewsContainers": {

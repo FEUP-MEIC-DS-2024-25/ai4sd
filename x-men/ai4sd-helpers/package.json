@@ -9,7 +9,7 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
@@ -48,11 +48,29 @@
         "title": "AI4SD Helpers: Ask for help"
       },
       {
+        "command": "ai4sd-helpers.wakeup",
+        "title": "Wake up assistants"
+      },
+      {
         "command": "EasyComment.annotate",
         "title": "Toggle Tutor Annotations",
         "icon": "$(comment)"
       }
     ],
+    "menus": {
+        "commandPalette": [
+            {
+                "command": "ai4sd-helpers.wakeup",
+                "when": "false"
+            }
+        ],
+        "editor/title": [
+        {
+          "command": "EasyComment.annotate",
+          "group": "navigation"
+        }
+      ]
+    },
     "viewsContainers": {
       "activitybar": [
         {
@@ -68,14 +86,6 @@
           "type": "webview",
           "id": "whattheduck.webview",
           "name": "Refactor Options"
-        }
-      ]
-    },
-    "menus": {
-      "editor/title": [
-        {
-          "command": "EasyComment.annotate",
-          "group": "navigation"
         }
       ]
     }
