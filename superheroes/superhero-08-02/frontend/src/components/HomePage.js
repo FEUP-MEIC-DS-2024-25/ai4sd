@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import apiClient from "../config/axios";
+import { Link } from "react-router-dom";
 import "../styles/HomePage.css";
 
 function HomePage() {
@@ -56,11 +57,11 @@ function HomePage() {
             <p className="projects-title">Your SPARK projects:</p>
 
             <ul className="project-list">
-              {sparkProjects.map((project) => (
+              {projects.map((project) => (
                 <li key={project.id} className="project-item">
-                  <a href={`/spark-project/${project.id}`} className="project-link">
+                  <Link to={`/spark/${project.id}`} className="project-link">
                     {project.name}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

@@ -82,17 +82,10 @@ function App() {
             }
           />
           <Route
-<<<<<<< HEAD
-            path="github/login"
-            element={
-              <Layout>
-                <h1>Not Found</h1>
-=======
             path="/spark/create/"
             element={
               <Layout>
                 <Create />
->>>>>>> origin/assistant/spark/react-integration-2
               </Layout>
             }
           />
