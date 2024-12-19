@@ -51,10 +51,10 @@ bucket_name = "hero-alliance-nexus"
 def upload_file_to_gcs(bucket_name, folder_path, file, filename):
     try:
         bucket = storage_client.bucket(bucket_name)
-        blob = bucket.blob(f"{folder_path}/{filename}")  
+        blob = bucket.blob(f"{folder_path}/{filename.split('/')[-1]}")  
         blob.upload_from_file(file)
         blob.make_public()
-        print(f"File '{filename}' uploaded to '{folder_path}' in bucket '{bucket_name}'.")
+        print(f"File '{filename.split('/')[-1]}' uploaded to '{folder_path}' in bucket '{bucket_name}'.")
         return blob.public_url
     except Exception as e:
         print(f"Error uploading file: {e}")
@@ -93,28 +93,28 @@ def create_folder():
         print(f"Error in creating folder: {e}")
         return jsonify({"error": str(e)}), 500
     
-@app.route('/api/upload', methods=['POST'])
-def upload():
-    try:
-        folder_path = 'assets/superhero-04-01'
-        files_data = request.files.getlist('files')
-        uploaded_files = []
+# @app.route('/api/upload', methods=['POST'])
+# def upload():
+#     try:
+#         folder_path = 'assets/superhero-04-01'
+#         files_data = request.files.getlist('files')
+#         uploaded_files = []
 
-        for file in files_data:
-            file.stream.seek(0)
-            public_url = upload_file_to_gcs(bucket_name, folder_path, file, file.filename)
-            uploaded_files.append({"filename": file.filename, "url": public_url})
+#         for file in files_data:
+#             file.stream.seek(0)
+#             public_url = upload_file_to_gcs(bucket_name, folder_path, file, file.filename)
+#             uploaded_files.append({"filename": file.filename, "url": public_url})
 
-            add_entry_to_firestore({
-                'date': datetime.datetime.now(tz=datetime.timezone.utc),
-                'file_name': file.filename,
-                'file_url': public_url
-            })
+#             add_entry_to_firestore({
+#                 'date': datetime.datetime.now(tz=datetime.timezone.utc),
+#                 'file_name': file.filename,
+#                 'file_url': public_url
+#             })
 
-        return jsonify({"status": "success", "uploaded_files": uploaded_files})
-    except Exception as e:
-        print(f"Error in uploading files: {e}")
-        return jsonify({"error": str(e)}), 500
+#         return jsonify({"status": "success", "uploaded_files": uploaded_files})
+#     except Exception as e:
+#         print(f"Error in uploading files: {e}")
+#         return jsonify({"error": str(e)}), 500
     
 @app.route('/api/process', methods=['POST'])
 def process():
@@ -173,7 +173,47 @@ def reset():
     except Exception as e:
         print(f"Error resetting chat history: {e}")
         return jsonify({"error": str(e)}), 500
-    
+
+@app.route('/api/list_blobs', methods=['GET'])
+def list_blobs():
+    try:
+        blobs = storage_client.bucket(bucket_name).list_blobs(prefix="assets/superhero-04-01")
+        blob_names = [blob.name for blob in blobs]
+
+        print(f"Found blobs: {blob_names}")
+        return jsonify({
+            "status": "success",
+            "blobs": blob_names
+        })
+    except Exception as e:
+        print(f"Error listing blobs: {e}")
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/delete_gcs_folder', methods=['GET'])
+def delete_folder():
+    try:
+        folder_path = "assets/superhero-04-01"  
+        bucket = storage_client.bucket(bucket_name)
+
+        blobs = bucket.list_blobs(prefix=folder_path)
+        blobs_deleted = []
+
+        for blob in blobs:
+            blob.delete()
+            blobs_deleted.append(blob.name)
+
+        print(f"Deleted {len(blobs_deleted)} objects from folder '{folder_path}'.")
+
+        return jsonify({
+            "status": "success",
+            "message": f"Deleted {len(blobs_deleted)} objects from folder '{folder_path}'.",
+            "deleted_blobs": blobs_deleted
+        })
+
+    except Exception as e:
+        print(f"Error deleting folder: {e}")
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5001)
 
