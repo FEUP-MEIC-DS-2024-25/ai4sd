@@ -16,7 +16,6 @@ export function activate(context: vscode.ExtensionContext) {
 	// This line of code will only be executed once when your extension is activated
 	console.log('Congratulations, your extension "ai4sd-helpers" is now active!');
 	const options:AI4SDMenuOption[] = [
-		{ label: "EasyComment", description: "Executes EasyComment superhero", execute: async () => (await import('./superheroes/easycomment/src/extension.js')).execute() }
 	  ];
 
 	// The command has been defined in the package.json file
