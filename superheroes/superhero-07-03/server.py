@@ -18,7 +18,7 @@ genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": ["http://104.155.4.93"]}})
+CORS(app, resources={r"/*": {"origins": ["http://104.155.4.93", "https://superhero-07-03-150699885662.europe-west1.run.app"]}})
 
 progress = {"status": 0, "result": ""}
 
