@@ -118,7 +118,7 @@
 
 /* Submit Button */
 .btn-submit {
-     padding: 0.25em 0.5em;
+     padding: 0.35em 0.7em;
      background-color: var(--blue);
      color: var(--white);
      font-size: 1.2em;
@@ -136,9 +136,18 @@
 .project-buttons {
      display: flex;
      justify-content: space-between;
+     align-items: center;
+     gap: 1em;
      margin-top: 2em;
 }
-
+ 
+/* Fix Delete Form */
+.delete-form {
+     display: inline-block;
+     margin: 0;
+}
+ 
+/* Secondary Button */
 .btn-secondary {
      background-color: var(--grey);
      color: var(--dark-blue);
@@ -150,12 +159,13 @@
      cursor: pointer;
      transition: background-color 0.3s ease;
 }
-
+ 
 .btn-secondary:hover {
      background-color: var(--cyan);
      color: var(--white);
 }
-
+ 
+/* Danger Button */
 .btn-danger {
      background-color: var(--red);
      color: var(--white);
@@ -166,10 +176,11 @@
      cursor: pointer;
      transition: background-color 0.3s ease;
 }
-
+ 
 .btn-danger:hover {
      background-color: #c9302c;
 }
+ 
 
 /* Action Buttons */
 .action-buttons {

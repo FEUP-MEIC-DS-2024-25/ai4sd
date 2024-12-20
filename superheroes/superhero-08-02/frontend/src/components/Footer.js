@@ -6,15 +6,15 @@ function Footer() {
     <footer className="footer">
       <p>
         &copy; 2024 SPARK.{" "}
-        <a href="/privacy-policy" className="footer-link">
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley" className="footer-link">
           Privacy Policy
         </a>{" "}
         |{" "}
-        <a href="/terms-of-service" className="footer-link">
+        <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ&ab_channel=RickAstley" className="footer-link">
           Terms of Service
         </a>{" "}
         |{" "}
-        <a href="/contact-us" className="footer-link">
+        <a href="https://www.youtube.com/watch?v=PgzkqqhQGUg&list=RDMM&start_radio=1&rv=dQw4w9WgXcQ&ab_channel=WTF" className="footer-link">
           Contact Us
         </a>
       </p>
