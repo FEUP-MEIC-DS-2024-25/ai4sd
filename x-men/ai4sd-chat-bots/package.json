@@ -9,15 +9,27 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": ["*"],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "ai4sd-chat-bots.call",
         "title": "AI4SD Chat Bots: Start a conversation"
+      },
+      {
+        "command": "ai4sd-chat-bots.wakeup",
+        "title": "Wake up assistants"
       }
-    ]
+    ],
+    "menus": {
+        "commandPalette": [
+            {
+                "command": "ai4sd-chat-bots.wakeup",
+                "when": "false"
+            }
+        ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

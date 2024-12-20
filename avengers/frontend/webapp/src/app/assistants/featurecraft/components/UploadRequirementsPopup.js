@@ -92,7 +92,7 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
                     <h2 className="text-xl font-bold">Upload Requirements</h2>
                     <button
                         onClick={onClose}
-                        className="text-gray-500 hover:text-gray-800 text-2xl"
+                        className="text-gray-500 hover:text-gray-800 text-4xl"
                         aria-label="Close"
                     >
                         &times;
@@ -106,7 +106,7 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
                             {fileContent.map((line, index) => (
                                 <li
                                     key={index}
-                                    className="p-2 bg-gray-100 rounded-md shadow-sm flex justify-between items-center"
+                                    className="p-2 bg-gray-100 rounded-xl shadow-sm flex justify-between items-center"
                                 >
                                     {editingIndex === index ? (
                                         <input
@@ -116,7 +116,7 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
                                             onKeyDown={(e) => {
                                                 if (e.key === "Enter") saveEditedRequirement(index);
                                             }}
-                                            className="flex-1 bg-white border p-2 focus:outline-none rounded-md"
+                                            className="flex-1 bg-white border p-2 focus:outline-none rounded-xl"
                                         />
                                     ) : (
                                         <span className="flex-1 overflow-hidden text-ellipsis">{line}</span>
@@ -125,21 +125,21 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
                                         {editingIndex === index ? (
                                             <button
                                                 onClick={() => saveEditedRequirement(index)}
-                                                className="px-2 py-1 bg-green-500 text-white rounded-md hover:bg-green-600"
+                                                className="px-2 py-1 bg-green-500 text-white rounded-xl hover:bg-green-600"
                                             >
                                                 Save
                                             </button>
                                         ) : (
                                             <button
                                                 onClick={() => startEditing(index)}
-                                                className="px-2 py-1 bg-yellow-500 text-white rounded-md hover:bg-yellow-600"
+                                                className="px-2 py-1 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600"
                                             >
                                                 Edit
                                             </button>
                                         )}
                                         <button
                                             onClick={() => handleDeleteRequirement(index)}
-                                            className="px-2 py-1 bg-red-500 text-white rounded-md hover:bg-red-600"
+                                            className="px-2 py-1 bg-red-500 text-white rounded-xl hover:bg-red-600"
                                         >
                                             Delete
                                         </button>
@@ -159,11 +159,11 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
                         value={newRequirement}
                         onChange={(e) => setNewRequirement(e.target.value)}
                         placeholder="Add new requirement"
-                        className="flex-1 mr-4 p-2 border rounded-md bg-white"
+                        className="flex-1 mr-4 p-2 border rounded-xl bg-white"
                     />
                     <button
                         onClick={handleAddRequirement}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                        className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
                     >
                         Add
                     </button>
@@ -175,18 +175,18 @@ export default function UploadRequirementsPopup({ onClose, conversationId, pinne
                         type="file"
                         accept=".txt"
                         onChange={handleFileUpload}
-                        className="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                        className="block text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                     />
                     <div className="flex flex-wrap gap-2">
                         <button
                             onClick={handleClearRequirements}
-                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                            className="px-4 py-2 bg-red-500 text-white rounded-xl hover:bg-red-600"
                         >
                             Clear All
                         </button>
                         <button
                             onClick={handleFinish}
-                            className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                            className="px-4 py-2 bg-green-500 text-white rounded-xl hover:bg-green-600"
                         >
                             Finish
                         </button>

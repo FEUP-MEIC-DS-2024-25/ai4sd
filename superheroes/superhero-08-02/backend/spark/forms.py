@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 from .models import SparkProject
+from rest_framework import serializers
 
 class MyUserCreationForm(UserCreationForm):
 
@@ -56,14 +57,22 @@ class MyAuthenticationForm(forms.Form):
     def get_user(self):
         return self.user
     
-class SparkProjectForm(forms.ModelForm):
+class SparkProjectSerializer(serializers.ModelSerializer):
+
+    owner = serializers.PrimaryKeyRelatedField(read_only=True)
+    members = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+
     class Meta:
         model = SparkProject
-        fields = ['name', 'description', 'github_project_link', 'miro_board_id']
+        fields = ['id', 'name', 'description', 'github_project_link', 'miro_board_id', 'owner', 'members']
 
-        widgest = {
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'description': forms.Textarea(attrs={'class': 'form-control'}),
-            'github_project_link': forms.URLInput(attrs={'class': 'form-control'}),
-            'miro_board_id': forms.URLInput(attrs={'class': 'form-control'}),
-        }
+    def validate(self, data):
+        print("Validating data: ", data)
+        if not data.get('name') or not data.get('github_project_link') or not data.get('miro_board_id'):
+            raise serializers.ValidationError('Name, GitHub project link, and Miro board ID are required.')
+        return data
+        
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    

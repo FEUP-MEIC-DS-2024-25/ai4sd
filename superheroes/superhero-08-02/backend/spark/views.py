@@ -1,14 +1,15 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from api.services.github_rest import githubRestAPI
-from .forms import MyUserCreationForm, SparkProjectForm
-from .models import SparkProject
+from api.services.miro import MiroAPI
+from .forms import MyUserCreationForm, SparkProjectSerializer
+from .models import SparkProject, Profile
 import requests
 from django.contrib.auth import authenticate, login
 from rest_framework.views import APIView
@@ -35,31 +36,32 @@ class LogoutAPIView(APIView):
 class HomeAPIView(APIView):
     def get(self, request):
 
-        sparkProjects = []
+        projects = []
 
         if not request.user.is_authenticated:
-            return Response({'username': None, 'isAuthenticated': False, 'sparkProjects': sparkProjects}, status=status.HTTP_200_OK)
+            return Response({'username': None, 'isAuthenticated': False, 'projects': projects}, status=status.HTTP_200_OK)
  
         profile = request.user.profile
-        sparkProjects = profile.owned_projects.all()
+        projects = profile.owned_projects.all()
 
-        return Response({'username': request.user.username, 'isAuthenticated': True, 'sparkProjects': sparkProjects}, status=status.HTTP_200_OK)
+        return Response({'username': request.user.username, 'isAuthenticated': True, 'projects': SparkProjectSerializer(projects, many=True).data}, status=status.HTTP_200_OK)
     
 
 class ProfileAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [AllowAny]
 
     def get(self, request, username = None):
         if username:
             user = get_object_or_404(User, username = username)
         else:
+            if not request.user.is_authenticated:
+                return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
             user = request.user
 
         profile = user.profile
         is_own_profile = request.user == user
 
-        return Response({'username': user.username, 'is_own_profile': is_own_profile, 'github_username': profile.github_username, 'github_token': bool(profile.github_token)}, status=status.HTTP_200_OK)
+        return Response({'username': user.username, 'is_own_profile': is_own_profile, 'github_username': profile.github_username, 'github_token': bool(profile.github_token), 'miro_token': bool(profile.miro_token)}, status=status.HTTP_200_OK)
     
     
 class LoginAPIView(APIView):
@@ -104,30 +106,38 @@ class SparkProjectAPIView(APIView):
             "description": project.description,
             "github_project_link": project.github_project_link or None,
             "miro_board_id": project.miro_board_id or None,
-            "created_at": project.created_at,
-            "updated_at": project.updated_at,
+            "miro_board_link": project.miro_board_url or None,
             "owner": project.owner.user.username,
             "members": [member.user.username for member in project.members.all()],
         }
 
         return Response(project_data, status=status.HTTP_200_OK)
 
-
 class CreateSparkProjectAPIView(APIView):
-    def post(self, request):
-        form = SparkProjectForm(request.data)
+    permission_classes = [IsAuthenticated]
 
-        if form.is_valid():
-            project = form.save(commit = False)
-            project.owner = request.user.profile
-            project.save()
-            project.members.add(request.user.profile)
+    def post(self, request):
+
+        if SparkProject.objects.filter(github_project_link=request.data.get('github_project_link')).exists():
+            return Response({'errors': 'Project with this GitHub link already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if SparkProject.objects.filter(miro_board_id=request.data.get('miro_board_id')).exists():
+            return Response({'errors': 'Project with this Miro board ID already exists.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = SparkProjectSerializer(data=request.data)
+
+        if serializer.is_valid():
+            profile = request.user.profile
+            project = serializer.save(owner=profile)
+            project.members.add(profile)
             return Response({'message': 'Project created successfully.', 'project_id': project.id}, status=status.HTTP_201_CREATED)
         
-        return Response({'error': 'Invalid data.'}, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
 
 class DeleteSparkProjectAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, id):
         project = get_object_or_404(SparkProject, id = id, owner = request.user.profile)
         project.delete()
@@ -153,6 +163,8 @@ class AddMemberToSparkProjectAPIView(APIView):
 
 
 class GitHubLoginAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         redirect_uri = "http://localhost:8000/github/callback"
         scopes = "repo user admin:org project"
@@ -162,6 +174,8 @@ class GitHubLoginAPIView(APIView):
     
 
 class GitHubCallbackAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         code = request.GET.get('code')
         state = request.GET.get('state')
@@ -186,7 +200,8 @@ class GitHubCallbackAPIView(APIView):
         profile.github_username = github_username
         profile.save()
 
-        return Response({'message': 'GitHub account linked successfully.', 'github_username': github_username}, status=status.HTTP_200_OK)
+        frontend_url = "http://localhost:3000/profile"
+        return redirect(frontend_url)
 
 
 class CheckGitHubTokenValidityAPIView(APIView):
@@ -243,6 +258,8 @@ class AddGitHubUsernameAPIView(APIView):
 
 
 class AddGitHubTokenAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         github_token = request.data.get('github_token')
 
@@ -257,6 +274,8 @@ class AddGitHubTokenAPIView(APIView):
 
 
 class AddMiroTokenToProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         miro_token = request.data.get('miro_token')
 
@@ -271,6 +290,8 @@ class AddMiroTokenToProfileAPIView(APIView):
     
 
 class DeleteMiroTokenFromProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         profile = request.user.profile
         profile.miro_token = None
@@ -280,6 +301,8 @@ class DeleteMiroTokenFromProfileAPIView(APIView):
 
 
 class AddMiroBoardIdToSparkProjectAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, project_id):
         miro_board_id = request.data.get('miro_board_id')
         project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
@@ -289,6 +312,51 @@ class AddMiroBoardIdToSparkProjectAPIView(APIView):
             project.save()
 
         return Response({'message': 'Miro board ID added successfully.'}, status=status.HTTP_200_OK)
+    
+class BacklogToMiroAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, project_id):
+        project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
+        miro_token = request.user.profile.miro_token
+
+        if not miro_token:
+            return Response({'error': 'Miro token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not project.miro_board_id:
+            return Response({'error': 'Miro board ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        miro_api = MiroAPI(miro_token)
+
+class SprintInMiroAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, project_id):
+        project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
+        miro_token = request.user.profile.miro_token
+
+        if not miro_token:
+            return Response({'error': 'Miro token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not project.miro_board_id:
+            return Response({'error': 'Miro board ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        miro_api = MiroAPI(miro_token)
+
+class SprintToGitHubAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, project_id):
+        project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
+        github_token = request.user.profile.github_token
+
+        if not github_token:
+            return Response({'error': 'GitHub token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not project.github_project_link:
+            return Response({'error': 'GitHub project link is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        github_api = githubRestAPI(github_token)
     
 def handler404(request, exception):
     return JsonResponse({'error': 'Page not found.', "status_code": 404}, status=404)

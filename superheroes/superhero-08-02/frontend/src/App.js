@@ -34,7 +34,7 @@ function App() {
             }
           />
           <Route
-            path="/create"
+            path="/spark/create"
             element={
               <Layout>
                 <Create />
@@ -42,7 +42,7 @@ function App() {
             }
           />
           <Route
-            path="/project/:projectId"
+            path="/spark/:projectId"
             element={
               <Layout>
                 <Project />
@@ -66,6 +66,14 @@ function App() {
             }
           />
           <Route
+            path="/profile"
+            element={
+              <Layout>
+                <Profile />
+              </Layout>
+            }
+          />
+          <Route
             path="/profile/:username"
             element={
               <Layout>
@@ -73,8 +81,17 @@ function App() {
               </Layout>
             }
           />
+          <Route
+            path="/spark/create/"
+            element={
+              <Layout>
+                <Create />
+              </Layout>
+            }
+          />
         </Routes>
       </Router>
+
     </div>
   );
 }
