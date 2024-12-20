@@ -1,6 +1,7 @@
 // The module 'vscode' contains the VS Code extensibility API
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
+import { MyWebviewViewProvider } from './components/myWebviewViewProvider';
 
 export interface AI4SDMenuOption extends vscode.QuickPickItem {
 	execute: Function
@@ -47,6 +48,11 @@ export function activate(context: vscode.ExtensionContext) {
 			options.push(newOption);
 		}
 	};
+
+	const webviewProvider = new MyWebviewViewProvider(context);
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(MyWebviewViewProvider.viewType, webviewProvider)
+    );	
 
 	context.subscriptions.push(disposable);
 	context.subscriptions.push(wakeUp);
