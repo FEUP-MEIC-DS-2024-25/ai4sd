@@ -1,12 +1,12 @@
 import React from "react";
-import HomePage from "./components/HomePage";
-import Footer from "./components/Footer";
-import Header from "./components/Header";
-import Create from "./components/spark/Create";
-import Project from "./components/spark/Project";
-import Login from "./components/account/Login";
-import Signup from "./components/account/Signup";
-import Profile from "./components/account/Profile";
+import HomePage from "./HomePage";
+import Footer from "./Footer";
+import Header from "./Header";
+import Create from "./spark/Create";
+import Project from "./spark/Project";
+import Login from "./account/Login";
+import Signup from "./account/Signup";
+import Profile from "./account/Profile";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 // Layout Wrapper Component
