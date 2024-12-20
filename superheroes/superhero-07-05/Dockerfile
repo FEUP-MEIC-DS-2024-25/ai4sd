@@ -20,9 +20,13 @@ RUN apt-get install -y nodejs
 # Confirmar que a versão correta do Node.js foi instalada
 RUN node -v && npm -v
 
+# Instalar o Google Cloud SDK
+RUN curl -sSL https://sdk.cloud.google.com | bash
+RUN /bin/bash -c "source /root/.bashrc && gcloud components install -q"
+
 # Instale o Mutmut globalmente
 RUN pip3 install --no-cache-dir MutPy
-RUN pip3 install --no-cache-dir google-generativeai
+RUN pip3 install --no-cache-dir google-generativeai python-dotenv hvac
 
 # Defina o diretório de trabalho no container
 WORKDIR /app
