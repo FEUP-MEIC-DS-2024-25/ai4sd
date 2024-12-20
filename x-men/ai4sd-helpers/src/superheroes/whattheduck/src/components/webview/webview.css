@@ -1,0 +1,88 @@
+/* Root styling */
+html,
+body {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    font-family: var(--vscode-font-family);
+    color: var(--vscode-foreground);
+    background-color: var(--vscode-sideBar-background);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Main container */
+.container {
+    width: 90%;
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+
+/* Checkbox container styling */
+.checkbox-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+/* Checkbox styling */
+input[type="checkbox"] {
+    display: none;
+}
+
+/* Label styling */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 6px 10px;
+    width: 100%;
+    font-size: 13px;
+    background-color: var(--vscode-editor-background);
+    border: 1px solid var(--vscode-sideBar-border);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    box-sizing: border-box;
+}
+
+/* Style for the selected state */
+input[type="checkbox"]:checked + .checkbox-label {
+    background-color: rgba(0, 0, 0, 0.1);
+    background-blend-mode: multiply;
+    border-color: var(--vscode-button-background);
+}
+
+/* Hover effect */
+.checkbox-label:hover {
+    border-color: var(--vscode-editorHoverHighlight-background);
+}
+
+/* Button styling */
+.button-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+button {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 13px;
+    background-color: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: var(--vscode-button-hoverBackground);
+}
