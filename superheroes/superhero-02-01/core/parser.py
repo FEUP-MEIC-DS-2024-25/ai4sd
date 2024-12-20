@@ -2,11 +2,7 @@ import re
 import os
 import json
 from typing import List, Dict, Optional, Union
-
-import re
-import os
-import json
-from typing import List, Dict, Optional, Union
+import requests
 
 LANGUAGE_EXTENSIONS = {
     '.py': 'python',
@@ -392,31 +388,23 @@ def parse_code_content(code: str, language: str) -> Dict[str, Optional[List[str]
     
     return parsed_elements
 
-def main(input_json_path: str, output_json_path: str):
-    """
-    Main function to process the input JSON and generate the output JSON with parsed code elements.
+def parser_code(repo_name: str) -> Dict[str, Union[Dict, List, str]]:
+    base_url = "https://superhero-02-01-150699885662.europe-west1.run.app/api/repo/FEUP-MEIC-DS-2024-25/{repo_name}"
+    url = base_url.format(repo_name=repo_name)
     
-    Args:
-        input_json_path (str): Path to the input JSON file.
-        output_json_path (str): Path to the output JSON file.
-    """
-    with open(input_json_path, 'r', encoding='utf-8') as infile:
-        data = json.load(infile)
+    try:
+        response = requests.get(url)
+        response.raise_for_status() 
+    except requests.exceptions.RequestException as e:
+        print(f"Error requesting {url}: {e}")
+        return {}
     
-    processed_data = process_json_structure(data)
+    try:
+        input_data = response.json()
+    except json.JSONDecodeError as e:
+        print(f"Erro deconding json: {e}")
+        return {}
     
-    with open(output_json_path, 'w', encoding='utf-8') as outfile:
-        json.dump(processed_data, outfile, indent=4)
+    processed_data = process_json(input_data)
     
-    print(f"Processed JSON has been saved to {output_json_path}")
-
-if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="Parse code files in a JSON structure and extract imports, classes, functions, and main function.")
-    parser.add_argument('input_json', help='Path to the input JSON file containing the project structure.')
-    parser.add_argument('output_json', help='Path to the output JSON file to save the parsed results.')
-    
-    args = parser.parse_args()
-    
-    main(args.input_json, args.output_json)
+    return processed_data
