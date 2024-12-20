@@ -137,7 +137,7 @@ async function sendZipToBackend(zipFilePath: string, language: string): Promise<
     formData.append('workspaceZip', fs.createReadStream(zipFilePath) as any);
     // https://superhero-02-04-150699885662.europe-west1.run.app/query -> url on the cloud
     try {
-        const response = await axios.post('http://localhost:8080/query', formData, {
+        const response = await axios.post('https://superhero-02-04-150699885662.europe-west1.run.app/query', formData, {
             headers: formData.getHeaders(),
         });
         

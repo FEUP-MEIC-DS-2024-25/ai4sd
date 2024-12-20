@@ -8,7 +8,7 @@ export interface RecentRequest {
 
 export async function fetchRecentRequests(): Promise<RecentRequest[]> {
     try {
-      const response = await fetch('http://localhost:8080/requests');
+      const response = await fetch('https://superhero-02-04-150699885662.europe-west1.run.app');
       const recentRequests: RecentRequest[] = await response.json(); // Ensure the data is typed as RecentRequest[]
       console.log('Recent Requests:', recentRequests);
       return recentRequests;

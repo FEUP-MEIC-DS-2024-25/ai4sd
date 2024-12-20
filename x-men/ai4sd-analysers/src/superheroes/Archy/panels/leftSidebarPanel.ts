@@ -55,7 +55,7 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
             if (message.command === "archy.loadRecentRequest") {
                 try {
                     // Call the backend to get the full request details by its ID
-                    const response = await fetch(`http://localhost:8080/requests/${message.id}`);
+                    const response = await fetch(`https://superhero-02-04-150699885662.europe-west1.run.app/requests/${message.id}`);
                     
                     if (!response.ok) {
                         throw new Error("Failed to fetch the request data");
@@ -111,7 +111,7 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
                         progress.report({ message: "Analysis Complete!" });
             
                         // Send the resultMarkdown to the backend
-                        const response = await fetch('http://localhost:8080/requests/save-markdown', {
+                        const response = await fetch('https://superhero-02-04-150699885662.europe-west1.run.app/requests/save-markdown', {
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
