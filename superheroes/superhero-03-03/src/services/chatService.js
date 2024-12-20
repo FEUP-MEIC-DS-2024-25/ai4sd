@@ -46,15 +46,13 @@ exports.getChatInteractions = async () => {
 
         // Query all chat documents
         const chatSnapshot = await db
-            .collection('superhero-03-03')
+            .collection('superhero-03-03').limit(20)
             .get();
 
         // Check if there are any chat documents
         if (chatSnapshot.empty) {
             return [];
         }
-
-        console.log(chatSnapshot)
 
         // Extract chat documents from snapshot
         const chats = chatSnapshot.docs.map((doc) => doc.id);
@@ -71,12 +69,16 @@ exports.postChatInteraction = async (chatId, msg, reply) => {
     try {
         await db.collection('superhero-03-03')
             .doc(chatId)
+            .set({}, { merge: true });
+
+        await db.collection('superhero-03-03')
+            .doc(chatId)
             .collection('messages')
             .add({
                 msg: msg,
                 reply: reply,
                 timestamp: admin.firestore.Timestamp.now()
-            });
+        });
 
         return { success: true };
     } catch (error) {
