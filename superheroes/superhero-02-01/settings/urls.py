@@ -33,6 +33,7 @@ urlpatterns = [
     path('api/test/secret', views.test_key, name='test_key'),
     re_path(r'^api/repo/(?P<repository_name>[^/]+)/?(?P<path>.*)?$', views.get_repository_tree, name='get_repo'),
     path('api/list_repos/<str:repository_name>', views.list_subfolders, name='get_list_repos'),
+    path('api/prompt/<str:repository_name>', views.get_prompt, name='get_prompt'),
 
 
 ]

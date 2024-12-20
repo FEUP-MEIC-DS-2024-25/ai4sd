@@ -388,23 +388,34 @@ def parse_code_content(code: str, language: str) -> Dict[str, Optional[List[str]
     
     return parsed_elements
 
-def parser_code(repo_name: str) -> Dict[str, Union[Dict, List, str]]:
-    base_url = "https://superhero-02-01-150699885662.europe-west1.run.app/api/repo/FEUP-MEIC-DS-2024-25/{repo_name}"
-    url = base_url.format(repo_name=repo_name)
-    
+def parser_code(repo_name):
+    """
+    Makes a request to the superhero API and returns the parsed JSON response
+
+    Args:
+        repo_name (str): Name of the repository to query
+
+    Returns:
+        dict: Parsed JSON response from the API
+    """
+    # Construct the API URL with the repo_name parameter
+    base_url = "https://superhero-02-01-150699885662.europe-west1.run.app"
+    endpoint = f"/api/repo/FEUP-MEIC-DS-2024-25/{repo_name}"
+    url = base_url + endpoint
+
     try:
+        # Make the GET request
         response = requests.get(url)
-        response.raise_for_status() 
-    except requests.exceptions.RequestException as e:
-        print(f"Error requesting {url}: {e}")
-        return {}
-    
-    try:
-        input_data = response.json()
-    except json.JSONDecodeError as e:
-        print(f"Erro deconding json: {e}")
-        return {}
-    
-    processed_data = process_json(input_data)
-    
-    return processed_data
+
+        # Raise an exception for bad status codes
+        response.raise_for_status()
+
+        # Parse and return the JSON response
+        return process_json_structure(response.json())
+
+    except requests.RequestException as e:
+        # Handle any request errors
+        error_json = {
+            "error": f"Failed to fetch repository data: {str(e)}"
+        }
+        return error_json

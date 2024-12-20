@@ -14,18 +14,6 @@ class Project(models.Model):
     repo_path = models.CharField(max_length=500, null=True, blank=True)
     plantuml_image = models.ImageField(upload_to='plantuml_images/', null=True, blank=True)
 
-    def clone_repo(self):
-        """ Clones the GitHub repository and stores it in static folder. """
-        if self.github_link:
-            repo_name = os.path.basename(self.github_link).replace('.git', '')
-            repo_dir = os.path.join(settings.MEDIA_DIR, 'repos', repo_name)
-
-            # Clone repo if it doesn't exist
-            if not os.path.exists(repo_dir):
-                subprocess.run(['git', 'clone', self.github_link, repo_dir])
-            self.repo_path = repo_dir
-            self.save()
-
     def generate_plantuml_image(self):
         """ Sends PlantUML code to a server to generate an image and stores it. """
         if self.plantuml_code:
@@ -44,27 +32,36 @@ class Project(models.Model):
                 self.plantuml_image = f'plantuml_images/{self.id}_diagram.png'
                 self.save()
 
+
     def save(self, *args, **kwargs):
-        if self.pk:
-            original = Project.objects.get(pk=self.pk)
-            if self.plantuml_code != original.plantuml_code:
-                self.generate_plantuml_image()
-        else:
-            # First save to generate PK
+        initial_save = not self.pk
+        if initial_save:
+            print("Initial save")
             super().save(*args, **kwargs)
-
-            # Clone GitHub repository when creating the project
             if not self.repo_path:
-                self.clone_repo()
+                self.repo_path = self.github_link.split('/')[-1]
 
-            # Generate description and PlantUML code
             if self.repo_path:
-                description, code = generate_description_uml(self.repo_path)
-                self.response = description
-                self.plantuml_code = code
+                            print("Generating description")
+                            description, code = generate_description_uml(self.repo_path)
+                            self.response = description
+                            self.plantuml_code = code
 
             # Generate PlantUML image
             if self.plantuml_code:
+                print("Generating PlantUML image")
                 self.generate_plantuml_image()
 
-        super().save(*args, **kwargs)
+            super().save(*args, **kwargs)
+
+
+        else:
+            print("else")
+            original = Project.objects.get(pk=self.pk)
+            original_code = original.plantuml_code
+
+            super().save(*args, **kwargs)
+
+            if self.plantuml_code != original_code:
+                self.generate_plantuml_image()
+                super().save(*args, **kwargs)
