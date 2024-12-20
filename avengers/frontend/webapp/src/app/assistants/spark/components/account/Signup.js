@@ -1,3 +1,6 @@
+"use client";
+
+
 import React, { useState } from "react";
 import apiClient from "../../config/axios";
 import { useNavigate, Link } from "react-router-dom";
