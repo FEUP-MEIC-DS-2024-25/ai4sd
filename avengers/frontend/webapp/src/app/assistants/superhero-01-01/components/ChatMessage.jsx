@@ -55,14 +55,7 @@ export const ChatMessage = ({
           style={{ originX: 0.5, originY: 0.5 }}
           className="flex flex-col gap-2 p-4"
         >
-    <div 
-      className={cn(
-        "flex items-start gap-3 max-w-full",
-        variant === 'sent' ? "flex-row-reverse" : "flex-row"
-      )}
-    >
       {renderMessageContent()}
-    </div>
     </motion.div>
   );
 };

@@ -255,7 +255,7 @@ export const Chatbot = () => {
         <form
           ref={formRef}
           onSubmit={handleSendMessage}
-          className="relative rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
+          className="relative border bg-background focus-within:ring-1 focus-within:ring-ring"
         >
           <TextareaAutosize
             ref={inputRef}
@@ -272,7 +272,6 @@ export const Chatbot = () => {
               p-3 
               shadow-none 
               resize-none 
-              rounded-lg 
               focus:outline-none 
               focus:ring-2 
               focus:ring-blue-500
@@ -295,7 +294,7 @@ export const Chatbot = () => {
               disabled={!formData || isLoading}
               type="submit"
               size="sm"
-              className="ml-auto gap-1.5"
+              className="ml-auto text-white rounded-md"
             >
               Send Code
               <CornerDownLeft className="size-3.5" />
