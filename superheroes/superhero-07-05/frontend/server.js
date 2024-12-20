@@ -10,13 +10,6 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const scriptPath = path.join(__dirname, '../key.py');
-spawn(
-  'python3',
-  [scriptPath],
-  { cwd: path.join(__dirname, '../') } // Diretório de trabalho para o script Python
-);
-
 let originalCodeFileName = ''; // Variável global para o nome original do ficheiro "code"
 let originalTestFileName = ''; // Variável global para o nome original do ficheiro "test"
 

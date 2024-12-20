@@ -22,7 +22,7 @@ RUN node -v && npm -v
 
 # Instale o Mutmut globalmente
 RUN pip3 install --no-cache-dir MutPy
-RUN pip3 install --no-cache-dir google-generativeai
+RUN pip3 install --no-cache-dir google-generativeai python-dotenv hvac
 
 # Defina o diretório de trabalho no container
 WORKDIR /app
@@ -35,6 +35,9 @@ RUN chmod +x *.sh
 
 WORKDIR /app/frontend
 RUN npm install
+
+RUN --mount=type=secret,id=superhero-07-05 \ 
+    cat /run/secrets/secret > .env
 
 # Exponha portas necessárias (se tiver serviços web ou APIs)
 EXPOSE 8080

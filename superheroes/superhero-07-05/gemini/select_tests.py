@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 
 # Carregar as variáveis do ficheiro .env
-load_dotenv('../.env')
+load_dotenv()
 
 # Aceder às variáveis de ambiente
 my_secret = os.getenv('GEMINI_KEY')
