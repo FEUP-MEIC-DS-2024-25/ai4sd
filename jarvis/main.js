@@ -88,7 +88,5 @@ export async function addWebhooksToAllRepos(octokit, org, webhookUrl) {
 
 
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-const webhookUrl = "https://0083-89-153-190-132.ngrok-free.app/webhook";
-await addWebhook(octokit, config.org, "T02", webhookUrl);
 await addWebhooksToAllRepos(octokit, config.org, webhookUrl);
 
