@@ -132,8 +132,7 @@ async function sendZipToBackend(zipFilePath: string, language: string): Promise<
 
     const formData = new FormData();
     formData.append('language', language);
-    console.log(zipFilePath)
-    //zipFilePath = '/home/afg/ai4sd/x-men/ai4sd-analysers/src/superheroes/Archy/arquitetura.zip'
+    
     formData.append('workspaceZip', fs.createReadStream(zipFilePath) as any);
     // https://superhero-02-04-150699885662.europe-west1.run.app/query -> url on the cloud
     try {
