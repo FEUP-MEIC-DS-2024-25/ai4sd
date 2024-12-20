@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import favIcon from '../assets/favicon.ico';
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
-import "./Header.css"; // Import the Header CSS
+import "../styles/Header.css"; 
+import apiClient from "../config/axios";
+
 
 function Header() {
   const [menuVisible, setMenuVisible] = useState(false);
@@ -11,14 +11,15 @@ function Header() {
 
   // Fetch user authentication status
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/user-status/", { withCredentials: true }) // Replace with your endpoint
+    apiClient
+      .get("/user-status/", { withCredentials: true })
       .then((response) => {
-        const { isAuthenticated } = response.data;
-        setIsAuthenticated(isAuthenticated);
+        console.log("Auth status response:", response.data);
+        const { is_authenticated } = response.data;
+        setIsAuthenticated(is_authenticated);
       })
       .catch((error) => console.error("Error checking authentication:", error));
-  }, []);
+  }, []);  
 
   const toggleMenu = () => {
     setMenuVisible((prev) => !prev); // Toggle the menu visibility state
@@ -26,7 +27,7 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      await axios.post("http://localhost:8000/logout/", {}, { withCredentials: true });
+      await apiClient.post("/logout/", {}, { withCredentials: true });
       setIsAuthenticated(false); // Update authentication state
       navigate("/login");
     } catch (error) {
@@ -34,11 +35,15 @@ function Header() {
     }
   };
 
+  const handleNavigateHome = () => {
+    navigate("/");
+  };
+
   return (
     <div className="nav">
-      <div className="together">
+      <div className="together" onClick={handleNavigateHome} style={{ cursor: "pointer" }}>
         {/* Logo */}
-        <img src={favIcon} alt="logo" height="50" style={{ width: "auto" }} />
+        <img src="/favicon.ico" alt="logo" height="50" style={{ width: "auto" }} />
         <h1 id="spark-title" className="sparkTitle">
           SPARK
         </h1>
@@ -78,9 +83,8 @@ function Header() {
           </svg>
         </span>
 
-        {/* Expandable Menu */}
         <div className={`toggleMenu ${menuVisible ? "show" : ""}`}>
-        {isAuthenticated ? (
+          {isAuthenticated ? (
             <>
               <Link to="/profile">Profile</Link>
               <button className="logout-button" onClick={handleLogout}>
@@ -93,9 +97,6 @@ function Header() {
               <Link to="/signup">Signup</Link>
             </>
           )}
-
-          <Link to="/option1">Option 1</Link>
-
         </div>
       </div>
     </div>
