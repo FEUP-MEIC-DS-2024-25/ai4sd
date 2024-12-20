@@ -1,4 +1,4 @@
-import { provideVSCodeDesignSystem, vsCodeButton, vsCodeCheckbox, Button  } from "@vscode/webview-ui-toolkit";
+import { provideVSCodeDesignSystem, vsCodeButton, vsCodeCheckbox } from "@vscode/webview-ui-toolkit";
 
 provideVSCodeDesignSystem().register(vsCodeButton(), vsCodeCheckbox());
 
@@ -7,21 +7,24 @@ const vscode = acquireVsCodeApi();
 window.addEventListener("load", main);
 
 function main() {
-  const saveOutputButton = document.getElementById('saveOutputButton');
+    console.log("Webview loaded.");
+    const saveOutputButton = document.getElementById('saveOutputButton');
 
-  // Check if the element exists and is an HTMLButtonElement
-  if (saveOutputButton && saveOutputButton instanceof HTMLButtonElement) {
-    saveOutputButton.addEventListener("click", handleSaveOutputClick);
-  } else {
-    console.error("Button not found or is not a button element.");
-  }
+    if (saveOutputButton) {
+        console.log("Button found:", saveOutputButton);
+        saveOutputButton.addEventListener("click", handleSaveOutputClick);
+        console.log("Event listener added.");
+    } else {
+        console.error("saveOutputButton not found.");
+    }
 }
 
-
 function handleSaveOutputClick() {
+    console.log("Button clicked.");
+    const resultText = document.getElementById('outputText')?.textContent;
+    console.log("Result Text:", resultText);
 
-  const resultText = document.getElementById('outputText')?.textContent; // get the text content stored in the pre tag of the panel html
-  vscode.postMessage({
-    command: 'saveOutput',
-  });
+    vscode.postMessage({
+        command: 'saveOutput',
+    });
 }
