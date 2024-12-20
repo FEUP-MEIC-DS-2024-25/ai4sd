@@ -105,10 +105,7 @@ export default function ViewProject() {
                             <div className="mb-4">
                                 <h3 className="font-bold mb-2">Response:</h3>
                                 {project.response ? (
-                                    <ReactMarkdown
-                                        className="prose"
-                                        remarkPlugins={[remarkGfm]}
-                                    >
+                                    <ReactMarkdown className="prose">
                                         {project.response}
                                     </ReactMarkdown>
                                 ) : (
