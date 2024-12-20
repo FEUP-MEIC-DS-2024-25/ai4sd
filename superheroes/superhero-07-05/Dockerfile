@@ -36,9 +36,6 @@ RUN chmod +x *.sh
 WORKDIR /app/frontend
 RUN npm install
 
-RUN --mount=type=secret,id=superhero-07-05 \ 
-    cat /run/secrets/secret > .env
-
 # Exponha portas necessárias (se tiver serviços web ou APIs)
 EXPOSE 8080
 
