@@ -22,7 +22,30 @@ export async function writeToBucket(org, repo, filePath, fileContents) {
         );
     } catch (err) {
         console.error(`Error writing file "${absolutePath}" to bucket:`, err.message);
-        throw err; // Re-throw error to handle at a higher level if necessary
+    }
+}
+
+/**
+ * Deletes a file from a Google Cloud Storage bucket at `org/repo/filePath`.
+ * @param {string} org - GitHub organization name.
+ * @param {string} repo - Repository name.
+ * @param {string} filePath - Path of the file within the repository.
+ */
+export async function deleteFromBucket(org, repo, filePath) {
+    const absolutePath = `${org}/${repo}/${filePath}`;
+
+    try {
+        // Reference the file in the bucket
+        const file = STORAGE_CLIENT.bucket(BUCKET_NAME).file(absolutePath);
+
+        // Delete the file
+        await file.delete();
+
+        console.log(
+            `File "${filePath.split('/').pop()}" deleted from bucket "${BUCKET_NAME}" successfully.`
+        );
+    } catch (err) {
+        console.error(`Error deleting file "${absolutePath}" from bucket:`, err.message);
     }
 }
 

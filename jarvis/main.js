@@ -86,7 +86,6 @@ export async function addWebhooksToAllRepos(octokit, org, webhookUrl) {
 }
 
 
-
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
 await addWebhooksToAllRepos(octokit, config.org, webhookUrl);
 

@@ -44,13 +44,16 @@ export function processChanges(octokit, payload) {
         const owner = payload.repository.owner.name;
         const repo = payload.repository.name;
 
-        if (change.changeType === 'removed') {
-            await deleteFromBucket(owner, repo, change.file);
-        }
-        else {
-            const metadata = await fetchRepoContents(octokit, owner, repo, change.file);
-            const fileWContent = await downloadFiles([metadata]);
-            await writeToBucket(owner, repo, fileWContent[0].path, fileWContent[0].content);
+        try {
+            if (change.changeType === 'removed') {
+                await deleteFromBucket(owner, repo, change.file);
+            } else {
+                const metadata = await fetchRepoContents(octokit, owner, repo, change.file);
+                const fileWContent = await downloadFiles([metadata]);
+                await writeToBucket(owner, repo, fileWContent[0].path, fileWContent[0].content);
+            }
+        } catch (error) {
+            console.error(`Failed to process change for file ${change.file}:`, error);
         }
     });
 }
