@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../../config/axios";
+import "../../styles/Project.css";
 
 function Project() {
   const { projectId } = useParams();
@@ -12,8 +13,8 @@ function Project() {
 
   // Fetch project details
   useEffect(() => {
-    axios
-      .get(`http://localhost:8000/api/projects/${projectId}/`)
+    apiClient
+      .get(`spark/${projectId}/`)
       .then((response) => setProject(response.data))
       .catch((error) => console.error("Error fetching project:", error));
   }, [projectId]);
@@ -21,8 +22,8 @@ function Project() {
   // Handle adding new member
   const handleAddMember = (e) => {
     e.preventDefault();
-    axios
-      .post(`http://localhost:8000/api/projects/${projectId}/add-member/`, {
+    apiClient
+      .post(`spark/${projectId}/add-member/`, {
         username: newMember,
       })
       .then(() => {
@@ -41,8 +42,8 @@ function Project() {
   // Handle project deletion
   const handleDeleteProject = (e) => {
     e.preventDefault();
-    axios
-      .delete(`http://localhost:8000/api/projects/${projectId}/`)
+    apiClient
+      .post(`spark/${projectId}/delete/`)
       .then(() => {
         alert("Project deleted successfully!");
         navigate("/");
@@ -51,75 +52,84 @@ function Project() {
   };
 
   if (!project) {
-    return <p>Loading project...</p>;
+    return <p className="loading-message">Loading project...</p>;
   }
 
   return (
-    <div className="container mt-4">
-      <h1>{project.project_name}</h1>
-      <p>
+    <div className="project-container">
+      <h1 className="project-title">{project.name}</h1>
+      <p className="project-description">
         <strong>Description:</strong> {project.description || "No description available."}
       </p>
 
-      <div className="mt-3">
-        <p>
-          <strong>Created At:</strong> {new Date(project.created_at).toLocaleString()}
-        </p>
+      <div className="project-links">
         <p>
           <strong>GitHub Link:</strong>{" "}
-          <a href={project.github_project_link} target="_blank" rel="noopener noreferrer">
+          <a
+            href={project.github_project_link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="project-link"
+          >
             {project.github_project_link}
           </a>
         </p>
 
-        {project.miro_board_link && (
+        {project.miro_board_id && (
           <p>
             <strong>Miro Board:</strong>{" "}
-            <a href={project.miro_board_link} target="_blank" rel="noopener noreferrer">
-              {project.miro_board_link}
+            <a
+              href={project.miro_board_link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="project-link"
+            >
+              {project.miro_board_id}
             </a>
           </p>
         )}
       </div>
 
-      <h2 className="mt-4">Members</h2>
-      <ul>
+      <div className="action-buttons">
+        <button className="btn-action">Load Product</button>
+        <button className="btn-action">Generate Sprints</button>
+        <button className="btn-action">Import Backlog</button>
+      </div>
+
+      <h2 className="members-title">Members</h2>
+      <ul className="members-list">
         {project.members.map((member) => (
-          <li key={member.user}>
-            <Link to={`/profile/${member.user}`}>{member.user}</Link>
+          <li key={member} className="member-item">
+            <Link to={`/profile/${member}`} className="member-link">
+              {member}
+            </Link>
           </li>
         ))}
       </ul>
 
-      <div className="container mt-4">
-        <h2>Add Member</h2>
+      <div className="add-member-section">
+        <h2 className="add-member-title">Add Member</h2>
         {errors && <p className="error-message">{errors}</p>}
 
-        <form className="mt-3" onSubmit={handleAddMember}>
+        <form className="add-member-form" onSubmit={handleAddMember}>
           <input
             type="text"
             name="username"
             value={newMember}
             onChange={(e) => setNewMember(e.target.value)}
             placeholder="Enter username"
-            className="form-control mb-2"
+            className="form-input"
             required
           />
-          <button type="submit" className="btn btn-primary">
-            Add Member
-          </button>
+          <button type="submit" className="btn-submit">Add Member</button>
         </form>
       </div>
 
-      <div className="mt-4">
-        <Link to="/" className="btn btn-secondary">
-          Back to Home
-        </Link>
+      <div className="project-buttons">
+        <Link to="/" className="btn-secondary">Back to Home</Link>
 
-        <form className="d-inline" onSubmit={handleDeleteProject}>
-          <button type="submit" className="btn btn-danger">
-            Delete Project
-          </button>
+        <form className="delete-form" onSubmit={handleDeleteProject}>
+          <button type="submit" className="btn-danger">Delete Project</button>
         </form>
       </div>
     </div>

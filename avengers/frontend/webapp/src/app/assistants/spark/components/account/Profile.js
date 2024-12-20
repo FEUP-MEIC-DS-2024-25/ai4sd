@@ -1,30 +1,66 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { useNavigate, Link } from "react-router-dom";
-import "./Profile.css";
+import apiClient from "../../config/axios";
+import { Link, useParams } from "react-router-dom";
+import "../../styles/Profile.css";
 
 function Profile() {
-  const [user, setUser] = useState(null);
-  const [miroToken, setMiroToken] = useState("");
+  const { username } = useParams();
+  const [miroTokenInput, setMiroTokenInput] = useState("");
+  const [user, setUser] = useState({
+    username: "",
+    is_own_profile: null,
+    github_username: "",
+    miro_token: false,
+  });
+
   const [errors, setErrors] = useState("");
-  const navigate = useNavigate();
+
+  const profileEndpoint = username ? `/profile/${username}/` : "/profile/";
 
   // Fetch user profile data
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/profile/")
+    apiClient
+      .get(profileEndpoint)
       .then((response) => setUser(response.data))
       .catch((error) => console.error("Error fetching profile:", error));
-  }, []);
+  }, [profileEndpoint]);
 
-  // Handle Miro Token Submission
+  const handleGitHubLink = async () => {
+    try {
+      const response = await apiClient.get("/github/login/");
+      const { auth_url } = response.data;
+      window.location.href = auth_url;
+    } catch (error) {
+      console.error("Error fetching GitHub auth URL:", error);
+      alert("Error fetching GitHub auth URL.");
+    }
+  };
+
+  const handleGitHubUnlink = async () => {
+    try {
+      await apiClient.post("/github/unlink/");
+      alert("GitHub account unlinked successfully!");
+      setUser((prevUser) => ({
+        ...prevUser,
+        github_username: null,
+      }));
+    } catch (error) {
+      console.error("Error unlinking GitHub account:", error);
+      alert("Error unlinking GitHub account.");
+    }
+  };
+
   const handleMiroTokenSubmit = (e) => {
     e.preventDefault();
-    axios
-      .post("http://localhost:8000/api/add-miro-token/", { miro_token: miroToken })
+    apiClient
+      .post("/miro/add-token/", { miro_token: miroTokenInput })
       .then(() => {
         alert("Miro token saved successfully!");
-        window.location.reload(); // Reload profile data
+        setUser((prevUser) => ({
+          ...prevUser,
+          miro_token: true,
+        }));
+        setMiroTokenInput("");
       })
       .catch((error) => {
         if (error.response && error.response.data) {
@@ -33,79 +69,82 @@ function Profile() {
       });
   };
 
-  // Handle Unlink Actions
-  const handleAction = (url, message) => {
-    axios
-      .post(url)
-      .then(() => {
-        alert(message);
-        window.location.reload(); // Reload profile data
-      })
-      .catch((error) => console.error(`Error performing action on ${url}:`, error));
+  const handleMiroTokenDelete = async () => {
+    try {
+      await apiClient.post("miro/delete-token/");
+      alert("Miro token deleted successfully!");
+      setUser((prevUser) => ({
+        ...prevUser,
+        miro_token: null,
+      }));
+    } catch (error) {
+      console.error("Error deleting Miro token:", error);
+      alert("Error deleting Miro token.");
+    }
   };
 
+  if (errors) {
+    return <p className="error-message">{errors}</p>;
+  }
+
   if (!user) {
-    return <p>Loading profile...</p>;
+    return <p className="loading-message">Loading profile...</p>;
   }
 
   return (
-    <div className="container mt-5">
-      <h1 className="mb-4">User Profile</h1>
+    <div className="profile-container">
+      <h1 className="profile-title">User Profile</h1>
 
-      {/* Back to Home Link */}
-      <p>
-        <Link to="/" className="btn btn-secondary">Go back to Home Page</Link>
-      </p>
 
-      {/* User Information */}
-      <h2>User Information</h2>
-      <ul className="list-group mb-4">
-        <li className="list-group-item">Username: {user.username}</li>
 
-        <li className="list-group-item">
+      <h2 className="section-title">User Information</h2>
+      <ul className="info-list">
+        <li className="info-item">Username: {user.username}</li>
+
+        <li className="info-item">
           Github Username:{" "}
-          {user.profile.github_username ? (
+          {user.github_username ? (
             <>
               <a
-                href={`https://github.com/${user.profile.github_username}`}
+                href={`https://github.com/${user.github_username}`}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="github-link"
               >
-                {user.profile.github_username}
+                {user.github_username}
               </a>
-              {user.is_current_user && (
+              {user.is_own_profile && (
                 <button
-                  className="btn btn-danger btn-sm ms-2"
-                  onClick={() =>
-                    handleAction(
-                      "http://localhost:8000/api/github-unlink/",
-                      "GitHub account unlinked successfully!"
-                    )
-                  }
+                  className="btn-danger small-btn"
+                  onClick={handleGitHubUnlink}
                 >
                   Unlink
                 </button>
               )}
             </>
           ) : (
-            "Not associated"
+            <>
+              Not associated
+              {user.is_own_profile && (
+                <button
+                  onClick={handleGitHubLink}
+                  className="btn-primary small-btn"
+                >
+                  Associate Github Account
+                </button>
+              )}
+            </>
           )}
         </li>
 
-        <li className="list-group-item">
-          Miro Token:{" "}
-          {user.profile.miro_token ? (
+        <li className="info-item">
+          Miro Token: {user.miro_token ? (
             <>
-              <span>Token is associated</span>
-              {user.is_current_user && (
+              <span className="token-status">Token is associated</span>
+              {user.is_own_profile && (
                 <button
-                  className="btn btn-danger btn-sm ms-2"
-                  onClick={() =>
-                    handleAction(
-                      "http://localhost:8000/api/delete-miro-token/",
-                      "Miro token deleted successfully!"
-                    )
-                  }
+                  className="btn-danger small-btn"
+                  onClick={handleMiroTokenDelete}
                 >
                   Delete Miro Token
                 </button>
@@ -114,34 +153,29 @@ function Profile() {
           ) : (
             <>
               Not associated
-              {user.is_current_user && (
-                <form onSubmit={handleMiroTokenSubmit} className="mt-3">
+              {user.is_own_profile && (
+                <form onSubmit={handleMiroTokenSubmit} className="token-form">
                   <input
                     type="text"
                     id="miro_token"
                     name="miro_token"
-                    value={miroToken}
-                    onChange={(e) => setMiroToken(e.target.value)}
-                    className="form-control mb-2"
+                    className="form-input"
                     placeholder="Enter your Miro token"
+                    value={miroTokenInput}
+                    onChange={(e) => setMiroTokenInput(e.target.value)}
                     required
                   />
-                  <button type="submit" className="btn btn-primary">
-                    Save Miro Token
-                  </button>
+                  <button type="submit" className="btn-submit">Save Miro Token</button>
                 </form>
               )}
             </>
           )}
         </li>
       </ul>
-
-      {/* Associate Github Button */}
-      {user.is_current_user && (
-        <a href="http://localhost:8000/api/github-login/" className="btn btn-primary">
-          Associate Github Account
-        </a>
-      )}
+      
+      <p>
+        <Link to="/" className="btn-secondary">Go back to Home Page</Link>
+      </p>
     </div>
   );
 }
