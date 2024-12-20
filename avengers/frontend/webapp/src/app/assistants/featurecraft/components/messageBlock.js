@@ -47,6 +47,7 @@ export default function MessageBlock({ messages, totalMessages, description, con
 
     const handleClosePopup = () => {
         setIsPopupVisible(false);
+        setSelectedText('');
     };
 
     const handlePinMessage = async () => {
@@ -162,21 +163,21 @@ export default function MessageBlock({ messages, totalMessages, description, con
             )}
             {isPopupVisible && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-1">
-                    <div className="bg-white p-4 rounded-md shadow-md w-[50vw] h-[50vh] flex flex-col">
+                    <div className="bg-white p-4 rounded-xl shadow-md w-[50vw] h-[50vh] flex flex-col">
                         <textarea
-                            className="flex-grow p-2 border rounded-md"
+                            className="flex-grow p-2 border rounded-xl"
                             value={selectedText}
                             onChange={(e) => setSelectedText(e.target.value)}
                         />
                         <div className="mt-4 flex justify-center space-x-2">
                             <button
-                                className="bg-[#212529] text-white py-1 px-2 rounded-md w-32"
+                                className="bg-blue-100 text-grey py-1 px-2 rounded-xl w-32"
                                 onClick={handleClosePopup}
                             >
                                 Close
                             </button>
                             <button
-                                className="bg-[#6C757D] text-white py-1 px-2 rounded-md w-32"
+                                className="bg-blue-400 text-white py-1 px-2 rounded-xl w-32"
                                 onClick={handlePinMessage}
                             >
                                 Pin Message
