@@ -22,7 +22,8 @@ async function updateCofiguration(configuration:string,searchQuery:string){
 
 async function getCommentsFromServer(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
     try {
-    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app", {
+      console.log("Getting comments from server");
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-comments", {
         languageId,
         text,
         apiKey,
@@ -59,11 +60,11 @@ async function getCommentsFromServer(languageId: string, text: string, apiKey: s
   }
 
 async function getCommentsFromServerSplitFunctions(languageId: string, text: string, apiKey: string, language: string): Promise<string> {
-    if (languageId !== "cpp") {
-        throw new Error(`Only C++ is supported for split functions mode language ${languageId}`);
+    if (languageId !== "cpp" && languageId !== "dart") {
+        throw new Error(`Only C++ and Dart is supported for split functions mode language ${languageId}`);
     }
     console.log("Getting comments from server split functions");
-    const response = await axios.post("http://localhost:8080/generate-comments-splited", {
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-comments-splited", {
         languageId,
         text,
         apiKey,
@@ -73,11 +74,11 @@ async function getCommentsFromServerSplitFunctions(languageId: string, text: str
 }
 
 async function getParsedFunctions(languageId: string, text: string, apiKey: string, language: string): Promise<[number,string][]> {
-    if (languageId !== "cpp") {
-        throw new Error(`Only C++ is supported for split functions mode language ${languageId}`);
+    if (languageId !== "cpp" && languageId !== "dart") {
+        throw new Error(`Only C++ and Dart is supported for split functions mode language ${languageId}`);
     }
     console.log("Getting comments from server split functions");
-    const response = await axios.post("http://localhost:8080/generate-split-code", {
+    const response = await axios.post("https://superhero-07-04-150699885662.europe-west1.run.app/generate-split-code", {
         languageId,
         text,
         apiKey,
@@ -121,6 +122,7 @@ async function selfhostTest(data: [number, string][], languageId: string) {
     }
     return comments;
 }
+
 async function askForApiKey(){
 	do {
 		var searchQuery = await vscode.window.showInputBox({
@@ -139,6 +141,12 @@ async function askForApiKey(){
 
 	} while (searchQuery === '');
 	return searchQuery;
+}
+
+async function test(){
+    const response = await axios.get("https://superhero-07-04-150699885662.europe-west1.run.app");
+    console.log(response.data);
+    return response.data;
 }
 
 export function activate(context: vscode.ExtensionContext) {
@@ -185,14 +193,18 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
         const language = await getLanguage();
-        let mode = 1;//TODO Leagacy is going to be a bit changed
-        if(mode===1){
+
+        const testResult = await test();
+        console.log(testResult);
+        console.log('Language:', textEditor.document.languageId);
+        let mode = 2;//TODO Leagacy is going to be a bit changed
+        if(textEditor.document.languageId === "python"){
             const response = await getCommentsFromServer(textEditor.document.languageId, textEditor.document.getText(), apiKey, language);
             //console.log(response);
             const comments: CodeComment[] = JSON.parse(response);
             console.log(comments);
             updateComments(textEditor,comments);
-        }else if(mode===2){
+        }else if(mode===1){
             console.log("Split functions");
             const functions = await getParsedFunctions(textEditor.document.languageId, textEditor.document.getText(), apiKey, language);
             console.log('Parsed functions:', functions);

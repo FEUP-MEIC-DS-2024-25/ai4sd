@@ -1,6 +1,7 @@
 import { getAuthOctokit } from "./jarvis-fetcher/auth.js";
 import { config } from "./config.js";
 import { uploadRepo } from "./jarvis-writer/writer.js";
+import { addWebhook } from "./jarvis-fetcher/githubClient.js";
 
 /**
  * Fetches all repositories in an organization.
@@ -54,19 +55,39 @@ export async function uploadAllReposInOrg(octokit, org) {
     }
 }
 
+/**
+ * Adds webhooks to all repositories in an organization.
+ * @param {object} octokit - Authenticated Octokit instance.
+ * @param {string} org - GitHub organization name.
+ * @param {string} webhookUrl - Webhook endpoint URL.
+ */
+export async function addWebhooksToAllRepos(octokit, org, webhookUrl) {
+    try {
+        console.log(`Fetching repositories for organization: ${org}`);
+        const repos = await fetchOrgRepos(octokit, org);
 
-//const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-//await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
+        if (repos.length === 0) {
+            console.log(`No repositories found for organization: ${org}`);
+            return;
+        }
 
-import fs from "fs";
-
-const path = './service_account_key.json';
-
-try {
-  // Read the file synchronously
-  const secret = fs.readFileSync(path, 'utf8');
-  console.log('Successfully read secret');
-} catch (err) {
-  console.error(`Error reading secret file at ${path}:`, err.message);
+        console.log(`Adding webhooks to ${repos.length} repositories in organization: ${org}`);
+        for (const repo of repos) {
+            try {
+                await addWebhook(octokit, org, repo, webhookUrl);
+            } catch (error) {
+                console.error(`Error processing webhook for repository "${repo}":`, error.message);
+            }
+        }
+        console.log(`Finished adding webhooks for organization: ${org}`);
+    } catch (error) {
+        console.error(`Error during webhook addition process:`, error.message);
+    }
 }
+
+
+
+const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
+const webhookUrl = "https://jarvis-150699885662.europe-west1.run.app/webhook";
+await addWebhooksToAllRepos(octokit, config.org, webhookUrl);
 

@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import "./Auth.css"; // Import the Auth CSS
+import "../../styles/Auth.css"; 
 import apiClient from "../../config/axios";
 
 function Login() {
   const navigate = useNavigate();
 
-  // State management
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -16,7 +15,6 @@ function Login() {
   const [errors, setErrors] = useState("");
   const [formErrors, setFormErrors] = useState({});
 
-  // Handle form field changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -25,7 +23,6 @@ function Login() {
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -47,8 +44,6 @@ function Login() {
   return (
     <div className="auth-container">
       <h1 className="auth-title">Login</h1>
-
-      {/* Display general form errors */}
       {errors && <div className="auth-error">{errors}</div>}
 
       <form onSubmit={handleSubmit} className="auth-form">

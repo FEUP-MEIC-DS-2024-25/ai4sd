@@ -2,6 +2,10 @@ import React, { useState } from "react";
 import { useAnalysis } from "../../context/AnalysisContext";
 import { useSaveData } from "../../context/SaveDataContext";
 
+import {Input} from "@nextui-org/react";
+import {Checkbox} from "@nextui-org/react";
+import {Select, SelectItem} from "@nextui-org/react";
+import {Button} from "@nextui-org/button";
 
 function FormsComponent({ setActiveView  }) {
   
@@ -11,7 +15,7 @@ function FormsComponent({ setActiveView  }) {
   const [response, setResponse] = useState(null);
   const [repoUrl, setRepoUrl] = useState("");
   const [authToken, setAuthToken] = useState("");
-  const [selectedOption, setSelectedOption] = useState("mvc");
+  const [selectedOption, setSelectedOption] = useState("");
   const [isPrivate, setIsPrivate] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -51,7 +55,7 @@ function FormsComponent({ setActiveView  }) {
           body: JSON.stringify({
             repo_url: repoUrl,
             token: authToken || null,
-            architecture: selectedOption,
+            architecture: (Array.from(selectedOption)[0]),
           }),
         }
       );
@@ -75,102 +79,108 @@ function FormsComponent({ setActiveView  }) {
       
   };
 
+  const architecturesDict = [
+    {key: "mvc", label: "Model-View-Controller"},
+    {key: "monolithic", label: "Monolithic Pattern"},
+    {key: "distributed", label: "Distributed Pattern"},
+    {key: "eventDriven", label: "Event-Driven Architecture"},
+    {key: "layered", label: "Layered (N-Tier) Architecture"},
+    {key: "clientServer", label: "Client-Server Architecture"},
+    {key: "microservice", label: "Microservices Architecture"},
+    {key: "serviceOriented", label: "Service-Oriented Architecture"},
+    {key: "serverless", label: "Serverless Architecture"},
+    {key: "component", label: "Component-Based Architecture"},
+    {key: "peerToPeer", label: "Peer-to-Peer (P2P) Architecture"},
+    {key: "pipeFilter", label: "Pipe-and-Filter Architecture"},
+    {key: "domainDriven", label: "Domain-Driven Design"},
+    {key: "hexagonal", label: "Hexagonal Architecture"},
+    {key: "CQRS", label: "Command Query Responsibility Segregation"},
+    {key: "microkernel", label: "Microkernel Architecture"}
+  ];
+
   return (
     <div className="pt-10 max-w-lg ml-0 text-left">
 
       {/* Repository Link */}
-      <div className="mb-2">
-        <label className="block text-lg font-rubik mb-2" htmlFor="repo-url">
-          Repository Link
-        </label>
-        <textarea
-          id="repo-url"
-          value={repoUrl}
-          onChange={(e) => setRepoUrl(e.target.value)}
-          placeholder="Enter the repository link"
-          className="w-full h-12 bg-ivory px-3 pt-2.5 border-1.5 border-zinc-800 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 no-resize overflow-y-hidden overflow-x-auto whitespace-nowrap"
-        />
-      </div>
+      <Input
+        isRequired
+        label="Repository Link"
+        labelPlacement="outside"
+        placeholder="Enter the repository link"
+        radius="sm"
+        size="lg"
+        variant="bordered"
+        value={repoUrl}
+        onValueChange={setRepoUrl}
+        classNames={{
+          mainWrapper: "pb-2",
+          label: "block text-lg text-black pb-20 mb-2",
+          inputWrapper: "bg-ivory border-1.5 border-zinc-800 duration-0 group-hover:border-1.5 group-hover:border-zinc-800 group-hover:duration-0"
+        }}
+      />
 
       {/* Private Assignment */}
-      <div className="mb-7">
-        <div>
-          <label>
-            Private?
-            <input
-              className="text-rubik ml-2 custom-checkbox"
-              type="checkbox"
-              checked={isPrivate}
-              onChange={() => setIsPrivate(!isPrivate)}
-            />{" "}
-          </label>
-        </div>
-      </div>
+      <Checkbox 
+        defaultSelected 
+        radius="full"
+        color="default"
+        isSelected={isPrivate}
+        onValueChange={setIsPrivate}>Private?</Checkbox>
 
       {/* Repository Token */}
       {isPrivate && (
-        <div className="mb-4">
-          <label
-            className="block text-lg font-rubik mb-2"
-            htmlFor="auth-token"
-          >
-            Access Token
-          </label>
-          <textarea
-            id="auth-token"
-            value={authToken}
-            onChange={(e) => setAuthToken(e.target.value)}
-            placeholder="Enter the access token"
-            className="w-full h-12 bg-ivory px-3 pt-2.5 border-zinc-800 border-1.5 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500 no-resize overflow-y-hidden overflow-x-auto whitespace-nowrap"
-          />
-        </div>
+        <Input
+          label="Access Token"
+          labelPlacement="outside"
+          placeholder="Enter the access token"
+          radius="sm"
+          size="lg"
+          variant="bordered"
+          value={authToken}
+          onValueChange={setAuthToken}
+          classNames={{
+            mainWrapper: "pt-4",
+            label: "block text-lg text-black pb-20 mb-2",
+            inputWrapper: "bg-ivory border-1.5 border-zinc-800 duration-0 group-hover:border-1.5 group-hover:border-zinc-800 group-hover:duration-0"
+          }}
+        />
       )}
 
       {/* Architecture Options */}
-      <div className="mb-4">
-        <label className="block text-lg font-rubik mb-2" htmlFor="dropdown">
-          Architectural Pattern
-        </label>
-        <select
-          id="dropdown"
-          value={selectedOption}
-          onChange={(e) => setSelectedOption(e.target.value)}
-          className="w-full px-3 p-2 border-zinc-800 border-1.5 rounded-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-          required
-        >
-          <option value="mvc">Model-View-Controller</option>
-          <option value="monolithic">Monolithic Pattern</option>
-          <option value="distributed">Distributed Pattern</option>
-          <option value="eventDriven">Event-Driven Architecture</option>
-          <option value="layered">Layered (N-Tier) Architecture</option>
-          <option value="clientServer">Client-Server Architecture</option>
-          <option value="microservice">Microservices Architecture</option>
-          <option value="serviceOriented">Service-Oriented Architecture</option>
-          <option value="serverless">Serverless Architecture</option>
-          <option value="component">Component-Based Architecture</option>
-          <option value="peerToPeer">Peer-to-Peer (P2P) Architecture</option>
-          <option value="pipeFilter">Pipe-and-Filter Architecture</option>
-          <option value="domainDriven">Domain-Driven Design</option>
-          <option value="hexagonal">Hexagonal Architecture</option>
-          <option value="CQRS">Command Query Responsibility Segregation</option>
-          <option value="microkernel">Microkernel Architecture</option>
-        </select>
-      </div>
+      <Select
+        isRequired
+        items={architecturesDict}
+        label="Architectural Pattern"
+        labelPlacement="outside"
+        placeholder="Select an architectural pattern"
+        radius="sm"
+        size="lg"
+        selectedKeys={selectedOption}
+        onSelectionChange={setSelectedOption}
+        classNames={{
+          mainWrapper: "py-8",
+          label: "block text-lg text-black ml-3 mb-2",
+          trigger: "bg-ivory border-1.5 border-zinc-800 group-hover:bg-ivory",
+          listbox: "text-black"
+        }}
+      >
+        {(arch) => <SelectItem>{arch.label}</SelectItem>}
+      </Select>
 
       {/* Button */}
-      <div className="mt-10 mb-4">
-        <button
-          onClick={handleTestClick}
-          className={`px-10 py-0.5 text-rubik text-lg bg-zinc-800 border-zinc-800 border-1.5 text-white rounded-sm transition duration-300 hover:bg-white hover:border-1.5 hover:border-zinc-800 hover:text-zinc-800 ${
-            loading
-              ? "bg-zinc-800 cursor-not-allowed"
-              : "bg-zinc-800 hover:bg-white"
-          }`}
-          disabled={loading}
-        >
-          {loading ? <div className="loader"></div> : "Submit"}
-        </button>
-      </div>
+      <Button 
+        radius="sm"
+        size="md"
+        onClick={handleTestClick}
+        className={`px-10 text-lg bg-zinc-800 border-zinc-800 border-1.5 hover:text-zinc-800 transition duration-300 ${
+          loading
+            ? "bg-zinc-800 cursor-not-allowed"
+            : "text-white hover:bg-white"
+        }`}
+        disabled={loading}
+      >
+        {loading ? <div className="loader"></div> : "Submit"}
+      </Button>
 
     
       {response && (

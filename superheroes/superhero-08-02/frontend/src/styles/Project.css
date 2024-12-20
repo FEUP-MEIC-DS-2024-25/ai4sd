@@ -1,0 +1,194 @@
+/* Project Container */
+.project-container {
+     max-width: 40em;
+     margin: 1em auto;
+     padding: 2em;
+     border-radius: 0.5em;
+     background-color: var(--grey);
+     box-shadow: 0 0.25em 0.375em rgba(0, 0, 0, 0.1);
+}
+   
+/* Project Title */
+.project-title {
+     font-size: 2.5em;
+     font-weight: bold;
+     text-align: center;
+     color: var(--dark-blue);
+}
+   
+/* Project Description */
+.project-description {
+     font-size: 1.3em;
+     color: var(--dark-blue);
+     margin-bottom: 0.5em;
+}
+   
+/* Project Links */
+.project-links p {
+     font-size: 1.1em;
+     color: var(--dark-blue);
+}
+   
+.project-link {
+     color: var(--cyan);
+     text-decoration: none;
+     font-weight: 600;
+}
+   
+.project-link:hover {
+     color: var(--blue);
+     text-decoration: none;
+     transition: color 0.3s ease;
+     margin-bottom: 0.5em;
+}
+   
+/* Members Section */
+.members-title {
+     font-size: 1.8em;
+     font-weight: bold;
+     margin-top: 0.2em;
+     margin-bottom: 0.2em;
+     color: var(--dark-blue);
+}
+
+.members-list {
+     list-style: none;
+     padding: 0;
+     margin-bottom: 0.2em;
+}
+
+.member-item {
+     margin: 0.2em 0;
+     font-size: 1.2em;
+}
+
+.member-link {
+     text-decoration: none;
+     color: var(--blue);
+     font-weight: 500;
+     transition: color 0.3s ease;
+}
+
+.member-link:hover {
+     color: var(--cyan);
+     text-decoration: none;
+}
+
+/* Add Member Section */
+.add-member-section {
+     margin-top: 0.7em;
+}
+
+.add-member-title {
+     font-size: 1.8em;
+     font-weight: bold;
+     color: var(--dark-blue);
+     margin-bottom: 0.5em;
+}
+
+.add-member-form {
+     display: flex;
+     flex-direction: column;
+     gap: 1em;
+}
+
+.form-input {
+     padding: 0.75em;
+     border: 0.075em solid var(--grey);
+     border-radius: 0.3em;
+     font-size: 1.2em;
+     transition: border-color 0.3s ease;
+}
+
+.form-input:focus {
+     outline: none;
+     border-color: var(--cyan);
+     box-shadow: 0 0 0.25em var(--cyan);
+}
+
+.error-message {
+     color: var(--red);
+     background-color: #fdecea;
+     border: 0.05em solid var(--red);
+     border-radius: 0.3em;
+     padding: 0.75em;
+     text-align: center;
+     margin-bottom: 1em;
+}
+
+/* Submit Button */
+.btn-submit {
+     padding: 0.25em 0.5em;
+     background-color: var(--blue);
+     color: var(--white);
+     font-size: 1.2em;
+     border: none;
+     border-radius: 0.3em;
+     cursor: pointer;
+     transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+     background-color: var(--cyan);
+}
+
+/* Project Buttons */
+.project-buttons {
+     display: flex;
+     justify-content: space-between;
+     margin-top: 2em;
+}
+
+.btn-secondary {
+     background-color: var(--grey);
+     color: var(--dark-blue);
+     padding: 0.75em 1.5em;
+     border-radius: 0.3em;
+     text-decoration: none;
+     font-size: 1em;
+     text-align: center;
+     cursor: pointer;
+     transition: background-color 0.3s ease;
+}
+
+.btn-secondary:hover {
+     background-color: var(--cyan);
+     color: var(--white);
+}
+
+.btn-danger {
+     background-color: var(--red);
+     color: var(--white);
+     padding: 0.75em 1.5em;
+     border: none;
+     border-radius: 0.3em;
+     font-size: 1em;
+     cursor: pointer;
+     transition: background-color 0.3s ease;
+}
+
+.btn-danger:hover {
+     background-color: #c9302c;
+}
+
+/* Action Buttons */
+.action-buttons {
+     display: flex;
+     justify-content: space-between;
+     margin: 0.5em 0;
+}
+   
+.btn-action {
+     padding: 0.5em 2.0em;
+     font-size: 1em;
+     background-color: var(--blue);
+     color: var(--white);
+     border: none;
+     border-radius: 0.3em;
+     cursor: pointer;
+     transition: background-color 0.3s ease;
+}
+   
+.btn-action:hover {
+     background-color: var(--cyan);
+}

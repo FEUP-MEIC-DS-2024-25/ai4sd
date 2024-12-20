@@ -6,7 +6,7 @@ import Image from "next/image";
 import { Input as UIInput } from '@/app/components/ui/input';
 import { Button } from '@/app/components/ui/button';
 
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = "https://superhero-06-02-150699885662.europe-west1.run.app";
 
 function Input() {
     const { sharedVariable, setSharedVariable } = useChatContext();
@@ -71,6 +71,13 @@ function Input() {
                             value="recommendations" id="recommendations" />
                         <label className="form-check-label" htmlFor="recommendations">
                             Get improvement recommendations
+                        </label>
+                    </div>
+                    <div className="form-check">
+                        <input className="form-check-input" type="radio" name="options"
+                            value="realExamples" id="realExamples" />
+                        <label className="form-check-label" htmlFor="realExamples">
+                            Explore real examples
                         </label>
                     </div>
                 </div>)}
