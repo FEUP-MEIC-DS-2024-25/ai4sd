@@ -17,6 +17,11 @@ from google.cloud import secretmanager
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
 
+# Set the Google Application Credentials environment variable
+os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
+    "GOOGLE_APPLICATION_CREDENTIALS", "/app/creds/hero-alliance-feup-ds-24-25-02aaf828936e.json"
+)
+
 # Load Whisper model once
 model = whisper.load_model("base")
 

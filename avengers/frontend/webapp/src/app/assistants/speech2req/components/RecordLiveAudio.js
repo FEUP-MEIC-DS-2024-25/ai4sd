@@ -52,6 +52,7 @@ const RecordLiveAudio = ({ setTranscription, setSummary}) => {
     setIsLoading(true);
     try {
       const response = await fetch("http://localhost:5000/api/transcribe", {
+      //const response = await fetch("https://superhero-04-03-150699885662.europe-west1.run.app/api/transcribe", {
         method: "POST",
         body: formData,
       });
