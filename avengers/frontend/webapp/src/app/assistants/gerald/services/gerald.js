@@ -1,7 +1,7 @@
 import { SUPPORTED_FILE_TYPES } from '../constants/fileTypes';
 
 
-const APIURL = 'http://localhost:8000';
+const APIURL = 'https://superhero-05-02-150699885662.europe-west1.run.app';
 
 export async function createProject() {
     const url = new URL(window.location.href);
