@@ -1,12 +1,4 @@
 import google.generativeai as genai
-from dotenv import load_dotenv
-import os
-
-# Carregar as variáveis do ficheiro .env
-load_dotenv()
-
-# Aceder às variáveis de ambiente
-my_secret = os.getenv('GEMINI_KEY')
 
 #Read all the files needed
 with open('./files/context.txt', 'r') as file:
@@ -19,7 +11,7 @@ query = "This is the context about what I expect my program to do:\n" + context 
 
 
 #Define the key, the model and make the query to the gemini
-genai.configure(api_key=my_secret)
+genai.configure(api_key="AIzaSyBxLCcSm4M2rvOfJjkKLWdpKyp76GSsyDk")
 model = genai.GenerativeModel("gemini-1.5-flash")
 response = model.generate_content(query)
 
