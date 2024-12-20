@@ -65,7 +65,7 @@ export const Chatbot = ({conversation, setConversation}) => {
     const convertUserStoryToText = async (userStory) => {
         return new Promise((resolve, reject) => {
             setTimeout(() => {
-                fetch('http://localhost:8000/api/gemini/', {
+                fetch('https://superhero-07-01-150699885662.europe-west1.run.app/api/gemini', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'

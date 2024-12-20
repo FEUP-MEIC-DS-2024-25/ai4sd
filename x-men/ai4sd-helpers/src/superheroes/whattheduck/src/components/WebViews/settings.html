@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WhatTheDuck Settings</title>
+</head>
+
+<body>
+    <h1>WhatTheDuck Settings</h1>
+    <p>Use this page to customize the extension settings.</p>
+
+    {{checkboxes}}
+
+    <script>
+        const vscode = acquireVsCodeApi();
+
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', (event) => {
+                        const target = event.target;
+                        vscode.postMessage({
+                            command: 'toggleLanguage',
+                            language: target.id.replace('Toggle', ''),
+                            value: target.checked
+                        });
+                    });
+                });
+    </script>
+</body>
+
+</html>

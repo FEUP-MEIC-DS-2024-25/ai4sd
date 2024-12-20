@@ -88,6 +88,5 @@ export async function addWebhooksToAllRepos(octokit, org, webhookUrl) {
 
 
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-const webhookUrl = "https://jarvis-150699885662.europe-west1.run.app/webhook";
 await addWebhooksToAllRepos(octokit, config.org, webhookUrl);
 

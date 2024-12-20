@@ -1,28 +1,28 @@
-# Usar uma imagem base oficial do Node.js
+# Node.js Image
 FROM node:18
 
-# Definir o diretório de trabalho dentro do container
+# Working directory
 WORKDIR /app
 
 # Copiar os ficheiros de configuração das dependências
 COPY package*.json ./
 
-# Instalar as dependências
+# Install the dependencies
 RUN npm install
 
 # Put the secret into the file /etc/secrets/.env in our container.
 RUN --mount=type=secret,id=superhero-03-02-secret \
  cat /run/secrets/superhero-03-02-secret > /etc/gemini_token
 
-# Copiar todos os ficheiros do projeto para o container
+# Copy files to the container
 COPY . .
 
-# Especificar o ambiente como produção
+# Environment
 ENV NODE_ENV=production
 
 
-# Expor a porta usada pela aplicação
+# Expose port
 EXPOSE 8080
 
-# Comando para iniciar a aplicação
+# start app commands
 CMD ["node", "app.js"]
