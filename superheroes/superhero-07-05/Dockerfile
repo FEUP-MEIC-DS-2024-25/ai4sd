@@ -20,10 +20,6 @@ RUN apt-get install -y nodejs
 # Confirmar que a versão correta do Node.js foi instalada
 RUN node -v && npm -v
 
-# Instalar o Google Cloud SDK
-RUN curl -sSL https://sdk.cloud.google.com | bash
-RUN /bin/bash -c "source /root/.bashrc && gcloud components install -q"
-
 # Instale o Mutmut globalmente
 RUN pip3 install --no-cache-dir MutPy
 RUN pip3 install --no-cache-dir google-generativeai python-dotenv hvac
@@ -39,6 +35,9 @@ RUN chmod +x *.sh
 
 WORKDIR /app/frontend
 RUN npm install
+
+RUN --mount=type=secret,id=superhero-07-05 \ 
+    cat /run/secrets/secret > .env
 
 # Exponha portas necessárias (se tiver serviços web ou APIs)
 EXPOSE 8080
