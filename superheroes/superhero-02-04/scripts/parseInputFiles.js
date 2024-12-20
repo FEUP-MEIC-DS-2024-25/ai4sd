@@ -41,20 +41,20 @@ async function parseInputFiles(zipFilePath, extractDir) {
         const unzipDirPath = path.join(extractDir, unzip_files_temp_dir);
         const parsedTextDirPath = path.join(extractDir, parsed_files_temp_dir);
 
-        await fsPromises.mkdir(unzipDirPath, { recursive: true }); 
-        await fsPromises.mkdir(parsedTextDirPath, { recursive: true }); 
+        await fsPromises.mkdir(unzipDirPath, { recursive: true });
+        await fsPromises.mkdir(parsedTextDirPath, { recursive: true });
 
-       // extract zip file contents to given dir
-       await fsPromises.mkdir(unzipDirPath, { recursive: true });
-       await new Promise((resolve, reject) => {
-           fs.createReadStream(zipFilePath)
-               .pipe(unzipper.Extract({ path: unzipDirPath }))
-               .on('close', resolve)
-               .on('error', reject);
-       });
+        // extract zip file contents to given dir
+        await fsPromises.mkdir(unzipDirPath, { recursive: true });
+        await new Promise((resolve, reject) => {
+            fs.createReadStream(zipFilePath)
+                .pipe(unzipper.Extract({ path: unzipDirPath }))
+                .on('close', resolve)
+                .on('error', reject);
+        });
 
-       const fileObjects = await readFilesRecursively(unzipDirPath, parsedTextDirPath); // put all files in array
-       return fileObjects
+        const fileObjects = await readFilesRecursively(unzipDirPath, parsedTextDirPath); // put all files in array
+        return fileObjects
 
     } catch (error) {
         console.error("Error unzipping data received", error);
@@ -87,7 +87,7 @@ async function readFilesRecursively(unzipDirPath, parsedDirPath) {
 
             let mimeType = mime.lookup(entryPath) || 'application/octet-stream';
 
-            if (supportedMimeTypes.includes(mimeType)) { // if the file is of a supported type, prepare to send it to LLM
+            if (supportedMimeTypes.includes(mimeType)) { // if the file is of a supported type, prepare to send it to LLM
 
                 // if the file is of a type that needs parsing to plain text
                 if (mimeType in parserDispatchTable) {
@@ -125,14 +125,14 @@ async function processFile(filePath, mimeType, parsedDirPath) {
         const parsedPlainTextFileDir = path.join(parsedDirPath, ...dir.split(path.sep).slice(2)); // dir to write parsed plain text file
         const txtFilePath = path.join(parsedPlainTextFileDir, parsedPlainTextFileName); // path to write parsed plain text file
 
-        await fsPromises.mkdir(parsedPlainTextFileDir, { recursive: true }); 
+        await fsPromises.mkdir(parsedPlainTextFileDir, { recursive: true });
 
         const plainText = await parserDispatchTable[mimeType](filePath);
-        
+
         await fsPromises.writeFile(txtFilePath, plainText, 'utf8');
 
         return {
-            'parsedPath': txtFilePath, 
+            'parsedPath': txtFilePath,
             'parsedName': parsedPlainTextFileName
         };
 
@@ -166,7 +166,7 @@ async function convertHTMLToText(htmlPath) {
 //not currently used
 async function convertPPTXToText(filePath) {
     const pptxData = await pptx2json(filePath);
-    
+
     let text = '';
 
     pptxData.slides.forEach(slide => {

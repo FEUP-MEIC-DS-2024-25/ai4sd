@@ -1,33 +1,27 @@
-import * as admin from "firebase-admin";
-import * as vscode from "vscode";
+import exp from "constants";
 
-let firestore: admin.firestore.Firestore | null = null;
+// Define the type for recent requests
+export interface RecentRequest {
+    id: string;
+    mode: string;
+  }
 
-// Initialize Firebase Admin SDK
-export function getFirestore(extensionUri: vscode.Uri): admin.firestore.Firestore {
-    if (!firestore) {
-        const serviceAccountPath = vscode.Uri.file(extensionUri.fsPath + "/src/superheroes/Archy/superhero-02-04.json").fsPath;
-        admin.initializeApp({
-            credential: admin.credential.cert(require(serviceAccountPath)),
-        });
-        firestore = admin.firestore();
-    }
-    return firestore;
-}
-
-export async function fetchRecentRequests(firestore: admin.firestore.Firestore): Promise<{ id: string, mode: string }[]> {
+export async function fetchRecentRequests(): Promise<RecentRequest[]> {
     try {
-        const snapshot = await firestore.collection("superhero-02-04")
-            .orderBy("timestamp", "desc") 
-            .limit(5) 
-            .get();
-
-            return snapshot.docs.map(doc => ({ id: doc.id, mode: doc.data().mode as string }));
-        
-        } catch (error) {
-        console.error("Error fetching recent requests:", error);
-        vscode.window.showErrorMessage("Failed to fetch recent requests from Firestore.");
-        return []; 
+      const response = await fetch('http://localhost:8080/requests');
+      const recentRequests: RecentRequest[] = await response.json(); // Ensure the data is typed as RecentRequest[]
+      console.log('Recent Requests:', recentRequests);
+      return recentRequests;
+    } catch (error) {
+      console.error('Failed to fetch recent requests:', error);
+      return [];
     }
-}
+  }
 
+  fetchRecentRequests();
+
+
+  
+ 
+  
+  
