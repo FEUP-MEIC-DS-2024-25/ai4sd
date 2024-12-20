@@ -1,3 +1,5 @@
+"use client";
+
 import styles from "@/app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.css';
 
