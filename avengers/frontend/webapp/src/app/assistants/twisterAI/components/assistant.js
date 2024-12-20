@@ -2,7 +2,7 @@
 
 import styles from "@/app/page.module.css";
 import "./assistant.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { uploadFile, saveContext, downloadMutations } from "../api/api";
 
 export default function Assistant() {
@@ -10,7 +10,16 @@ export default function Assistant() {
   const [testFile, setTestFile] = useState(null);
   const [context, setContext] = useState("");
   const [language, setLanguage] = useState("java");
-  const [testsGenerated, setTestsGenerated] = useState(false); 
+  const [testsGenerated, setTestsGenerated] = useState(false);
+  const [isDownloadReady, setIsDownloadReady] = useState(false);
+
+  // Função para lidar com mudanças nos ficheiros
+  useEffect(() => {
+    if (codeFile || testFile) {
+      setIsDownloadReady(false);  // Reseta o estado de download quando os ficheiros mudam
+      setTestsGenerated(false);   // Reseta a flag de testes gerados
+    }
+  }, [codeFile, testFile]);  // Sempre que os ficheiros mudarem
 
   const handleFileChange = (e, type) => {
     if (type === 'code') {
@@ -26,6 +35,7 @@ export default function Assistant() {
       if (testFile) await uploadFile(testFile, 'test');
       await saveContext(context, language);
       setTestsGenerated(true);
+      setIsDownloadReady(true);
       console.log("Mutant tests generated successfully");
     } catch (error) {
       console.error("Error generating mutant tests:", error);
@@ -95,7 +105,14 @@ export default function Assistant() {
 
         <section className="action_section">
           <button onClick={handleGenerateMutants}>Generate mutant tests</button>
-          <button onClick={handleDownloadMutations} disabled={!testsGenerated}>Download mutant tests</button>
+          {isDownloadReady && (
+        <button 
+          onClick={handleDownloadMutations} 
+          disabled={!testsGenerated}
+        >
+          Download mutant tests
+        </button>
+      )}
         </section>
       </main>
     </div>
