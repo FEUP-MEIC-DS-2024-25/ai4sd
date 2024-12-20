@@ -2,9 +2,10 @@
 
 const url = "https://superhero-02-01-150699885662.europe-west1.run.app";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import AssistantPicker from "@/app/components/assistantPicker";
+import CaveInput from "@/app/components/ui/caveInput";
 import Image from "next/image";
 import caveLogo from "../assets/cave-logo-name.png";
 
@@ -13,32 +14,51 @@ export default function CreateProject() {
     const [githubLink, setGithubLink] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [repositories, setRepositories] = useState([]); // State to store fetched repositories
     const router = useRouter();
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        setLoading(true);
-        setError("");
-    
-        const formData = new FormData();
-        formData.append("name", name);
-        formData.append("github_link", githubLink);
-    
-        try {
-            const response = await fetch(`${url}/api/projects/create_project/`, {
-                method: "POST",
-                body: formData,
-            });
-    
-            if (!response.ok) {
-                throw new Error("Failed to create the project. Please try again.");
+    // Fetch repository names on component mount
+    useEffect(() => {
+        const fetchRepositories = async () => {
+            try {
+                const response = await fetch(`${url}/api/list_repos/FEUP-MEIC-DS-2024-25`);
+                if (response.ok) {
+                    const data = await response.json();
+                    setRepositories(data.subfolders || []); // Set the repositories from the API
+                } else {
+                    console.error("Failed to fetch repositories");
+                }
+            } catch (error) {
+                console.error("An error occurred while fetching repositories:", error);
             }
-    
-            const data = await response.json();
-            // Redirect to the view page of the created project
-            router.push(`/projects/${data.id}`);
-        } catch (err) {
-            setError(err.message || "An unexpected error occurred.");
+        };
+
+        fetchRepositories();
+    }, []);
+
+    const handleSubmit = async (event) => {
+        event.preventDefault();
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${url}/projects`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    name,
+                    githubLink,
+                }),
+            });
+
+            if (response.ok) {
+                router.push("/assistants/cave");
+            } else {
+                console.error("Failed to create project");
+            }
+        } catch (error) {
+            console.error("An error occurred:", error);
         } finally {
             setLoading(false);
         }
@@ -74,19 +94,18 @@ export default function CreateProject() {
                             required
                         />
                     </div>
-                    <div className="mb-4">
-                        <label htmlFor="githubLink" className="block text-lg font-medium text-gray-700">
-                            GitHub Link
-                        </label>
-                        <input
+                    <div className="mb-4 text-gray-700">
+                        <label htmlFor="github-link" style={{ display: "block", marginBottom: "5px"}}>GitHub Link:</label>
+                        <CaveInput
                             type="text"
-                            id="githubLink"
-                            value={githubLink}
-                            onChange={(e) => setGithubLink(e.target.value)}
-                            placeholder="Enter the GitHub repository URL"
+                            id="github-link"
+                            suggestions={repositories} // Use fetched repositories as suggestions
+                            onAutocomplete={(value) => setGithubLink(`/api/repo/FEUP-MEIC-DS-2024-25/${value}`)} // Build the full GitHub link
+                            placeholder="Start typing to search repositories"
                             className="mt-2 p-2 border rounded w-full bg-white text-gray-400"
                             required
                         />
+
                     </div>
                     <button
                         type="submit"
