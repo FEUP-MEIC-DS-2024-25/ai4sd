@@ -5,7 +5,7 @@ import '@/app/globals.css';
 
 import AssistantPicker from "@/app/components/assistantPicker";
 import AssistantHistory from "@/app/components/assistantHistory";
-import Spark from "./components/Spark";
+import App from "./src/App";
 
 export default function Interactor() {
     //preparing mock data
@@ -16,7 +16,7 @@ export default function Interactor() {
         <div className={styles.interactorLayout}>
             <AssistantPicker />
             <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
-            <Spark />
+            <App />
         </div>
     )
 }
