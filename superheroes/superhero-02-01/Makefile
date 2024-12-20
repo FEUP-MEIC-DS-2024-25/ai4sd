@@ -9,7 +9,8 @@ build:
 
 # Run the container
 run:
-	docker run -d -p $(PORT):8080 --name $(CONTAINER_NAME) $(IMAGE_NAME)
+	docker run -d -p $(PORT):8080 --name $(CONTAINER_NAME) \
+	-v $(shell pwd):/app $(IMAGE_NAME)
 
 # Stop and remove the container
 down:

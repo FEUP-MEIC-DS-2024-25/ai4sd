@@ -11,8 +11,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 # Copy the entire project into the container
 COPY . .
 
+# ENV GOOGLE_APPLICATION_CREDENTIALS=hero-alliance-feup-ds-24-25-8825321d47ed.json
+
 # Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt
 
 # Expose the port the app runs on
 EXPOSE 8080

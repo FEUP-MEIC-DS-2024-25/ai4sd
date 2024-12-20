@@ -3,6 +3,7 @@ import textwrap
 from pathlib import Path
 from dotenv import load_dotenv
 from openai import OpenAI
+from google.cloud import secretmanager
 import subprocess
 import re
 
@@ -10,11 +11,29 @@ env_path = Path(__file__).resolve().parent.parent / '.env' / '.keys'
 load_dotenv(dotenv_path=env_path)
 
 # Get the API key for Google generative AI (Gemini)
-#GOOGLE_API_KEY = os.getenv('CLOUD_KEY')
+# GOOGLE_API_KEY = os.getenv('CLOUD_KEY')
 
 # Get the OpenAI API key
 # OPENAI_API_KEY = os.getenv('OPENAI')
-OPENAI_API_KEY = "teste"
+
+def access_secret_version(version_id="latest"):
+    try:
+        client = secretmanager.SecretManagerServiceClient()
+        name = f"projects/150699885662/secrets/superhero-02-01-secret/{version_id}"
+        response = client.access_secret_version(request={"name": name})
+        payload = response.payload.data.decode("UTF-8")
+        print(f"Success accessing secret {name}")
+        return payload
+    except Exception as e:
+        print(f"Error accessing secret version: {e}")
+        return "teste"
+
+try:
+    OPENAI_API_KEY = access_secret_version()
+except Exception as e:
+    print(f"Error setting OPENAI_API_KEY: {e}")
+    OPENAI_API_KEY = "teste"
+
 client = OpenAI(
     # This is the default and can be omitted
     api_key=OPENAI_API_KEY
