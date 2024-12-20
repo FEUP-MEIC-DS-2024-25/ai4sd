@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const BASE_URL = 'https://superhero-07-05-150699885662.europe-west1.run.app';
+const BASE_URL = 'https://superhero-07-05-150699885662.europe-west1.run.app/';
 
 export const uploadFile = async (file, type) => {
     const formData = new FormData();
