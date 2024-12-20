@@ -11,7 +11,7 @@ import caveLogo from "../assets/cave-logo-name.png";
 
 export default function CreateProject() {
     const [name, setName] = useState("");
-    const [githubLink, setGithubLink] = useState("");
+    const [github_link, setGithub_link] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
     const [repositories, setRepositories] = useState([]); // State to store fetched repositories
@@ -40,25 +40,23 @@ export default function CreateProject() {
         event.preventDefault();
         setLoading(true);
 
+        const formData = new FormData();
+        formData.append("name", name);
+        formData.append("github_link", github_link);
+
         try {
-            const response = await fetch(`${url}/projects`, {
+            await fetch(`${url}/api/projects/create_project`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name,
-                    githubLink,
-                }),
+                mode: "no-cors", // Allows bypassing CORS for the request
+                body: formData,
             });
 
-            if (response.ok) {
-                router.push("/assistants/cave");
-            } else {
-                console.error("Failed to create project");
-            }
+            // Since response is opaque in no-cors, assume success and redirect
+            alert("Project creation request sent. Please check the backend for results.");
+            router.push("/assistants/cave");
         } catch (error) {
             console.error("An error occurred:", error);
+            setError("An unexpected error occurred. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -95,17 +93,20 @@ export default function CreateProject() {
                         />
                     </div>
                     <div className="mb-4 text-gray-700">
-                        <label htmlFor="github-link" style={{ display: "block", marginBottom: "5px"}}>GitHub Link:</label>
+                        <label htmlFor="github-link" style={{ display: "block", marginBottom: "5px" }}>
+                            GitHub Link:
+                        </label>
                         <CaveInput
                             type="text"
                             id="github-link"
                             suggestions={repositories} // Use fetched repositories as suggestions
-                            onAutocomplete={(value) => setGithubLink(`/api/repo/FEUP-MEIC-DS-2024-25/${value}`)} // Build the full GitHub link
+                            onAutocomplete={(value) =>
+                                setGithub_link(`${url}/api/repo/FEUP-MEIC-DS-2024-25/${value}`)
+                            } // Build the full GitHub link
                             placeholder="Start typing to search repositories"
                             className="mt-2 p-2 border rounded w-full bg-white text-gray-400"
                             required
                         />
-
                     </div>
                     <button
                         type="submit"
