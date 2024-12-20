@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import "../../styles/Auth.css"; 

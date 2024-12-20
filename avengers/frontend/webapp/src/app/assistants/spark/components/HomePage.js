@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from "react";
 import apiClient from "../config/axios";
 import { Link } from "react-router-dom";
