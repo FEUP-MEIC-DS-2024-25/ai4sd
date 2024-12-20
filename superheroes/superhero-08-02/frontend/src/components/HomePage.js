@@ -53,7 +53,7 @@ function HomePage() {
       <main className="main-content">
         {isAuthenticated ? (
           <div className="user-info">
-            <p className="welcome-message">Hello, {username}! You are logged in.</p>
+            <p className="welcome-message">Hello, <Link to="profile/" className="username-link"> {username}</Link>! You are logged in.</p>
             <p className="projects-title">Your SPARK projects:</p>
 
             <ul className="project-list">
