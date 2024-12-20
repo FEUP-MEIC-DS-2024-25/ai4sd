@@ -1,13 +1,18 @@
 FROM python:3.12
 
-WORKDIR /app
+# set a directory for the app
+WORKDIR /usr/src/app
 
-COPY . /app
+# copy all the files to the container
+COPY . .
 
+# Copy the .env file into the container
+# COPY .env .env
+
+# install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 8080
 
-ENV FLASK_APP=app.py
-
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Run main.py when the container launches
+CMD ["python", "app.py"]
