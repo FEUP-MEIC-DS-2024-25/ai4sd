@@ -3,9 +3,10 @@ import os
 import json
 from typing import List, Dict, Optional, Union
 
-# ==========================
-# Language Mappings and Regex Patterns
-# ==========================
+import re
+import os
+import json
+from typing import List, Dict, Optional, Union
 
 LANGUAGE_EXTENSIONS = {
     '.py': 'python',
@@ -131,19 +132,15 @@ REGEX_PATTERNS = {
     },
 }
 
-# ==========================
-# Helper Functions
-# ==========================
-
 def detect_language(file_name: str) -> Optional[str]:
     """
     Detects the programming language based on the file extension.
-    
+
     Args:
         file_name (str): The name of the source code file.
-    
+
     Returns:
-        Optional[str]: The detected language ('python', 'java', 'cpp'), or None if unsupported.
+        Optional[str]: The detected language ('python', 'java', 'cpp', 'c', 'javascript', 'kotlin', 'html'), or None if unsupported.
     """
     _, ext = os.path.splitext(file_name)
     return LANGUAGE_EXTENSIONS.get(ext.lower())
@@ -151,11 +148,11 @@ def detect_language(file_name: str) -> Optional[str]:
 def extract_imports(code: str, language: str) -> List[str]:
     """
     Extracts import/include statements from the code using regex.
-    
+
     Args:
         code (str): The source code as a string.
         language (str): The programming language of the source code.
-    
+
     Returns:
         List[str]: A list of import/include statements.
     """
@@ -163,17 +160,18 @@ def extract_imports(code: str, language: str) -> List[str]:
     patterns = REGEX_PATTERNS.get(language, {}).get('import', [])
     for pattern in patterns:
         matches = re.findall(pattern, code, re.MULTILINE)
-        imports.extend(matches)
+        if matches:
+            imports.extend(matches)
     return imports
 
 def extract_classes(code: str, language: str) -> List[Dict[str, Optional[List[str]]]]:
     """
-    Extracts class definitions, including inheritance details.
-    
+    Extracts class (or struct) definitions, including inheritance details.
+
     Args:
         code (str): The source code as a string.
         language (str): The programming language of the source code.
-    
+
     Returns:
         List[Dict[str, Optional[List[str]]]]: A list of dictionaries containing class names and their inheritance.
     """
@@ -197,6 +195,16 @@ def extract_classes(code: str, language: str) -> List[Dict[str, Optional[List[st
                 if match.groups()[2:]:
                     # Additional inheritances
                     inheritance.extend([grp.strip() for grp in match.groups()[2:] if grp])
+            elif language == 'c':
+                # C structs do not inherit, so inheritance remains empty
+                inheritance = None
+            elif language == 'javascript':
+                if match.group(2):
+                    inheritance.append(match.group(2).strip())  # extends
+            elif language == 'kotlin':
+                if match.group(2):
+                    inheritance.append(match.group(2).strip())  # primary constructor or inheritance
+            # HTML classes are handled differently (CSS classes), so no inheritance
             classes.append({
                 'name': class_name,
                 'inheritance': inheritance if inheritance else None
@@ -206,11 +214,11 @@ def extract_classes(code: str, language: str) -> List[Dict[str, Optional[List[st
 def extract_functions(code: str, language: str) -> List[str]:
     """
     Extracts function/method definitions, including their parameters.
-    
+
     Args:
         code (str): The source code as a string.
         language (str): The programming language of the source code.
-    
+
     Returns:
         List[str]: A list of function/method definitions with parameters.
     """
@@ -221,42 +229,70 @@ def extract_functions(code: str, language: str) -> List[str]:
             if language == 'python':
                 func_name = match.group(1)
                 params = match.group(2).strip()
-                # Reconstruct the function definition line
                 func_def = f"def {func_name}({params}):"
                 functions.append(func_def)
             elif language == 'java':
-                func_name = match.group(4)
-                params = match.group(5).strip()
-                # Extract access modifiers and return type if available
+                func_name = match.group(3)
+                params = match.group(4).strip()
                 access_modifier = match.group(1) or ''
                 static_modifier = match.group(2) or ''
                 return_type = match.group(3)
-                # Reconstruct the function definition line
                 parts = [part for part in [access_modifier, static_modifier, return_type, func_name] if part]
                 func_def = ' '.join(parts) + f"({params})"
                 functions.append(func_def)
             elif language == 'cpp':
                 func_name = match.group(1)
                 params = match.group(2).strip()
-                # Extract return type from the entire match
                 return_type_match = re.search(r'([\w\*&<>]+)\s+' + re.escape(func_name) + r'\s*\(', match.group(0))
                 if return_type_match:
                     return_type = return_type_match.group(1)
                 else:
                     return_type = ''
-                # Reconstruct the function definition line
                 func_def = f"{return_type} {func_name}({params})"
+                functions.append(func_def)
+            elif language == 'c':
+                func_name = match.group(1)
+                params = match.group(2).strip()
+                return_type_match = re.search(r'([\w\*\s]+)\s+' + re.escape(func_name) + r'\s*\(', match.group(0))
+                if return_type_match:
+                    return_type = return_type_match.group(1).strip()
+                else:
+                    return_type = ''
+                func_def = f"{return_type} {func_name}({params})"
+                functions.append(func_def)
+            elif language == 'javascript':
+                func_name = match.group(1)
+                params = match.group(2).strip()
+                if 'function' in match.group(0):
+                    func_def = f"function {func_name}({params})"
+                else:
+                    func_def = f"{func_name}({params}) =>"
+                functions.append(func_def)
+            elif language == 'kotlin':
+                func_name = match.group(1)
+                params = match.group(2).strip()
+                return_type_match = re.search(r':\s*([\w<>]+)', match.group(0))
+                if return_type_match:
+                    return_type = return_type_match.group(1)
+                    func_def = f"fun {func_name}({params}): {return_type}"
+                else:
+                    func_def = f"fun {func_name}({params})"
+                functions.append(func_def)
+            elif language == 'html':
+                func_name = match.group(1)
+                params = match.group(2).strip()
+                func_def = f"function {func_name}({params})"  # Treat as JavaScript function
                 functions.append(func_def)
     return functions
 
 def extract_main(code: str, language: str) -> Optional[str]:
     """
     Detects the main function in the code.
-    
+
     Args:
         code (str): The source code as a string.
         language (str): The programming language of the source code.
-    
+
     Returns:
         Optional[str]: The main function definition line, or None if not found.
     """
@@ -265,7 +301,6 @@ def extract_main(code: str, language: str) -> Optional[str]:
         match = re.search(pattern, code, re.MULTILINE)
         if match:
             if language == 'python':
-                # Attempt to extract the main function definition
                 func_def_pattern = r'def\s+main\s*\(([^)]*)\)\s*:'
                 func_match = re.search(func_def_pattern, code, re.MULTILINE)
                 if func_match:
@@ -274,26 +309,22 @@ def extract_main(code: str, language: str) -> Optional[str]:
                     func_def = f"def {func_name}({params}):"
                     return func_def
                 else:
-                    # Look for the __main__ block as the main function
                     main_block_pattern = r'if\s+__name__\s*==\s*[\'"]__main__[\'"]\s*:'
                     main_block_match = re.search(main_block_pattern, code, re.DOTALL | re.MULTILINE)
                     if main_block_match:
                         return "if __name__ == '__main__':"
-            else:
-                # For Java and C++, extract the main function definition
-                # Attempt to capture the entire main function signature
+            elif language in ['java', 'cpp', 'c', 'kotlin']:
                 func_def_pattern = pattern + r'.*?(?:\{|;)'
                 func_match = re.search(func_def_pattern, code, re.DOTALL | re.MULTILINE)
                 if func_match:
                     func_def_line = func_match.group(0).strip()
-                    # Clean up the function definition line by removing the opening brace or semicolon
                     func_def_line = re.sub(r'[\{\};\s]+$', '', func_def_line).strip()
                     return func_def_line
+            elif language == 'javascript':
+                return None
+            elif language == 'html':
+                return None
     return None
-
-# ==========================
-# JSON Processing Function
-# ==========================
 
 def process_json_structure(data: Union[Dict, List], parent_path: str = "") -> Union[Dict, List]:
     """
@@ -311,27 +342,21 @@ def process_json_structure(data: Union[Dict, List], parent_path: str = "") -> Un
         for key, value in data.items():
             current_path = os.path.join(parent_path, key)
             if isinstance(value, dict):
-                # Recurse into subdirectories
                 processed_data[key] = process_json_structure(value, current_path)
             elif isinstance(value, str):
                 language = detect_language(key)
                 if language:
-                    # It's a code file; parse its content
                     parsed_elements = parse_code_content(value, language)
                     if parsed_elements:
                         processed_data[key] = parsed_elements
                     else:
-                        # If parsing failed or no elements found, you can choose to exclude or keep empty
                         processed_data[key] = {}
                 elif key.lower() == "readme.md":
-                    # Keep README.md unchanged
                     processed_data[key] = value
                 else:
-                    # Exclude other non-code files
-                    pass  # Do not include in the processed_data
+                    pass
             else:
-                # For any other types, you can choose to keep or exclude
-                pass  # Exclude by default
+                pass
         return processed_data
     elif isinstance(data, list):
         return [process_json_structure(item, parent_path) for item in data]
@@ -367,10 +392,6 @@ def parse_code_content(code: str, language: str) -> Dict[str, Optional[List[str]
     
     return parsed_elements
 
-# ==========================
-# Main Execution Function
-# ==========================
-
 def main(input_json_path: str, output_json_path: str):
     """
     Main function to process the input JSON and generate the output JSON with parsed code elements.
@@ -379,32 +400,23 @@ def main(input_json_path: str, output_json_path: str):
         input_json_path (str): Path to the input JSON file.
         output_json_path (str): Path to the output JSON file.
     """
-    # Load the input JSON file
     with open(input_json_path, 'r', encoding='utf-8') as infile:
         data = json.load(infile)
     
-    # Process the JSON structure
     processed_data = process_json_structure(data)
     
-    # Save the processed data to the output JSON file
     with open(output_json_path, 'w', encoding='utf-8') as outfile:
         json.dump(processed_data, outfile, indent=4)
     
     print(f"Processed JSON has been saved to {output_json_path}")
 
-# ==========================
-# Example Usage
-# ==========================
-
 if __name__ == "__main__":
     import argparse
 
-    # Set up argument parser
     parser = argparse.ArgumentParser(description="Parse code files in a JSON structure and extract imports, classes, functions, and main function.")
     parser.add_argument('input_json', help='Path to the input JSON file containing the project structure.')
     parser.add_argument('output_json', help='Path to the output JSON file to save the parsed results.')
     
     args = parser.parse_args()
     
-    # Execute the main function
     main(args.input_json, args.output_json)
