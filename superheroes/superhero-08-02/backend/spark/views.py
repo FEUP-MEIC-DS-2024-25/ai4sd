@@ -1,12 +1,13 @@
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
 from api.services.github_rest import githubRestAPI
+from api.services.miro import MiroAPI
 from .forms import MyUserCreationForm, SparkProjectSerializer
 from .models import SparkProject, Profile
 import requests
@@ -47,13 +48,14 @@ class HomeAPIView(APIView):
     
 
 class ProfileAPIView(APIView):
-    permission_classes = [IsAuthenticated]
-
+    permission_classes = [AllowAny]
 
     def get(self, request, username = None):
         if username:
             user = get_object_or_404(User, username = username)
         else:
+            if not request.user.is_authenticated:
+                return Response({'error': 'Authentication required.'}, status=status.HTTP_401_UNAUTHORIZED)
             user = request.user
 
         profile = user.profile
@@ -256,6 +258,8 @@ class AddGitHubUsernameAPIView(APIView):
 
 
 class AddGitHubTokenAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         github_token = request.data.get('github_token')
 
@@ -270,6 +274,8 @@ class AddGitHubTokenAPIView(APIView):
 
 
 class AddMiroTokenToProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         miro_token = request.data.get('miro_token')
 
@@ -284,6 +290,8 @@ class AddMiroTokenToProfileAPIView(APIView):
     
 
 class DeleteMiroTokenFromProfileAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         profile = request.user.profile
         profile.miro_token = None
@@ -293,6 +301,8 @@ class DeleteMiroTokenFromProfileAPIView(APIView):
 
 
 class AddMiroBoardIdToSparkProjectAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, project_id):
         miro_board_id = request.data.get('miro_board_id')
         project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
@@ -302,6 +312,51 @@ class AddMiroBoardIdToSparkProjectAPIView(APIView):
             project.save()
 
         return Response({'message': 'Miro board ID added successfully.'}, status=status.HTTP_200_OK)
+    
+class BacklogToMiroAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, project_id):
+        project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
+        miro_token = request.user.profile.miro_token
+
+        if not miro_token:
+            return Response({'error': 'Miro token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not project.miro_board_id:
+            return Response({'error': 'Miro board ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        miro_api = MiroAPI(miro_token)
+
+class SprintInMiroAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, project_id):
+        project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
+        miro_token = request.user.profile.miro_token
+
+        if not miro_token:
+            return Response({'error': 'Miro token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not project.miro_board_id:
+            return Response({'error': 'Miro board ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        miro_api = MiroAPI(miro_token)
+
+class SprintToGitHubAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, project_id):
+        project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
+        github_token = request.user.profile.github_token
+
+        if not github_token:
+            return Response({'error': 'GitHub token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not project.github_project_link:
+            return Response({'error': 'GitHub project link is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        github_api = githubRestAPI(github_token)
     
 def handler404(request, exception):
     return JsonResponse({'error': 'Page not found.', "status_code": 404}, status=404)
