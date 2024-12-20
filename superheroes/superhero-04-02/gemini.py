@@ -5,7 +5,6 @@ from google.cloud import secretmanager
 from dotenv import load_dotenv
 from database import *
 
-model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
 
 # Example requiremnts
@@ -20,8 +19,9 @@ load_dotenv()
 def access_secret():
     try:
         client = secretmanager.SecretManagerServiceClient()
-        name = "projects/150699885662/secrets/superhero-04-02-secret/versions/latest"
-        response = client.access_secret_version(name=name)
+        name = f"projects/hero-alliance-feup-ds-24-25/secrets/superhero-04-02-secret/versions/latest"
+        response = client.access_secret_version(request={"name": name})
+        os.environ["API_KEY"] = response.payload.data.decode("UTF-8")
         return response.payload.data.decode("UTF-8")
     except Exception as e:
         print(f"Error accessing secret using ADC: {e}")
@@ -31,6 +31,7 @@ api_key = access_secret()
 
 
 genai.configure(api_key=api_key)
+model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
 blueprint = Blueprint("gemini_api", __name__)
 
