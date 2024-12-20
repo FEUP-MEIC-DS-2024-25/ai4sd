@@ -56,15 +56,19 @@ function HomePage() {
             <p className="welcome-message">Hello, {username}! You are logged in.</p>
             <p className="projects-title">Your SPARK projects:</p>
 
-            <ul className="project-list">
-              {projects.map((project) => (
-                <li key={project.id} className="project-item">
-                  <Link to={`/spark/${project.id}`} className="project-link">
-                    {project.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            {projects.length > 0 ? (
+              <ul className="project-list">
+                {projects.map((project) => (
+                  <li key={project.id} className="project-item">
+                    <Link to={`/spark/${project.id}`} className="project-link">
+                      {project.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="no-projects-message">You have no projects.</p>
+            )}
 
             <a href="/spark/create/" className="logout-button">
               Create a new SPARK project
@@ -83,6 +87,7 @@ function HomePage() {
         )}
       </main>
     </div>
+
   );
 }
 
