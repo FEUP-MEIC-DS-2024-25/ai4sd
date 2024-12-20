@@ -24,7 +24,6 @@
     "@google-cloud/storage": "^7.14.0",
     "@octokit/app": "^15.1.1",
     "axios": "^1.7.7",
-    "bull": "^4.16.5",
     "concurrently": "^9.1.0",
     "crypto-js": "^4.2.0",
     "dotenv": "^16.4.5",
