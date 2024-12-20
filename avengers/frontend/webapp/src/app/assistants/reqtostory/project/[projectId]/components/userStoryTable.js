@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { ThumbsUp, ThumbsDown, Pencil, Trash2 } from "lucide-react";
 
 export default function UserStoryTable({
@@ -13,6 +13,8 @@ export default function UserStoryTable({
     reqVersion,
     userStoriesVersion
 }) {
+    const [error, setError] = useState("");
+
     const handleEditClick = (storyIndex) => {
         setEditingStory(storyIndex);
         setTempContent(userStories[storyIndex].user_story);
@@ -97,7 +99,7 @@ export default function UserStoryTable({
     };
 
     ///////////////////////////////////////////////////////////////////////////////////////////
-    const updateUserStoryContent = async (projectId, reqVersion, userStoriesVersion, index, content) => {
+    const updateUserStoryContent = async (projectId, reqVersion, userStoriesVersion, index, newContent) => {
         try {
             const response = await fetch('http://localhost:8080/project/userstory/update', {
                 method: "POST",
@@ -107,7 +109,7 @@ export default function UserStoryTable({
                     req_version: reqVersion + 1,
                     version: userStoriesVersion + 1,
                     index: index,
-                    content: content,
+                    content: newContent,
                 }),
             });
             if (!response.ok) {

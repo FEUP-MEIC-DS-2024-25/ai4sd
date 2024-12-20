@@ -11,19 +11,19 @@ import "bootstrap/dist/css/bootstrap.css";
 const Assistant = () => {
     const [error, setError] = useState("");
 
-    const [versions, setVersions] = useState([]);
-    const [requirements, setRequirements] = useState({});
-    const [userStories, setUserStories] = useState([]);
+    const [versions, setVersions] = useState([]); // all project content
+    const [requirements, setRequirements] = useState({}); // all requirements
+    const [userStories, setUserStories] = useState([]); // all current user stories
     const [feedbackQueries, setFeedbackQueries] = useState([]);
 
-    const [reqVersion, setReqVersion] = useState(0);
-    const [userStoriesVersion, setUserStoriesVersion] = useState(0);
+    const [reqVersion, setReqVersion] = useState(0); // current selected requirement version
+    const [userStoriesVersion, setUserStoriesVersion] = useState(0); // current selected user stories version
     const numberVersion = useRef(0);
 
-    const { projectId } = useParams();
+    const { projectId } = useParams(); // project id
 
     const searchParams = useSearchParams();
-    const name = searchParams.get("name");
+    const name = searchParams.get("name"); // project name
     const version = null;
 
     const [isEditing, setIsEditing] = useState(false);
@@ -157,7 +157,7 @@ const Assistant = () => {
     const handleSubmit = async (projId, reqVersion, newContent, submittedContent = null) => {
         try {
             setIsLoading(true);
-            let content = editContent;
+            let content = editReq || submittedContent
 
             if (!newContent) {
                 content = submittedContent || requirements.content;
@@ -167,7 +167,6 @@ const Assistant = () => {
                 throw new Error("Content cannot be null or an empty string.");
             }
 
-            console.log(content);
             const response = await fetch("http://localhost:8080/regenerate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
@@ -184,10 +183,11 @@ const Assistant = () => {
             }
             const data = await response.json();
 
-            const userStories = data.response
+            const userStoriesSring = data.response
                 .replace("```json", "")
                 .replace("```", "");
 
+            const userStories = JSON.parse(userStoriesSring)
             updateVersion(content, userStories, newContent);
 
             setTimeout(() => {
@@ -222,10 +222,10 @@ const Assistant = () => {
             const newReqVersion = {
                 version: lastVersion + 1,
                 content: req,
-                user_stories: [{ version: 1, user_stories }],
+                user_stories: [{ version: 1, user_stories: user_stories }],
             };
             updatedVersions.push(newReqVersion);
-            setCurrentIndex(updatedVersions.length - 1);
+            setReqVersion(updatedVersions.length - 1);
         } else {
             const currentVersion = updatedVersions.find(
                 (v) => v.version === requirements.version
@@ -237,14 +237,11 @@ const Assistant = () => {
                 );
                 currentVersion.user_stories.push({
                     version: lastUSVersion + 1,
-                    user_stories,
+                    user_stories: user_stories,
                 });
-                setUserStoryIndex(currentVersion.user_stories.length - 1);
+                setUserStoriesVersion(currentVersion.user_stories.length - 1);
             }
         }
-        console.log(versions)
-        console.log(updatedVersions)
-
         setVersions(updatedVersions);
     };
 
@@ -280,6 +277,11 @@ const Assistant = () => {
             >
                 <Header />
                 <section className="bg-[#171717] text-[#e1e1e1] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 mx-auto my-8 flex flex-col items-center gap-6  w-[90%]">
+                    <div className="flex flex-rows items-start justify-start w-[90%] ">
+                        <a className="btn flex items-center justify-center hover:bg-[#e1e1e1] submitButton bg-[#2f2f2f] text-[#e1e1e1] w-12 h-12 dull border-[#2f2f2f] hover:border-[#e1e1e1] rounded-full" href="/assistants/reqtostory">
+                            <i className="bi bi-plus text-3xl hover:text-[#2f2f2f]"></i>
+                        </a>
+                    </div>
                     <LanguageSelector
                         selectedLanguage={selectedLanguage}
                         onLanguageChange={setSelectedLanguage}
@@ -297,7 +299,7 @@ const Assistant = () => {
                         <div className="w-[100%]">
                             <p>Project's Requirements</p>
                             <textarea
-                                className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%] resize-none"
+                                className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%]"
                                 value={editReq}
                                 onChange={(e) => setEditReq(e.target.value)}
                             />
@@ -320,7 +322,7 @@ const Assistant = () => {
                         <div className="w-[100%]">
                             <p>Project's Requirements</p>
                             <textarea
-                                className="bg-[#e1e1e1] text-[#2f2f2f] border-4 border-[#e1e1e1] rounded-[20px] mx-auto p-2 w-[80%] resize-none"
+                                className="bg-[#e1e1e1] text-[#2f2f2f] border-4 border-[#e1e1e1] rounded-[20px] mx-auto p-2 w-[80%]"
                                 placeholder={requirements.content}
                                 disabled
                             />
@@ -359,36 +361,6 @@ const Assistant = () => {
                     className="bg-[#171717] text-[#e1e1e1] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 mx-auto my-8 flex flex-col items-center gap-6  w-[90%]"
                 >
                     <h2 className="text-[#171717]">Generated User Stories</h2>
-                    <div id="tableContainer">
-                        <UserStoryTable
-                            userStories={userStories}
-                            setUserStories={setUserStories}
-                            editingStory={editingStory}
-                            setEditingStory={setEditingStory}
-                            tempContent={tempContent}
-                            setTempContent={setTempContent}
-                        />
-                    </div>
-                    <div className="versionSelect">
-                        <button
-                            onClick={goBackUS}
-                            disabled={userStoriesVersion === 0}
-                        >
-                            ⮜{" "}
-                        </button>
-                        <span>
-                            {userStoriesVersion + 1}/{numberVersion.current}
-                        </span>
-                        <button
-                            onClick={goForwardUS}
-                            disabled={
-                                userStoriesVersion === numberVersion.current - 1
-                            }
-                        >
-                            {" "}
-                            ⮞
-                        </button>
-                    </div>
                     <div id="buttonContainer" className="text-[#171717]">
                         <button
                             id="exportButton"
@@ -425,6 +397,40 @@ const Assistant = () => {
                                 Regenerate User Stories
                             </button>
                         )}
+                    </div>
+                    <div id="tableContainer">
+                        <UserStoryTable
+                            userStories={userStories}
+                            setUserStories={setUserStories}
+                            editingStory={editingStory}
+                            setEditingStory={setEditingStory}
+                            tempContent={tempContent}
+                            setTempContent={setTempContent}
+                            queryAdders={handleFeedback}
+                            projectId = {projectId}
+                            reqVersion =  {reqVersion}
+                            userStoriesVersion = {userStoriesVersion}
+                        />
+                    </div>
+                    <div className="versionSelect">
+                        <button
+                            onClick={goBackUS}
+                            disabled={userStoriesVersion === 0}
+                        >
+                            ⮜{" "}
+                        </button>
+                        <span>
+                            {userStoriesVersion + 1}/{numberVersion.current}
+                        </span>
+                        <button
+                            onClick={goForwardUS}
+                            disabled={
+                                userStoriesVersion === numberVersion.current - 1
+                            }
+                        >
+                            {" "}
+                            ⮞
+                        </button>
                     </div>
                 </div>
             </div>
