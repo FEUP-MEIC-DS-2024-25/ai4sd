@@ -1,0 +1,9 @@
+Regarding vision accessibility review my code so that it makes sure:
+- all images have alternative text, allowing visually impaired users to access and understand the content through screen readers, enhancing the application's overall accessibility
+- there are options to increase font size, allowing visually impaired users to easily see the website content, enhancing the application's overall accessibility
+- the colours are distinguishable enough so that colourblind people can easily see the website. If not, recommend me an adequate palette
+- the website has warm colors mode, enhancing the application's overall accessibility. If not, recommends me an adquate palette
+- my website has darkmode and recommends me colour for the darkmode if not, so that the user's eyes are protected and it's easier to pick colours
+- there are no flashing images, so that users with epilepsy can interact with the interface without getting triggered
+- my website colors dont have too much contrast so that the user's eyes are protected, enhancing the application's overall accessibility
+- all buttons have default color buttons, allowing visually impaired users to easily identify buttons, enhancing the application's overall accessibility
