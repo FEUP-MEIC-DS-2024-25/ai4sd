@@ -82,7 +82,7 @@ export default function MainChat({ chatID }) {
 
         try {
             
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+            const backendUrl = "http://localhost:8080";
             const response = await fetch(`${backendUrl}/api/prompt`, {
                 method: "POST",
                 headers: {
@@ -125,23 +125,20 @@ export default function MainChat({ chatID }) {
             if (data) {
 
                 //New Chat Message - Generate a chatID
-                if(conversations.length === 0){
-
-                    const chatID = Math.random().toString(36).substring(7);
-                }
+                conversations.length === 0 ? (chatID =  Math.random().toString(36).substring(7)) : chatID
 
                 //Post the new message to the backend
                 try{
 
                     const response = await axios.post(`${backendUrl}/req2speech/chat/${chatID}`, {
                         msg: message,
-                        reply: data.reply
+                        reply: data
                     });
 
                     //Append new conversation pair (user query and answer)
                     setConversations((prevConversations) => [
                         ...prevConversations,
-                        { query: message, answer: data.reply }
+                        { query: message, answer: data }
                     ]);
                     
                 } catch (error){
@@ -151,7 +148,7 @@ export default function MainChat({ chatID }) {
                 // Append new conversation pair (user query and answer)
                 setConversations((prevConversations) => [
                     ...prevConversations,
-                    { query: msg, answer: data.reply }
+                    { query: message, answer: data }
                 ]);
 
             } else {

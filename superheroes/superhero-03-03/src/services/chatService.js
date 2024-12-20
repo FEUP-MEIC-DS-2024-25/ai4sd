@@ -7,9 +7,9 @@ require('dotenv').config();
 // Initialize Firebase Admin SDK
 admin.initializeApp({
     credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJ_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_K.replace(/\\n/g, '\n'),
+      projectId: process.env.PROJECT_ID,
+      clientEmail: process.env.CLIENT_EMAIL,
+      privateKey: process.env.PRIVATE_KEY.replace(/\\n/g, '\n'),
     }),
 });
 
@@ -54,6 +54,8 @@ exports.getChatInteractions = async () => {
             return [];
         }
 
+        console.log(chatSnapshot)
+
         // Extract chat documents from snapshot
         const chats = chatSnapshot.docs.map((doc) => doc.id);
 
@@ -71,9 +73,9 @@ exports.postChatInteraction = async (chatId, msg, reply) => {
             .doc(chatId)
             .collection('messages')
             .add({
-            msg: msg,
-            reply: reply,
-            timestamp: admin.firestore.Timestamp.now()
+                msg: msg,
+                reply: reply,
+                timestamp: admin.firestore.Timestamp.now()
             });
 
         return { success: true };

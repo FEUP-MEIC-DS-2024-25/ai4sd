@@ -24,6 +24,8 @@ export default function Interactor() {
         async function fetchChats() {
 
             const chats = await getChats();
+
+            console.log(chats); 
             const history = [];
             
             chats.map((chat) => {
