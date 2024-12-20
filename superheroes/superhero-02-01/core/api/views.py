@@ -8,6 +8,7 @@ from google.cloud import secretmanager
 from google.cloud import storage
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from ..parser import parser_code
 
 import logging
 
@@ -71,8 +72,8 @@ class ProjectViewSet(viewsets.ModelViewSet):
     def create_project(self, request):
         form = ProjectForm(request.POST)
         if form.is_valid():
-            form.save()
-            return Response({'status': 'Project created'}, status=status.HTTP_201_CREATED)
+            project = form.save()
+            return Response({'status': 'Project created', 'id': project.id}, status=status.HTTP_201_CREATED)
         else:
             return Response(form.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -93,7 +94,7 @@ def test_key(request):
     def access_secret_version(version_id="latest"):
         try:
             client = secretmanager.SecretManagerServiceClient()
-            name = f"projects/150699885662/secrets/superhero-02-01-secret/{version_id}"
+            name = f"projects/hero-alliance-feup-ds-24-25/secrets/superhero-02-01-secret/versions/latest"
             response = client.access_secret_version(request={"name": name})
             payload = response.payload.data.decode("UTF-8")
             print(f"Success accessing secret {name}")
@@ -200,3 +201,20 @@ def list_subfolders(request, repository_name):
 
     except Exception as e:
         return Response({'error': f"Error listing subfolders: {str(e)}"}, status=500)
+
+
+
+@api_view(['GET'])
+def get_prompt(request, repository_name):
+    try:
+        # Call the parser_code function with the repository name
+        result = parser_code(repository_name)
+
+        # Return the processed data
+        if result:
+            return Response(result, status=200)
+        else:
+            return Response({"error": "Failed to process repository data."}, status=500)
+
+    except Exception as e:
+        return Response({"error": f"Unexpected error: {str(e)}"}, status=500)

@@ -6,20 +6,16 @@ from openai import OpenAI
 from google.cloud import secretmanager
 import subprocess
 import re
+from .parser import parser_code
+from rest_framework.response import Response
 
-env_path = Path(__file__).resolve().parent.parent / '.env' / '.keys'
-load_dotenv(dotenv_path=env_path)
-
-# Get the API key for Google generative AI (Gemini)
-# GOOGLE_API_KEY = os.getenv('CLOUD_KEY')
-
-# Get the OpenAI API key
-# OPENAI_API_KEY = os.getenv('OPENAI')
+# env_path = Path(__file__).resolve().parent.parent / '.env' / '.keys'
+# load_dotenv(dotenv_path=env_path)
 
 def access_secret_version(version_id="latest"):
     try:
         client = secretmanager.SecretManagerServiceClient()
-        name = f"projects/150699885662/secrets/superhero-02-01-secret/{version_id}"
+        name = f"projects/hero-alliance-feup-ds-24-25/secrets/superhero-02-01-secret/versions/latest"
         response = client.access_secret_version(request={"name": name})
         payload = response.payload.data.decode("UTF-8")
         print(f"Success accessing secret {name}")
@@ -35,13 +31,8 @@ except Exception as e:
     OPENAI_API_KEY = "teste"
 
 client = OpenAI(
-    # This is the default and can be omitted
     api_key=OPENAI_API_KEY
 )
-
-# Initialize Google generative AI model
-#genai.configure(api_key=GOOGLE_API_KEY)
-#model = genai.GenerativeModel('gemini-pro')
 
 
 UML_SYNTAX_TEMPLATE = """
@@ -109,91 +100,123 @@ UML_SYNTAX_TEMPLATE = """
 
 # Extract information from the repository
 def collect(repo_path):
-    full_content = ""
-    # run tree command to get the structure of the repository
-    tree_output = subprocess.run(['tree', repo_path], capture_output=True, text=True).stdout
-    full_content += f"### Repository Structure\n\n```\n{tree_output}\n```\n\n"
-    # extract the README file content
-    readme_path = os.path.join(repo_path, 'README.md')
-    if os.path.exists(readme_path):
-        with open(readme_path, 'r') as f:
-            readme_content = f.read()
-        full_content += f"### README.md\n\n{readme_content}\n\n"
-    # extract all the code files from each file of every format except sql, and sqlite3 from all the folders
-    # and acupulates to the full_content, the file names like "/core/models.py, /core/views.py"
-    for root, dirs, files in os.walk(repo_path):
-        if '.git' in dirs:
-            dirs.remove('.git')
-        for file in files:
-            if file.endswith(('.py', '.js', '.java', '.html', '.css', '.cpp', '.c', '.h', '.hpp', '.go', '.rb', '.rs', '.swift', '.kt', '.m', '.php', '.pl', '.sh', '.swift', '.ts', '.dart', '.cs', '.fs', '.fsx', '.fsi', '.fsproj', '.vb', '.vbs', '.bas', '.clj', '.cljs', '.cljc', '.edn', '.scala', '.sc', '.groovy', '.gradle', '.kt', '.kts', '.kts', '.ktm', 'md')):
-                if file != "README.md" and file != "readme.md":
-                    full_content += f"### {os.path.join(root, file)}\n\n```{file.split('.')[-1]}\n"
-                    with open(os.path.join(root, file), 'r') as f:
-                        full_content += f.read()
-                    full_content += "\n```\n\n"
-    #print(full_content)
-    return full_content
+    try:
+        result = parser_code(repo_path)  # Note: there's also a variable name mismatch here
+        if result:
+            return result
+        else:
+            return Response({"error": "Failed to process repository data."}, status=500)
+    except Exception as e:
+        return Response({"error": f"Unexpected error: {str(e)}"}, status=500)
 
 
 
 def generate_response(query, code):
-    # Step 1: Retrieve documents from the database based on the query
-    ## Not implemented for now
+    try:
+        # Validate inputs
+        if not code or not isinstance(code, str):
+            print("Invalid code input")
+            return None
 
-    # Step 2: Some context
-    context = UML_SYNTAX_TEMPLATE
+        # Initialize OpenAI client
+        try:
+            api_key = access_secret_version()
+            client = OpenAI(api_key=api_key)
+        except Exception as e:
+            print(f"Failed to initialize OpenAI client: {str(e)}")
+            return None
 
-    # Step 3: Generate content using the generative model (RAG)
-    #response = model.generate_content(f"Question: {query}, \n\nCode: {code}, \n\n UML CODE SYNTAX Context: {context}")
-    #return response
-    prompt = f"Question: {query}\n\nCode: {code}\n\n UML CODE SYNTAX Context: {context}"
+        # Print debug info
+        print(f"Making OpenAI request with code length: {len(code)}")
 
-    # Call OpenAI to generate a response
-    response = client.chat.completions.create(
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant skilled in code analysis, architectual patterns recognizer and UML code generation."},
-            {"role": "user", "content": prompt}
-        ],
-        # messages=[
-        #     {
-        #         "role": "user",
-        #         "content": "Say this is a test",
-        #     }
-        # ],
-        model="gpt-3.5-turbo",
-    )
-    
-    return response
+        response = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant skilled in code analysis, architectural patterns recognition and UML code generation."},
+                {"role": "user", "content": f"""
+                Question: {query}
+
+                Project to analyze:
+                ```
+                {code}
+                ```
+
+                Simple mockup for you to add info to it and have a starting point:
+                ```
+                {UML_SYNTAX_TEMPLATE}
+                ```
+                """}
+            ],
+            model="gpt-3.5-turbo",
+        )
+
+        # Verify response
+        if not response or not hasattr(response, 'choices'):
+            print("Invalid response from OpenAI")
+            return None
+
+        return response
+
+    except Exception as e:
+        print(f"Error in generate_response: {str(e)}")
+        return None
+
 
 
 def format_response(response):
-    # Extract the content part from the response (this assumes response is a dict-like structure)
-    content = response.choices[0].message.content
-    
-    # Replace escaped newlines (\n) with actual newlines
-    content = content.replace('\\n', '\n')
-    
-    # Find the UML code block (text inside triple backticks)
-    code_blocks = re.findall(r'```plantuml(.*?)```', content, re.DOTALL)
-    
-    # If a code block exists, we'll extract the first one (assuming there's only one UML code block)
-    code = code_blocks[0].strip() if code_blocks else ''
-    
-    # Remove the code block from the content to get the description
-    description = re.sub(r'```.*?```', '', content, flags=re.DOTALL).strip()
-    
-    # Ensure that the code block has proper newlines
-    code = code.replace('\\n', '\n').strip()
-    
-    return description, code
+    if response is None:
+        return "Error: Failed to get response from OpenAI", ""
+
+    try:
+        if not hasattr(response, 'choices') or not response.choices:
+            return "Error: Invalid response format from OpenAI", ""
+
+        content = response.choices[0].message.content
+        if not content:
+            return "Error: Empty response content", ""
+
+        content = content.replace('\\n', '\n')
+
+        # Find the UML code block
+        code_blocks = re.findall(r'```(?:plantuml)?(.*?)```', content, re.DOTALL)
+
+        # Extract code and description
+        code = code_blocks[0].strip() if code_blocks else ''
+        description = re.sub(r'```.*?```', '', content, flags=re.DOTALL).strip()
+
+        return description, code
+
+    except Exception as e:
+        return f"Error formatting response: {str(e)}", ""
 
 
 
-def generate_description_uml(repo_path):
-    code = collect(repo_path)
-    query = "Find all the architectual patterns that you find in this code, describe them and generate UML class diagram (give the code) for the following project code, you have some context about uml syntax that you can use if you want."
-    response = generate_response(query, code)
-    print(response)
-    description, code = format_response(response)
-    return description, code
+def generate_description_uml(repo_url):
+    try:
+        # Collect and validate code
+        code = collect(repo_url)
+        if code is None:
+            return "Failed to collect repository data", ""
+
+        # Print debug info
+        print(f"Collected code successfully, length: {len(str(code))}")
+
+        # Generate response
+        query = "Detect all the architectural patterns of this project, describe them and generate UML class diagram (give the code)"
+        response = generate_response(query, str(code))
+
+        if response is None:
+            return "Failed to get response from OpenAI", ""
+
+        # Format response
+        description, uml_code = format_response(response)
+
+        # Print debug info
+        print(f"Generated description length: {len(description)}, UML code length: {len(uml_code)}")
+
+        return description, uml_code
+
+    except Exception as e:
+        error_msg = f"Error in generate_description_uml: {str(e)}"
+        print(error_msg)
+        return error_msg, ""
 
