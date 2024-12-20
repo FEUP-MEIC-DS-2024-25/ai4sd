@@ -1,30 +1,22 @@
+"use client"
+import { useState } from "react";
 import styles from "@/app/page.module.css";
 import 'bootstrap/dist/css/bootstrap.css';
 
 import '@/app/globals.css';
 
 import AssistantPicker from "@/app/components/assistantPicker";
-import AssistantHistory from "@/app/components/assistantHistory";
+import AssistantHistory from "./components/rrbuddyHistory";
 import Assistant from "./components/assistant";
 
 export default function Interactor() {
-    //preparing mock data
-    const assistName = "RRBuddy";
-    const assistType = "req"; // change according to the assistant type (req, arch, refact, verif)
-    const assistHistory = prepareMockHistory();
+    const [historyData, setHistoryData] = useState([]);
+
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
-            <AssistantHistory name={assistName} type={assistType} interactions={assistHistory} />
-            <Assistant />
+            <AssistantHistory name={"RRBuddy"} type={"req"} interactions={historyData} />
+            <Assistant setHistoryData={setHistoryData}/>
         </div>
-    )
-}
-function prepareMockHistory() {
-    const history = [];
-    for (let i = 1; i <= 20; i++) {
-        const chat = { text: `Chat ${i}`, link: "#" };
-        history.push(chat);
-    }
-    return history;
+    );
 }

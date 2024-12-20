@@ -27,7 +27,7 @@ load_dotenv()
 SECRET_KEY = 'm4a2p+0g)!suj_86%nys-e!=lb6c=mo$upk9x)10@k34&54i'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 if DEBUG: # Running in development
     SECURE_SSL_REDIRECT = False

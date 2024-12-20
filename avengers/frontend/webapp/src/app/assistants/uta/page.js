@@ -16,7 +16,7 @@ export default function Interactor() {
     return (
         <div className={styles.interactorLayout}>
             <AssistantPicker />
-            <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/>
+            {/* <AssistantHistory name={assistName} type={assistType} interactions={assistHistory}/> */}
             <Assistant />
         </div>
     )

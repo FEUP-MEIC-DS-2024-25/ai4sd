@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import { useChatContext } from './ChatPage';
 import { Card } from '@/app/components/ui/card';
 import logo from '../assets/logo.png';
-const BASE_URL = process.env.REACT_APP_API_URL;
+const BASE_URL = "https://superhero-06-02-150699885662.europe-west1.run.app";
 
 function Chat() {
     const { sharedVariable, setSharedVariable } = useChatContext();
@@ -34,13 +34,12 @@ function Chat() {
     const [expertise, setExpertise] = useState(""); // State to track selected expertise
 
     const handleExpertiseChange = async (event) => {
-        // event.preventDefault();
-        // setExpertise(event.target.value);
-        // const response = await axios.post(BASE_URL + '/app/change_expertise/', {"expertise": event.target.value});
-        // setSharedVariable(!sharedVariable);
-        // console.log(response);
+        event.preventDefault();
+        setExpertise(event.target.value);
+        const response = await axios.post(BASE_URL + '/app/change_expertise/', {"expertise": event.target.value});
+        setSharedVariable(!sharedVariable);
+        console.log(response);
 
-        setChatHistory([...chatHistory, {sender: 'app', chat_content: 'APP APP APP APP APP APP APP APP APP APP APP APP APP APP APP APP APP APP APP APP APP '}, {sender: 'user', chat_content: 'USER USER USER USER USER USER USER USER USER USER USER USER USER USER USER USER USER USER '}]);
     };
 
     return (
