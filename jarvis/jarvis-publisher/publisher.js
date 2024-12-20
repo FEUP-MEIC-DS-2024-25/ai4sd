@@ -1,4 +1,4 @@
-import { ECHO_JARVIS_TOPIC, PUBSUB_CLIENT } from '../consts';
+import { ECHO_JARVIS_TOPIC, PUBSUB_CLIENT } from '../consts.js';
 
 /**
  * Publishes a message to the 'echo-jarvis' Pub/Sub topic.
