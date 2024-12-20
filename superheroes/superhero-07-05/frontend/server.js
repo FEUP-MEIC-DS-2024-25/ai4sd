@@ -169,8 +169,6 @@ app.post('/save-context', async (req, res) => {
       console.warn('O ficheiro context.txt não foi encontrado.');
     }
 
-    
-
     // Executar o script Python
     const scriptPath = path.join(__dirname, '../juncao.py');
     const pythonProcess = spawn(
@@ -226,6 +224,12 @@ app.get('/files/mutations.txt', (req, res) => {
     res.status(404).json({ message: 'Mutations file not found' });
   }
 });
+
+// Rota GET simples para testar o servidor
+app.get('/test', (req, res) => {
+  res.send('Servidor está funcionando corretamente!');
+});
+
 
 app.listen(port, () => {
   console.log(`Servidor rodando em http://localhost:${port}`);

@@ -26,6 +26,10 @@ export default function useAssistChatReceive(
         } else if (response.status === 201) {
             setConversationId(response.data.id);
             setMembers(response.data.members);
+            const MAX_DESC_LENGTH = 90;
+            const truncatedDescription = response.data.description.length > MAX_DESC_LENGTH 
+                ? response.data.description.substring(0, MAX_DESC_LENGTH) + ' ...'
+                : response.data.description;
             setDescription(response.data.description);
             const assistantResponse = response.data.messages[response.data.messages.length - 1];
             setMessages((prevMessages) => [
@@ -37,7 +41,7 @@ export default function useAssistChatReceive(
 
             setAssistHistory((prevHistory) => [
                 {
-                    text: response.data.description,
+                    text: truncatedDescription,
                     link: `/assistants/featurecraft/${response.data.id}`
                 },
                 ...prevHistory

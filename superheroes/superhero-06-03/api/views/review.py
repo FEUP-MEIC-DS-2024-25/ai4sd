@@ -6,77 +6,46 @@ from rest_framework.views import APIView
 import google.generativeai as genai
 import uuid
 
-from google.cloud import firestore
-
 from backend.github_retrieval import get_github_artifacts
+from google.cloud import firestore
 
 from datetime import datetime
 
 class ReviewView(APIView):
     def post(self, request):
-        print("Parsing request body")
+        print("Yeaahhhh")
+        repo_url = request.data.get('repo_url')
+        auth_token = request.data.get('token')
+        pattern = request.data.get('architecture') 
 
-        repo_url = auth_token = pattern = userID = None
+        # Parse the repo url
+        _, _, _, repoOwner, repoName = repo_url.rstrip('/').split('/')
 
         try:
-            repo_url = request.data.get('repo_url')
-            auth_token = request.data.get('token')
-            pattern = request.data.get('architecture') 
-            userID = request.data.get('client_id')
-        except KeyError:
-            return Response({
-                "message": "Invalid request body"
-            }, status=status.HTTP_400_BAD_REQUEST)
-        
-        if not repo_url or not pattern or not userID:
-            return Response({
-                "message": "Repo URL, pattern and client ID are required"
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        repoOwner = repoName = None
-
-        try: 
-            _, _, _, repoOwner, repoName = repo_url.rstrip('/').split('/')
-        except ValueError:
-            return Response({
-                "message": "Invalid repository URL"
-            }, status=status.HTTP_400_BAD_REQUEST)
-
-        db = collection_ref = secrets = None
-
-        try: 
             db = firestore.Client()
             collection_ref = db.collection('superhero-06-03')
-            secrets = collection_ref.document('secrets').get().to_dict()
-        except Exception as e:
-            return Response({
-                "message": f"Error connecting to Firestore: {str(e)}"
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        try:
+            doc_ref = collection_ref.document('secrets')
+            doc = doc_ref.get()
+            secrets = doc.to_dict()
             gemini_key = secrets.get('gemini_api_key')
-        except KeyError:
-            return Response({
-                "message": "Gemini API key not found in secrets"
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        try:
-            genai.configure(api_key=gemini_key)
+            print("THE GEMINI KEY IS : ", gemini_key)
         except Exception as e:
+            print("Error retrieving gemini key from Firestore:", str(e))
             return Response({
-                "message": f"Error configuring Gemini API: {str(e)}"
+                "message": f"Catch statement caught an exception: {str(e)}"
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+
+        genai.configure(api_key=gemini_key)
         model = genai.GenerativeModel("gemini-1.5-flash")
-        
-        artifacts = None
-        
-        try:
-            get_github_artifacts(repo_url, auth_token)
-        except Exception as e:
+
+        if not repo_url:
             return Response({
-                "message": f"Error getting artifacts from GitHub: {str(e)}"
-            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                "message": "Repo URL and auth token, in case of private repository, are required"
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        artifacts = get_github_artifacts(repo_url, auth_token)
 
         prompt = f"""I'm need you to analyses the following files and tell me how well the {pattern} pattern is implemented in this project.
                     I'll send you, for each file, the name, the path and the content of the file. Then, you'll give some conclusions. Later on the message I'll ask you for them.
@@ -84,11 +53,18 @@ class ReviewView(APIView):
                     Files will start now:
                 """
         
+        # Appending the prompt with the files
         for artifact in artifacts:
+                # Appending the file name
                 prompt += f"File name: {artifact['name']};\n"
+                
+                # Appending the file path
                 prompt += f"File path: {artifact['path']};\n"
+
+                # Appending the file content
                 prompt += f"File content:\n {artifact['content']};\n\n"
 
+        # Concluding the prompt
         prompt += f"""All files that I want you to analyse are sent. The conclusions need to be written in markdow, with the following structure, with '\n' only after each sentence, no blank lines between the sentences I ask for:
                     - Heading 1 entitled 'Percentage of the pattern implemented in the project'
                     - Normal text with the value of the percentage of how well the pattern is implemented in the project, from 0 to 100
@@ -99,12 +75,11 @@ class ReviewView(APIView):
                     - Heading 1 entitled 'Strenghts'
                     - Normal text with 3 bullet points with the strenghts of the project, if any. Each bullet point needs to have a simple text intro, followed by a ':', and then the explanation of the strenght
                     """
-        
-        print("Prompting the model")
-
+        print("Miiiiiiiiiiiiiid")
         try:
             response = model.generate_content(prompt)
 
+            # Extract the conclusions from the response and remove spaces in the beggining, * and - characters
             percentage = response.text.split('\n')[1].replace("*", "").replace("-", "").strip()
             explanation = response.text.split('\n')[3].replace("*", "").replace("-", "").strip()
 
@@ -128,32 +103,16 @@ class ReviewView(APIView):
                          {strength3.split(':')[0].replace("*", "").replace("-", "").strip(): strength3.split(':')[1].replace("*", "").replace("-", "").strip()}
                         ]
 
+            print("Conclusions provided: ", percentage, explanation, improvements, strengths)
+
+            # Create a JSON with the results
             current_datetime = datetime.now()
 
+            # Format the datetime to 'YYYY-MM-DD HH:MM:SS'
             formatted_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
 
-            id = str(uuid.uuid4())
-
-            report = {
-                "id" : id,
-                "name": repoName,
-                "timestamp": formatted_datetime,
-                "pattern": pattern,
-                "percentage": percentage,
-                "explanation": explanation,
-                "improvements": improvements,
-                "strenghts": strengths
-            }
-
-            users_ref = collection_ref.document("users")
-            users_json = users_ref.get().to_dict()
-
-            users_json[userID]['reports'].append(report)
-
-            users_ref.update(users_json)
-
             return Response({
-                "id" : id,
+                "id" : str(uuid.uuid4()),
                 "name": repoName,
                 "timestamp": formatted_datetime,
                 "pattern": pattern,
