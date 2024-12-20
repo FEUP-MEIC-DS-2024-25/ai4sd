@@ -12,3 +12,5 @@ djangorestframework==3.15.2
 requests==2.32.3
 pillow==11.0.0
 django-cors-headers
+google-cloud-secret-manager
+google-cloud-storage
