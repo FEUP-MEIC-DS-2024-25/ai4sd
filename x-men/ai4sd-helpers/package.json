@@ -9,12 +9,12 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": ["*"],
+  "activationEvents": [
+    "*"
+  ],
   "main": "./out/extension.js",
   "contributes": {
-    "configuration": {
-      
-    },
+    "configuration": {},
     "commands": [
       {
         "command": "ai4sd-helpers.call",
@@ -26,14 +26,13 @@
       }
     ],
     "menus": {
-        "commandPalette": [
-            {
-                "command": "ai4sd-helpers.wakeup",
-                "when": "false"
-            }
-        ],
-        "editor/title": [
-      ]
+      "commandPalette": [
+        {
+          "command": "ai4sd-helpers.wakeup",
+          "when": "false"
+        }
+      ],
+      "editor/title": []
     },
     "viewsContainers": {
       "activitybar": [
@@ -74,5 +73,10 @@
     "eslint": "^9.13.0",
     "openai": "^4.76.1",
     "typescript": "^5.6.3"
+  },
+  "dependencies": {
+    "@types/sqlite3": "^3.1.11",
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
   }
 }
