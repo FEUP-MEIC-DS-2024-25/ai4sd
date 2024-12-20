@@ -124,6 +124,7 @@ const Assistant = () => {
                         className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%]"
                         id="nameInput"
                         type="text"
+                        autoComplete="off"
                         value={nameInput}
                         onChange={(e) => setNameInput(e.target.value)}
                         placeholder="Project name"
@@ -133,7 +134,7 @@ const Assistant = () => {
                 </div>
                 <div className="w-[100%]">
                     <textarea
-                        className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%] resize-none"
+                        className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%] rows-10"
                         id="userInput"
                         value={reqInput}
                         onChange={(e) => setReqInput(e.target.value)}
