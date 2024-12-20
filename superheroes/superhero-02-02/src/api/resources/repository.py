@@ -22,7 +22,12 @@ class Repository:
 
     def process_prompt_response(self, model_name: str, submodel_name: Union[str, None] = None):
         service = LLMService(submodel_name)
-        service.run_model(model_name, self.FILES_DIR, self.PROMPT_DIR)
+
+        try:
+            service.run_model(model_name, self.FILES_DIR, self.PROMPT_DIR)
+        except Exception as e:
+            self.__clean_dirs()
+            abort(500, "Error running model: " + e.message)
 
         content = self.__get_prompt_content()
         self.__clean_dirs()
