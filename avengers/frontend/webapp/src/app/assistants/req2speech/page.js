@@ -48,7 +48,7 @@ export default function Interactor() {
 }
 
 async function getChats(){
-    const backendUrl = "http://localhost:8080/req2speech/chat";
+    const backendUrl = "https://superhero-03-03-150699885662.europe-west1.run.app/req2speech/chat";
 
     const response = await axios.get(backendUrl);
 

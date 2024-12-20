@@ -39,7 +39,7 @@ export default function MainChat({ chatID }) {
 
             try {
 
-                const backendUrl = "http://localhost:8080";
+                const backendUrl = "https://superhero-03-03-150699885662.europe-west1.run.app";
                 const response = await axios.get(`${backendUrl}/req2speech/chat/${chatID}`);
                 const data = response.data;
 
@@ -82,7 +82,7 @@ export default function MainChat({ chatID }) {
 
         try {
             
-            const backendUrl = "http://localhost:8080";
+            const backendUrl = "https://superhero-03-03-150699885662.europe-west1.run.app";
             const response = await fetch(`${backendUrl}/api/prompt`, {
                 method: "POST",
                 headers: {
