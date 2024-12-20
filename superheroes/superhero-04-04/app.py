@@ -11,7 +11,7 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}})
 logging.basicConfig(level=logging.INFO)
 
-if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"):
+if not os.getenv("GOOGLE_APPLICATION_CREDENTIALS"): # not needed in Cloud Run
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "superhero-04-04.json"
 
 
