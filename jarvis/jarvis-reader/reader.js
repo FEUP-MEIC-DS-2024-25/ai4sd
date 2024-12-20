@@ -19,4 +19,4 @@ async function readFromBucket() {
     }
 }
 
-readFromBucket();
+//readFromBucket();

@@ -13,39 +13,7 @@
   "main": "./out/extension.js",
   "contributes": {
     "configuration": {
-      "title": "EasyComment",
-      "properties": {
-        "EasyComment.apikey": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "Gemini API Key String"
-        },
-        "EasyComment.mode": {
-          "type": "number",
-          "default": "",
-          "markdownDescription": "mode 1 use llm local when possible, mode 2 use llm from openai"
-        },
-        "EasyComment.language": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "Language of the comments"
-        },
-        "EasyComment.url_host_llm": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "url of openai api host of the llm"
-        },
-        "EasyComment.apikey_host_llm": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "api_key of openai api host of the llm"
-        },
-        "EasyComment.model_used": {
-          "type": "string",
-          "default": "",
-          "markdownDescription": "model used from the openai api"
-        }
-      }
+      
     },
     "commands": [
       {
@@ -55,11 +23,6 @@
       {
         "command": "ai4sd-helpers.wakeup",
         "title": "Wake up assistants"
-      },
-      {
-        "command": "EasyComment.annotate",
-        "title": "Toggle Tutor Annotations",
-        "icon": "$(comment)"
       }
     ],
     "menus": {
@@ -70,10 +33,6 @@
             }
         ],
         "editor/title": [
-        {
-          "command": "EasyComment.annotate",
-          "group": "navigation"
-        }
       ]
     },
     "viewsContainers": {
