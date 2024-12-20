@@ -25,13 +25,3 @@ export default function Interactor() {
         </div>
     )
 }
-
-
-//function prepareMockHistory() {
-//    const history = [];
-//    for (let i = 1; i <= 20; i++) {
-//        const chat = { text: `Chat ${i}`, link: "#" };
-//        history.push(chat);
-//    }
-//    return history;
-//}

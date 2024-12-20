@@ -38,6 +38,7 @@ const Assistant = () => {
         }
     };
 
+    //http://localhost:8080/generate
     const handleSubmit = async () => {
         try {
             setIsLoading(true);
@@ -55,7 +56,7 @@ const Assistant = () => {
                 throw new Error("Content cannot be null or an empty string.");
             }
 
-            const response = await fetch("http://localhost:8080/generate", {
+            const response = await fetch("https://superhero-04-02-150699885662.europe-west1.run.app/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

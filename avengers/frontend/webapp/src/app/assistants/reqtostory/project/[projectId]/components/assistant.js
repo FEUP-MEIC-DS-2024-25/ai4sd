@@ -68,10 +68,12 @@ const Assistant = () => {
         setUserStories(userStories);
     }, [reqVersion, versions, userStoriesVersion]);
 
+
+    //http://localhost:8080/project/${projectId}/content
     const fetchProjectContent = async (projectId) => {
         try {
             const response = await fetch(
-                `http://localhost:8080/project/${projectId}/content`
+                `https://superhero-04-02-150699885662.europe-west1.run.app/project/${projectId}/content`
             );
             if (!response.ok) {
                 throw new Error(
@@ -154,6 +156,9 @@ const Assistant = () => {
         }
     };
 
+
+    //http://localhost:8080/regenerate
+    
     const handleSubmit = async (projId, reqVersion, newContent, submittedContent = null) => {
         try {
             setIsLoading(true);
@@ -167,7 +172,7 @@ const Assistant = () => {
                 throw new Error("Content cannot be null or an empty string.");
             }
 
-            const response = await fetch("http://localhost:8080/regenerate", {
+            const response = await fetch("https://superhero-04-02-150699885662.europe-west1.run.app/regenerate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

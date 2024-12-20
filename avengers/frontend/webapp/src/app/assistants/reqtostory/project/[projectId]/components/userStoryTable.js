@@ -98,10 +98,11 @@ export default function UserStoryTable({
         }
     };
 
+    //http://localhost:8080/project/userstory/update'
     ///////////////////////////////////////////////////////////////////////////////////////////
     const updateUserStoryContent = async (projectId, reqVersion, userStoriesVersion, index, newContent) => {
         try {
-            const response = await fetch('http://localhost:8080/project/userstory/update', {
+            const response = await fetch('https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/update', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -123,11 +124,11 @@ export default function UserStoryTable({
             console.error(error);
         } 
     };
-
+    //http://localhost:8080/project/userstory/delete
 
     const deleteUserStory = async (projectId, reqVersion, userStoriesVersion, index) => {
         try {
-            const response = await fetch('http://localhost:8080/project/userstory/delete', {
+            const response = await fetch('https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/delete', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -148,11 +149,11 @@ export default function UserStoryTable({
             console.error(error);
         } 
     };
+    //`http://localhost:8080/project/userstory/feedback`
 
-    
     const updateUserStoryFeedback = async (projectId, reqVersion, userStoriesVersion, index, feedback) => {
         try {
-            const response = await fetch(`http://localhost:8080/project/userstory/feedback`, {
+            const response = await fetch(`https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/feedback`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
