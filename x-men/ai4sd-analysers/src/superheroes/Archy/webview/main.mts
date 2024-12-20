@@ -7,12 +7,16 @@ const vscode = acquireVsCodeApi();
 window.addEventListener("load", main);
 
 function main() {
-  // To get improved type annotations/IntelliSense the associated class for
-  // a given toolkit component can be imported and used to type cast a reference
-  // to the element (i.e. the `as Button` syntax)
-  const saveOutputButton = document.getElementById('saveOutputButton') as Button;
-  saveOutputButton?.addEventListener("click", handleSaveOutputClick);
+  const saveOutputButton = document.getElementById('saveOutputButton');
+
+  // Check if the element exists and is an HTMLButtonElement
+  if (saveOutputButton && saveOutputButton instanceof HTMLButtonElement) {
+    saveOutputButton.addEventListener("click", handleSaveOutputClick);
+  } else {
+    console.error("Button not found or is not a button element.");
+  }
 }
+
 
 function handleSaveOutputClick() {
 
