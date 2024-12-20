@@ -1,0 +1,2 @@
+Regarding motor accessibility review my code so that it makes sure:
+- all buttons are sufficiently spaced, allowing movement-impaired users to easily click individual buttons, improving the overall accessibility of the application
