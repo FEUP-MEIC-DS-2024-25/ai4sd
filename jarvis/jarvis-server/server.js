@@ -6,7 +6,7 @@ import { config } from "../config.js";
 import { handleWebhookEvent } from "../jarvis-publisher/webhook-handler.js";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
 
 app.use(bodyParser.json());
@@ -24,6 +24,13 @@ app.post("/webhook", async (req, res) => {
     }
 
     if (event === "push") {
+
+        if (!(payload.ref === "refs/heads/master" || payload.ref === "refs/heads/main")) {
+            console.log(`Received push on ref ${payload.ref} which is not master or main. Ignoring...`);
+            return res.status(200).send("Event received but branch is not 'master' or 'main'.");
+        }
+
+
         const { repository, ref } = payload;
         const repo = repository?.name;
         const branch = ref?.split("/").pop();
