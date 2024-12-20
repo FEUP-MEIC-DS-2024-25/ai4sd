@@ -15,10 +15,10 @@ const useProjects = ({update, setUpdate}) => {
       setUpdate(false)}
   }, [update]);
 
-  
+  //http://localhost:8080/projects
   const fetchProjects = useCallback(async () => {
     try {
-      const response = await fetch("http://localhost:8080/projects");
+      const response = await fetch("https://superhero-04-02-150699885662.europe-west1.run.app/projects");
       if (!response.ok) {
         throw new Error(`Failed to fetch projects: ${response.statusText}`);
       }
