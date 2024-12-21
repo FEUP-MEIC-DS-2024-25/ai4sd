@@ -16,7 +16,8 @@ RUN pip install --no-cache-dir \
     python-docx \
     markdown2 \
     beautifulsoup4 \
-    google-cloud-secret-manager
+    google-cloud-secret-manager \
+    python-dotenv
 
 COPY . .
 

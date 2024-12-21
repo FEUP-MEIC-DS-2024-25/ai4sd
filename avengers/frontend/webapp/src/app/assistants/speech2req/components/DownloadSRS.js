@@ -7,8 +7,8 @@ const DownloadSRS = ({ transcription, summary }) => {
     if (!transcription || !summary.length) return;
 
     try {
-      const response = await fetch("http://localhost:5000/api/download_srs", {
-      //const response = await fetch("https://superhero-04-03-150699885662.europe-west1.run.app/api/download_srs", {
+      //const response = await fetch("http://localhost:5000/api/download_srs", {
+      const response = await fetch("https://superhero-04-03-150699885662.europe-west1.run.app/api/download_srs", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -18,9 +18,12 @@ app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
 
 # Set the Google Application Credentials environment variable
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = os.getenv(
-    "GOOGLE_APPLICATION_CREDENTIALS", "/app/creds/hero-alliance-feup-ds-24-25-02aaf828936e.json"
-)
+# Set the Google Application Credentials environment variable
+#google_creds = os.getenv("GOOGLE_APPLICATION_CREDENTIALS")
+#if not google_creds:
+#    print("Warning: GOOGLE_APPLICATION_CREDENTIALS is not set. Check your .env file.")
+#else:
+#    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = google_creds
 
 # Load Whisper model once
 model = whisper.load_model("base")
@@ -42,6 +45,10 @@ def get_secret():
     response = client.access_secret_version(name=name)
     return response.payload.data.decode("UTF-8")
 
+#gemini_secret = os.getenv("GEMINI_SECRET")
+#if not gemini_secret:
+#    print("GEMINI_SECRET is not set.")
+
 
 # Save history to the file
 def save_history(history):
@@ -56,8 +63,8 @@ def transcribe_audio(mp3_file_path):
 # Function to summarize the transcription
 def summarize_transcription(transcription):
     # will not work
-    google_api_key = get_secret()
-    genai.configure(api_key=google_api_key)
+    apikey = get_secret()
+    genai.configure(api_key=apikey)
 
     model = genai.GenerativeModel("gemini-1.5-flash")
     response = model.generate_content(
