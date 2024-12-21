@@ -1,0 +1,34 @@
+# Node.js specific
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs
+*.log
+*.log.*
+
+# Dependency caches
+package-lock.json
+yarn.lock
+
+# Build artifacts (if applicable)
+dist
+build
+
+# Temporary files
+.DS_Store
+*.swp
+*.swo
+*.tmp
+*.bak
+*.backup
+
+# Docker-specific
+Dockerfile
+.dockerignore

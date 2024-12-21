@@ -1,0 +1,92 @@
+{
+  "name": "EasyComment",
+  "displayName": "EasyComment",
+  "description": "This extension helps you to add comments to whatever you wish in different languages and different programming languages",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.94.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onCommand:ai4sd-helpers.wakeup"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "EasyComment",
+      "properties": {
+        "EasyComment.apikey": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Gemini API Key String"
+        },
+        "EasyComment.language": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Language of the comments"
+        },
+        "EasyComment.url_host_llm": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "url of openai api host of the llm"
+        },
+        "EasyComment.apikey_host_llm": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "api_key of openai api host of the llm"
+        },
+        "EasyComment.model_used": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "model used from the openai api"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "EasyComment.annotate",
+        "title": "Toggle Tutor Annotations",
+        "icon": "$(comment)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "EasyComment.annotate",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/body-parser": "^1.19.5",
+    "@types/express": "^5.0.0",
+    "@types/mocha": "^10.0.8",
+    "@types/node": "20.x",
+    "@types/vscode": "^1.94.0",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.11.1",
+    "typescript": "^5.6.2"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "express": "^4.21.1",
+    "openai": "^4.76.1",
+    "typescript-parsec": "^0.3.4"
+  }
+}

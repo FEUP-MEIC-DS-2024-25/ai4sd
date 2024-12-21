@@ -1,0 +1,12 @@
+asgiref
+Django
+djangorestframework
+packaging
+sqlparse
+typing_extensions
+django-cors-headers
+google-generativeai
+PyGithub
+whitenoise
+google-cloud-firestore
+google-cloud

@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+google-generativeai
+python-dotenv
+pydantic
+markdown
+google-cloud-secret-manager
+python-multipart

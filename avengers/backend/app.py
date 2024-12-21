@@ -18,3 +18,4 @@ def read_item(assistant: str):
     return {"assistant": assistant}
 
 register_req2test_api(app)
+register_story2test_api(app)

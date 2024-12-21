@@ -26,7 +26,17 @@ SECRET_KEY = 'django-insecure-x!!i1t2bx$(l!o1s&$@iel8%ybr%pmn2hrp&a)owp+a9xmc(ml
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'superhero-02-01-150699885662.europe-west1.run.app', '104.155.4.93']
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React frontend
+    "https://storage.googleapis.com", # Google Cloud Storage
+    "https://superhero-02-01-150699885662.europe-west1.run.app", # Django backend
+    "http://104.155.4.93"
+]
+
 
 
 # Application definition
@@ -41,6 +51,7 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
+    'corsheaders',
     'crispy_forms',
     'crispy_bootstrap4',
     'rest_framework',
@@ -60,6 +71,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 ROOT_URLCONF = 'settings.urls'
@@ -150,7 +162,7 @@ REST_FRAMEWORK = {
     # Use Django's standard `django.contrib.auth` permissions,
     # or allow read-only access for unauthenticated users.
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
+        'rest_framework.permissions.AllowAny'
     ]
 }
 

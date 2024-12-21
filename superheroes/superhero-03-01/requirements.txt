@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+requests
+python-dotenv
+pymongo
+jsonschema
+firebase-admin
+google-cloud
+google-cloud-secret-manager

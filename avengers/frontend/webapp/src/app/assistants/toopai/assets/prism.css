@@ -1,0 +1,59 @@
+/* Appliquer un fond sombre et du texte clair aux blocs de code */
+code[class*="language-"], pre[class*="language-"] {
+    color: #ffffff; /* Couleur du texte en blanc */
+    background-color: #2e2e2e; /* Couleur de fond sombre */
+    font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 1em;
+    text-align: left;
+    white-space: pre;
+    word-spacing: normal;
+    word-break: normal;
+    word-wrap: normal;
+    line-height: 1.5;
+    tab-size: 4;
+    hyphens: none;
+}
+
+/* Sélection du texte */
+code[class*="language-"]::selection, pre[class*="language-"]::selection {
+    text-shadow: none;
+    background: #555555; /* Fond de sélection légèrement plus clair */
+}
+
+/* Styles supplémentaires pour l'apparence des tokens */
+.token.comment,
+.token.prolog,
+.token.cdata {
+    color: #999999; /* Couleur douce pour les commentaires */
+}
+
+.token.punctuation {
+    color: #bbbbbb;
+}
+
+.token.boolean,
+.token.constant,
+.token.number,
+.token.symbol,
+.token.deleted {
+    color: #ff5555; /* Couleur vive pour certains tokens */
+}
+
+.token.string,
+.token.attr-value,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #50fa7b; /* Couleur verte pour les chaînes */
+}
+
+.token.keyword,
+.token.selector,
+.token.atrule {
+    color: #ff79c6; /* Couleur rose pour les mots-clés */
+}
+
+.token.function,
+.token.class-name {
+    color: #8be9fd; /* Couleur cyan pour les fonctions */
+}

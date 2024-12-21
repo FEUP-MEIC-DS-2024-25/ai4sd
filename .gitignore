@@ -38,3 +38,7 @@ terraform.rc
 
 # Ignore Terraform lock files
 *.lock.hcl
+
+*.env
+
+*node_modules/

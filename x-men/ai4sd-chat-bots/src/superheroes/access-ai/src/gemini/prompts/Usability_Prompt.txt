@@ -1,0 +1,8 @@
+Regarding usability, review my code so that it makes sure:
+- it implements effective error prevention, including input validation, user-friendly error messages, and state preservation for seamless recovery
+- it standardizes user inputs effectively, focusing on consistent formatting, input validation, and ease of navigation throughout the website
+- the website provides loading indicators or status messages, 
+- uses familiar language and concepts, 
+- provides clear visible options, 
+- supports shortcuts, 
+- avoids irrelevant information and provides accessible help and guidance, enhancing the application's overall accessibility by following the Nielsen's usability heuristics.

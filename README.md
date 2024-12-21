@@ -30,7 +30,7 @@
     - **avengers** cloud storage bucket: the web app of AI4SD *(up to you to develop)*
         - This is not a VM but a data container. Because you will be using ReactJS to develop the frontend of the app, its output are just static files. Thus, this is a cost effective approach for maintaining a frontend.
     - **superhero-0X-0Y** cloud run instance: your superhero service powered by GenAI capabilities *(up to you to develop by us)*
-        - The service account name of your superhero follows the format `superhero-0X-0Y@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com`
+        - The service account name of your superhero follows the format `superhero-0X-0Y@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com    `
     - **nexus** cloud storage bucket: a data bucket that will hold the repositories your superhero will use *(already deployed by us)*
         - We recommend creating one folder per superhero. Inside that folder you can put whatever you want there
     - **vault** firestore: data storage for holding information specific to your superhero (internally it is mandatory that it is referred by GCP as `(default)`) *(already deployed by us)*
@@ -41,6 +41,7 @@
         - The service account name of jarvis follows the format `hero-alliance-jarvis@hero-alliance-feup-ds-24-25.iam.gserviceaccount.com`
     - **echo-jarvis** pub/sub: a communication channel that allows **jarvis** to let superheroes know there are updates in repositories held in **nexus** *(already deployed by us)*
     - **echo-superheroes** pub/sub: same as above, but for **superheroes** to communicate with each other *(already deployed by us)*
+- **Virtual Machine (optional - for Avengers)**: if you are having problems with deployment, you may use the new virtual machine for the avengers. This should allow you to deploy the web application if you are struggling with using the storage bucket. To do so, you need to login using the monitoring account with `gcloud auth login` (check Discord for the credentials: [here](https://discordapp.com/channels/1305936467113021513/1305936467113021517/1318285302367912017)) and the private key (also on Discord, [here](https://discordapp.com/channels/1305936467113021513/1305936467113021517/1318308647855456307)). Use this command to access the virtual machine after authenticating: `gcloud compute ssh --zone "europe-west1-d" "avengers-vm" --project "hero-alliance-feup-ds-24-25" --ssh-key-file=[private key]`
 
 ## Public superhero links
 - **avengers**: https://storage.googleapis.com/hero-alliance-avengers/index.html

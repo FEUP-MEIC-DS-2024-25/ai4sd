@@ -1,0 +1,12 @@
+PyPDF2
+protobuf
+python-dotenv
+google-generativeai
+fpdf
+google-cloud-firestore
+google-cloud-storage
+google-cloud-secret-manager
+firebase-admin
+fastapi
+uvicorn
+python-multipart

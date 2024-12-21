@@ -1,6 +1,13 @@
 {
+    "apiKey": "AIzaSyD8kleEGvzyFxtx8WOfhsIZSp7VuC1ypRM",
+    "model": "gemini-1.5-pro",
     "activityDiagramPromptGenerator": "Explain the following code through a PlantUML activity diagram. Output only the code. Here's a PlantUML example: @startuml\nstart\nrepeat\n  :Test something;\n    if (Something went wrong?) then (no)\n      #palegreen:OK;\n      break\n    endif\n    ->NOK;\n    :Alert \"Error with long text\";\nrepeat while (Something went wrong with long text?) is (yes) not (no)\n->//merged step//;\n:Alert \"Success\";\nstop\n@enduml. The code is as follows:\n",
     "sequenceDiagramPromptGenerator": "Explain the following code through a PlantUML sequence diagram. Output only the code. Here's a PlantUML example: @startuml\nAlice -> Bob: Authentication Request\nalt successful case\n    Bob -> Alice: Authentication Accepted\nelse some kind of failure\n    Bob -> Alice: Authentication Failure\n    group My own label\n    Alice -> Log : Log attack start\n        loop 1000 times\n            Alice -> Bob: DNS Attack\n        end\n    Alice -> Log : Log attack end\n    end\nelse Another type of failure\n   Bob -> Alice: Please repeat\nend\n@enduml. The code is as follows:\n",
-    "activityDiagramPrompt": "Explain the following code through a PlantUML activity diagram. Output only the code. Here's a PlantUML example: @startuml\nstart\nrepeat\n  :Test something;\n    if (Something went wrong?) then (no)\n      #palegreen:OK;\n      break\n    endif\n    ->NOK;\n    :Alert \"Error with long text\";\nrepeat while (Something went wrong with long text?) is (yes) not (no)\n->//merged step//;\n:Alert \"Success\";\nstop\n@enduml. The code is as follows:\n",
-    "sequenceDiagramPrompt": "Explain the following code through a PlantUML sequence diagram. Output only the code. Here's a PlantUML example: @startuml\nstart\nrepeat\n  :Test something;\n    if (Something went wrong?) then (no)\n      #palegreen:OK;\n      break\n    endif\n    ->NOK;\n    :Alert \"Error with long text\";\nrepeat while (Something went wrong with long text?) is (yes) not (no)\n->//merged step//;\n:Alert \"Success\";\nstop\n@enduml. The code is as follows:\n"
+    "ChatDiagramPrompt": "Explain the following code through a PlantUML diagram of the same type. Output only the code. Here's a PlantUML example: @startuml\nstart\nrepeat\n  :Test something;\n    if (Something went wrong?) then (no)\n      #palegreen:OK;\n      break\n    endif\n    ->NOK;\n    :Alert \"Error with long text\";\nrepeat while (Something went wrong with long text?) is (yes) not (no)\n->//merged step//;\n:Alert \"Success\";\nstop\n@enduml. The code is as follows:\n",
+    "errorMessages": {
+        "missingCodeOrDiagramType": "Both 'code' and 'diagramType' are required.",
+        "invalidDiagramType": "Invalid 'diagramType' provided.",
+        "missingActionOrClientId": "Both 'action' and 'clientId' are required.",
+        "missingChatObject": "No chat found for the clientID. Maybe it wasn't initialized when generating the diagram for the first time."
+    }
 }

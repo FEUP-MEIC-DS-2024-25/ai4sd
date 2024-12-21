@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Krona+One&display=swap');
+
+:root, #root {
+  /* background-color: #2f2f2f; */
+  color: #ffffff;
+  height:100vh;
+  width: 100%;
+}
+
+h1 {
+    font-family: "Krona One", sans-serif;
+    font-style: normal;
+}
+
+.logo {
+    height: 100%;
+
+}
+
+.homepage-div p {
+    font-family: "Krona One", sans-serif;
+    font-style: normal;
+    margin: 10px;
+}
+
+.homepage-div a {
+    margin: 10px;
+    width: auto;
+
+}
+
+h2 {
+  text-align: center;
+}
+
+.conversation {
+  margin: 20px auto;
+  padding: 20px;
+
+}
+
+.message {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  width: fit-content;
+  max-width: 90%;
+}
+
+.user {
+  /*text-align: right;*/
+  /* TODO: change display block to align the user's messages to the right */
+  color: black;
+  background-color: rgb(240, 240, 240);
+}
+
+.app {
+  text-align: left;
+  color: white;
+  background-color: rgb(34, 34, 34);
+}
+
+.chat-box {
+  height: 350px;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+textarea {
+  width: ãuto;
+
+}
+
+.chat-box::-webkit-scrollbar {
+  width: 12px;
+
+}
+
+/* Track (background) of the scrollbar */
+.chat-box::-webkit-scrollbar-track {
+  background: #878787;
+
+  border-radius: 10px;
+
+}
+
+/* Handle (the draggable part) of the scrollbar */
+.chat-box::-webkit-scrollbar-thumb {
+  background: #4f4e4e;
+
+  border-radius: 10px;
+
+}
+
+/* Handle on hover */
+.chat-box::-webkit-scrollbar-thumb:hover {
+  background: #555;
+
+}

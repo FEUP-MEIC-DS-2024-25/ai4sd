@@ -10,9 +10,6 @@ COPY go.mod go.sum ./
 # Download Go modules
 RUN go mod download
 
-# Copy the gemini key from google environment variable
-RUN echo 'GEMINI_API_KEY=$(T05_G04_GEMINI_API_KEY)' > .env
-
 # Copy the source code
 COPY . .
 
@@ -28,11 +25,12 @@ WORKDIR /root/
 # Install SSL certificates
 RUN apk --no-cache add ca-certificates
 
+# Mount secret
+RUN --mount=type=secret,id=superhero-05-05-secret \
+    echo "GEMINI_API_KEY=$(cat /run/secrets/superhero-05-05-secret)" > ./.env
+
 # Copy the Pre-built binary file from the previous stage
 COPY --from=builder /app/server .
-
-# Copy the .env file
-COPY --from=builder /app/.env .
 
 # Expose port 8080 to the outside world
 EXPOSE 8080

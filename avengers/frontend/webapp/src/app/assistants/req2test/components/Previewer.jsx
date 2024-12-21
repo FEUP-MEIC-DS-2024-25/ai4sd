@@ -54,6 +54,33 @@ export default function Previewer(msg) {
     };
       
     return(
+      <Markdown 
+        key={Math.random()} 
+        value={msg.content} 
+        renderer={customRenderer} 
+      />
+    )
+}
+
+export function PreviewerDark(msg) {
+
+    const customRenderer = {
+      code: (code, lang) => {
+        if (lang === 'gherkin') {
+          return (
+            <section key={Math.random()} className="my-2 p-3 bg-gray-950 outline outline-gray-700 rounded-md">
+              <Header code={code} />
+              <div
+                dangerouslySetInnerHTML={{ __html: formatGherkin(code) }}
+              />
+            </section>
+          )
+        }
+        return <pre key={Math.random()}><code>{code}</code></pre>;
+      }
+    };
+
+    return(
         <Markdown value={msg.content} renderer={customRenderer} />
     )
 }

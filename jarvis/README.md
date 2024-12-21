@@ -4,7 +4,7 @@ Jarvis is a service of AI4SD that fetches information from GitHub repositories a
 
 ## Current state
 
-Currently, Jarvis fetches and downloads Python files from a GitHub repository, given its (https) URL.
+Currently, Jarvis fetches all the files from every repository in a pre-defined organization and saves them to Nexus, maintaining the same structure as the original repository. Jarvis also supports functions to upload a single repository to Nexus, using either its (HTTPS) URL or its name and organization.
 
 ## Technologies
 
@@ -23,15 +23,12 @@ The `jarvis-fetcher` authentication was done as a GitHub App installation. We us
 
 ## How to contribute
 
-To add a new functionality to Jarvis, you'll likely want to have a new interaction with the GitHub API. To do this, add your new interactions to `jarvis-fetcher/githubClient.js`, and then call it in `main.js`.
+To add a new functionality to Jarvis, you'll likely want to have a new interaction with the GitHub API. To do this, add your new interactions to `jarvis-fetcher/githubClient.js`. Any overarching functionality of a new fetching feature that doesn't directly communicate with the GitHub API should be placed in `jarvis-fetcher/fetcher.js`. For functionalities that read or write to Nexus, develop them in `jarvis-reader/reader.js` or `jarvis-writer/writer.js`, respectively. Finally, call your new functions in `main.js`.
 
 ```js
-import { processRepo } from "./jarvis-fetcher/fetcher.js";
-import { getAuthOctokit } from "./jarvis-fetcher/auth.js";
-import { config } from "./config.js";
-
 const octokit = await getAuthOctokit(config.org); // Get authenticated Octokit instance
-processRepo(octokit, "https://github.com/FEUP-MEIC-DS-2024-25/T02_G02_BackEnd");
+await uploadAllReposInOrg(octokit, config.org); // Upload all repositories in the organization
 ```
 
 Make sure to **use the authenticate octokit instance defined in `main.js`.**
+
