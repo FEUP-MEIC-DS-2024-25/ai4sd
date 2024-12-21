@@ -1,0 +1,15 @@
+# Node.js dependencies
+node_modules
+npm-debug.log
+
+# Python cache
+__pycache__
+*.pyc
+*.pyo
+
+# VSCode
+.vscode
+.vscodeignore
+
+# Logs
+*.log
