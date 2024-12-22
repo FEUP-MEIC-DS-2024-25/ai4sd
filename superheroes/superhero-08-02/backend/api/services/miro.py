@@ -1,6 +1,6 @@
 import os, random, requests, re
-from github_graphql import GitHubGraphQLAPI
-from gemini import GeminiAPI
+from .github_graphql import GitHubGraphQLAPI
+from .gemini import GeminiAPI
 
 import json
 from dotenv import load_dotenv
@@ -21,9 +21,14 @@ class MiroAPI:
         if hasattr(self, '_initialized') and self._initialized:
             return
         
-        self.headers = {
+        self.postHeaders = {
             "accept": "application/json",
             "content-type": "application/json",
+            "authorization": f"Bearer {token}"
+        }
+
+        self.getHeaders = {
+            "accept": "application/json",
             "authorization": f"Bearer {token}"
         }
         
@@ -154,12 +159,8 @@ class MiroAPI:
     def get_tag_id(self, board_id):
         url = f"{self.BASE_URL}/{board_id}/tags"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
 
         # Create the dictionary from the response
@@ -172,12 +173,7 @@ class MiroAPI:
 
         url = f"{self.BASE_URL}/{board_id}/items?limit=50"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
         sticky_notes_dict = {}
         for item in data['data']:
@@ -191,12 +187,8 @@ class MiroAPI:
     def attach_note_to_tag(self, board_id,  note_id, tag_id):
         url = f"{self.BASE_URL}/{board_id}/items/{note_id}?tag_id={tag_id}"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.post(url, headers=headers)
+        
+        response = requests.post(url, headers=self.getHeaders)
         return response
 
 
@@ -229,12 +221,7 @@ class MiroAPI:
     def get_iteration_tasks(self, board_id, sticky_notes_dict):
         url = f"{self.BASE_URL}/{board_id}/items?limit=50"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
         
         iteration_tasks = []
@@ -259,12 +246,7 @@ class MiroAPI:
 
         url = f"{self.BASE_URL}/{board_id}/items/{note_id}/tags"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
 
         priority_tag = None
@@ -282,15 +264,9 @@ class MiroAPI:
         }
     
     def create_miro_template(self, board_id):
+
         url_rect = f"{self.BASE_URL}/{board_id}/shapes"
-
         url_text = f"{self.BASE_URL}/{board_id}/texts"
-
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
 
         left_rectangle_payload = {
             "data": { "shape": "rectangle" },
@@ -417,21 +393,14 @@ class MiroAPI:
             }
         }
 
-        requests.post(url_rect, json=left_rectangle_payload, headers=headers)
+        rectanglePayloads = [left_rectangle_payload, right_rectangle_payload, min_left_rectangle_payload, min_right_rectangle_payload, top_rectangle_payload]
+        textPayloads = [miro_text_payload, miro_pb_text_payload, miro_ib_text_payload]
 
-        requests.post(url_rect, json=right_rectangle_payload, headers=headers)
+        for payload in rectanglePayloads:
+            requests.post(url_rect, json=payload, headers=self.postHeaders)
 
-        requests.post(url_rect, json=min_left_rectangle_payload, headers=headers)       
-    
-        requests.post(url_rect, json=min_right_rectangle_payload, headers=headers)
-
-        requests.post(url_rect, json=top_rectangle_payload, headers=headers)
-
-        requests.post(url_text, json=miro_text_payload, headers=headers)
-
-        requests.post(url_text, json=miro_pb_text_payload, headers=headers)
-
-        requests.post(url_text, json=miro_ib_text_payload, headers=headers)
+        for payload in textPayloads:
+            requests.post(url_text, json=payload, headers=self.postHeaders)
 
 def main():
     #------TEST FUNCTIONS------
@@ -513,7 +482,6 @@ def main():
         # 1. Get Project data from github 
         # Query to get the project data
         
-
         # 2. Gemini choose tasks to move to the 'Iteration Backlog'
 
         geminiAPI = GeminiAPI()
@@ -570,12 +538,16 @@ def main():
             miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, priority_id)
             miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, size_id)
 
+        ###############################################################################
+
         print("Updating sticky notes...")
         for note in iteration_tasks:
             note_id = sticky_notes_dict[note]
             miro_api.update_sticky_note("uXjVLQTokqg%3D", note_id)
 
         print("Miro is updated with the tasks for the upcoming iteration successfully!")
+
+        ################################################################################
 
     # MIRO -> GITHUB API FUNCTIONALITY
     sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")    
