@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <link rel="stylesheet" href="{{cssUri}}" />
+    <script src="{{jsUri}}" defer></script>
+  </head>
+  <body>
+    <div class="container">
+        <div class="checkbox-container">
+            <input type="checkbox" id="renameVariables" />
+            <label for="renameVariables" class="checkbox-label">
+                Rename Variables
+            </label>
+
+            <input type="checkbox" id="inlineTemps" />
+            <label for="inlineTemps" class="checkbox-label">
+                Inline Temporary Variables
+            </label>
+
+            <input type="checkbox" id="extractVariables" />
+            <label for="extractVariables" class="checkbox-label">
+                Extract Variables
+            </label>
+
+            <input type="checkbox" id="extractMethods" />
+            <label for="extractMethods" class="checkbox-label">
+                Extract Methods
+            </label>
+
+            <input type="checkbox" id="renameMethods" />
+            <label for="renameMethods" class="checkbox-label">
+                Rename Methods
+            </label>
+
+            <input type="checkbox" id="inlineMethods" />
+            <label for="inlineMethods" class="checkbox-label">
+                Inline Methods
+            </label>
+
+            <input type="checkbox" id="replaceTempWithQuery" />
+            <label for="replaceTempWithQuery" class="checkbox-label">
+                Replace Temp with Query
+            </label>
+
+            <input type="checkbox" id="removeAssignmentsToParameters" />
+            <label for="removeAssignmentsToParameters" class="checkbox-label">
+                Remove Assignments to Parameters
+            </label>
+
+            <input type="checkbox" id="removeParameters" />
+            <label for="removeParameters" class="checkbox-label">
+                Remove Parameters
+            </label>
+
+            <input type="checkbox" id="replaceMagicNumbers" />
+            <label for="replaceMagicNumbers" class="checkbox-label">
+                Replace Magic Numbers
+            </label>
+
+            <input type="checkbox" id="consolidateDuplicateConditionals" />
+            <label for="consolidateDuplicateConditionals" class="checkbox-label">
+                Consolidate Duplicate Conditionals
+            </label>
+
+            <input type="checkbox" id="removeNestedConditionals" />
+            <label for="removeNestedConditionals" class="checkbox-label">
+                Remove Nested Conditionals
+            </label>
+
+            <input type="checkbox" id="analyseTimeComplexity" />
+            <label for="analyseTimeComplexity" class="checkbox-label">
+                Analyse Time Complexity
+            </label>
+
+            <input type="checkbox" id="analyseSpaceComplexity" />
+            <label for="analyseSpaceComplexity" class="checkbox-label">
+                Analyse Space Complexity
+            </label>
+
+            <input type="checkbox" id="removeComments" />
+            <label for="removeComments" class="checkbox-label">
+                Remove Comments
+            </label>
+          
+           <input type="checkbox" id="analyseSecurityVulnerabilities" />
+           <label for="analyseSecurityVulnerabilities" class="checkbox-label">
+                Analyse Security Vulnerabilities
+           </label>
+
+            <input type="checkbox" id="highExpensiveOperations" />
+            <label for="highExpensiveOperations" class="checkbox-label">
+                High Expensive Operations
+            </label>
+
+            <input type="checkbox" id="customInput" />
+            <label for="customInput" class="checkbox-label">
+                 Write Custom Input
+            </label>
+
+            <input type="checkbox" id="refactorMultipleFiles" />
+            <label for="refactorMultipleFiles" class="checkbox-label">
+                 Refactor All Open Files
+            </label>
+        </div>
+
+        <div class="button-container">
+            <button id="refactorButton">Refactor</button>
+        </div>
+
+        <br>
+
+        <div class="button-container">
+            <button id="saveButton">Save Config</button>
+        </div>
+
+        <br>
+
+        <div class="button-container">
+            <button id="loadButton">Load Config</button>
+        </div>
+    </div>
+  </body>
+</html>

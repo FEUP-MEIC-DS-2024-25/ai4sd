@@ -68,7 +68,7 @@ export function PreviewerDark(msg) {
       code: (code, lang) => {
         if (lang === 'gherkin') {
           return (
-            <section key={crypto.randomUUID()} className="my-2 p-3 bg-gray-950 outline outline-gray-700 rounded-md">
+            <section key={Math.random()} className="my-2 p-3 bg-gray-950 outline outline-gray-700 rounded-md">
               <Header code={code} />
               <div
                 dangerouslySetInnerHTML={{ __html: formatGherkin(code) }}
@@ -76,7 +76,7 @@ export function PreviewerDark(msg) {
             </section>
           )
         }
-        return <pre key={crypto.randomUUID()}><code>{code}</code></pre>;
+        return <pre key={Math.random()}><code>{code}</code></pre>;
       }
     };
 

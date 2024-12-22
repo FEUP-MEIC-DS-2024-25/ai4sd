@@ -38,6 +38,7 @@ const Assistant = () => {
         }
     };
 
+    //http://localhost:8080/generate
     const handleSubmit = async () => {
         try {
             setIsLoading(true);
@@ -55,7 +56,7 @@ const Assistant = () => {
                 throw new Error("Content cannot be null or an empty string.");
             }
 
-            const response = await fetch("http://localhost:8080/generate", {
+            const response = await fetch("https://superhero-04-02-150699885662.europe-west1.run.app/generate", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -124,6 +125,7 @@ const Assistant = () => {
                         className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%]"
                         id="nameInput"
                         type="text"
+                        autoComplete="off"
                         value={nameInput}
                         onChange={(e) => setNameInput(e.target.value)}
                         placeholder="Project name"
@@ -133,7 +135,7 @@ const Assistant = () => {
                 </div>
                 <div className="w-[100%]">
                     <textarea
-                        className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%] resize-none"
+                        className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%] rows-10"
                         id="userInput"
                         value={reqInput}
                         onChange={(e) => setReqInput(e.target.value)}

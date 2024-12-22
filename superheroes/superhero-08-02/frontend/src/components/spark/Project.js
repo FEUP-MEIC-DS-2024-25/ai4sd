@@ -14,10 +14,42 @@ function Project() {
   // Fetch project details
   useEffect(() => {
     apiClient
-      .get(`spark/${projectId}/`)
+      .get(`spark/${projectId}/`, {
+        project_id: projectId,
+      })
       .then((response) => setProject(response.data))
       .catch((error) => console.error("Error fetching project:", error));
   }, [projectId]);
+
+  const handleBacklogToMiro = (e) => {
+    e.preventDefault();
+    apiClient
+      .post(`spark/${projectId}/backlog-to-miro/`)
+      .then(() => {
+        alert("Product backlog loaded to Miro successfully!");
+      })
+      .catch((error) => console.error("Error loading product backlog to Miro:", error));
+  };
+
+  const handleGenerateSprints = (e) => {
+    e.preventDefault();
+    apiClient
+      .post(`spark/${projectId}/sprint-in-miro/`)
+      .then(() => {
+        alert("Sprints generated successfully!");
+      })
+      .catch((error) => console.error("Error generating sprints:", error));
+  };
+
+  const handleSprintToGitHub = (e) => {
+    e.preventDefault();
+    apiClient
+      .post(`spark/${projectId}/sprint-to-github/`)
+      .then(() => {
+        alert("Sprint loaded to GitHub successfully!");
+      })
+      .catch((error) => console.error("Error loading sprint to GitHub:", error));
+  };
 
   // Handle adding new member
   const handleAddMember = (e) => {
@@ -91,9 +123,9 @@ function Project() {
       </div>
 
       <div className="action-buttons">
-        <button className="btn-action">Load Product</button>
-        <button className="btn-action">Generate Sprints</button>
-        <button className="btn-action">Import Backlog</button>
+        <button className="btn-action" onClick={handleBacklogToMiro}>Load Product Backlog to Miro</button>
+        <button className="btn-action" onClick={handleGenerateSprints}>Generate Sprints</button>
+        <button className="btn-action" onClick={handleSprintToGitHub}>Load Sprint to GitHub</button>
       </div>
 
       <h2 className="members-title">Members</h2>

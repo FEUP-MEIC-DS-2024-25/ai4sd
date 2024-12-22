@@ -20,6 +20,7 @@ class SparkProject(models.Model):
     name = models.CharField(max_length=255, unique=True)
     description = models.TextField(blank=True, null=True)
     github_project_link = models.URLField(blank=True, null=True, unique=True)
+    github_project_data = models.JSONField(blank=True, null=True)
     miro_board_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
 
     owner = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='owned_projects')

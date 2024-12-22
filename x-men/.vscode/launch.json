@@ -10,10 +10,12 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}/ai4sd-analysers",
 				"--extensionDevelopmentPath=${workspaceFolder}/ai4sd-helpers",
 				"--extensionDevelopmentPath=${workspaceFolder}/easycomment"
 			],
 			"outFiles": [
+				"${workspaceFolder}/ai4sd-analysers/out/**/*.js",
 				"${workspaceFolder}/ai4sd-helpers/out/**/*.js",
 				"${workspaceFolder}/easycomment/out/**/*.js"
 			],

@@ -2,13 +2,21 @@
 // Import the module and reference it with the alias vscode in your code below
 import { json } from 'stream/consumers';
 import * as vscode from 'vscode';
-import { refactor } from './refactor/refactor';
+import * as Refactor from './refactor/refactor';
 import { TreeItem } from 'vscode';
 import { MyWebviewViewProvider } from './components/myWebviewViewProvider';
+import * as settings from './components/settings';
+import * as db from './components/databaseManager';
+
 
 // This method is called when your extension is activated
 // Your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
+	// Initialize the database manager
+	db.setup(context);
+	db.getDatabaseManager().initialize();
+
+	settings.setup(context);
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
@@ -25,12 +33,24 @@ export function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(disposable);
 
+	const settingsCommand = vscode.commands.registerCommand('whattheduck.settings', () => {
+		settings.getSettings().createSettingsWebview();
+	});
+	context.subscriptions.push(settingsCommand);
+
 	// Register the renameAllVariables command
-	const refactorCommand = vscode.commands.registerCommand('whattheduck.refactor', refactor);
+	const refactorCommand = vscode.commands.registerCommand('whattheduck.refactor', Refactor.refactor);
 	context.subscriptions.push(refactorCommand);
 
+	// Register the history command
+	const historyCommand = vscode.commands.registerCommand('whattheduck.history', () => {
+		db.getDatabaseManager().createHistoryWebview();
+	});
+	context.subscriptions.push(historyCommand);
+	
+
 	// Register the webview provider
-    const webviewProvider = new MyWebviewViewProvider(context.extensionUri);
+    const webviewProvider = new MyWebviewViewProvider(context);
     context.subscriptions.push(
         vscode.window.registerWebviewViewProvider(MyWebviewViewProvider.viewType, webviewProvider)
     );	
@@ -38,4 +58,6 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() {
+	db.getDatabaseManager().close();
+}

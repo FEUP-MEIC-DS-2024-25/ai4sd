@@ -15,11 +15,11 @@ function Header() {
       .get("/user-status/", { withCredentials: true })
       .then((response) => {
         console.log("Auth status response:", response.data);
-        const { isAuthenticated } = response.data;
-        setIsAuthenticated(isAuthenticated);
+        const { is_authenticated } = response.data;
+        setIsAuthenticated(is_authenticated);
       })
       .catch((error) => console.error("Error checking authentication:", error));
-  }, []);
+  }, []);  
 
   const toggleMenu = () => {
     setMenuVisible((prev) => !prev); // Toggle the menu visibility state

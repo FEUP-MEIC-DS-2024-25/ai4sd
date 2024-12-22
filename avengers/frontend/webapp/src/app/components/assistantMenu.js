@@ -12,6 +12,24 @@ export default function AssistantMenu({ buttons, assistantName }) {
         setShowSettings(!showSettings);
     };
 
+    if (assistantName === "FeatureCraft") {
+        return (
+            <div className="relative btn-group w-100 p-3 flex justify-center" role="group" aria-label="Basic example">
+                <a href="/assistants/featurecraft">
+                    <button
+                        type="button"
+                        data-placement="top"
+                        data-toggle="tooltip"
+                        title="New Conversation"
+                        className="btn btn-secondary w-12 h-12"
+                    >
+                        <i className={`bi bi-plus`}></i>
+                    </button>
+                </a>
+            </div>
+        );
+    }
+
     return (
         <div className="relative btn-group w-100 p-3" role="group" aria-label="Basic example">
             {buttons.map((button, index) => (

@@ -31,8 +31,12 @@ function getAssistantList() {
     let ai16 = { name: "RefactorRocket", type:"verif", link: "/assistants/superhero-01-01" };
     let ai17 = { name: "BANANAI", type: "req", link: "/assistants/bananai" };
     let ai18 = { name: "TwisterAI", type: "verif", link: "/assistants/twisterAI" };
-  
-    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, ai15, ai16, ai17,ai18];
+    let ai19 = { name: "BANANAI", type: "req", link: "/assistants/bananai" };
+    let ai20 = { name: "TwisterAI", type: "verif", link: "/assistants/twisterAI" };
+    let ai21 = { name: "GeraldAI", type: "refact", link: "/assistants/gerald" };
+    let ai22 = { name: "SPARK", type: "req", link: "/assistants/spark" };
+
+    return [ai1, ai2, ai3, ai4, ai5, ai6, ai7, ai8, ai9, ai10, ai11, ai12, ai13, ai14, ai15, ai16, ai17, ai18, ai19, ai20, ai21, ai22];
 }
 
 function AssistantPickerItems() {

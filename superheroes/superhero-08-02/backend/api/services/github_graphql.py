@@ -187,7 +187,8 @@ class GitHubGraphQLAPI:
 
             task_id = None
             for item in project_data['data']['node']['items']['nodes']:
-                if item['content']['title'] == task_name:
+                if item and item.get('content') and item['content'].get('title') == task_name:
+
                     task_id = item['id']
                     break
 
@@ -299,3 +300,71 @@ class GitHubGraphQLAPI:
             'field_id': field_id,
             'options': option_ids
         }
+
+    def get_project_data(self, project_id):
+
+        query = """
+        query ($id: ID!) {
+        node(id: $id) {
+            ... on ProjectV2 {
+            items(first: 20) {
+                nodes {
+                id  
+                fieldValues(first: 8) {
+                    nodes {
+                    ... on ProjectV2ItemFieldTextValue {
+                        text
+                        field {
+                        ... on ProjectV2FieldCommon {
+                            name
+                        }
+                        }
+                    }
+                    ... on ProjectV2ItemFieldDateValue {
+                        date
+                        field {
+                        ... on ProjectV2FieldCommon {
+                            name
+                        }
+                        }
+                    }
+                    ... on ProjectV2ItemFieldSingleSelectValue {
+                        name
+                        field {
+                        ... on ProjectV2FieldCommon {
+                            name
+                        }
+                        }
+                    }
+                    }
+                }
+                content {
+                    ... on DraftIssue {
+                    title
+                    body
+                    }
+                    ... on Issue {
+                    title
+                    assignees(first: 10) {
+                        nodes {
+                        login
+                        }
+                    }
+                    }
+                    ... on PullRequest {
+                    title
+                    assignees(first: 10) {
+                        nodes {
+                        login
+                        }
+                    }
+                    }
+                }
+                }
+            }
+            }
+        }
+        }
+        """
+
+        return self.send_request(query, {"id": project_id})       

@@ -1,9 +1,14 @@
 import * as vscode from 'vscode';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export class MyWebviewViewProvider implements vscode.WebviewViewProvider {
     public static readonly viewType = 'whattheduck.webview';
+    private readonly extensionUri: vscode.Uri;
 
-    constructor(private readonly extensionUri: vscode.Uri) { }
+    constructor(private readonly context: vscode.ExtensionContext) {
+        this.extensionUri = context.extensionUri;
+    }
 
     resolveWebviewView(webviewView: vscode.WebviewView) {
         webviewView.webview.options = {
@@ -11,196 +16,116 @@ export class MyWebviewViewProvider implements vscode.WebviewViewProvider {
         };
 
         // Set the HTML content of the webview
-        webviewView.webview.html = this.getWebviewContent();
+        webviewView.webview.html = this.getWebviewContent(webviewView.webview);
+
+
+        // Initially load the config when the webview is created
+        this.loadConfig(webviewView.webview, 'default');
+
+        // Trigger the loadConfig function only when the webview becomes visible again
+        webviewView.onDidChangeVisibility(() => {
+            if (webviewView.visible) {
+                this.loadConfig(webviewView.webview, 'default');  // No need to reload the content every time, only when visible
+            }
+        });
 
         // Listen for messages from the webview
-        webviewView.webview.onDidReceiveMessage((message) => {
-            if (message.command === 'refactor') {
-                // Call renameAllVariables and pass the filters from the webview
-                vscode.commands.executeCommand('whattheduck.refactor', message.filters);
+        webviewView.webview.onDidReceiveMessage(async (message) => {
+            switch (message.command) {
+                case 'refactor':
+                    // Call renameAllVariables and pass the filters from the webview
+                    vscode.commands.executeCommand('whattheduck.refactor', message.filters);
+                    break;
+                case 'save':
+                    const configName = await vscode.window.showInputBox({
+                        prompt: 'Enter a name for this configuration',
+                        placeHolder: 'Configuration name',
+                        validateInput: (value) => value.trim() ? null : 'Configuration name cannot be empty',
+                    });
+                    if(configName){
+                        this.saveConfig(configName, message.filters);
+                    } else {
+                        vscode.window.showWarningMessage('Configuration save cancelled. No name provided.');
+                    }
+                    break;       
+                case 'promptLoad':
+                    const configPath = path.join(this.context.globalStorageUri.fsPath, 'configs.json');
+                    if (fs.existsSync(configPath)) {
+                        const allConfigs = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+
+                        // Let the user pick a configuration
+                        const selectedConfig = await vscode.window.showQuickPick(
+                            Object.keys(allConfigs), // Get the keys (config names) to show in the picker
+                            { placeHolder: 'Select a configuration to load' }
+                        );
+
+                        if (selectedConfig) {
+                            // Send the selected config to the webview
+                            this.loadConfig(webviewView.webview, selectedConfig);
+                            vscode.window.showInformationMessage(`Loaded configuration "${selectedConfig}".`);
+                        } else {
+                            vscode.window.showWarningMessage('No configuration selected.');
+                        }
+                    } else {
+                        vscode.window.showWarningMessage('No configuration file found. Save a configuration first!');
+                    }
+                    break;
+
+               
             }
         });
     }
 
-    private getWebviewContent(): string {
-        return `
-            <!DOCTYPE html>
-            <html lang="en">
-            <head>
-                <style>
-                    /* Root styling */
-                    html,
-                    body {
-                        height: 100%;
-                        width: 100%;
-                        padding: 0;
-                        margin: 0;
-                        font-family: var(--vscode-font-family);
-                        color: var(--vscode-foreground);
-                        background-color: var(--vscode-sideBar-background);
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                    }
+    private saveConfig(configName: string, filters: string[]) {
+        const configPath = path.join(this.context.globalStorageUri.fsPath, 'configs.json');
+        let configs: Record<string, string[]> = {};
+    
+        // If the file exists, read existing configurations
+        if (fs.existsSync(configPath)) {
+            const fileContents = fs.readFileSync(configPath, 'utf8');
+            configs = JSON.parse(fileContents);
+        }
+    
+        // Save or update the named configuration
+        configs[configName] = filters;
+    
+        // Write the updated configurations back to the file
+        fs.writeFileSync(configPath, JSON.stringify(configs, null, 4), 'utf8');
+    
+        vscode.window.showInformationMessage(`Configuration "${configName}" saved successfully!`);
+    }
 
-                    /* Main container */
-                    .container {
-                        width: 90%;
-                        max-width: 300px;
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        padding: 10px;
-                    }
+    private loadConfig(webview: vscode.Webview, configName: string) {
+        const configPath = path.join(this.context.globalStorageUri.fsPath, 'configs.json');
+        if (fs.existsSync(configPath)) {
+            const fileContents = fs.readFileSync(configPath, 'utf8');
+            const configs: Record<string, string[]> = JSON.parse(fileContents);
+    
+            // Check if the named configuration exists
+            if (configs[configName]) {
+                const filters = configs[configName];
+                webview.postMessage({ command: 'load', filters });
+            } else if(configName === 'default') {
+                webview.postMessage({ command: 'load', filters: [] });
+            } else {
+                vscode.window.showErrorMessage(`Configuration "${configName}" not found.`);
+            }
+        }
+    }
 
-                    /* Checkbox container styling */
-                    .checkbox-container {
-                        width: 100%;
-                        display: flex;
-                        flex-direction: column;
-                        margin-bottom: 15px;
-                        gap: 10px;
-                    }
+    private getWebviewContent(webview: vscode.Webview): string {
+        const webviewFolder = path.join(this.extensionUri.fsPath, '/src/components/webview');
 
-                    /* Checkbox styling */
-                    input[type="checkbox"] {
-                        display: none;
-                    }
+        const htmlPath = path.join(webviewFolder, 'webview.html');
 
-                    /* Label styling */
-                    .checkbox-label {
-                        display: flex;
-                        align-items: center;
-                        padding: 6px 10px;
-                        width: 100%;
-                        font-size: 13px;
-                        background-color: var(--vscode-editor-background);
-                        border: 1px solid var(--vscode-sideBar-border);
-                        border-radius: 2px;
-                        cursor: pointer;
-                        transition: background-color 0.2s, border-color 0.2s;
-                        box-sizing: border-box;
-                    }
+        let html = fs.readFileSync(htmlPath, 'utf-8');
 
-                    /* Style for the selected state */
-                    input[type="checkbox"]:checked + .checkbox-label {
-                        background-color: rgba(0, 0, 0, 0.1);
-                        background-blend-mode: multiply;
-                        border-color: var(--vscode-button-background);
-                    }
+        const cssUri = webview.asWebviewUri(vscode.Uri.file(path.join(webviewFolder, 'webview.css')));
+        const jsUri = webview.asWebviewUri(vscode.Uri.file(path.join(webviewFolder, 'webview.js')));
 
-                    /* Hover effect */
-                    .checkbox-label:hover {
-                        border-color: var(--vscode-editorHoverHighlight-background);
-                    }
+        html = html.replace('{{cssUri}}', cssUri.toString());
+        html = html.replace('{{jsUri}}', jsUri.toString());
 
-                    /* Button styling */
-                    .button-container {
-                        width: 100%;
-                        display: flex;
-                        justify-content: center;
-                    }
-
-                    button {
-                        width: 100%;
-                        padding: 10px 0;
-                        font-size: 13px;
-                        background-color: var(--vscode-button-background);
-                        color: var(--vscode-button-foreground);
-                        border: none;
-                        border-radius: 3px;
-                        cursor: pointer;
-                        transition: background-color 0.3s;
-                    }
-
-                    button:hover {
-                        background-color: var(--vscode-button-hoverBackground);
-                    }
-                </style>
-            </head>
-
-            <body>
-                <div class="container">
-                    <div class="checkbox-container">
-                        <input type="checkbox" id="renameVariables" />
-                        <label for="renameVariables" class="checkbox-label">
-                            Rename Variables
-                        </label>
-
-                        <input type="checkbox" id="inlineTemps" />
-                        <label for="inlineTemps" class="checkbox-label">
-                            Inline Temporary Variables
-                        </label>
-
-                        <input type="checkbox" id="extractVariables" />
-                        <label for="extractVariables" class="checkbox-label">
-                            Extract Variables
-                        </label>
-
-                        <input type="checkbox" id="extractMethods" />
-                        <label for="extractMethods" class="checkbox-label">
-                            Extract Methods
-                        </label>
-
-                        <input type="checkbox" id="renameMethods" />
-                        <label for="renameMethods" class="checkbox-label">
-                            Rename Methods
-                        </label>
-
-                        <input type="checkbox" id="inlineMethods" />
-                        <label for="inlineMethods" class="checkbox-label">
-                            Inline Methods
-                        </label>
-
-                        <input type="checkbox" id="replaceTempWithQuery" />
-                        <label for="replaceTempWithQuery" class="checkbox-label">
-                            Replace Temp with Query
-                        </label>
-
-                        <input type="checkbox" id="removeAssignmentsToParameters" />
-                        <label for="removeAssignmentsToParameters" class="checkbox-label">
-                            Remove Assignments to Parameters
-                        </label>
-
-                        <input type="checkbox" id="removeParameters" />
-                        <label for="removeParameters" class="checkbox-label">
-                            Remove Parameters
-                        </label>
-
-                        <input type="checkbox" id="replaceMagicNumbers" />
-                        <label for="replaceMagicNumbers" class="checkbox-label">
-                            Replace Magic Numbers
-                        </label>
-
-                        <input type="checkbox" id="consolidateDuplicateConditionals" />
-                        <label for="consolidateDuplicateConditionals" class="checkbox-label">
-                            Consolidate Duplicate Conditionals
-                        </label>
-
-                        <input type="checkbox" id="removeNestedConditionals" />
-                        <label for="removeNestedConditionals" class="checkbox-label">
-                            Remove Nested Conditionals
-                        </label>
-                    </div>
-
-                    <div class="button-container">
-                        <button id="refactorButton">Refactor</button>
-                    </div>
-                </div>
-
-                <script>
-                    const vscode = acquireVsCodeApi();
-
-                    document.getElementById('refactorButton').addEventListener('click', () => {
-                        // Get all checked filters
-                        const filters = Array.from(document.querySelectorAll('input[type="checkbox"]:checked'))
-                            .map(checkbox => checkbox.id);
-
-                        // Send the selected filters to the VS Code extension
-                        vscode.postMessage({ command: 'refactor', filters });
-                    });
-                </script>
-            </body>
-            </html>`;
+        return html;
     }
 }

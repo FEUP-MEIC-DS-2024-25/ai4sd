@@ -24,6 +24,10 @@ export async function analyzeLocal(llm: string): Promise<void> {
     panel.webview.html = html.replace("Analyzing Repository...", "Analyzing Local Repository...");
 
     const apiUrl = buildApiUrl(API_LOCAL_ENDPOINT);
+
+    // sleep 1s para dar tempo para criar o zip
+    await new Promise(r => setTimeout(r, 1000));
+
     const params = {
         "file": new Blob([fs.readFileSync(path.join('/tmp', 'sara_local_files.zip'))]),
         "llm": llm,
@@ -39,6 +43,15 @@ export async function analyzeLocal(llm: string): Promise<void> {
     }
     finally {
         panel.dispose();
+        delete_local_files();
+    }
+}
+
+function delete_local_files() {
+    const folderPath = path.join('/tmp', 'sara_local_files.zip');
+
+    if (fs.existsSync(folderPath)) {
+        fs.unlinkSync(folderPath);
     }
 }
 

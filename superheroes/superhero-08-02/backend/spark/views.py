@@ -6,11 +6,13 @@ from django.contrib.auth import login
 from django.http import JsonResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, redirect
+from api.services.gemini import geminiAPI
 from api.services.github_rest import githubRestAPI
+from api.services.github_graphql import GitHubGraphQLAPI
 from api.services.miro import MiroAPI
 from .forms import MyUserCreationForm, SparkProjectSerializer
 from .models import SparkProject, Profile
-import requests
+import requests, json
 from django.contrib.auth import authenticate, login
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -161,7 +163,6 @@ class AddMemberToSparkProjectAPIView(APIView):
         project.members.add(profile)
         return Response({'message': 'User added to the project.'}, status=status.HTTP_200_OK)
 
-
 class GitHubLoginAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -172,7 +173,6 @@ class GitHubLoginAPIView(APIView):
         request.session['github_state'] = state
         return Response({'auth_url': auth_url}, status=status.HTTP_200_OK)
     
-
 class GitHubCallbackAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -319,14 +319,46 @@ class BacklogToMiroAPIView(APIView):
     def post(self, request, project_id):
         project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
         miro_token = request.user.profile.miro_token
+        miro_board_id = project.miro_board_id
+        github_token = request.user.profile.github_token
 
         if not miro_token:
+            print("Miro token is required.")
             return Response({'error': 'Miro token is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if not project.miro_board_id:
+        if not miro_board_id:
+            print("Miro board ID is required.")
             return Response({'error': 'Miro board ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        if not github_token:
+            print("GitHub token is required.")
+            return Response({'error': 'GitHub token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
         miro_api = MiroAPI(miro_token)
+        github_graphql = GitHubGraphQLAPI(github_token)
+        github_project_data = github_graphql.get_project_data("PVT_kwDOCtw04M4Ap0aW") # Hardcoded project ID
+        project_data_prompt = json.dumps(github_project_data)
+        
+        prompt = (
+            "Based on the provided project data, " + project_data_prompt + """\n
+            Consider only the tasks currently in the 'Product Backlog' status.
+            Identify the tasks that should be moved to the 'Iteration Backlog' for the upcoming iteration, prioritizing tasks with the highest impact.
+            Leave tasks not selected in their current status and do not modify their position.
+            Provide the response in a Python list with the names of all the tasks in the backlog. 
+            Additionally, provide two more Python lists with the priorities of the tasks and their sizes for all the tasks in the backlog in the same order.
+            Finally, provide one more Python list with the names of the tasks that should be moved to the 'Iteration Backlog'.
+            Don't give an explanation, just the lists.
+            """
+        )   
+
+        gemini_response = geminiAPI.prompt_gemini(prompt)
+        miro_api.backlogToMiro(miro_board_id, gemini_response)
+
+        project.github_project_data = github_project_data
+        project.save()
+
+        return Response({'message': 'Product backlog moved to Miro successfully.'}, status=status.HTTP_200_OK)
+        
 
 class SprintInMiroAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -334,14 +366,18 @@ class SprintInMiroAPIView(APIView):
     def post(self, request, project_id):
         project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
         miro_token = request.user.profile.miro_token
+        miro_board_id = project.miro_board_id
 
         if not miro_token:
             return Response({'error': 'Miro token is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        if not project.miro_board_id:
+        if not miro_board_id:
             return Response({'error': 'Miro board ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
         miro_api = MiroAPI(miro_token)
+        miro_api.sprintInMiro(miro_board_id)
+
+        return Response({'message': 'Sprint in Miro started successfully.'}, status=status.HTTP_200_OK)
 
 class SprintToGitHubAPIView(APIView):
     permission_classes = [IsAuthenticated]
@@ -349,6 +385,7 @@ class SprintToGitHubAPIView(APIView):
     def post(self, request, project_id):
         project = get_object_or_404(SparkProject, id = project_id, owner = request.user.profile)
         github_token = request.user.profile.github_token
+        miro_token = request.user.profile.miro_token
 
         if not github_token:
             return Response({'error': 'GitHub token is required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -356,7 +393,18 @@ class SprintToGitHubAPIView(APIView):
         if not project.github_project_link:
             return Response({'error': 'GitHub project link is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        github_api = githubRestAPI(github_token)
+        if not project.miro_board_id:
+            return Response({'error': 'Miro board ID is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if not miro_token:
+            return Response({'error': 'Miro token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        miroAPI = MiroAPI(request.user.profile.miro_token)
+        github_grapqhl = GitHubGraphQLAPI(github_token)
+        iteration_tasks, priority_tasks, size_tasks = miroAPI.sprintToGitHub(project.miro_board_id)
+        github_grapqhl.update_tasks_to_iteration_backlog(project.github_project_data, iteration_tasks, priority_tasks, size_tasks)
+
+        return Response({'message': 'Sprint in GitHub started successfully.'}, status=status.HTTP_200_OK)
     
 def handler404(request, exception):
     return JsonResponse({'error': 'Page not found.', "status_code": 404}, status=404)

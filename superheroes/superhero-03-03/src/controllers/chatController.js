@@ -1,28 +1,34 @@
-const admin = require("firebase-admin");
-
-require('dotenv').config();
-
-console.log("Project ID: ", process.env.FIREBASE_PROJ_ID);
-console.log("Client Email: ", process.env.FIREBASE_CLIENT_EMAIL);
-console.log("Private Key: ", process.env.FIREBASE_PRIVATE_K);
-
-// Initialize Firebase Admin SDK
-admin.initializeApp({
-    credential: admin.credential.cert({
-      projectId: process.env.FIREBASE_PROJ_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey: process.env.FIREBASE_PRIVATE_K.replace(/\\n/g, '\n'),
-    }),
-});
-
-// Initialize Firestore database
-const db = admin.firestore();
+const chatService = require('../services/chatService');
 
 exports.getChat = async (req, res) => {
+    const chatId = req.params.id;
 
-    res.send('getChat');
+    try {
+        const chat = await chatService.getChatInteraction(chatId);
+        res.status(200).json(chat);
+    } catch (error) {
+        res.status(500).send('Error getting chat interaction');
+    }
+}
+
+exports.getChats = async (req, res) => {
+    try {
+        const chats = await chatService.getChatInteractions();
+        res.status(200).json(chats);
+    } catch (error) {
+        res.status(500).send('Error getting chat interactions');
+    }
 }
 
 exports.sendChat = async (req, res) => {
-    res.send('sendChat');
-}
+    const chatId = req.params.id;
+    const msg = req.body.msg;
+    const reply = req.body.reply;
+
+    try {
+        const response  = await chatService.postChatInteraction(chatId, msg, reply);
+        res.status(200).json(response);
+    } catch (error) {
+        res.status(500).send('Error posting chat interaction');
+    }
+};

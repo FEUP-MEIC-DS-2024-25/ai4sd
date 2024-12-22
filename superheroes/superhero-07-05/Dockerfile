@@ -22,7 +22,7 @@ RUN node -v && npm -v
 
 # Instale o Mutmut globalmente
 RUN pip3 install --no-cache-dir MutPy
-RUN pip3 install --no-cache-dir google-generativeai
+RUN pip3 install --no-cache-dir google-generativeai python-dotenv hvac
 
 # Defina o diretório de trabalho no container
 WORKDIR /app

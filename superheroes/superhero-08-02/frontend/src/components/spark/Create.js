@@ -61,6 +61,7 @@ function Create() {
             type="text"
             id="name"
             name="name"
+            placeholder="Insert Project Name"
             value={formData.name}
             onChange={handleChange}
             className={`form-input ${errors.name ? "is-invalid" : ""}`}
@@ -76,6 +77,7 @@ function Create() {
           <textarea
             id="description"
             name="description"
+            placeholder="Insert Project Description"
             value={formData.description}
             onChange={handleChange}
             className={`form-input ${errors.description ? "is-invalid" : ""}`}
@@ -92,6 +94,7 @@ function Create() {
             type="text"
             id="github_project_link"
             name="github_project_link"
+            placeholder="Insert Github Link"
             value={formData.github_project_link}
             onChange={handleChange}
             className={`form-input ${errors.githubLink ? "is-invalid" : ""}`}
@@ -108,6 +111,7 @@ function Create() {
             type="text"
             id="miro_board_id"
             name="miro_board_id"
+            placeholder="Insert Miro ID"
             value={formData.miro_board_id}
             onChange={handleChange}
             className={`form-input ${errors.miroBoard ? "is-invalid" : ""}`}
