@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
 	"github.com/joho/godotenv"
 
 	"github.com/FEUP-MEIC-DS-2024-25/T05_G04/internal/github"
@@ -24,8 +25,8 @@ type Assistant struct {
 	chat    *genai.ChatSession
 }
 
-// NewAssistant creates a new AI coding assistant
-func NewAssistant() (*Assistant, error) {
+// New creates a new AI coding assistant
+func New() (*Assistant, error) {
 	err := godotenv.Load()
 	if err != nil {
 		return nil, fmt.Errorf("failed to load environment variables: %w", err)
@@ -44,7 +45,7 @@ func NewAssistant() (*Assistant, error) {
 	chat := model.StartChat()
 
 	_, err = chat.SendMessage(ctx, genai.Text(`
-		You will make the role of an AI coding assistant. In this specific case,
+		Your name is Sam. You will make the role of an AI coding assistant. In this specific case,
 		you will be given the file tree of a git repository and then the contents of each file.
 		Then the user will ask you for help implementing certain 'issues' that exist in their github repository,
 		but initially they only want a natural language description on how to implement these changes.
@@ -63,22 +64,15 @@ func NewAssistant() (*Assistant, error) {
 		chat:    chat,
 	}, nil
 }
- 
-// Close closes the AI coding assistant and cleans up resources
-func (a *Assistant) Close() {
-	if err := os.RemoveAll("tmp"); err != nil {
-		fmt.Printf("failed to remove tmp directory: %v\n", err)
-	}
 
-	a.client.Close()
-}
-
-// Ask asks the AI coding assistant for help with a GitHub issue
-func (a *Assistant) Ask(issue github.Issue) (string, error) {
+// Init initializes the AI coding assistant with an issue
+func (a *Assistant) Init(issue *github.Issue) (string, error) {
 	_, err := a.chat.SendMessage(a.context, genai.Text(fmt.Sprintf(`
 		You have been asked for help with the following issue:
 		%s
 		%s
+
+        Please remember to only use natural language to describe the steps to implement this issue.
 	`, issue.Title, issue.Body)))
 	if err != nil {
 		return "", fmt.Errorf("failed to send message: %w", err)
@@ -92,6 +86,24 @@ func (a *Assistant) Ask(issue github.Issue) (string, error) {
 		a.context,
 		genai.Text("What are the steps to implement this issue?"),
 	)
+	if err != nil {
+		return "", fmt.Errorf("failed to send message: %w", err)
+	}
+
+	for _, candidate := range resp.Candidates {
+		if candidate.Content != nil {
+			for _, part := range candidate.Content.Parts {
+				return fmt.Sprintf("```%s```", part), nil
+			}
+		}
+	}
+
+	return "", fmt.Errorf("no response from assistant")
+}
+
+// Ask asks the AI coding assistant a question
+func (a *Assistant) Ask(message string) (string, error) {
+	resp, err := a.chat.SendMessage(a.context, genai.Text(message))
 	if err != nil {
 		return "", fmt.Errorf("failed to send message: %w", err)
 	}
@@ -125,7 +137,8 @@ func readFile(path string) (string, error) {
 
 // feedContext feeds the AI coding assistant with the contents of a git repository
 func (a *Assistant) feedContext(owner, repo string) error {
-	path := fmt.Sprintf("tmp/%s/%s", owner, repo)
+	path := fmt.Sprintf("%s/%s/%s", os.TempDir(), owner, repo)
+	supportedLangs := []string{".rs", ".go", ".py", ".js", ".ts", ".c", ".cpp", ".java", ".scala", ".cs", ".dart", ".html", ".rb", ".swift"}
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
 		if err := github.CloneRepository(owner, repo, path); err != nil {
@@ -139,9 +152,10 @@ func (a *Assistant) feedContext(owner, repo string) error {
 			return nil
 		}
 
-		// Only consider Rust files for now
-		if strings.HasSuffix(file, ".rs") {
-			files = append(files, file)
+		for _, lang := range supportedLangs {
+			if strings.HasSuffix(file, lang) {
+				files = append(files, file)
+			}
 		}
 
 		return nil
@@ -158,6 +172,8 @@ func (a *Assistant) feedContext(owner, repo string) error {
 
 		content = append(content, fmt.Sprintf("```%s\n%s\n```", file, fileContent))
 	}
+
+	content = append(content, `Please remember to only use natural language to describe the steps to implement this issue.`)
 
 	_, err := a.chat.SendMessage(a.context, genai.Text(strings.Join(content, "\n")))
 
