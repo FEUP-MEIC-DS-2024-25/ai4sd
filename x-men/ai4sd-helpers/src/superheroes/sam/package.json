@@ -1,0 +1,97 @@
+{
+  "name": "sam",
+  "displayName": "SAM",
+  "description": "AI assistant",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.94.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "samViewContainer",
+          "title": "SAM",
+          "icon": "media/samIcon.svg"
+        }
+      ]
+    },
+    "views": {
+      "samViewContainer": [
+        {
+          "id": "samView",
+          "name": "SAM",
+          "type": "webview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sam.sayHello",
+        "title": "Boot SAM"
+      },
+      {
+        "command": "sam.ademarPrompt",
+        "title": "Interact with professor Ademar"
+      }
+    ],
+    "webview": {
+      "localResourceRoots": [],
+      "security": {
+        "contentSecurityPolicy": "default-src 'none'; connect-src https://api.github.com; script-src 'self'; style-src 'self';"
+      }
+    }
+  },
+  "scripts": {
+    "install:all": "npm install && cd webview-ui && npm install",
+    "start:webview": "cd webview-ui && npm run start",
+    "build:webview": "cd webview-ui && npm run build",
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run build:webview && npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.8",
+    "@types/node": "20.x",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@types/vscode": "^1.94.0",
+    "@typescript-eslint/eslint-plugin": "^8.7.0",
+    "@typescript-eslint/parser": "^8.7.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.24.0",
+    "eslint": "^9.11.1",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.1"
+  },
+  "dependencies": {
+    "@types/parse-git-config": "^3.0.4",
+    "@types/vscode-webview": "^1.57.5",
+    "markdown-to-jsx": "^7.7.2",
+    "parse-git-config": "^3.0.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^9.0.1",
+    "react-router-dom": "^7.0.1",
+    "rehype-highlight": "^7.0.1",
+    "remark-html": "^16.0.1",
+    "remark-parse": "^11.0.0"
+  }
+}

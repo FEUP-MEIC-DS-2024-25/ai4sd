@@ -1,5 +1,5 @@
-import sqlite3 from 'sqlite3';
-import { open, Database } from 'sqlite';
+import sqlite3 from "sqlite3";
+import { open, Database } from "sqlite";
 import * as path from "path";
 import * as fs from "fs";
 import * as vscode from "vscode";
@@ -23,7 +23,11 @@ export class myDatabaseManager {
   private historyPanel: vscode.WebviewPanel | undefined;
 
   constructor(context: vscode.ExtensionContext) {
-    this.dbPath = path.join(context.globalStorageUri.fsPath, "history", "history.db");
+    this.dbPath = path.join(
+      context.globalStorageUri.fsPath,
+      "history",
+      "history.db"
+    );
   }
 
   // Initialize the database and create the table
@@ -36,12 +40,14 @@ export class myDatabaseManager {
 
       this.db = await open({
         filename: this.dbPath,
-        driver: sqlite3.Database
+        driver: sqlite3.Database,
       });
 
       await this.createTable();
     } catch (err) {
-      vscode.window.showErrorMessage("Error during database initialization:" + err);
+      vscode.window.showErrorMessage(
+        "Error during database initialization:" + err
+      );
       throw err;
     }
   }
@@ -64,7 +70,14 @@ export class myDatabaseManager {
   }
 
   // Insert a record into the history table
-  public async insertRecord(original_code: string, filters: string, selected: boolean, error: boolean, refactored_code: string, accepted: boolean): Promise<void> {
+  public async insertRecord(
+    original_code: string,
+    filters: string,
+    selected: boolean,
+    error: boolean,
+    refactored_code: string,
+    accepted: boolean
+  ): Promise<void> {
     try {
       const query = `
         INSERT INTO history (original_code, filters, selected, error, refactored_code, accepted)
@@ -108,16 +121,18 @@ export class myDatabaseManager {
   public async getRecordsHTML(): Promise<string> {
     const records = await this.getAllRecords();
 
-    const htmlPath = vscode.Uri.file(path.join(__dirname, '../../src/components/WebViews/history.html'));
-    let htmlContent = fs.readFileSync(htmlPath.fsPath, 'utf8');
+    const htmlPath = vscode.Uri.file(
+      path.join(__dirname, "../../src/components/WebViews/history.html")
+    );
+    let htmlContent = fs.readFileSync(htmlPath.fsPath, "utf8");
 
     if (records.length === 0) {
       const row = "<tr><td colspan='8'>No records found</td></tr>";
-      htmlContent = htmlContent.replace('{{history}}', row);
+      htmlContent = htmlContent.replace("{{history}}", row);
       return htmlContent;
     }
 
-    let history = '';
+    let history = "";
     for (const record of records) {
       const row = `
         <tr>
@@ -150,7 +165,7 @@ export class myDatabaseManager {
       history += row;
     }
 
-    htmlContent = htmlContent.replace('{{history}}', history);
+    htmlContent = htmlContent.replace("{{history}}", history);
 
     return htmlContent;
   }
@@ -163,19 +178,21 @@ export class myDatabaseManager {
       }
     } else {
       this.historyPanel = vscode.window.createWebviewPanel(
-        'history',
-        'History',
+        "history",
+        "History",
         vscode.ViewColumn.One,
         {
           enableScripts: true,
           retainContextWhenHidden: true,
           localResourceRoots: [
-            vscode.Uri.file(path.join(__dirname, '../../resources'))
-          ]
+            vscode.Uri.file(path.join(__dirname, "../../resources")),
+          ],
         }
       );
 
-      this.historyPanel.iconPath = vscode.Uri.file(path.join(__dirname, '../../resources/whattheduck.jpg'));
+      this.historyPanel.iconPath = vscode.Uri.file(
+        path.join(__dirname, "../../resources/whattheduck.jpg")
+      );
       this.historyPanel.webview.html = await this.getRecordsHTML();
 
       this.historyPanel.onDidDispose(() => {
@@ -202,7 +219,7 @@ export async function setup(context: vscode.ExtensionContext): Promise<void> {
 // database getter
 export function getDatabaseManager(): myDatabaseManager {
   if (!dbManager) {
-    throw new Error('Database manager not initialized');
+    throw new Error("Database manager not initialized");
   }
 
   return dbManager;
