@@ -28,17 +28,17 @@ def get_content(project_id):
         return jsonify({"error": "Internal Server Error"}), 500
 
 # Api delete a projects
-@api.route('/project/<int:project_id>/delete/', methods=['DELETE'])
+@api.route('/project/<int:project_id>/delete', methods=['DELETE'])
 def delete_proj(project_id):
     try:
-        delete_project(project_id)
+        delete_project(str(project_id))
         return jsonify({"response": "Project deleted successfully"}), 200
     except Exception as e:
         print(f"Error fetching projects: {e}")
         error_message = str(e)
         return jsonify({"error": error_message}), 500
     
-# Api to give feedback to a user storie
+# Api to give feedback to a user story
 @api.route('/project/userstory/feedback', methods=['POST'])
 def user_story_feedback():
     try:

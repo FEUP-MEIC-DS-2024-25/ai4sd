@@ -31,7 +31,9 @@ def get_project_content(project_id):
             "user_stories": user_stories,
         }
         project_content.append(req_dict)
-
+    
+    project_content = sorted(project_content, key=lambda x: x["version"])
+    
     return project_content
 
 # Fetches user stories associated with a specific requirement ID.
@@ -67,6 +69,8 @@ def get_user_stories_by_requirement_id(project_id, req_id):
       for us_doc in user_stories_docs:
         user_story_data = us_doc.to_dict()
         user_stories_list.append(user_story_data)
+    
+      user_stories_list = sorted(user_stories_list, key=lambda x: x["index"])
 
       us_dict = {
         "version": version_dict.get("version"),
@@ -74,6 +78,8 @@ def get_user_stories_by_requirement_id(project_id, req_id):
       }
 
       all_content.append(us_dict)
+    
+    all_content = sorted(all_content, key=lambda x: x["version"])
 
     return all_content
 
@@ -160,7 +166,6 @@ def get_requirement_id(project_id, version):
 def save_user_stories(project_id, req_id, user_stories):
     req_ref = db.collection("ReqToStory").document(project_id).collection("Requirements").document(req_id)
 
-
     req_doc = req_ref.get()
 
     if req_doc.exists:
@@ -230,9 +235,28 @@ def update_user_story_feedback(project_id, req_version, version, index, feedback
 # Delete project by id
 def delete_project(id):
     project_ref = db.collection("ReqToStory").document(id)
-    if not project_ref.exists: 
-        abort(404, description="Project not found") 
+    doc = project_ref.get()
+    if not doc.exists:
+        abort(404, description="Project not found")
+    
+    # Delete subcollections recursively
+    def delete_subcollections(collection_ref):
+        docs = collection_ref.stream()
+        for doc in docs:
+            if doc.exists:
+                subcollections = doc.reference.collections()
+                for subcol in subcollections:
+                    delete_subcollections(subcol)
+                doc.reference.delete()
+
+    # Delete subcollections of the project
+    subcollections = project_ref.collections()
+
+    for subcol in subcollections:
+        delete_subcollections(subcol)
+
     project_ref.delete()
+
 
 # Delete requirement by project_id and its vertion
 def delete_requirement(project_id, req_id):

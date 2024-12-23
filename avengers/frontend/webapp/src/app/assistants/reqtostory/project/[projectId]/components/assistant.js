@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-
+import React, { useState, useEffect, useRef} from "react";
+import { useParams, useSearchParams, useRouter} from "next/navigation";
 import LanguageSelector from "./../../../components/languageSelector";
 import UserStoryTable from "./userStoryTable";
 import styles from "@/app/page.module.css";
 import Header from "./../../../components/header";
 
 import "bootstrap/dist/css/bootstrap.css";
+import { Plus, Trash2 } from "lucide-react";
 
 const Assistant = () => {
     const [error, setError] = useState("");
@@ -26,15 +26,29 @@ const Assistant = () => {
     const name = searchParams.get("name"); // project name
     const version = null;
 
+    // Edit Requirements
     const [isEditing, setIsEditing] = useState(false);
     const [editReq, setEditReq] = useState(requirements.content);
 
+    // Edit user story
     const [editingStory, setEditingStory] = useState(null);
     const [tempContent, setTempContent] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("en");
-
+    
     const [isLoading, setIsLoading] = useState(false);
 
+    //Delete Modal
+    const [showModal, setShowModal] = useState(false);
+    const handleCloseModal = () => setShowModal(false);
+    const handleShowModal = () => setShowModal(true);
+
+    const router = useRouter();
+
+    const handleRedirect = () => {
+        router.push('/assistants/reqtostory'); 
+    };
+
+    //Get project content
     useEffect(() => {
         if (!version) {
             fetchProjectContent(projectId);
@@ -45,6 +59,8 @@ const Assistant = () => {
         setUserStoriesVersion(0);
     }, [projectId, version]);
 
+
+    //Set requiremnt version
     useEffect(() => {
         if (versions.length === 0) return;
         setRequirements({
@@ -56,6 +72,7 @@ const Assistant = () => {
         setEditReq(versions[reqVersion].content);
     }, [reqVersion, versions]);
 
+    //Set user stories version
     useEffect(() => {
         if (
             versions.length === 0 ||
@@ -68,11 +85,12 @@ const Assistant = () => {
         setUserStories(userStories);
     }, [reqVersion, versions, userStoriesVersion]);
 
-
-    //http://localhost:8080/project/${projectId}/content
+    ////`https://superhero-04-02-150699885662.europe-west1.run.app/project/${projectId}/content`
+    //Fetch project content
     const fetchProjectContent = async (projectId) => {
         try {
             const response = await fetch(
+                
                 `https://superhero-04-02-150699885662.europe-west1.run.app/project/${projectId}/content`
             );
             if (!response.ok) {
@@ -88,6 +106,34 @@ const Assistant = () => {
         }
     };
 
+    const handleDelete = () => {
+        deleteProject(projectId);
+        handleCloseModal();
+      };
+    
+    //Delete project
+    const deleteProject = async (projectId) => {
+        try {
+            const response = await fetch(
+                `https://superhero-04-02-150699885662.europe-west1.run.app/project/${projectId}/delete`,
+                { method: "DELETE"}
+            );
+            if (!response.ok) {
+                throw new Error(
+                    `Failed to fetch project: ${response.statusText}`
+                );
+            }
+            const data = await response.json();
+            const deleteResponse = data.response
+            console.log(deleteResponse)
+            handleRedirect()
+
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    //Handle feedback
     const handleFeedback = (feedbackType, storyIndex) => {
         const story = userStories[storyIndex];
         
@@ -117,6 +163,7 @@ const Assistant = () => {
         });
     };
 
+    //Submit with queries
     const submitWithQueries = (queries) => {
         try {
             let content = requirements.content;
@@ -130,6 +177,7 @@ const Assistant = () => {
         }
     };
 
+    //Go back and forward in versions
     const goBack = () => {
         if (reqVersion > 0) {
             setReqVersion(reqVersion - 1);
@@ -144,6 +192,7 @@ const Assistant = () => {
         }
     };
 
+    //Go back and forward in user stories versions
     const goBackUS = () => {
         if (userStoriesVersion > 0) {
             setUserStoriesVersion(userStoriesVersion - 1);
@@ -156,16 +205,19 @@ const Assistant = () => {
         }
     };
 
-
-    //http://localhost:8080/regenerate
-    
+    //Submit requirements to regenerate user stories
     const handleSubmit = async (projId, reqVersion, newContent, submittedContent = null) => {
         try {
             setIsLoading(true);
-            let content = editReq || submittedContent
+            let content = editReq
 
             if (!newContent) {
-                content = submittedContent || requirements.content;
+                if(submittedContent == null){
+                    content = requirements.content;
+                }
+                else{
+                    content = submittedContent;
+                }
             }
 
             if (!content.trim()) {
@@ -215,6 +267,7 @@ const Assistant = () => {
         }
     };
 
+    //Update requirements and user stories versions from the response
     const updateVersion = (req, user_stories, newContent) => {
         const updatedVersions = [...versions];
     
@@ -250,6 +303,7 @@ const Assistant = () => {
         setVersions(updatedVersions);
     };
 
+    //Download user stories
     const downloadUserStories = () => {
         const blob = new Blob([JSON.stringify(userStories, null, 2)], {
             type: "application/json",
@@ -260,18 +314,22 @@ const Assistant = () => {
         link.click();
     };
 
+    //Edit requirements
     const handleEditClickReq = () => {
         setIsEditing(true);
     };
 
+    //Save edited requirements
     const handleSaveClick = () => {
         handleSubmit(projectId, requirements.version, true);
         setIsEditing(false);
     };
 
+    //Cancel editing requirements
     const handleCancelClick = () => {
-        setIsEditing(false);
         setEditReq(requirements.content);
+        setIsEditing(false);
+        
     };
 
     return (
@@ -282,10 +340,16 @@ const Assistant = () => {
             >
                 <Header />
                 <section className="bg-[#171717] text-[#e1e1e1] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 mx-auto my-8 flex flex-col items-center gap-6  w-[90%]">
-                    <div className="flex flex-rows items-start justify-start w-[90%] ">
-                        <a className="btn flex items-center justify-center hover:bg-[#e1e1e1] submitButton bg-[#2f2f2f] text-[#e1e1e1] w-12 h-12 dull border-[#2f2f2f] hover:border-[#e1e1e1] rounded-full" href="/assistants/reqtostory">
-                            <i className="bi bi-plus text-3xl hover:text-[#2f2f2f]"></i>
+                    <div className="flex flex-rows items-start justify-between w-[90%] ">
+                        <a
+                            className="btn btn-primary hover:bg-[#e1e1e1] hover:text-[#2f2f2f] hover:border-[#e1e1e1] bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] p-2 m-2"
+                            href="/assistants/reqtostory"
+                        >
+                            <Plus size={18} />
                         </a>
+                        <button type="button" className="btn btn-primary hover:bg-[#e1e1e1] hover:text-[#2f2f2f] hover:border-[#e1e1e1] bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] p-2 m-2" onClick={handleShowModal}>
+                            <Trash2 size={18} />
+                        </button>
                     </div>
                     <LanguageSelector
                         selectedLanguage={selectedLanguage}
@@ -296,7 +360,7 @@ const Assistant = () => {
                         <input
                             className="bg-[#e1e1e1] text-[#2f2f2f] border-4 border-[#e1e1e1] rounded-[20px] mx-auto p-2 w-[80%]"
                             type="text"
-                            placeholder={name}
+                            value={name}
                             disabled
                         />
                     </div>
@@ -328,7 +392,7 @@ const Assistant = () => {
                             <p>Project's Requirements</p>
                             <textarea
                                 className="bg-[#e1e1e1] text-[#2f2f2f] border-4 border-[#e1e1e1] rounded-[20px] mx-auto p-2 w-[80%]"
-                                placeholder={requirements.content}
+                                value={requirements.content}
                                 disabled
                             />
 
@@ -365,6 +429,14 @@ const Assistant = () => {
                     id="sectionUserStories"
                     className="bg-[#171717] text-[#e1e1e1] shadow-[0_0_20px_rgba(0,0,0,0.7)] text-center p-8 mx-auto my-8 flex flex-col items-center gap-6  w-[90%]"
                 >
+                    {error && (
+                    <div
+                        id="fileError"
+                        className="text-[#ff4444] my-2 text-sm text-left"
+                    >
+                        {error}
+                    </div>
+                    )}
                     <h2 className="text-[#171717]">Generated User Stories</h2>
                     <div id="buttonContainer" className="text-[#171717]">
                         <button
@@ -415,6 +487,7 @@ const Assistant = () => {
                             projectId = {projectId}
                             reqVersion =  {reqVersion}
                             userStoriesVersion = {userStoriesVersion}
+                            setError={setError}
                         />
                     </div>
                     <div className="versionSelect">
@@ -436,6 +509,38 @@ const Assistant = () => {
                             {" "}
                             ⮞
                         </button>
+                    </div>
+                </div>
+                <div className={`modal fade ${showModal ? 'show d-block' : ''}`} tabIndex="-1" onClick={handleCloseModal}>
+                    <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+                      <div className="modal-content border border-white">
+                        <div className="modal-header">
+                        <h5 className="modal-title text-white">Confirm Delete</h5>
+                          <button
+                            type="button"
+                            className="btn-close"
+                            onClick={handleCloseModal}
+                            aria-label="Close"
+                          ></button>
+                        </div>
+                        <p  className="text-white p-2">Are you sure you want to delete this project? This action cannot be undone.</p>
+                        <div className="modal-footer">
+                          <button
+                            type="button"
+                            className="btn hover:bg-[#e1e1e1] submitButton bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] px-4 py-2 hover:border-[#e1e1e1]"
+                            onClick={handleCloseModal}
+                          >
+                            Close
+                          </button>
+                          <button 
+                            type="button" 
+                            className="btn hover:bg-[#e10000] submitButton bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] px-4 py-2 hover:border-[#e1e1e1] hover:text-white"
+                            onClick={handleDelete}
+                            >
+                            Delete Project
+                          </button>
+                        </div>
+                      </div>
                     </div>
                 </div>
             </div>

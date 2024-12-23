@@ -11,9 +11,9 @@ export default function UserStoryTable({
     queryAdders,
     projectId,
     reqVersion,
-    userStoriesVersion
+    userStoriesVersion,
+    setError,
 }) {
-    const [error, setError] = useState("");
 
     const handleEditClick = (storyIndex) => {
         setEditingStory(storyIndex);
@@ -98,8 +98,7 @@ export default function UserStoryTable({
         }
     };
 
-    //http://localhost:8080/project/userstory/update'
-    ///////////////////////////////////////////////////////////////////////////////////////////
+    //Update user story content
     const updateUserStoryContent = async (projectId, reqVersion, userStoriesVersion, index, newContent) => {
         try {
             const response = await fetch('https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/update', {
@@ -124,8 +123,8 @@ export default function UserStoryTable({
             console.error(error);
         } 
     };
-    //http://localhost:8080/project/userstory/delete
 
+    //Delete user story
     const deleteUserStory = async (projectId, reqVersion, userStoriesVersion, index) => {
         try {
             const response = await fetch('https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/delete', {
@@ -149,8 +148,8 @@ export default function UserStoryTable({
             console.error(error);
         } 
     };
-    //`http://localhost:8080/project/userstory/feedback`
-
+    
+    //Update User Story Feedback
     const updateUserStoryFeedback = async (projectId, reqVersion, userStoriesVersion, index, feedback) => {
         try {
             const response = await fetch(`https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/feedback`, {
@@ -175,7 +174,6 @@ export default function UserStoryTable({
             console.error(error);
         } 
     };
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
     return (
         <table className="bg-[#e1e1e1] text-[#2f2f2f] p-4 m-auto w-[90%]">
@@ -199,7 +197,7 @@ export default function UserStoryTable({
                 {userStories.map((story, idx) => (
                     <tr key={idx}>
                         <td className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
-                            {story.index}
+                            {idx}
                         </td>
                         <td className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
                             {editingStory === idx ? (
@@ -244,7 +242,7 @@ export default function UserStoryTable({
                             <button
                                 className="mx-2 like text-gray-600 hover:text-gray-800"
                                 data-index={idx}
-                                data-filled="false"
+                                data-filled={story.feedback  && story.feedback > 0 ? "true" : "false"}
                                 onClick={() => handleLike(idx, story.index)}
                             >
                                 <ThumbsUp size={18} />
@@ -253,7 +251,7 @@ export default function UserStoryTable({
                             <button
                                 className="mx-2 dislike text-gray-600 hover:text-gray-800"
                                 data-index={idx}
-                                data-filled="false"
+                                data-filled={story.feedback && story.feedback < 0 ? "true" : "false"}
                                 onClick={() => handleDislike(idx, story.index)}
                             >
                                 <ThumbsDown size={18} />
