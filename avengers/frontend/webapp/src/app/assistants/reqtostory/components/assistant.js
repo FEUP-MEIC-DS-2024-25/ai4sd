@@ -38,7 +38,7 @@ const Assistant = () => {
         }
     };
 
-    //http://localhost:8080/generate
+    //"https://superhero-04-02-150699885662.europe-west1.run.app/generate"
     const handleSubmit = async () => {
         try {
             setIsLoading(true);
@@ -56,7 +56,8 @@ const Assistant = () => {
                 throw new Error("Content cannot be null or an empty string.");
             }
 
-            const response = await fetch("https://superhero-04-02-150699885662.europe-west1.run.app/generate", {
+            const response = await fetch(
+                'https://superhero-04-02-150699885662.europe-west1.run.app/generate', {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -70,22 +71,18 @@ const Assistant = () => {
             }
             const data = await response.json();
             const projectId = parseInt(data.response.project_id);
-            const userStories = data.response.user_stories
+            const userStoriesSring = data.response.user_stories
                 .replace("```json", "")
                 .replace("```", "");
-            const version = createVersion(projectId, content, userStories);
+            const userStories = JSON.parse(userStoriesSring)
+            //const version = createVersion(projectId, content, userStories);
 
-            //setUpdate(true);
 
             router.push(
                 `reqtostory/project/${projectId}?name=${encodeURIComponent(
                     name
                 )}`
             );
-
-            // navigate(`/project/${projectId}`, {
-            //   state: { name:name},
-            // });
         } catch (error) {
             setError(`Failed to generate user stories:  ${error}.`);
             console.error(error);
@@ -131,9 +128,9 @@ const Assistant = () => {
                         placeholder="Project name"
                         maxLength={255}
                     />
-                    <p>Project's Requirements</p>
                 </div>
                 <div className="w-[100%]">
+                    <p>Project's Requirements</p>
                     <textarea
                         className="bg-[#2f2f2f] text-[#e1e1e1] border-4 border-[#2f2f2f] rounded-[20px] mx-auto p-2 w-[80%] rows-10"
                         id="userInput"
