@@ -3,7 +3,7 @@
 import styles from "@/app/page.module.css";
 
 //Custom Components
-import LandingPage from "./LandingPage"
+import MainChat from "./MainChat"
 import Header from "./Header"
 
 //Contexts 
@@ -21,7 +21,7 @@ export default function Assistant() {
         <div className={styles.assistantInteraction}>
             <ThemeProvider className="flex flex-col items-center">
                 <Header user={user}/>
-                <LandingPage />
+                <MainChat />
             </ThemeProvider>
         </div>
     )

@@ -1,0 +1,9 @@
+services:
+  backend:
+    image: backend:latest
+    container_name: backend
+    restart: unless-stopped
+    volumes:
+      - .:/backend
+    ports:
+      - 8080:8080

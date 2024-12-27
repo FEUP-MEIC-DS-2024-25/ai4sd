@@ -9,12 +9,16 @@ import time
 
 load_dotenv()
 
-GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+#with open('/etc/gemini_token', 'r') as file:
+ # GEMINI_API_KEY = file.read().strip()
+
+GEMINI_API_KEY = "AIzaSyAo7X1_n5zB69B_iAJgZeU1-o3vjs1DZQ4"
+
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(model_name="gemini-1.5-flash")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": ["http://104.155.4.93"]}})
 
 progress = {"status": 0, "result": ""}
 

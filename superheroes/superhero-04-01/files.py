@@ -17,9 +17,8 @@ def process_files(files):
             except Exception as e:
                 print(f"Error reading PDF file {file.filename}: {e}")
         else:
-            text = file.read().decode('utf-8')
+            text = file.file.read().decode('utf-8')
             result.append(text)
-            print(f"Contents of {file.filename}:\n{text}")    
     return result
 
 def create_response_txt(text):

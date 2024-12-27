@@ -1,8 +1,11 @@
 Django
+python-dotenv
 djangorestframework
 django-cors-headers
-python-dotenv
+mysqlclient==2.2.5
+google-generativeai
 Image
 tenacity
-google-generativeai
-google-cloud-firestore
+firebase-admin
+google-auth
+google-cloud-secret-manager

@@ -40,3 +40,5 @@ terraform.rc
 *.lock.hcl
 
 *.env
+
+*node_modules/

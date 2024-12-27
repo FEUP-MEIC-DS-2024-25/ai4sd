@@ -1,13 +1,12 @@
 import React from "react";
 
-const IntroductionComponent = ({ pattern, explanation }) => {
+const IntroductionComponent = ({ results }) => {
   return (
-    <div className=" p-6 flex items-center">
+    <div className=" p-6 flex items-center text-left">
         <div>
-          <h2 className="text-xl font-bold mb-2">Repository Evaluation</h2>
-          <p className="text-left pt-4">
-            The repository has been evaluated regarding the implementation of pattern {pattern} .<p>
-            Here are the results: {explanation}</p>
+          <h2 className="text-xl font-bold mb-2">Explanation</h2>
+          <p className="text-justify pt-4">
+            {results.explanation}
           </p>
         </div>
       </div>

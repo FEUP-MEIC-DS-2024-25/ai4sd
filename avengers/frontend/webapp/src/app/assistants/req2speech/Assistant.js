@@ -3,13 +3,13 @@
 import styles from "@/app/page.module.css";
 
 //Custom Components
-import LandingPage from "./components/LandingPage"
+import MainChat from "./components/MainChat"
 import Header from "./components/Header"
 
 //Contexts 
 import { ThemeProvider } from "./components/contexts/ThemeContext"
 
-export default function Assistant() {
+export default function Assistant({ chatID }) {
 
     //Static Mock data 
     const user = {
@@ -21,7 +21,7 @@ export default function Assistant() {
         <div className={`${styles.assistantInteraction} dark:bg-neutral-950 bg-gray-200`}>
             <ThemeProvider className="flex flex-col items-center">
                 <Header user={user}/>
-                <LandingPage />
+                <MainChat chatID={chatID} />
             </ThemeProvider>
         </div>
     )

@@ -63,7 +63,7 @@ export default function Interactor() {
     
 
     // Stubb info for demo purposes
-    const retrievedData = useRef([{retrievedData: {name: "Stub", id: 1, timestamp: "teste", pattern: "MVC", percentage: "95", explanation: "Very nice, good programming here", improvements: [{Improve1: "This"}, {Improve2: "Then"}, {Improve3: "That"}], strenghts: [{Stregth1: "This"}, {Stregth2: "Then"}, {Stregth3: "That"}]}}])
+    const retrievedData = useRef([{retrievedData: {name: "Stub", id: 10000, timestamp: "teste", pattern: "MVC", percentage: "95", explanation: "Very nice, good programming here", improvements: [{Improve1: "This"}, {Improve2: "Then"}, {Improve3: "That"}], strenghts: [{Stregth1: "This"}, {Stregth2: "Then"}, {Stregth3: "That"}]}}])
 
     return (
         <div className={styles.interactorLayout}>

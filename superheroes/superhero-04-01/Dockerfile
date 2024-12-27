@@ -12,7 +12,7 @@ COPY . .
 # install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-EXPOSE 5001
+EXPOSE 8080
 
 # Run main.py when the container launches
 CMD ["python", "backend.py"]

@@ -85,7 +85,6 @@ ${strengthsMarkdown}
 
   return (
     <div className="relative">
-      {/* Download Button */}
       <div className="flex justify-end">
         <button
           onClick={handleDownloadClick}
@@ -102,7 +101,6 @@ ${strengthsMarkdown}
         onClick={handleCloseModal}>
           <div className="bg-white rounded-lg p-6 max-w-sm w-full shadow-lg relative"
           onClick={(event) => event.stopPropagation()}>
-            {/* Close Button */}
             <button
               onClick={handleCloseModal}
               className="absolute top-2 right-2 text-gray-400 hover:text-black"
@@ -110,7 +108,6 @@ ${strengthsMarkdown}
               ✕
             </button>
 
-            {/* Modal Content */}
             <h2 className="text-lg font-semibold text-center mb-4">
               Download your report
             </h2>

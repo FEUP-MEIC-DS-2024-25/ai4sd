@@ -8,7 +8,7 @@ WORKDIR /app
 COPY . .
 
 # Install required Python packages
-RUN pip install fastapi uvicorn
+RUN pip install fastapi uvicorn firebase_admin google.generativeai google.cloud google-cloud-secret-manager
 
 # Expose the port the app runs on
 EXPOSE 8080

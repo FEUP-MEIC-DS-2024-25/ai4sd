@@ -1,0 +1,48 @@
+{
+  "name": "node-plantuml",
+  "version": "0.9.0",
+  "plantumlVersion": "1.2019.6",
+  "description": "A Node.js module and CLI for running PlantUML",
+  "main": "index.js",
+  "author": "Markus Hedvall <mackanhedvall@gmail.com>",
+  "repository": "https://github.com/markushedvall/node-plantuml",
+  "license": "MIT",
+  "engines": {
+    "node": ">= 6.x"
+  },
+  "keywords": [
+    "plantuml",
+    "uml",
+    "diagram"
+  ],
+  "dependencies": {
+    "commander": "^2.8.1",
+    "node-nailgun-client": "^0.1.0",
+    "node-nailgun-server": "^0.1.4",
+    "plantuml-encoder": "^1.2.5"
+  },
+  "devDependencies": {
+    "chai": "^4.x",
+    "mocha": "^5.x",
+    "standard": "^12.x",
+    "shelljs": "^0.8.x"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "vendor/plantuml.jar",
+    "resources/",
+    "nail/plantumlnail.jar",
+    "scripts/download.js",
+    "scripts/get-vizjs.js"
+  ],
+  "scripts": {
+    "prepublish": "node scripts/get-plantuml-jar.js",
+    "postinstall": "node scripts/get-vizjs.js",
+    "test": "standard && node test/fixtures/prepare.js && mocha",
+    "build": "node nail/build.js"
+  },
+  "bin": {
+    "puml": "index.js"
+  }
+}

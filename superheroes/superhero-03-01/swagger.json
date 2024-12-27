@@ -95,6 +95,75 @@
             "description": "Not Found"
           }
         }
+      },
+      "delete": {
+        "tags": [
+          "chat"
+        ],
+        "summary": "Delete a chat conversation by ID",
+        "description": "Deletes a chat conversation by the provided chat ID.",
+        "operationId": "deleteChatById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the chat to delete.",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Chat deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Chat deleted successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Chat document does not exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/chat": {
@@ -154,6 +223,9 @@
       "post": {
         "summary": "Pin Message by ID",
         "description": "Pins a message to a chat by the provided chat ID.",
+        "tags": [
+          "pin"
+        ],
         "operationId": "pinMessageById",
         "parameters": [
           {
@@ -171,21 +243,18 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": "object",
-                "properties": {
-                  "message": {
-                    "type": "string",
-                    "description": "The message to pin."
-                  }
-                },
-                "required": ["message"]
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "description": "Messages to pin."
+                }
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Message pinned successfully.",
+            "description": "Messages pinned successfully.",
             "content": {
               "application/json": {
                 "schema": {
@@ -241,6 +310,9 @@
         "summary": "Get the pinned messages of a conversation",
         "description": "The conversation identifier should be used to obtain a full conversation.",
         "operationId": "getPinnedMessagesById",
+        "tags": [
+          "pin"
+        ],
         "parameters": [
           {
             "name": "id",
@@ -320,6 +392,237 @@
           }
         }
       }
+    },
+    "/chat/pin/delete": {
+      "delete": {
+        "tags": [
+          "pin"
+        ],
+        "summary": "Delete a pinned message by ID",
+        "description": "Deletes a pinned message from a chat by the provided chat ID and pinned message ID.",
+        "operationId": "deletePinnedMessageById",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "chatId": {
+                    "type": "string",
+                    "description": "The ID of the chat."
+                  },
+                  "pinnedMessageId": {
+                    "type": "string",
+                    "description": "The ID of the pinned message to delete."
+                  }
+                },
+                "required": ["chatId", "pinnedMessageId"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Pinned message deleted successfully.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Pinned message deleted successfully."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Pinned message not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Pinned message does not exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chat/pin/{id}/export": {
+      "get": {
+        "tags": [
+          "pin"
+        ],
+        "summary": "Export pinned messages as text file",
+        "description": "Exports all pinned messages from a conversation as a downloadable text file",
+        "operationId": "exportPinnedMessages",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "The ID of the chat to export pinned messages from",
+            "schema": {
+              "type": "string",
+              "format": "uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Text file containing pinned messages",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Chat not found or no pinned messages exist",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string",
+                      "example": "Chat not found or no pinned messages exist"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {
+                      "type": "string"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+  "summary": "Edit a pinned message by ID",
+  "description": "Edits a pinned message of a chat by the provided chat ID and pinned message ID.",
+  "operationId": "editPinMessageById",
+  "parameters": [
+    {
+      "name": "id",
+      "in": "path",
+      "required": true,
+      "description": "The ID of the chat where the message should be updated.",
+      "schema": {
+        "type": "string"
+      }
+    }
+  ],
+  "requestBody": {
+    "required": true,
+    "content": {
+      "application/json": {
+        "schema": {
+          "type": "object",
+          "properties": {
+            "pinned_id": {
+              "type": "string",
+              "description": "The ID of the pinned message to update."
+            },
+            "message": {
+              "type": "string",
+              "description": "The updated content of the pinned message."
+            }
+          },
+          "required": ["pinned_id", "message"]
+        }
+      }
+    }
+  },
+  "responses": {
+    "200": {
+      "description": "Pinned message updated successfully.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "example": "Pinned message updated successfully"
+              }
+            }
+          }
+        }
+      }
+    },
+    "404": {
+      "description": "Chat or pinned message not found.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "detail": {
+                "type": "string",
+                "example": "Pinned message not found"
+              }
+            }
+          }
+        }
+      }
+    },
+    "500": {
+      "description": "Internal server error.",
+      "content": {
+        "application/json": {
+          "schema": {
+            "type": "object",
+            "properties": {
+              "detail": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
     }
   },
   "components": {

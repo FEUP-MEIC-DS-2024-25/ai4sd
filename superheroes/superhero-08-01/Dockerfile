@@ -6,9 +6,9 @@ COPY package*.json ./
 
 RUN npm install
 
-RUN --mount=type=secret,id=apikey \
-    if [ -f /run/secrets/apikey ]; then \
-        ENV_CONTENT=$(cat /run/secrets/apikey) && \
+RUN --mount=type=secret,id=secret \
+    if [ -f /run/secrets/secret ]; then \
+        ENV_CONTENT=$(cat /run/secrets/secret) && \
         echo -e "PROD=0\nPORT=3200\nGEMINI_API_KEY=${ENV_CONTENT}" > .env; \
     fi
 

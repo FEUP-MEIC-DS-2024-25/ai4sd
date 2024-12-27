@@ -1,0 +1,6 @@
+.env
+out/
+src/output/
+*.log
+node_modules/
+superhero-02-04.json
