@@ -3,7 +3,7 @@ import { getUri } from "../utilities/getUri";
 import { getNonce } from "../utilities/getNonce";
 import { processArchitecture } from "../scripts/processArchitecture";
 import { ArchitectureResultsPanel } from "./ArchitectureResultsPanel.js";
-import { getFirestore, fetchRecentRequests } from "../utilities/firebase";
+import {fetchRecentRequests, RecentRequest} from "../utilities/firebase";
 import * as admin from "firebase-admin";
 import * as path from 'path';
 
@@ -20,7 +20,6 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
         this._view = webviewView;
         const webview = webviewView.webview;
         
-        const firestore = getFirestore(this._extensionUri);
 
         webview.options = {
             enableScripts: true,
@@ -34,16 +33,17 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
             return;
         }
 
-        webview.html = this._getLoadingHtml();
+       webview.html = this._getLoadingHtml();
 
-        fetchRecentRequests(firestore)
-        .then((recentRequests) => {
-            webview.html = this._getHtmlForWebview(webview, this._extensionUri, recentRequests);
-        })
-        .catch((error) => {
-            vscode.window.showErrorMessage(`Failed to load recent requests: ${error.message}`);
-        });
+       fetchRecentRequests()
+       .then((recentRequests) => {
+         webview.html = this._getHtmlForWebview(webview, this._extensionUri, recentRequests);
+       })
+       .catch((error) => {
+         vscode.window.showErrorMessage(`Failed to load recent requests: ${error.message}`);
+       });
 
+    
         // Handle messages from the sidebar webview
         webview.onDidReceiveMessage(async (message) => {
             const loadingMessages = [
@@ -52,24 +52,27 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
                 "Analyzing the project's architecture ..",
                 "Analyzing the project's architecture ..."
             ];
-
             if (message.command === "archy.loadRecentRequest") {
                 try {
-                    const docSnapshot = await firestore.collection("superhero-02-04").doc(message.id).get();
-                    if (docSnapshot.exists) {
-                        const data = docSnapshot.data();
-                        const resultMarkdown = data?.resultMarkdown || "No content available for this request.";
-                        ArchitectureResultsPanel.render(this._extensionUri, resultMarkdown); // Opens a new tab
-                        vscode.window.showInformationMessage("Loading recent request...");
-                    } else {
-                        vscode.window.showErrorMessage("The selected request does not exist.");
+                    // Call the backend to get the full request details by its ID
+                    const response = await fetch(`https://superhero-02-04-150699885662.europe-west1.run.app/requests/${message.id}`);
+                    
+                    if (!response.ok) {
+                        throw new Error("Failed to fetch the request data");
                     }
+                    
+                    const { resultMarkdown } = await response.json(); // Extract the resultMarkdown content
+            
+                    // Render the markdown content in your panel
+                    ArchitectureResultsPanel.render(this._extensionUri, resultMarkdown);
+            
+                    vscode.window.showInformationMessage("Loading recent request...");
                 } catch (error: any) {
                     vscode.window.showErrorMessage(`Failed to load the recent request: ${error.message || "Unknown error"}`);
                 }
                 return;
             }
-            
+
             let includeCommits = message.includeCommits;
             let includeDocumentation = message.includeDocumentation;
             let language = message.language || "english"; // default language is english
@@ -84,45 +87,112 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
             const progressNotification = vscode.window.withProgress(
                 {
                     location: vscode.ProgressLocation.Notification,
-                    title: "",
+                    title: "Analyzing architecture...",
                     cancellable: false
                 },
                 async (progress) => {
                     let index = 0;
+                    const loadingMessages = [
+                        "Analyzing the project's architecture",
+                        "Analyzing the project's architecture .",
+                        "Analyzing the project's architecture ..",
+                        "Analyzing the project's architecture ..."
+                    ];
+            
                     const interval = setInterval(() => {
                         progress.report({ message: loadingMessages[index] });
                         index = (index + 1) % loadingMessages.length;
                     }, 500);
-
+            
                     try {
-                        const resultMarkdown = await processArchitecture(includeCommits, includeDocumentation, language); // fetch markdown result
-                        clearInterval(interval); // stop updating the notification when result arrives
-                        progress.report({ message: "Analysis Complete!" });
-
-                        const docRef = firestore.collection("superhero-02-04").doc();
-                        await docRef.set({
-                            mode: mode,
-                            resultMarkdown: resultMarkdown,
-                            timestamp: admin.firestore.FieldValue.serverTimestamp(),
-                        });
-
-                        vscode.window.showInformationMessage("Results saved to Firestore!");
-
-
-                        return resultMarkdown;
-                    } catch (error: any) {
+                        // Perform the analysis
+                        const resultMarkdown = await processArchitecture(includeCommits, includeDocumentation, language);
                         clearInterval(interval);
-                        vscode.window.showErrorMessage(`Execution failed: ${error.message || 'Unknown error occurred'}`);
+                        progress.report({ message: "Analysis Complete!" });
+            
+                        // Send the resultMarkdown to the backend
+                        const response = await fetch('https://superhero-02-04-150699885662.europe-west1.run.app/requests/save-markdown', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                resultMarkdown: resultMarkdown,
+                                mode: mode, // ensure `mode` is defined
+                            }),
+                        });
+            
+                        if (response.ok) {
+                            vscode.window.showInformationMessage("Results saved to Firestore!");
+                        } else {
+                            vscode.window.showErrorMessage("Failed to save the results to Firestore.");
+                        }
+            
+                        // Return resultMarkdown so the next part of the code can access it
+                        return resultMarkdown;
+            
+                    } catch (error: unknown) {
+                        clearInterval(interval);
+                    
+                        // Check if 'error' has a 'message' property
+                        if (typeof error === 'object' && error !== null && 'message' in error) {
+                            const typedError = error as { message: string };
+                            vscode.window.showErrorMessage(`Execution failed: ${typedError.message || 'Unknown error occurred'}`);
+                        } else {
+                            vscode.window.showErrorMessage('Execution failed: Unknown error occurred');
+                        }
+                    
+                        return null; // Return null in case of error
                     }
                 }
             );
-
+            
+            // Handle the resultMarkdown once the promise resolves
             progressNotification.then(resultMarkdown => {
                 if (resultMarkdown) {
                     ArchitectureResultsPanel.render(this._extensionUri, resultMarkdown);
                 }
             });
+            
+            /*
+            if (message.command === "archy.startExecution") {
+                const includeCommits = message.includeCommits;
+                const includeDocumentation = message.includeDocumentation;
+                const language = message.language || "english"; // Default language
+        
+                const progressNotification = vscode.window.withProgress(
+                    {
+                        location: vscode.ProgressLocation.Notification,
+                        title: "",
+                        cancellable: false
+                    },
+                    async (progress) => {
+                        let index = 0;
+                        const interval = setInterval(() => {
+                            progress.report({ message: loadingMessages[index] });
+                            index = (index + 1) % loadingMessages.length;
+                        }, 500);
+        
+                        try {
+                            // Perform the analysis
+                            const resultMarkdown = await processArchitecture(includeCommits, includeDocumentation, language);
+        
+                            clearInterval(interval); // Stop updating progress
+                            progress.report({ message: "Analysis Complete!" });
+        
+                            // Directly render the results in the webview
+                            ArchitectureResultsPanel.render(this._extensionUri, resultMarkdown);
+        
+                            vscode.window.showInformationMessage("Analysis complete! Results displayed.");
+                        } catch (error: any) {
+                            clearInterval(interval);
+                            vscode.window.showErrorMessage(`Execution failed: ${error.message || "Unknown error occurred"}`);
+                        }
+                    }
+                );  
+            }*/
         });
+        
     }
 
     show(): void {
@@ -131,13 +201,13 @@ export class LeftSidebarPanel implements vscode.WebviewViewProvider {
         }
     }
 
-    _getHtmlForWebview(webview: vscode.Webview, extensionUri: vscode.Uri, recentRequests: { id: string, mode: string }[]) {
+    _getHtmlForWebview(webview: vscode.Webview, extensionUri: vscode.Uri, recentRequests: RecentRequest[]) {
         console.log("Resolve html");
-        
+      
         const webviewUri = getUri(webview, extensionUri, ["out", "superheroes", "Archy", "webview.js"]);
         const languagesJsonUri = webview.asWebviewUri(vscode.Uri.file(path.join(extensionUri.fsPath, 'src', 'superheroes', 'Archy', 'assets', 'languages.json')));
         const nonce = getNonce();
-
+      
         const recentRequestsHtml = recentRequests.map(request => `
             <div class="sidebar-item" data-id="${request.id}">
                 <span>${request.id}</span>

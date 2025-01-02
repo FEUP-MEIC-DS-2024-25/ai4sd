@@ -15,6 +15,7 @@ django-oauth2-provider = "*"
 oauth2-provider = "*"
 djangorestframework = "*"
 django-cors-headers = "*"
+google-generativeai = "*"
 
 [dev-packages]
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useState} from "react";
 import { ThumbsUp, ThumbsDown, Pencil, Trash2 } from "lucide-react";
 
 export default function UserStoryTable({
@@ -8,8 +8,13 @@ export default function UserStoryTable({
     setEditingStory,
     tempContent,
     setTempContent,
-    queryAdders
+    queryAdders,
+    projectId,
+    reqVersion,
+    userStoriesVersion,
+    setError,
 }) {
+
     const handleEditClick = (storyIndex) => {
         setEditingStory(storyIndex);
         setTempContent(userStories[storyIndex].user_story);
@@ -20,18 +25,19 @@ export default function UserStoryTable({
         setTempContent("");
     };
 
-    const handleSaveEdit = () => {
+    const handleSaveEdit = (index) => {
         if (!tempContent.trim()) return;
         setUserStories((prevStories) => {
             const updatedStories = [...prevStories];
             updatedStories[editingStory].user_story = tempContent;
             return updatedStories;
         });
+        updateUserStoryContent(projectId, reqVersion, userStoriesVersion, index, tempContent)
         setEditingStory(null);
         setTempContent("");
     };
 
-    const handleDelete = (index) => {
+    const handleDelete = (index, realIndex) => {
         setUserStories((prevStories) => {
             const updatedStories = [...prevStories];
             updatedStories.splice(index, 1);
@@ -40,9 +46,10 @@ export default function UserStoryTable({
                 index: idx + 1
             }));
         });
+        deleteUserStory(projectId, reqVersion, userStoriesVersion, realIndex)
     };
 
-    const handleLike = (index) => {
+    const handleLike = (index, realIndex) => {
         const button = document.querySelector(`.like[data-index="${index}"]`);
         const isCurrentlyLiked = button.getAttribute('data-filled') === 'true';
         const dislikeButton = document.querySelector(`.dislike[data-index="${index}"]`);
@@ -50,6 +57,7 @@ export default function UserStoryTable({
         if (!isCurrentlyLiked) {
             button.setAttribute('data-filled', 'true');
             button.style.color = '#2f2f2f'; // filled
+            updateUserStoryFeedback(projectId, reqVersion, userStoriesVersion, realIndex, 1)
             
             if (dislikeButton.getAttribute('data-filled') === 'true') {
                 dislikeButton.setAttribute('data-filled', 'false');
@@ -60,18 +68,21 @@ export default function UserStoryTable({
         } else {
             button.setAttribute('data-filled', 'false');
             button.style.color = '#666'; // unfilled
+            updateUserStoryFeedback(projectId, reqVersion, userStoriesVersion, realIndex, 0)
             queryAdders(null, index);
         }
     };
 
-    const handleDislike = (index) => {
+    const handleDislike = (index, realIndex) => {
         const button = document.querySelector(`.dislike[data-index="${index}"]`);
         const isCurrentlyDisliked = button.getAttribute('data-filled') === 'true';
         const likeButton = document.querySelector(`.like[data-index="${index}"]`);
         
+        
         if (!isCurrentlyDisliked) {
             button.setAttribute('data-filled', 'true');
             button.style.color = '#2f2f2f'; 
+            updateUserStoryFeedback(projectId, reqVersion, userStoriesVersion, realIndex, -1)
             
             if (likeButton.getAttribute('data-filled') === 'true') {
                 likeButton.setAttribute('data-filled', 'false');
@@ -80,10 +91,88 @@ export default function UserStoryTable({
             
             queryAdders("dislike", index);
         } else {
+            updateUserStoryFeedback(projectId, reqVersion, userStoriesVersion, realIndex, 0)
             button.setAttribute('data-filled', 'false');
             button.style.color = '#666';
             queryAdders(null, index);
         }
+    };
+
+    //Update user story content
+    const updateUserStoryContent = async (projectId, reqVersion, userStoriesVersion, index, newContent) => {
+        try {
+            const response = await fetch('https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/update', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    req_version: reqVersion + 1,
+                    version: userStoriesVersion + 1,
+                    index: index,
+                    content: newContent,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+            const data = await response.json();
+            const content = data.response;
+            console.log(content)
+        } catch (error) {
+            setError(`Failed to update user story:  ${error}.`);
+            console.error(error);
+        } 
+    };
+
+    //Delete user story
+    const deleteUserStory = async (projectId, reqVersion, userStoriesVersion, index) => {
+        try {
+            const response = await fetch('https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/delete', {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    req_version: reqVersion + 1,
+                    version: userStoriesVersion + 1,
+                    index: index,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+            const data = await response.json();
+            const content = data.response;
+            console.log(content)
+        } catch (error) {
+            setError(`Failed to delete user story:  ${error}.`);
+            console.error(error);
+        } 
+    };
+    
+    //Update User Story Feedback
+    const updateUserStoryFeedback = async (projectId, reqVersion, userStoriesVersion, index, feedback) => {
+        try {
+            const response = await fetch(`https://superhero-04-02-150699885662.europe-west1.run.app/project/userstory/feedback`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    project_id: projectId,
+                    req_version: reqVersion + 1,
+                    version: userStoriesVersion + 1,
+                    index: index,
+                    feedback: feedback,
+                }),
+            });
+            if (!response.ok) {
+                throw new Error(`Error: ${response.status}`);
+            }
+            const data = await response.json();
+            const content = data.response;
+            console.log(content)
+        } catch (error) {
+            setError(`Failed to save user story feedback:  ${error}.`);
+            console.error(error);
+        } 
     };
 
     return (
@@ -108,7 +197,7 @@ export default function UserStoryTable({
                 {userStories.map((story, idx) => (
                     <tr key={idx}>
                         <td className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
-                            {story.index}
+                            {idx}
                         </td>
                         <td className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
                             {editingStory === idx ? (
@@ -125,7 +214,7 @@ export default function UserStoryTable({
                         <td className="min-h-[2em] min-w-[3em] text-center border border-[#e1e1e1] p-2">
                             {editingStory === idx ? (
                                 <>
-                                    <button onClick={handleSaveEdit}>
+                                    <button onClick={() => handleSaveEdit(story.index)}>
                                         Save
                                     </button>
                                     <button onClick={handleCancelEdit}>
@@ -142,7 +231,7 @@ export default function UserStoryTable({
                                     </button>
                                     <button 
                                         className="text-red-600 hover:text-red-800 ml-2 p-1"
-                                        onClick={() => handleDelete(idx)}
+                                        onClick={() => handleDelete(idx, story.index)}
                                     >
                                         <Trash2 size={18} />
                                     </button>
@@ -153,8 +242,8 @@ export default function UserStoryTable({
                             <button
                                 className="mx-2 like text-gray-600 hover:text-gray-800"
                                 data-index={idx}
-                                data-filled="false"
-                                onClick={() => handleLike(idx)}
+                                data-filled={story.feedback  && story.feedback > 0 ? "true" : "false"}
+                                onClick={() => handleLike(idx, story.index)}
                             >
                                 <ThumbsUp size={18} />
                             </button>
@@ -162,8 +251,8 @@ export default function UserStoryTable({
                             <button
                                 className="mx-2 dislike text-gray-600 hover:text-gray-800"
                                 data-index={idx}
-                                data-filled="false"
-                                onClick={() => handleDislike(idx)}
+                                data-filled={story.feedback && story.feedback < 0 ? "true" : "false"}
+                                onClick={() => handleDislike(idx, story.index)}
                             >
                                 <ThumbsDown size={18} />
                             </button>

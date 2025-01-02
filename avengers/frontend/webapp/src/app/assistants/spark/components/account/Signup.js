@@ -1,7 +1,10 @@
+"use client";
+
+
 import React, { useState } from "react";
 import apiClient from "../../config/axios";
 import { useNavigate, Link } from "react-router-dom";
-import "./Auth.css"; // Import the Auth CSS
+import "../../styles/Auth.css"; // Import the Auth CSS
 
 function Signup() {
   const navigate = useNavigate();
@@ -58,6 +61,7 @@ function Signup() {
             type="text"
             id="username"
             name="username"
+            placeholder="Enter your username"
             value={formData.username}
             onChange={handleChange}
             className={`form-input ${errors.username ? "is-invalid" : ""}`}
@@ -77,6 +81,7 @@ function Signup() {
             type="password"
             id="password1"
             name="password1"
+            placeholder="Enter your password"
             value={formData.password1}
             onChange={handleChange}
             className={`form-input ${errors.password1 ? "is-invalid" : ""}`}
@@ -96,6 +101,7 @@ function Signup() {
             type="password"
             id="password2"
             name="password2"
+            placeholder="Repeat the password"
             value={formData.password2}
             onChange={handleChange}
             className={`form-input ${errors.password2 ? "is-invalid" : ""}`}

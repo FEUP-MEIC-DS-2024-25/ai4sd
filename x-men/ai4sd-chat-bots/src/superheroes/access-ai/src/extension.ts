@@ -8,6 +8,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(disposable);
     console.log('Your chatbot extension "access-ai" is now active!');
+
 }
 
 export function deactivate() {}
@@ -21,6 +22,23 @@ function openChatbotPanel(context: vscode.ExtensionContext) {
             enableScripts: true
         }
     );
+
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+
+    if (workspaceFolders && workspaceFolders.length > 0) {
+        const workspacePath = workspaceFolders[0].uri.fsPath;
+        // escerver para gemini/worksapce.txt
+        const fs = require('fs');
+        fs.writeFile(`${workspacePath}/.vscode/workspace.txt`, workspacePath, (err: any) => {
+            if (err) {
+                vscode.window.showErrorMessage('Error writing to the workspace file.');
+            } else {
+                vscode.window.showInformationMessage('Workspace path written to file.');
+            }
+        });
+    } else {
+        vscode.window.showErrorMessage('No workspace is currently open.');
+    }
 
     panel.webview.html = getWebviewContent(context, panel.webview);
 

@@ -28,7 +28,6 @@ ENV SERVICE_ACCOUNT_KEY_PATH './service_account_key.txt'
 # Set the environment variable for Firebase credentials
 ENV GOOGLE_APPLICATION_CREDENTIALS='./service_account_key.json'
 
-
 # Switch to a non-root user for security
 USER node
 

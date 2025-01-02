@@ -10,7 +10,7 @@
     "Other"
   ],
   "activationEvents": [
-    "*"
+    "workspaceContains:**"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -54,6 +54,11 @@
           "title": "Archy",
           "icon": "public/images/extension_icon.svg",
           "when": "config.ai4sd-analysers.showActivityBarIcon && archy.visible"
+        },
+        {
+          "id": "analysers",
+          "title": "AI4SD Analysers",
+          "icon": "public/images/analysers_icon.svg"
         }
       ]
     },
@@ -65,6 +70,13 @@
           "name": "Archy",
           "icon": "public/images/extension_icon.svg",
           "when": "archy.visible"
+        }
+      ],
+      "analysers": [
+        {
+          "type": "webview",
+          "id": "analysers.extensionSidePanel",
+          "name": "AI4SD Analysers"
         }
       ]
     }

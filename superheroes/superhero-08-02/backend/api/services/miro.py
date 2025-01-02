@@ -1,6 +1,6 @@
 import os, random, requests, re
-from github_graphql import GitHubGraphQLAPI
-from gemini import GeminiAPI
+from .github_graphql import GitHubGraphQLAPI
+from .gemini import geminiAPI
 
 import json
 from dotenv import load_dotenv
@@ -21,9 +21,14 @@ class MiroAPI:
         if hasattr(self, '_initialized') and self._initialized:
             return
         
-        self.headers = {
+        self.postHeaders = {
             "accept": "application/json",
             "content-type": "application/json",
+            "authorization": f"Bearer {token}"
+        }
+
+        self.getHeaders = {
+            "accept": "application/json",
             "authorization": f"Bearer {token}"
         }
         
@@ -31,7 +36,6 @@ class MiroAPI:
         self.existing_sticky_notes = [] # this probably has to be passed by parameter
 
     BASE_URL = 'https://api.miro.com/v2/boards'
-
 
     def check_overlap(self, new_x, new_y, width):
 
@@ -45,7 +49,6 @@ class MiroAPI:
 
                 return True  
         return False 
-
 
     def create_sticky_note(self, board_id, content):
 
@@ -62,8 +65,8 @@ class MiroAPI:
         last_x, last_y = 0, 0  
 
         for _ in range(max_attempts):
-            x = random.randint(-3500 + width/2, -width/2)
-            y = random.randint(-1850 + width/2, 2600 - width/2)
+            x = random.randint(int(-3500 + width/2), int(-width/2))
+            y = random.randint(int(-1850 + width/2), int(2600 - width/2))
             last_x, last_y = x, y 
 
             if not self.check_overlap(x, y, width):
@@ -83,7 +86,7 @@ class MiroAPI:
                     "geometry": { "width": width }
                 }
                 
-                response = requests.post(url, json = payload, headers = self.headers)
+                response = requests.post(url, json = payload, headers = self.postHeaders)
                 return response.json()
 
         # If the loop ends without finding a valid position
@@ -101,7 +104,7 @@ class MiroAPI:
             "geometry": { "width": width }
         }
         
-        response = requests.post(url, json=payload, headers = self.headers)
+        response = requests.post(url, json=payload, headers = self.getHeaders)
         return response.json()
 
 
@@ -121,7 +124,7 @@ class MiroAPI:
             "title": content
         }
         
-        response = requests.post(url, json=payload, headers = self.headers)
+        response = requests.post(url, json=payload, headers = self.postHeaders)
         return response.json()
 
 
@@ -132,13 +135,13 @@ class MiroAPI:
         color = None
         if size <= 3:
             color = "blue"
-        elif 3 < size <= 5:
+        elif size <= 5:
             color = "green"
-        elif 5 < size <= 8:
+        elif size <= 8:
             color = "yellow"
-        elif 8 < size <= 13:
+        elif size <= 13:
             color = "red"
-        elif size > 13:
+        else:
             color = "magenta"
 
         payload = {
@@ -146,7 +149,7 @@ class MiroAPI:
             "title": size 
         }
         
-        response = requests.post(url, json = payload, headers = self.headers)
+        response = requests.post(url, json = payload, headers = self.getHeaders)
         return response.json()
 
 
@@ -154,12 +157,8 @@ class MiroAPI:
     def get_tag_id(self, board_id):
         url = f"{self.BASE_URL}/{board_id}/tags"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
 
         # Create the dictionary from the response
@@ -172,12 +171,7 @@ class MiroAPI:
 
         url = f"{self.BASE_URL}/{board_id}/items?limit=50"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
         sticky_notes_dict = {}
         for item in data['data']:
@@ -191,12 +185,8 @@ class MiroAPI:
     def attach_note_to_tag(self, board_id,  note_id, tag_id):
         url = f"{self.BASE_URL}/{board_id}/items/{note_id}?tag_id={tag_id}"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.post(url, headers=headers)
+        
+        response = requests.post(url, headers=self.getHeaders)
         return response
 
 
@@ -217,54 +207,44 @@ class MiroAPI:
 
     def update_sticky_note(self, board_id, note_id):
         width = 1000
-        x = random.randint(width/2, 3500 - width/2)
+        x = random.randint(int(width/2), int(3500 - width/2))
         url = f"{self.BASE_URL}/{board_id}/sticky_notes/{note_id}"
 
         payload = { "position": { "x": x } }
 
-        response = requests.patch(url, json=payload, headers = self.headers)
+        response = requests.patch(url, json=payload, headers = self.getHeaders)
         return response.json()
 
 
     def get_iteration_tasks(self, board_id, sticky_notes_dict):
         url = f"{self.BASE_URL}/{board_id}/items?limit=50"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
         
-        iteration_tasks = []
-        priority_tasks = []
-        size_tasks = []
+        self.iteration_tasks = []
+        self.priority_tasks = []
+        self.size_tasks = []
 
         for item in data['data']:
             if item['type'] == 'sticky_note' and item['position']['x'] > 0:
                 content = re.sub(r'<.*?>', '', item['data']['content'])
-                iteration_tasks.append(content)
+                self.iteration_tasks.append(content)
         
-        for task in iteration_tasks:
+        for task in self.iteration_tasks:
             task_id = sticky_notes_dict[task]
             tags_info = self.get_tags_from_notes("uXjVLQTokqg%3D", task_id)
-            priority_tasks.append(tags_info["priority_tag"])
-            size_tasks.append(tags_info["size_tag"])
+            self.priority_tasks.append(tags_info["priority_tag"])
+            self.size_tasks.append(tags_info["size_tag"])
 
-        return iteration_tasks, priority_tasks, size_tasks
+        return self.iteration_tasks, self.priority_tasks, self.size_tasks
                 
 
     def get_tags_from_notes(self, board_id, note_id):
 
         url = f"{self.BASE_URL}/{board_id}/items/{note_id}/tags"
 
-        headers = {
-            "accept": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
-
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=self.getHeaders)
         data = response.json()
 
         priority_tag = None
@@ -282,15 +262,9 @@ class MiroAPI:
         }
     
     def create_miro_template(self, board_id):
+
         url_rect = f"{self.BASE_URL}/{board_id}/shapes"
-
         url_text = f"{self.BASE_URL}/{board_id}/texts"
-
-        headers = {
-            "accept": "application/json",
-            "content-type": "application/json",
-            "authorization": f"Bearer {self.bearer_token}"
-        }
 
         left_rectangle_payload = {
             "data": { "shape": "rectangle" },
@@ -417,25 +391,66 @@ class MiroAPI:
             }
         }
 
-        requests.post(url_rect, json=left_rectangle_payload, headers=headers)
+        rectanglePayloads = [left_rectangle_payload, right_rectangle_payload, min_left_rectangle_payload, min_right_rectangle_payload, top_rectangle_payload]
+        textPayloads = [miro_text_payload, miro_pb_text_payload, miro_ib_text_payload]
 
-        requests.post(url_rect, json=right_rectangle_payload, headers=headers)
+        for payload in rectanglePayloads:
+            requests.post(url_rect, json=payload, headers=self.postHeaders)
 
-        requests.post(url_rect, json=min_left_rectangle_payload, headers=headers)       
-    
-        requests.post(url_rect, json=min_right_rectangle_payload, headers=headers)
+        for payload in textPayloads:
+            requests.post(url_text, json=payload, headers=self.postHeaders)
 
-        requests.post(url_rect, json=top_rectangle_payload, headers=headers)
+    def backlogToMiro(self, board_id, gemini_response):
 
-        requests.post(url_text, json=miro_text_payload, headers=headers)
+        print("Creating Miro template...")
+        self.create_miro_template(board_id)
+        
+        print("Extracting lists from gemini response...")
+        lists = self.extract_lists_from_response(gemini_response)
+        all_tasks = lists[0]
+        priorities = lists[1]
+        sizes = lists[2]
+        self.iteration_tasks = lists[3]
 
-        requests.post(url_text, json=miro_pb_text_payload, headers=headers)
+        print("Creating sticky notes...")
+        for i in range(len(all_tasks)):
+            self.create_sticky_note(board_id, all_tasks[i])
 
-        requests.post(url_text, json=miro_ib_text_payload, headers=headers)
+        print("Creating priority tags...")
+        for i in range(len(priorities)):
+            self.create_priority_tag(board_id, priorities[i])
+
+        print("Creating size tags...")
+        for i in range(len(sizes)):
+            self.create_size_tag(board_id, sizes[i])
+
+        print("Attaching notes to tags...")
+        tags_dict = self.get_tag_id(board_id)
+        self.sticky_notes_dict = self.get_sticky_notes_id(board_id)
+
+        for note in all_tasks:
+            note_id = self.sticky_notes_dict[note]
+            priority_id = tags_dict[priorities[all_tasks.index(note)]]
+            size_id = tags_dict[sizes[all_tasks.index(note)]]
+
+            self.attach_note_to_tag(board_id, note_id, priority_id)
+            self.attach_note_to_tag(board_id, note_id, size_id)
+
+    def sprintInMiro(self, board_id):
+        print("Updating sticky notes...")
+        for note in self.iteration_tasks:
+            note_id = self.sticky_notes_dict[note]
+            self.update_sticky_note(board_id, note_id)
+
+        print("Miro is updated with the tasks for the upcoming iteration successfully!")
+
+    def sprintToGitHub(self, board_id):
+        self.sticky_notes_dict = self.get_sticky_notes_id(board_id)    
+        self.iteration_tasks, self.priority_tasks, self.size_tasks = self.get_iteration_tasks(board_id, self.sticky_notes_dict)
+        print("GitHub is updated with the tasks for the upcoming iteration successfully!")
+        return self.iteration_tasks, self.priority_tasks, self.size_tasks
 
 def main():
-    #------TEST FUNCTIONS------
-    flag = False # (FALSE) - Just to test the MIRO -> GITHUB API functionality
     MIRO_TOKEN = os.getenv('MIRO_TOKEN')    
     miro_api = MiroAPI(MIRO_TOKEN)
 
@@ -509,73 +524,73 @@ def main():
     # Send the request to the API to get the project data
     project_data = github_api.send_request(query)
 
-    if flag:
-        # 1. Get Project data from github 
-        # Query to get the project data
+    # 1. Get Project data from github 
+    # Query to get the project data
         
+    # 2. Gemini choose tasks to move to the 'Iteration Backlog'
 
-        # 2. Gemini choose tasks to move to the 'Iteration Backlog'
-
-        geminiAPI = GeminiAPI()
-
-        project_data_prompt = json.dumps(project_data)
+    project_data_prompt = json.dumps(project_data)
         
-        prompt = (
-            "Based on the provided project data, " + project_data_prompt + """\n
-            Identify the tasks that should be moved to the 'Iteration Backlog' for the upcoming iteration, prioritizing tasks with the highest impact.
-            Leave tasks not selected in their current status and do not modify their position.
-            Provide the response in a Python list with the names of all the tasks in the backlog. 
-            Additionally, provide two more Python lists with the priorities of the tasks and their sizes for all the tasks in the backlog in the same order.
-            Finally, provide one more Python list with the names of the tasks that should be moved to the 'Iteration Backlog'.
-            Don't give an explanation, just the lists.
-            """
-        )
+    prompt = (
+        "Based on the provided project data, " + project_data_prompt + """\n
+        Identify the tasks that should be moved to the 'Iteration Backlog' for the upcoming iteration, prioritizing tasks with the highest impact.
+        Leave tasks not selected in their current status and do not modify their position.
+        Provide the response in a Python list with the names of all the tasks in the backlog. 
+        Additionally, provide two more Python lists with the priorities of the tasks and their sizes for all the tasks in the backlog in the same order.
+        Finally, provide one more Python list with the names of the tasks that should be moved to the 'Iteration Backlog'.
+        Don't give an explanation, just the lists.
+        """
+    )
         
-        gemini_response = geminiAPI.prompt_gemini(prompt)
+    gemini_response = geminiAPI.prompt_gemini(prompt)
 
-        # 3. Create sticky notes in Miro for the tasks that should be moved to the 'Iteration Backlog'
+    # 3. Create sticky notes in Miro for the tasks that should be moved to the 'Iteration Backlog'
     
 
-        print("Creating Miro template...")
-        miro_api.create_miro_template("uXjVLQTokqg%3D")
+    print("Creating Miro template...")
+    miro_api.create_miro_template("uXjVLQTokqg%3D")
         
-        print("Extracting lists from gemini response...")
-        lists = miro_api.extract_lists_from_response(gemini_response)
-        all_tasks = lists[0]
-        priorities = lists[1]
-        sizes = lists[2]
-        iteration_tasks = lists[3]
+    print("Extracting lists from gemini response...")
+    lists = miro_api.extract_lists_from_response(gemini_response)
+    all_tasks = lists[0]
+    priorities = lists[1]
+    sizes = lists[2]
+    iteration_tasks = lists[3]
 
-        print("Creating sticky notes...")
-        for i in range(len(all_tasks)):
-            miro_api.create_sticky_note("uXjVLQTokqg%3D", all_tasks[i])
+    print("Creating sticky notes...")
+    for i in range(len(all_tasks)):
+        miro_api.create_sticky_note("uXjVLQTokqg%3D", all_tasks[i])
 
-        print("Creating priority tags...")
-        for i in range(len(priorities)):
-            miro_api.create_priority_tag("uXjVLQTokqg%3D", priorities[i])
+    print("Creating priority tags...")
+    for i in range(len(priorities)):
+        miro_api.create_priority_tag("uXjVLQTokqg%3D", priorities[i])
 
-        print("Creating size tags...")
-        for i in range(len(sizes)):
-            miro_api.create_size_tag("uXjVLQTokqg%3D", sizes[i])
+    print("Creating size tags...")
+    for i in range(len(sizes)):
+        miro_api.create_size_tag("uXjVLQTokqg%3D", sizes[i])
 
-        print("Attaching notes to tags...")
-        tags_dict = miro_api.get_tag_id("uXjVLQTokqg%3D")
-        sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")
+    print("Attaching notes to tags...")
+    tags_dict = miro_api.get_tag_id("uXjVLQTokqg%3D")
+    sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")
 
-        for note in all_tasks:
-            note_id = sticky_notes_dict[note]
-            priority_id = tags_dict[priorities[all_tasks.index(note)]]
-            size_id = tags_dict[sizes[all_tasks.index(note)]]
+    for note in all_tasks:
+        note_id = sticky_notes_dict[note]
+        priority_id = tags_dict[priorities[all_tasks.index(note)]]
+        size_id = tags_dict[sizes[all_tasks.index(note)]]
 
-            miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, priority_id)
-            miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, size_id)
+        miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, priority_id)
+        miro_api.attach_note_to_tag("uXjVLQTokqg%3D", note_id, size_id)
 
-        print("Updating sticky notes...")
-        for note in iteration_tasks:
-            note_id = sticky_notes_dict[note]
-            miro_api.update_sticky_note("uXjVLQTokqg%3D", note_id)
+    ###############################################################################
 
-        print("Miro is updated with the tasks for the upcoming iteration successfully!")
+    print("Updating sticky notes...")
+    for note in iteration_tasks:
+        note_id = sticky_notes_dict[note]
+        miro_api.update_sticky_note("uXjVLQTokqg%3D", note_id)
+
+    print("Miro is updated with the tasks for the upcoming iteration successfully!")
+
+    ################################################################################
 
     # MIRO -> GITHUB API FUNCTIONALITY
     sticky_notes_dict = miro_api.get_sticky_notes_id("uXjVLQTokqg%3D")    

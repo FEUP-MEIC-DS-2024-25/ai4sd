@@ -2,7 +2,6 @@ import { extractRepoDetails, fetchFiles } from "../jarvis-fetcher/fetcher.js";
 import { BUCKET_NAME, STORAGE_CLIENT } from "../consts.js";
 import { downloadFiles } from "../jarvis-fetcher/utils.js";
 
-
 /**
  * Writes a file to a Google Cloud Storage bucket at `org/repo/filePath`.
  * @param {string} org - GitHub organization name.
@@ -23,6 +22,35 @@ export async function writeToBucket(org, repo, filePath, fileContents) {
         );
     } catch (err) {
         console.error(`Error writing file "${absolutePath}" to bucket:`, err.message);
+    }
+}
+/**
+ * Deletes a file from a Google Cloud Storage bucket at `org/repo/filePath`.
+ * @param {string} org - GitHub organization name.
+ * @param {string} repo - Repository name.
+ * @param {string} filePath - Path of the file within the repository.
+ */
+export async function deleteFromBucket(org, repo, filePath) {
+    const absolutePath = `${org}/${repo}/${filePath}`;
+
+    try {
+        // Reference the file in the bucket
+        const file = STORAGE_CLIENT.bucket(BUCKET_NAME).file(absolutePath);
+
+        // Check if the file exists
+        const [exists] = await file.exists();
+        if (!exists) {
+            console.log(`File "${absolutePath}" does not exist in bucket "${BUCKET_NAME}".`);
+            return; // Exit without trying to delete the file
+        }
+
+        // Delete the file
+        await file.delete();
+        console.log(
+            `File "${filePath.split('/').pop()}" deleted from bucket "${BUCKET_NAME}" successfully.`
+        );
+    } catch (err) {
+        console.error(`Error deleting file "${absolutePath}" from bucket:`, err.message);
         throw err; // Re-throw error to handle at a higher level if necessary
     }
 }

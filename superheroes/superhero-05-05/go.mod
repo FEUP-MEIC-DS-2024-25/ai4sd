@@ -7,6 +7,7 @@ require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/google/generative-ai-go v0.18.0
 	github.com/joho/godotenv v1.5.1
+	github.com/yuin/goldmark v1.4.13
 	google.golang.org/api v0.208.0
 )
 

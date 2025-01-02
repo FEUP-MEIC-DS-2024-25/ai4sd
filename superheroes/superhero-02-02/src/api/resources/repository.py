@@ -10,7 +10,7 @@ from zipfile import *
 from flask import jsonify, abort, request
 from flask_restful import Resource
 
-from fetch import download_files_from_repo
+
 from utils.utils_misc import get_env_variable
 
 from communication.service import LLMService
@@ -22,7 +22,12 @@ class Repository:
 
     def process_prompt_response(self, model_name: str, submodel_name: Union[str, None] = None):
         service = LLMService(submodel_name)
-        service.run_model(model_name, self.FILES_DIR, self.PROMPT_DIR)
+
+        try:
+            service.run_model(model_name, self.FILES_DIR, self.PROMPT_DIR)
+        except Exception as e:
+            self.__clean_dirs()
+            abort(500, "Error running model: " + e.message)
 
         content = self.__get_prompt_content()
         self.__clean_dirs()
@@ -45,45 +50,6 @@ class Repository:
         shutil.rmtree(self.PROMPT_DIR)
 
 
-class RemoteRepository(Resource, Repository):
-    def post(self):
-        repo = request.form['repo']
-        llm = request.form['llm']
-
-        pattern = r'(?:git@github\.com:|https://github\.com/)([^/]+)/([^/]+)\.git$'
-    
-        match = re.search(pattern, repo)
-        if match:
-            owner = match.group(1)
-            repo = match.group(2) 
-        else:
-            abort(
-                400,
-                "Invalid repository format. Please provide a valid GitHub repository.",
-            )
-
-        url = f"https://api.github.com/repos/{owner}/{repo}/contents/"
-
-        try:
-            download_files_from_repo(url)
-        except Exception as e:
-            abort(
-                500,
-                f"Failed to fetch repository contents: {e}",
-            )
-
-        content = None
-
-        # if llm has '/' is because llm has multiple models to choose from
-        # e.g. groq/llama ; groq/gemma
-        if "/" in llm:
-            [llm_name, model_subname] = llm.split("/")
-            content = self.process_prompt_response(llm_name, model_subname)
-        else:
-            content = self.process_prompt_response(llm)
-
-        return jsonify({"data": content})
-    
 
 class LocalRepository(Resource, Repository):
     def post(self):

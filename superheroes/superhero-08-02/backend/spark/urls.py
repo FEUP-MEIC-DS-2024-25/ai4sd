@@ -41,6 +41,9 @@ urlpatterns = [
     path('spark/<int:id>/delete/', DeleteSparkProjectAPIView.as_view(), name='delete-spark-project'),
     path('spark/<int:project_id>/add-member/', AddMemberToSparkProjectAPIView.as_view(), name='add-member-to-spark-project'),
     path('spark/<int:project_id>/add-miro-board-id/', AddMiroBoardIdToSparkProjectAPIView.as_view(), name='add-miro-board-id-to-spark-project'),
+    path('spark/<int:project_id>/backlog-to-miro/', BacklogToMiroAPIView.as_view(), name='backlog-to-miro'),
+    path('spark/<int:project_id>/sprint-in-miro/', SprintInMiroAPIView.as_view(), name='sprint-in-miro'),
+    path('spark/<int:project_id>/sprint-to-github/', SprintToGitHubAPIView.as_view(), name='sprint-to-github'),
 ]
 
 handler404 = 'spark.views.handler404'

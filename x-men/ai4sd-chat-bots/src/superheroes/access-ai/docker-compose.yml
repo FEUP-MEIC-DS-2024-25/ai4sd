@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  access-ai:
+    build:
+      context: .
+    ports:
+      - "5000:5000" 
+    volumes:
+      - ./src/gemini:/app/gemini
+      - ./src/frontend:/app/frontend
+    command: ["python", "/app/gemini/app.py"]
